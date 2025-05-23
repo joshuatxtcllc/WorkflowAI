@@ -17,7 +17,7 @@ export class AIService {
     try {
       const orders = await storage.getOrders();
       const metrics = await storage.getWorkloadMetrics();
-      
+
       const activeOrders = orders.filter(order => 
         !['COMPLETED', 'PICKED_UP'].includes(order.status)
       );
@@ -177,14 +177,14 @@ Be helpful, concise, and actionable in your responses. Use the workload context 
 
   private generateFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
-    
+
     if (lowerMessage.includes('status') || lowerMessage.includes('update')) {
       return `I can help you check the current workload status. Please check the dashboard for real-time order information, or I can provide specific details about any order if you provide the tracking ID.`;
     }
-    
+
     if (lowerMessage.includes('help') || lowerMessage.includes('behind')) {
       return `Here are some general recommendations for staying on track:
-      
+
 1. Prioritize orders by due date and complexity
 2. Batch similar tasks together for efficiency
 3. Check material availability before starting work
@@ -192,7 +192,7 @@ Be helpful, concise, and actionable in your responses. Use the workload context 
 
 Would you like specific information about any particular order or workflow stage?`;
     }
-    
+
     if (lowerMessage.includes('material')) {
       return `For material management:
 - Check the materials tab for each order
@@ -202,7 +202,7 @@ Would you like specific information about any particular order or workflow stage
 
 Do you need information about specific materials for an order?`;
     }
-    
+
     return `I'm here to help with your framing shop operations! I can assist with:
 - Order status and workload updates
 - Workflow optimization suggestions
@@ -220,7 +220,7 @@ What specific information would you like to know about?`;
     activeOrders.forEach(order => {
       const dueDate = new Date(order.dueDate);
       const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-      
+
       if (hoursUntilDue < 0) {
         alerts.push({
           id: `overdue_${order.id}`,

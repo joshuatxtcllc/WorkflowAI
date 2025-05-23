@@ -24,6 +24,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
+import * as crypto from "crypto";
 
 // Interface for storage operations
 export interface IStorage {
@@ -363,8 +364,9 @@ export class DatabaseStorage implements IStorage {
     const [analysis] = await db
       .insert(aiAnalysis)
       .values({
+        id: crypto.randomUUID(), // Add explicit ID generation
         metrics: data.metrics,
-        recommendations: data.alerts,
+        alerts: data.alerts,
       })
       .returning();
     return analysis;
