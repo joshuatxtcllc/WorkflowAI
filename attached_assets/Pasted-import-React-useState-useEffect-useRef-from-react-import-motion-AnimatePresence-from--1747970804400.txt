@@ -1,0 +1,354 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Brain, AlertTriangle, TrendingUp, Clock, 
+  MessageSquare, Send, X, Zap, BarChart3,
+  Calendar, Package, AlertCircle, CheckCircle
+} from 'lucide-react';
+
+interface AIMessage {
+  id: string;
+  type: 'user' | 'assistant' | 'alert';
+  content: string;
+  timestamp: Date;
+  severity?: 'info' | 'warning' | 'urgent' | 'success';
+}
+
+interface WorkloadAnalysis {
+  totalOrders: number;
+  totalHours: number;
+  averageComplexity: number;
+  onTimePercentage: number;
+  bottlenecks: string[];
+  recommendations: string[];
+  projectedCompletion: Date;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+}
+
+const AIAssistant: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<AIMessage[]>([]);
+  const [input, setInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [workloadAnalysis, setWorkloadAnalysis] = useState<WorkloadAnalysis | null>(null);
+  const [urgentAlerts, setUrgentAlerts] = useState<number>(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom when new messages arrive
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Simulate AI analysis and alerts
+  useEffect(() => {
+    const interval = setInterval(() => {
+      analyzeWorkload();
+      checkForAlerts();
+    }, 30000); // Check every 30 seconds
+
+    // Initial analysis
+    analyzeWorkload();
+    checkForAlerts();
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const analyzeWorkload = async () => {
+    setIsAnalyzing(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      const analysis: WorkloadAnalysis = {
+        totalOrders: 12,
+        totalHours: 28.5,
+        averageComplexity: 6.8,
+        onTimePercentage: 85,
+        bottlenecks: ['Mat cutting station backed up', '3 orders waiting for glass delivery'],
+        recommendations: [
+          'Prioritize Emma Davis order - due tomorrow',
+          'Order museum glass for upcoming shadowbox orders',
+          'Consider overtime for mat cutting backlog'
+        ],
+        projectedCompletion: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        riskLevel: 'medium'
+      };
+      
+      setWorkloadAnalysis(analysis);
+      setIsAnalyzing(false);
+    }, 1000);
+  };
+
+  const checkForAlerts = () => {
+    const alerts = [
+      {
+        id: Date.now().toString(),
+        type: 'alert' as const,
+        content: "⚠️ URGENT: Emma Davis order (#JF2024003) is due in 18 hours. Current status: Frame Cut. Estimated 1.5 hours remaining.",
+        timestamp: new Date(),
+        severity: 'urgent' as const
+      },
+      {
+        id: (Date.now() + 1).toString(),
+        type: 'alert' as const,
+        content: "📦 Materials Update: 2 orders have materials in transit. Expected delivery tomorrow morning.",
+        timestamp: new Date(),
+        severity: 'info' as const
+      }
+    ];
+
+    const urgentCount = alerts.filter(a => a.severity === 'urgent').length;
+    setUrgentAlerts(prev => prev + urgentCount);
+
+    // Add alerts to messages if assistant is open
+    if (isOpen) {
+      setMessages(prev => [...prev, ...alerts]);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const userMessage: AIMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: input,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+
+    // Simulate AI response
+    setTimeout(() => {
+      const response = generateAIResponse(input);
+      setMessages(prev => [...prev, response]);
+    }, 1000);
+  };
+
+  const generateAIResponse = (userInput: string): AIMessage => {
+    const lowercaseInput = userInput.toLowerCase();
+    let response = '';
+    let severity: AIMessage['severity'] = 'info';
+
+    if (lowercaseInput.includes('status') || lowercaseInput.includes('update')) {
+      response = `Current workload status:
+- Active Orders: 12
+- Total Hours: 28.5h
+- On-time Completion: 85%
+- Risk Level: MEDIUM
+
+Key concerns:
+1. Emma Davis order needs immediate attention
+2. Mat cutting station creating bottleneck
+3. Consider reassigning resources from frame cutting`;
+      severity = 'warning';
+    } else if (lowercaseInput.includes('help') || lowercaseInput.includes('behind')) {
+      response = `I'm seeing you're falling behind. Here's my action plan:
+
+IMMEDIATE (Next 2 hours):
+1. Complete Emma Davis frame - it's URGENT
+2. Start mat cutting for orders #JF2024004-006
+
+TODAY:
+3. Call supplier about glass delivery ETA
+4. Prep all materials for tomorrow's orders
+
+EFFICIENCY TIPS:
+- Batch similar order types together
+- Pre-cut common mat sizes during downtime
+- Set 25-min focused work sprints
+
+You've got this! I'll alert you every 30 mins with progress checks.`;
+      severity = 'urgent';
+    } else if (lowercaseInput.includes('materials')) {
+      response = `Material Status Update:
+✅ In Stock: Frame molding (oak, cherry), Standard mats
+⚠️ Low Stock: Museum glass (2 sheets), Black mats
+🚛 In Transit: Conservation glass (arrives tomorrow)
+❌ Need to Order: Shadowbox spacers, Gold leaf frames
+
+Recommendation: Place order for low stock items TODAY to avoid delays.`;
+    } else {
+      response = `I'm analyzing your request. Based on current workload metrics, I recommend focusing on time-sensitive orders first. 
+
+Current efficiency: 73% (target: 85%)
+Projected completion time for all orders: 4 days
+
+Would you like specific recommendations for improving throughput?`;
+    }
+
+    return {
+      id: (Date.now() + 1).toString(),
+      type: 'assistant',
+      content: response,
+      timestamp: new Date(),
+      severity
+    };
+  };
+
+  const getRiskLevelColor = (level: string) => {
+    switch (level) {
+      case 'critical': return 'text-red-500';
+      case 'high': return 'text-orange-500';
+      case 'medium': return 'text-yellow-500';
+      default: return 'text-green-500';
+    }
+  };
+
+  return (
+    <>
+      {/* Floating AI Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => {
+          setIsOpen(true);
+          setUrgentAlerts(0);
+        }}
+        className={`
+          fixed bottom-6 right-6 w-16 h-16 rounded-full
+          bg-gradient-to-br from-jade-500 to-jade-600
+          text-white shadow-2xl flex items-center justify-center
+          hover:from-jade-400 hover:to-jade-500 transition-all
+          ${!isOpen ? 'block' : 'hidden'}
+        `}
+      >
+        <Brain className="w-8 h-8" />
+        {urgentAlerts > 0 && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold"
+          >
+            {urgentAlerts}
+          </motion.div>
+        )}
+      </motion.button>
+
+      {/* AI Assistant Panel */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: 400, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 400, opacity: 0 }}
+            className="fixed right-0 top-0 h-full w-[480px] bg-gray-900 border-l border-gray-800 shadow-2xl z-50"
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-jade-600 to-jade-500 p-6 text-white">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Brain className="w-8 h-8" />
+                  <div>
+                    <h2 className="text-xl font-bold">AI Assistant</h2>
+                    <p className="text-jade-100 text-sm">Your Order Management Copilot</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-jade-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
+                  <BarChart3 className="w-5 h-5 mx-auto mb-1" />
+                  <p className="text-2xl font-bold">{workloadAnalysis?.onTimePercentage || 0}%</p>
+                  <p className="text-xs">On Time</p>
+                </div>
+                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
+                  <Clock className="w-5 h-5 mx-auto mb-1" />
+                  <p className="text-2xl font-bold">{workloadAnalysis?.totalHours || 0}h</p>
+                  <p className="text-xs">Workload</p>
+                </div>
+                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
+                  <AlertTriangle className="w-5 h-5 mx-auto mb-1" />
+                  <p className={`text-2xl font-bold uppercase ${getRiskLevelColor(workloadAnalysis?.riskLevel || 'low')}`}>
+                    {workloadAnalysis?.riskLevel || 'LOW'}
+                  </p>
+                  <p className="text-xs">Risk</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-6 h-[calc(100%-320px)]">
+              <AnimatePresence>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`mb-4 ${message.type === 'user' ? 'text-right' : ''}`}
+                  >
+                    <div
+                      className={`
+                        inline-block max-w-[80%] p-4 rounded-lg
+                        ${message.type === 'user' 
+                          ? 'bg-jade-600 text-white' 
+                          : message.type === 'alert'
+                          ? 'bg-gray-800 border-l-4 ' + 
+                            (message.severity === 'urgent' ? 'border-red-500' :
+                             message.severity === 'warning' ? 'border-yellow-500' :
+                             message.severity === 'success' ? 'border-green-500' :
+                             'border-jade-500')
+                          : 'bg-gray-800 text-gray-200'
+                        }
+                      `}
+                    >
+                      {message.type === 'assistant' && (
+                        <div className="flex items-center gap-2 mb-2 text-jade-400">
+                          <Brain className="w-4 h-4" />
+                          <span className="text-sm font-semibold">AI Assistant</span>
+                        </div>
+                      )}
+                      <p className="whitespace-pre-line">{message.content}</p>
+                      <p className="text-xs opacity-60 mt-2">
+                        {message.timestamp.toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="p-6 border-t border-gray-800">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Ask about orders, materials, or deadlines..."
+                  className="flex-1 bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-jade-500"
+                />
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={sendMessage}
+                  className="bg-jade-500 text-white p-3 rounded-lg hover:bg-jade-400 transition-colors"
+                >
+                  <Send className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+export default AIAssistant;

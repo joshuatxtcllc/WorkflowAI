@@ -1,0 +1,94 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        jade: {
+          DEFAULT: '#00A693',
+          50: '#E6FAF7',
+          100: '#CCF5EF',
+          200: '#99EBDE',
+          300: '#66E0CE',
+          400: '#33D6BD',
+          500: '#00A693',
+          600: '#007A6C',
+          700: '#005C52',
+          800: '#003D37',
+          900: '#001F1C',
+        },
+        gray: {
+          950: '#0A0A0B',
+          900: '#131316',
+          850: '#1C1C21',
+          800: '#26262C',
+          700: '#3A3A42',
+          600: '#4E4E58',
+          500: '#62626E',
+          400: '#767684',
+          300: '#A0A0A8',
+          200: '#C4C4CC',
+          100: '#E8E8F0',
+          50: '#F5F5FA',
+        },
+        accent: {
+          purple: '#8B5CF6',
+          pink: '#EC4899',
+          yellow: '#F59E0B',
+        },
+        status: {
+          success: '#10B981',
+          danger: '#EF4444',
+          warning: '#F59E0B',
+          info: '#3B82F6',
+        }
+      },
+      fontFamily: {
+        'orbitron': ['Orbitron', 'monospace'],
+        'inter': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'gradient-shift': 'gradientShift 20s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+      },
+      keyframes: {
+        gradientShift: {
+          '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+          '33%': { transform: 'rotate(120deg) scale(1.1)' },
+          '66%': { transform: 'rotate(240deg) scale(0.9)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        glow: {
+          'from': { boxShadow: '0 0 10px rgba(0, 166, 147, 0.5)' },
+          'to': { boxShadow: '0 0 20px rgba(0, 166, 147, 0.8), 0 0 30px rgba(0, 166, 147, 0.6)' },
+        },
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      backgroundImage: {
+        'grid-pattern': `linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)`,
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glow-sm': '0 0 10px rgba(0, 166, 147, 0.5)',
+        'glow-md': '0 0 20px rgba(0, 166, 147, 0.5)',
+        'glow-lg': '0 0 30px rgba(0, 166, 147, 0.5)',
+        'inner-glow': 'inset 0 0 20px rgba(0, 166, 147, 0.2)',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
+}

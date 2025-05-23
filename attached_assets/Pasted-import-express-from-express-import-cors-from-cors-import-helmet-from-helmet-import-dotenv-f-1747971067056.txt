@@ -1,0 +1,208 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import rateLimit from 'express-rate-limit';
+import { PrismaClient } from '@prisma/client';
+
+// Import routes
+import authRoutes from './routes/auth';
+import orderRoutes from './routes/orders';
+import customerRoutes from './routes/customers';
+import materialRoutes from './routes/materials';
+import aiRoutes from './routes/ai';
+import notificationRoutes from './routes/notifications';
+import analyticsRoutes from './routes/analytics';
+
+// Import middleware
+import { errorHandler } from './middleware/errorHandler';
+import { authMiddleware } from './middleware/auth';
+
+// Import services
+import { AIService } from './services/AIService';
+import { NotificationService } from './services/NotificationService';
+
+// Load environment variables
+dotenv.config();
+
+// Initialize Prisma
+const prisma = new PrismaClient();
+
+// Initialize Express
+const app = express();
+const httpServer = createServer(app);
+
+// Initialize Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  },
+});
+
+// Initialize services
+const aiService = new AIService(prisma);
+const notificationService = new NotificationService(prisma);
+
+// Middleware
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+  message: 'Too many requests from this IP, please try again later.',
+});
+app.use('/api', limiter);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/orders', authMiddleware, orderRoutes);
+app.use('/api/customers', authMiddleware, customerRoutes);
+app.use('/api/materials', authMiddleware, materialRoutes);
+app.use('/api/ai', authMiddleware, aiRoutes);
+app.use('/api/notifications', authMiddleware, notificationRoutes);
+app.use('/api/analytics', authMiddleware, analyticsRoutes);
+
+// Customer portal routes (no auth required)
+app.get('/api/customer/order/:trackingId', async (req, res, next) => {
+  try {
+    const { trackingId } = req.params;
+    
+    const order = await prisma.order.findUnique({
+      where: { trackingId },
+      include: {
+        customer: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        materials: true,
+        statusHistory: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+        },
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Remove sensitive data
+    const { internalNotes, assignedToId, ...safeOrder } = order;
+    
+    res.json(safeOrder);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  // Join user to their room
+  socket.on('join-user', (userId: string) => {
+    socket.join(`user:${userId}`);
+  });
+
+  // Join order room for real-time updates
+  socket.on('join-order', (orderId: string) => {
+    socket.join(`order:${orderId}`);
+  });
+
+  // Handle order status updates
+  socket.on('update-order-status', async (data) => {
+    const { orderId, newStatus, userId } = data;
+    
+    try {
+      // Update order in database
+      const order = await prisma.order.update({
+        where: { id: orderId },
+        data: { 
+          status: newStatus,
+          updatedAt: new Date(),
+        },
+        include: {
+          customer: true,
+          materials: true,
+        },
+      });
+
+      // Add to status history
+      await prisma.statusHistory.create({
+        data: {
+          orderId,
+          toStatus: newStatus,
+          changedBy: userId,
+        },
+      });
+
+      // Emit update to all connected clients
+      io.to(`order:${orderId}`).emit('order-updated', order);
+      io.emit('kanban-update', { orderId, newStatus });
+
+      // Send customer notification if needed
+      if (['COMPLETED', 'READY_FOR_PICKUP'].includes(newStatus)) {
+        await notificationService.sendStatusUpdate(order);
+      }
+
+      // AI analysis for workload
+      await aiService.analyzeWorkloadChange();
+      
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      socket.emit('error', { message: 'Failed to update order status' });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// Error handling
+app.use(errorHandler);
+
+// Start server
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🧠 AI Assistant enabled: ${process.env.OPENAI_API_KEY ? 'Yes' : 'No'}`);
+  console.log(`📧 Email notifications: ${process.env.SENDGRID_API_KEY ? 'Enabled' : 'Disabled'}`);
+  console.log(`📱 SMS notifications: ${process.env.TWILIO_ACCOUNT_SID ? 'Enabled' : 'Disabled'}`);
+  
+  // Start AI monitoring
+  if (process.env.OPENAI_API_KEY) {
+    setInterval(() => {
+      aiService.runScheduledAnalysis();
+    }, parseInt(process.env.AI_CHECK_INTERVAL || '30000'));
+  }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received: closing HTTP server');
+  httpServer.close(async () => {
+    await prisma.$disconnect();
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+export { app, io, prisma };

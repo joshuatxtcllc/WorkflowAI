@@ -1,0 +1,455 @@
+import React, { useState, useEffect } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Clock, AlertTriangle, CheckCircle, Package, 
+  Scissors, Layers, Truck, Timer, User,
+  Calendar, DollarSign, MessageSquare, Zap
+} from 'lucide-react';
+
+// Types
+interface Order {
+  id: string;
+  customerName: string;
+  trackingId: string;
+  orderType: 'frame' | 'mat' | 'shadowbox';
+  status: OrderStatus;
+  dueDate: Date;
+  createdAt: Date;
+  estimatedHours: number;
+  actualHours?: number;
+  materials: Material[];
+  price: number;
+  notes?: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  complexity: number; // 1-10 scale
+}
+
+interface Material {
+  type: 'frame' | 'mat' | 'glass';
+  subtype?: string;
+  quantity: number;
+  ordered: boolean;
+  arrived: boolean;
+}
+
+type OrderStatus = 
+  | 'order_processed'
+  | 'materials_ordered'
+  | 'materials_arrived'
+  | 'frame_cut'
+  | 'mat_cut'
+  | 'prepped'
+  | 'completed'
+  | 'delayed'
+  | 'picked_up';
+
+const statusColumns: { key: OrderStatus; label: string; icon: React.ReactNode }[] = [
+  { key: 'order_processed', label: 'Order Processed', icon: <Package className="w-5 h-5" /> },
+  { key: 'materials_ordered', label: 'Materials Ordered', icon: <Truck className="w-5 h-5" /> },
+  { key: 'materials_arrived', label: 'Materials Arrived', icon: <CheckCircle className="w-5 h-5" /> },
+  { key: 'frame_cut', label: 'Frame Cut', icon: <Scissors className="w-5 h-5" /> },
+  { key: 'mat_cut', label: 'Mat Cut', icon: <Layers className="w-5 h-5" /> },
+  { key: 'prepped', label: 'Prepped', icon: <Timer className="w-5 h-5" /> },
+  { key: 'completed', label: 'Completed', icon: <CheckCircle className="w-5 h-5" /> },
+  { key: 'delayed', label: 'Delayed', icon: <AlertTriangle className="w-5 h-5" /> },
+  { key: 'picked_up', label: 'Picked Up', icon: <User className="w-5 h-5" /> },
+];
+
+// Drag and Drop Item
+const DraggableOrder: React.FC<{ order: Order; onUpdate: (order: Order) => void }> = ({ order, onUpdate }) => {
+  const [{ isDragging }, drag] = useDrag({
+    type: 'order',
+    item: { order },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'border-red-500 bg-red-500/10';
+      case 'high': return 'border-orange-500 bg-orange-500/10';
+      case 'medium': return 'border-yellow-500 bg-yellow-500/10';
+      default: return 'border-jade-500 bg-jade-500/10';
+    }
+  };
+
+  const getOrderTypeIcon = (type: string) => {
+    switch (type) {
+      case 'shadowbox': return '🎨';
+      case 'mat': return '🖼️';
+      default: return '🪟';
+    }
+  };
+
+  const daysUntilDue = Math.ceil((new Date(order.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+  const isOverdue = daysUntilDue < 0;
+  const isUrgent = daysUntilDue <= 2 && daysUntilDue >= 0;
+
+  return (
+    <motion.div
+      ref={drag}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: isDragging ? 0.5 : 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ scale: 1.02 }}
+      className={`
+        relative p-4 rounded-lg border-2 cursor-move
+        ${getPriorityColor(order.priority)}
+        backdrop-blur-sm shadow-lg
+        transition-all duration-200
+      `}
+    >
+      {/* Priority Badge */}
+      <div className="absolute -top-2 -right-2">
+        <motion.div
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className={`
+            w-8 h-8 rounded-full flex items-center justify-center
+            ${order.priority === 'urgent' ? 'bg-red-500' : ''}
+            ${order.priority === 'high' ? 'bg-orange-500' : ''}
+            ${order.priority === 'medium' ? 'bg-yellow-500' : ''}
+            ${order.priority === 'low' ? 'bg-jade-500' : ''}
+          `}
+        >
+          <Zap className="w-4 h-4 text-white" />
+        </motion.div>
+      </div>
+
+      <div className="space-y-3">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h4 className="font-semibold text-white flex items-center gap-2">
+              <span className="text-xl">{getOrderTypeIcon(order.orderType)}</span>
+              {order.customerName}
+            </h4>
+            <p className="text-xs text-gray-400 font-mono">#{order.trackingId}</p>
+          </div>
+        </div>
+
+        {/* Order Type & Time */}
+        <div className="flex items-center justify-between text-sm">
+          <span className="px-2 py-1 bg-jade-500/20 text-jade-300 rounded-md font-medium capitalize">
+            {order.orderType}
+          </span>
+          <span className="text-gray-400 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {order.estimatedHours}h
+          </span>
+        </div>
+
+        {/* Due Date */}
+        <div className={`
+          flex items-center gap-2 text-sm
+          ${isOverdue ? 'text-red-400' : isUrgent ? 'text-orange-400' : 'text-gray-400'}
+        `}>
+          <Calendar className="w-3 h-3" />
+          <span className="font-medium">
+            {isOverdue ? `${Math.abs(daysUntilDue)} days overdue!` : 
+             isUrgent ? `Due in ${daysUntilDue} days!` : 
+             `${daysUntilDue} days`}
+          </span>
+        </div>
+
+        {/* Materials Status */}
+        <div className="flex gap-1">
+          {order.materials.map((mat, idx) => (
+            <div
+              key={idx}
+              className={`
+                w-2 h-2 rounded-full
+                ${mat.arrived ? 'bg-green-500' : mat.ordered ? 'bg-yellow-500' : 'bg-gray-600'}
+              `}
+              title={`${mat.type} - ${mat.arrived ? 'Arrived' : mat.ordered ? 'Ordered' : 'Not ordered'}`}
+            />
+          ))}
+        </div>
+
+        {/* Price */}
+        <div className="flex items-center justify-between">
+          <span className="text-jade-400 font-semibold flex items-center gap-1">
+            <DollarSign className="w-3 h-3" />
+            {order.price}
+          </span>
+          {order.notes && (
+            <MessageSquare className="w-4 h-4 text-gray-500" />
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Droppable Column
+const KanbanColumn: React.FC<{
+  status: OrderStatus;
+  label: string;
+  icon: React.ReactNode;
+  orders: Order[];
+  onDrop: (order: Order, newStatus: OrderStatus) => void;
+}> = ({ status, label, icon, orders, onDrop }) => {
+  const [{ isOver }, drop] = useDrop({
+    accept: 'order',
+    drop: (item: { order: Order }) => {
+      if (item.order.status !== status) {
+        onDrop(item.order, status);
+      }
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+
+  const columnOrders = orders.filter(order => order.status === status);
+  const totalHours = columnOrders.reduce((sum, order) => sum + order.estimatedHours, 0);
+
+  return (
+    <div
+      ref={drop}
+      className={`
+        flex-1 min-w-[300px] bg-gray-900/50 rounded-xl p-4
+        border-2 transition-all duration-300
+        ${isOver ? 'border-jade-400 bg-jade-900/20' : 'border-gray-800'}
+      `}
+    >
+      {/* Column Header */}
+      <div className="mb-4 pb-4 border-b border-gray-800">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="text-jade-400">{icon}</div>
+            <h3 className="font-bold text-white">{label}</h3>
+          </div>
+          <span className="px-2 py-1 bg-jade-500/20 text-jade-300 rounded-full text-xs font-semibold">
+            {columnOrders.length}
+          </span>
+        </div>
+        {totalHours > 0 && (
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {totalHours}h total
+          </div>
+        )}
+      </div>
+
+      {/* Orders */}
+      <div className="space-y-3 min-h-[200px]">
+        <AnimatePresence>
+          {columnOrders.map(order => (
+            <DraggableOrder
+              key={order.id}
+              order={order}
+              onUpdate={() => {}}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+// Main Kanban Board Component
+const KanbanBoard: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [aiAlerts, setAiAlerts] = useState<string[]>([]);
+
+  // Handle order status change
+  const handleOrderDrop = async (order: Order, newStatus: OrderStatus) => {
+    const updatedOrder = { ...order, status: newStatus };
+    
+    // Update local state
+    setOrders(prev => prev.map(o => o.id === order.id ? updatedOrder : o));
+    
+    // API call to update status
+    try {
+      await fetch(`/api/orders/${order.id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      // Trigger notifications
+      if (newStatus === 'completed') {
+        // Send customer notification
+        await fetch('/api/notifications/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: order.id,
+            type: 'status_update',
+            status: newStatus,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+    }
+  };
+
+  // Load orders on mount
+  useEffect(() => {
+    // Mock data for demonstration
+    const mockOrders: Order[] = [
+      {
+        id: '1',
+        customerName: 'Sarah Johnson',
+        trackingId: 'JF2024001',
+        orderType: 'shadowbox',
+        status: 'order_processed',
+        dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(),
+        estimatedHours: 3.5,
+        materials: [
+          { type: 'frame', ordered: false, arrived: false, quantity: 1 },
+          { type: 'mat', ordered: false, arrived: false, quantity: 2 },
+          { type: 'glass', subtype: 'museum', ordered: false, arrived: false, quantity: 1 }
+        ],
+        price: 450,
+        priority: 'high',
+        complexity: 8,
+        notes: 'Vintage baseball memorabilia'
+      },
+      {
+        id: '2',
+        customerName: 'Michael Chen',
+        trackingId: 'JF2024002',
+        orderType: 'mat',
+        status: 'materials_ordered',
+        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(),
+        estimatedHours: 2,
+        materials: [
+          { type: 'frame', ordered: true, arrived: false, quantity: 1 },
+          { type: 'mat', ordered: true, arrived: false, quantity: 1 },
+          { type: 'glass', subtype: 'conservation', ordered: true, arrived: false, quantity: 1 }
+        ],
+        price: 225,
+        priority: 'medium',
+        complexity: 5
+      },
+      {
+        id: '3',
+        customerName: 'Emma Davis',
+        trackingId: 'JF2024003',
+        orderType: 'frame',
+        status: 'frame_cut',
+        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(),
+        estimatedHours: 1.5,
+        materials: [
+          { type: 'frame', ordered: true, arrived: true, quantity: 1 },
+          { type: 'glass', subtype: 'clear', ordered: true, arrived: true, quantity: 1 }
+        ],
+        price: 125,
+        priority: 'urgent',
+        complexity: 3,
+        notes: 'Rush order - wedding photo'
+      }
+    ];
+    
+    setOrders(mockOrders);
+    
+    // Simulate AI alerts
+    setAiAlerts([
+      "⚠️ Emma Davis order due tomorrow - prioritize completion!",
+      "📦 2 orders waiting for materials to arrive",
+      "⏰ Current workload: 7 hours estimated across 3 orders"
+    ]);
+  }, []);
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div className="min-h-screen bg-gray-950 p-6">
+        {/* Header */}
+        <div className="max-w-[1920px] mx-auto mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-white font-['Orbitron'] tracking-wider">
+                JAY'S FRAMES
+              </h1>
+              <p className="text-jade-400 mt-1">AI-Powered Order Management</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-jade-500 text-black font-semibold rounded-lg hover:bg-jade-400 transition-colors"
+              >
+                New Order
+              </motion.button>
+            </div>
+          </div>
+
+          {/* AI Assistant Alerts */}
+          {aiAlerts.length > 0 && (
+            <div className="mb-6 space-y-2">
+              {aiAlerts.map((alert, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ x: -50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="bg-gray-900/80 border border-jade-500/30 rounded-lg p-4 flex items-center gap-3"
+                >
+                  <div className="w-2 h-2 bg-jade-400 rounded-full animate-pulse" />
+                  <span className="text-gray-200">{alert}</span>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Kanban Board */}
+        <div className="max-w-[1920px] mx-auto">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-jade-600 scrollbar-track-gray-900">
+            {statusColumns.map(column => (
+              <KanbanColumn
+                key={column.key}
+                status={column.key}
+                label={column.label}
+                icon={column.icon}
+                orders={orders}
+                onDrop={handleOrderDrop}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Bar */}
+        <div className="max-w-[1920px] mx-auto mt-8">
+          <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-800">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Active Orders</p>
+                <p className="text-3xl font-bold text-white">{orders.length}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Hours</p>
+                <p className="text-3xl font-bold text-jade-400">
+                  {orders.reduce((sum, o) => sum + o.estimatedHours, 0)}h
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Urgent Orders</p>
+                <p className="text-3xl font-bold text-orange-400">
+                  {orders.filter(o => o.priority === 'urgent').length}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Revenue Pipeline</p>
+                <p className="text-3xl font-bold text-green-400">
+                  ${orders.reduce((sum, o) => sum + o.price, 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </DndProvider>
+  );
+};
+
+export default KanbanBoard;

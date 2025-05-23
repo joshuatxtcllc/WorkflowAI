@@ -1,0 +1,215 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String?
+  address     String?
+  preferences Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders        Order[]
+  notifications Notification[]
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  trackingId   String      @unique
+  customerId   String
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  assignedToId String?
+  assignedTo   User?       @relation(fields: [assignedToId], references: [id])
+  
+  orderType    OrderType
+  status       OrderStatus @default(ORDER_PROCESSED)
+  priority     Priority    @default(MEDIUM)
+  complexity   Int         @default(5) // 1-10 scale
+  
+  dueDate         DateTime
+  estimatedHours  Float
+  actualHours     Float?
+  
+  price           Float
+  deposit         Float      @default(0)
+  
+  dimensions      Json?      // { width, height, depth }
+  notes           String?
+  internalNotes   String?
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  completedAt     DateTime?
+  pickedUpAt      DateTime?
+
+  materials       Material[]
+  statusHistory   StatusHistory[]
+  timeEntries     TimeEntry[]
+  notifications   Notification[]
+}
+
+model Material {
+  id       String       @id @default(cuid())
+  orderId  String
+  order    Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  type     MaterialType
+  subtype  String?      // e.g., "museum glass", "oak frame"
+  quantity Int
+  unit     String       @default("piece")
+  
+  ordered  Boolean      @default(false)
+  arrived  Boolean      @default(false)
+  
+  supplier      String?
+  cost          Float?
+  orderedDate   DateTime?
+  arrivedDate   DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  changedBy  String      // User ID
+  reason     String?
+  
+  createdAt  DateTime    @default(now())
+}
+
+model TimeEntry {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  userId    String   // Who worked on it
+  duration  Float    // In hours
+  task      String   // What was done
+  notes     String?
+  
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  customerId String?
+  customer   Customer?        @relation(fields: [customerId], references: [id])
+  orderId    String?
+  order      Order?           @relation(fields: [orderId], references: [id])
+  
+  type       NotificationType
+  channel    NotificationChannel
+  status     NotificationStatus @default(PENDING)
+  
+  subject    String
+  content    String
+  metadata   Json?
+  
+  sentAt     DateTime?
+  failedAt   DateTime?
+  error      String?
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AIAnalysis {
+  id        String   @id @default(cuid())
+  
+  date      DateTime @default(now())
+  metrics   Json     // Workload metrics, bottlenecks, etc.
+  alerts    Json     // Current alerts and warnings
+  
+  createdAt DateTime @default(now())
+}
+
+// Enums
+enum Role {
+  ADMIN
+  EMPLOYEE
+  VIEWER
+}
+
+enum OrderType {
+  FRAME
+  MAT
+  SHADOWBOX
+}
+
+enum OrderStatus {
+  ORDER_PROCESSED
+  MATERIALS_ORDERED
+  MATERIALS_ARRIVED
+  FRAME_CUT
+  MAT_CUT
+  PREPPED
+  COMPLETED
+  DELAYED
+  PICKED_UP
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MaterialType {
+  FRAME
+  MAT
+  GLASS
+  HARDWARE
+  OTHER
+}
+
+enum NotificationType {
+  ORDER_CREATED
+  STATUS_UPDATE
+  READY_FOR_PICKUP
+  OVERDUE_REMINDER
+  MATERIAL_UPDATE
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  BOTH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
