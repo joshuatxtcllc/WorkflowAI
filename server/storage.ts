@@ -13,7 +13,6 @@ import {
   type InsertCustomer,
   type Order,
   type InsertOrder,
-  type OrderWithDetails,
   type Material,
   type InsertMaterial,
   type StatusHistory,
@@ -21,10 +20,12 @@ import {
   type Notification,
   type InsertNotification,
   type AIAnalysis,
+  type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, gte, lte } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
+// Interface for storage operations
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
@@ -90,7 +91,7 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations
+  // User operations (mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
@@ -127,10 +128,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCustomer(customer: InsertCustomer): Promise<Customer> {
-    const id = `cust_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const [newCustomer] = await db
       .insert(customers)
-      .values({ ...customer, id })
+      .values(customer)
       .returning();
     return newCustomer;
   }
@@ -146,31 +146,25 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async getOrders(): Promise<OrderWithDetails[]> {
-    const ordersData = await db
+    const ordersList = await db
       .select()
       .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
-      .leftJoin(users, eq(orders.assignedToId, users.id))
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-
-    for (const row of ordersData) {
-      const order = row.orders;
-      const customer = row.customers!;
-      const assignedTo = row.users || undefined;
-
-      const [orderMaterials, orderStatusHistory] = await Promise.all([
-        this.getMaterialsByOrder(order.id),
-        db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id)).orderBy(desc(statusHistory.createdAt))
-      ]);
+    
+    for (const order of ordersList) {
+      const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
+      const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
+      const orderMaterials = await this.getMaterialsByOrder(order.id);
+      const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
 
       ordersWithDetails.push({
         ...order,
-        customer,
+        customer: customer!,
         assignedTo,
         materials: orderMaterials,
-        statusHistory: orderStatusHistory,
+        statusHistory: orderHistory,
       });
     }
 
@@ -178,68 +172,45 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrder(id: string): Promise<OrderWithDetails | undefined> {
-    const [orderData] = await db
-      .select()
-      .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
-      .leftJoin(users, eq(orders.assignedToId, users.id))
-      .where(eq(orders.id, id));
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    if (!order) return undefined;
 
-    if (!orderData) return undefined;
-
-    const order = orderData.orders;
-    const customer = orderData.customers!;
-    const assignedTo = orderData.users || undefined;
-
-    const [orderMaterials, orderStatusHistory] = await Promise.all([
-      this.getMaterialsByOrder(order.id),
-      db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id)).orderBy(desc(statusHistory.createdAt))
-    ]);
+    const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
+    const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
+    const orderMaterials = await this.getMaterialsByOrder(order.id);
+    const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
 
     return {
       ...order,
-      customer,
+      customer: customer!,
       assignedTo,
       materials: orderMaterials,
-      statusHistory: orderStatusHistory,
+      statusHistory: orderHistory,
     };
   }
 
   async getOrderByTrackingId(trackingId: string): Promise<OrderWithDetails | undefined> {
-    const [orderData] = await db
-      .select()
-      .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
-      .leftJoin(users, eq(orders.assignedToId, users.id))
-      .where(eq(orders.trackingId, trackingId));
+    const [order] = await db.select().from(orders).where(eq(orders.trackingId, trackingId));
+    if (!order) return undefined;
 
-    if (!orderData) return undefined;
-
-    const order = orderData.orders;
-    const customer = orderData.customers!;
-    const assignedTo = orderData.users || undefined;
-
-    const [orderMaterials, orderStatusHistory] = await Promise.all([
-      this.getMaterialsByOrder(order.id),
-      db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id)).orderBy(desc(statusHistory.createdAt))
-    ]);
+    const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
+    const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
+    const orderMaterials = await this.getMaterialsByOrder(order.id);
+    const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
 
     return {
       ...order,
-      customer,
+      customer: customer!,
       assignedTo,
       materials: orderMaterials,
-      statusHistory: orderStatusHistory,
+      statusHistory: orderHistory,
     };
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
-    const id = `ord_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const trackingId = `JF${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
-    
     const [newOrder] = await db
       .insert(orders)
-      .values({ ...order, id, trackingId })
+      .values(order)
       .returning();
     return newOrder;
   }
@@ -254,32 +225,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrdersByStatus(status: string): Promise<OrderWithDetails[]> {
-    const ordersData = await db
+    const ordersList = await db
       .select()
       .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
-      .leftJoin(users, eq(orders.assignedToId, users.id))
       .where(eq(orders.status, status as any))
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-
-    for (const row of ordersData) {
-      const order = row.orders;
-      const customer = row.customers!;
-      const assignedTo = row.users || undefined;
-
-      const [orderMaterials, orderStatusHistory] = await Promise.all([
-        this.getMaterialsByOrder(order.id),
-        db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id)).orderBy(desc(statusHistory.createdAt))
-      ]);
+    
+    for (const order of ordersList) {
+      const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
+      const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
+      const orderMaterials = await this.getMaterialsByOrder(order.id);
+      const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
 
       ordersWithDetails.push({
         ...order,
-        customer,
+        customer: customer!,
         assignedTo,
         materials: orderMaterials,
-        statusHistory: orderStatusHistory,
+        statusHistory: orderHistory,
       });
     }
 
@@ -287,32 +252,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrdersByCustomer(customerId: string): Promise<OrderWithDetails[]> {
-    const ordersData = await db
+    const ordersList = await db
       .select()
       .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
-      .leftJoin(users, eq(orders.assignedToId, users.id))
       .where(eq(orders.customerId, customerId))
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-
-    for (const row of ordersData) {
-      const order = row.orders;
-      const customer = row.customers!;
-      const assignedTo = row.users || undefined;
-
-      const [orderMaterials, orderStatusHistory] = await Promise.all([
-        this.getMaterialsByOrder(order.id),
-        db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id)).orderBy(desc(statusHistory.createdAt))
-      ]);
+    
+    for (const order of ordersList) {
+      const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
+      const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
+      const orderMaterials = await this.getMaterialsByOrder(order.id);
+      const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
 
       ordersWithDetails.push({
         ...order,
-        customer,
+        customer: customer!,
         assignedTo,
         materials: orderMaterials,
-        statusHistory: orderStatusHistory,
+        statusHistory: orderHistory,
       });
     }
 
@@ -325,10 +284,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMaterial(material: InsertMaterial): Promise<Material> {
-    const id = `mat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const [newMaterial] = await db
       .insert(materials)
-      .values({ ...material, id })
+      .values(material)
       .returning();
     return newMaterial;
   }
@@ -350,12 +308,11 @@ export class DatabaseStorage implements IStorage {
     changedBy: string;
     reason?: string;
   }): Promise<StatusHistory> {
-    const id = `sh_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const [statusHistoryEntry] = await db
+    const [newHistory] = await db
       .insert(statusHistory)
-      .values({ ...data, id })
+      .values(data)
       .returning();
-    return statusHistoryEntry;
+    return newHistory;
   }
 
   // Time entry operations
@@ -368,20 +325,18 @@ export class DatabaseStorage implements IStorage {
     startTime: Date;
     endTime: Date;
   }): Promise<TimeEntry> {
-    const id = `te_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const [timeEntry] = await db
+    const [newTimeEntry] = await db
       .insert(timeEntries)
-      .values({ ...data, id })
+      .values(data)
       .returning();
-    return timeEntry;
+    return newTimeEntry;
   }
 
   // Notification operations
   async createNotification(notification: InsertNotification): Promise<Notification> {
-    const id = `not_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const [newNotification] = await db
       .insert(notifications)
-      .values({ ...notification, id })
+      .values(notification)
       .returning();
     return newNotification;
   }
@@ -399,16 +354,18 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(notifications)
-      .where(eq(notifications.status, "PENDING"))
+      .where(eq(notifications.status, 'PENDING'))
       .orderBy(desc(notifications.createdAt));
   }
 
   // AI Analysis operations
   async saveAIAnalysis(data: { metrics: any; alerts: any }): Promise<AIAnalysis> {
-    const id = `ai_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const [analysis] = await db
       .insert(aiAnalysis)
-      .values({ ...data, id })
+      .values({
+        metrics: data.metrics,
+        recommendations: data.alerts,
+      })
       .returning();
     return analysis;
   }
@@ -429,36 +386,23 @@ export class DatabaseStorage implements IStorage {
     averageComplexity: number;
     onTimePercentage: number;
   }> {
-    const [metrics] = await db
-      .select({
-        totalOrders: sql<number>`count(*)`,
-        totalHours: sql<number>`coalesce(sum(${orders.estimatedHours}), 0)`,
-        averageComplexity: sql<number>`coalesce(avg(${orders.complexity}), 0)`,
-      })
-      .from(orders)
-      .where(
-        and(
-          sql`${orders.status} != 'PICKED_UP'`,
-          sql`${orders.status} != 'COMPLETED'`
-        )
-      );
-
-    // Calculate on-time percentage
-    const [onTimeData] = await db
-      .select({
-        total: sql<number>`count(*)`,
-        onTime: sql<number>`count(case when ${orders.completedAt} <= ${orders.dueDate} then 1 end)`,
-      })
-      .from(orders)
-      .where(sql`${orders.completedAt} is not null`);
-
-    const onTimePercentage = onTimeData.total > 0 ? (onTimeData.onTime / onTimeData.total) * 100 : 0;
+    const allOrders = await db.select().from(orders);
+    const totalOrders = allOrders.length;
+    const totalHours = allOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const averageComplexity = totalHours / totalOrders || 0;
+    
+    const completedOrders = allOrders.filter(order => order.status === 'COMPLETED');
+    const onTimeOrders = completedOrders.filter(order => {
+      if (!order.dueDate) return true;
+      return new Date() <= order.dueDate;
+    });
+    const onTimePercentage = completedOrders.length > 0 ? (onTimeOrders.length / completedOrders.length) * 100 : 100;
 
     return {
-      totalOrders: metrics.totalOrders,
-      totalHours: metrics.totalHours,
-      averageComplexity: metrics.averageComplexity,
-      onTimePercentage: Math.round(onTimePercentage),
+      totalOrders,
+      totalHours,
+      averageComplexity,
+      onTimePercentage,
     };
   }
 }

@@ -305,10 +305,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     setInterval(async () => {
       try {
         const analysis = await aiService.analyzeWorkload();
-        if (analysis.alerts && analysis.alerts.length > 0) {
+        if (analysis) {
           broadcast(wss, {
-            type: 'ai-alerts',
-            data: analysis.alerts
+            type: 'ai-analysis',
+            data: analysis
           });
         }
       } catch (error) {
