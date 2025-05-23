@@ -33,35 +33,35 @@ interface OrderStore {
   filteredOrders: OrderWithDetails[];
   workloadAnalysis?: WorkloadAnalysis;
   aiMessages: AIMessage[];
-  
+
   // UI state
   ui: UIState;
   filters: OrderFilters;
   sort: OrderSort;
-  
+
   // Loading states
   isLoading: boolean;
   isUpdatingOrder: boolean;
   isGeneratingAI: boolean;
-  
+
   // Error states
   error?: string;
-  
+
   // Actions
   setOrders: (orders: OrderWithDetails[]) => void;
   addOrder: (order: OrderWithDetails) => void;
   updateOrder: (id: string, updates: Partial<OrderWithDetails>) => void;
   removeOrder: (id: string) => void;
-  
+
   setWorkloadAnalysis: (analysis: WorkloadAnalysis) => void;
   addAIMessage: (message: AIMessage) => void;
   clearAIMessages: () => void;
-  
+
   // Filtering and sorting
   setFilters: (filters: Partial<OrderFilters>) => void;
   setSort: (sort: OrderSort) => void;
   applyFiltersAndSort: () => void;
-  
+
   // UI actions
   setSelectedOrder: (id?: string) => void;
   toggleOrderDetails: () => void;
@@ -69,13 +69,15 @@ interface OrderStore {
   toggleAIAssistant: () => void;
   toggleMobileMenu: () => void;
   setKanbanViewMode: (mode: 'compact' | 'detailed') => void;
-  
+  setUI: (updates: Partial<UIState>) => void;
+  setSelectedOrderId: (id: string) => void;
+
   // Loading actions
   setLoading: (loading: boolean) => void;
   setUpdatingOrder: (updating: boolean) => void;
   setGeneratingAI: (generating: boolean) => void;
   setError: (error?: string) => void;
-  
+
   // Computed values
   getOrdersByStatus: (status: string) => OrderWithDetails[];
   getUrgentOrders: () => OrderWithDetails[];
@@ -292,6 +294,17 @@ export const useOrderStore = create<OrderStore>()(
             kanbanViewMode,
           },
         });
+      },
+
+      // UI state actions
+      setUI: (updates) => {
+        set((state) => ({
+          ui: { ...state.ui, ...updates }
+        }));
+      },
+
+      setSelectedOrderId: (id) => {
+        set({ selectedOrderId: id });
       },
 
       // Loading actions

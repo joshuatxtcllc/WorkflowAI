@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
 import AIAssistant from '@/components/AIAssistant';
+import OrderDetails from '@/components/OrderDetails';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrendingUp, Clock, BarChart3 } from 'lucide-react';
 import type { WorkloadAnalysis } from '@shared/schema';
@@ -135,6 +136,7 @@ export default function Dashboard() {
       <KanbanBoard />
       <TimeEstimationDashboard />
       <AIAssistant />
+      <OrderDetails />
     </div>
   );
 }

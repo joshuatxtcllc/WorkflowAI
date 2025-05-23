@@ -7,7 +7,11 @@ interface OrderCardProps {
   order: OrderWithDetails;
 }
 
+import { useOrderStore } from '@/store/useOrderStore';
+
 export default function OrderCard({ order }: OrderCardProps) {
+  const { setUI, setSelectedOrderId } = useOrderStore();
+  
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
     item: { id: order.id },
@@ -15,6 +19,11 @@ export default function OrderCard({ order }: OrderCardProps) {
       isDragging: monitor.isDragging(),
     }),
   });
+  
+  const handleCardClick = () => {
+    setSelectedOrderId(order.id);
+    setUI({ isOrderDetailsOpen: true });
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -96,6 +105,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   return (
     <motion.div
       ref={drag}
+      onClick={handleCardClick}
       className={`
         relative p-4 rounded-lg border-2 cursor-move transition-all duration-200
         ${getPriorityColor(order.priority)}
