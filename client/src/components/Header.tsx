@@ -1,0 +1,68 @@
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign } from "lucide-react";
+
+export default function Header() {
+  const { data: workloadMetrics } = useQuery({
+    queryKey: ["/api/analytics/workload"],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  return (
+    <header className="relative z-10 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
+      <div className="max-w-[1920px] mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Brand */}
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-jade-500 to-jade-600 rounded-xl flex items-center justify-center">
+              <Frame className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold font-mono tracking-wider text-jade-400">JAY'S FRAMES</h1>
+              <p className="text-sm text-gray-400">Smart Production Management</p>
+            </div>
+          </div>
+          
+          {/* Stats Overview */}
+          <div className="hidden lg:flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-jade-400 flex items-center gap-1">
+                <BarChart3 className="w-5 h-5" />
+                {workloadMetrics?.totalOrders || 0}
+              </div>
+              <div className="text-xs text-gray-400">Active Orders</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-400 flex items-center gap-1">
+                <Clock className="w-5 h-5" />
+                {workloadMetrics?.totalHours || 0}h
+              </div>
+              <div className="text-xs text-gray-400">Total Hours</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
+                <TrendingUp className="w-5 h-5" />
+                {workloadMetrics?.onTimePercentage || 0}%
+              </div>
+              <div className="text-xs text-gray-400">On Time</div>
+            </div>
+          </div>
+          
+          {/* Actions */}
+          <div className="flex items-center gap-4">
+            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold">
+              <Plus className="w-4 h-4 mr-2" />
+              New Order
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Settings className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" onClick={() => window.location.href = "/api/logout"}>
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

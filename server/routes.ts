@@ -87,8 +87,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create status history entry
       await storage.createStatusHistory({
         orderId: order.id,
-        toStatus: order.status,
-        changedBy: req.user?.claims?.sub || 'system',
+        toStatus: order.status || 'ORDER_PROCESSED',
+        changedBy: (req.user as any)?.claims?.sub || 'system',
         reason: 'Order created'
       });
 
@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { status } = req.body;
       const orderId = req.params.id;
-      const userId = req.user?.claims?.sub || 'system';
+      const userId = (req.user as any)?.claims?.sub || 'system';
 
       // Get current order
       const currentOrder = await storage.getOrder(orderId);
@@ -117,14 +117,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update order status
       const updatedOrder = await storage.updateOrder(orderId, { 
         status,
-        completedAt: status === 'COMPLETED' ? new Date() : undefined,
-        pickedUpAt: status === 'PICKED_UP' ? new Date() : undefined,
       });
 
       // Create status history entry
       await storage.createStatusHistory({
         orderId,
-        fromStatus: currentOrder.status,
+        fromStatus: currentOrder.status || undefined,
         toStatus: status,
         changedBy: userId,
       });

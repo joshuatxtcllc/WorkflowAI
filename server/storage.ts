@@ -259,7 +259,7 @@ export class DatabaseStorage implements IStorage {
       .from(orders)
       .leftJoin(customers, eq(orders.customerId, customers.id))
       .leftJoin(users, eq(orders.assignedToId, users.id))
-      .where(eq(orders.status, status))
+      .where(eq(orders.status, status as any))
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
