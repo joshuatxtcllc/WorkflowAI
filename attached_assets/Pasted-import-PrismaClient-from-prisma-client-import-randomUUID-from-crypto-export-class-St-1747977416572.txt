@@ -1,0 +1,385 @@
+import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'crypto';
+
+export class StorageService {
+  private prisma: PrismaClient;
+
+  constructor(prisma: PrismaClient) {
+    this.prisma = prisma;
+  }
+
+  /**
+   * Store AI analysis results with proper ID generation
+   */
+  async storeAIAnalysis(analysis: {
+    metrics: any;
+    alerts: any[];
+    recommendations?: string[];
+    riskLevel?: string;
+  }) {
+    try {
+      // Generate a unique ID
+      const id = randomUUID();
+      
+      // Create the analysis record with generated ID
+      const result = await this.prisma.aIAnalysis.create({
+        data: {
+          id, // Explicitly set the ID
+          date: new Date(),
+          metrics: analysis.metrics,
+          alerts: analysis.alerts,
+        },
+      });
+
+      return result;
+    } catch (error) {
+      console.error('Error storing AI analysis:', error);
+      throw new Error('Failed to store AI analysis');
+    }
+  }
+
+  /**
+   * Get the latest AI analysis
+   */
+  async getLatestAIAnalysis() {
+    try {
+      const analysis = await this.prisma.aIAnalysis.findFirst({
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      return analysis;
+    } catch (error) {
+      console.error('Error fetching latest AI analysis:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get AI analyses within a date range
+   */
+  async getAIAnalysesByDateRange(startDate: Date, endDate: Date) {
+    try {
+      const analyses = await this.prisma.aIAnalysis.findMany({
+        where: {
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+      });
+
+      return analyses;
+    } catch (error) {
+      console.error('Error fetching AI analyses by date range:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Store order status change with proper ID generation
+   */
+  async storeStatusChange(data: {
+    orderId: string;
+    fromStatus?: string;
+    toStatus: string;
+    changedBy: string;
+    reason?: string;
+  }) {
+    try {
+      const id = randomUUID();
+      
+      const statusHistory = await this.prisma.statusHistory.create({
+        data: {
+          id,
+          orderId: data.orderId,
+          fromStatus: data.fromStatus as any,
+          toStatus: data.toStatus as any,
+          changedBy: data.changedBy,
+          reason: data.reason,
+        },
+      });
+
+      return statusHistory;
+    } catch (error) {
+      console.error('Error storing status change:', error);
+      throw new Error('Failed to store status change');
+    }
+  }
+
+  /**
+   * Store notification with proper ID generation
+   */
+  async storeNotification(data: {
+    customerId?: string;
+    orderId?: string;
+    type: string;
+    channel: string;
+    subject: string;
+    content: string;
+    metadata?: any;
+  }) {
+    try {
+      const id = randomUUID();
+      
+      const notification = await this.prisma.notification.create({
+        data: {
+          id,
+          customerId: data.customerId,
+          orderId: data.orderId,
+          type: data.type as any,
+          channel: data.channel as any,
+          subject: data.subject,
+          content: data.content,
+          metadata: data.metadata,
+          status: 'PENDING',
+        },
+      });
+
+      return notification;
+    } catch (error) {
+      console.error('Error storing notification:', error);
+      throw new Error('Failed to store notification');
+    }
+  }
+
+  /**
+   * Update notification status
+   */
+  async updateNotificationStatus(
+    notificationId: string,
+    status: 'SENT' | 'FAILED',
+    error?: string
+  ) {
+    try {
+      const updateData: any = {
+        status,
+        updatedAt: new Date(),
+      };
+
+      if (status === 'SENT') {
+        updateData.sentAt = new Date();
+      } else if (status === 'FAILED') {
+        updateData.failedAt = new Date();
+        if (error) {
+          updateData.error = error;
+        }
+      }
+
+      const notification = await this.prisma.notification.update({
+        where: { id: notificationId },
+        data: updateData,
+      });
+
+      return notification;
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+      throw new Error('Failed to update notification status');
+    }
+  }
+
+  /**
+   * Store time entry with proper ID generation
+   */
+  async storeTimeEntry(data: {
+    orderId: string;
+    userId: string;
+    duration: number;
+    task: string;
+    notes?: string;
+    startTime: Date;
+    endTime: Date;
+  }) {
+    try {
+      const id = randomUUID();
+      
+      const timeEntry = await this.prisma.timeEntry.create({
+        data: {
+          id,
+          orderId: data.orderId,
+          userId: data.userId,
+          duration: data.duration,
+          task: data.task,
+          notes: data.notes,
+          startTime: data.startTime,
+          endTime: data.endTime,
+        },
+      });
+
+      return timeEntry;
+    } catch (error) {
+      console.error('Error storing time entry:', error);
+      throw new Error('Failed to store time entry');
+    }
+  }
+
+  /**
+   * Clean up old AI analyses (retention policy)
+   */
+  async cleanupOldAnalyses(retentionDays: number = 90) {
+    try {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+
+      const result = await this.prisma.aIAnalysis.deleteMany({
+        where: {
+          createdAt: {
+            lt: cutoffDate,
+          },
+        },
+      });
+
+      console.log(`Cleaned up ${result.count} old AI analyses`);
+      return result.count;
+    } catch (error) {
+      console.error('Error cleaning up old analyses:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Get aggregated metrics for dashboard
+   */
+  async getDashboardMetrics() {
+    try {
+      const [
+        totalOrders,
+        activeOrders,
+        completedToday,
+        overdueOrders,
+        totalRevenue,
+        pendingMaterials,
+      ] = await Promise.all([
+        // Total orders
+        this.prisma.order.count(),
+        
+        // Active orders (not completed or picked up)
+        this.prisma.order.count({
+          where: {
+            status: {
+              notIn: ['COMPLETED', 'PICKED_UP'],
+            },
+          },
+        }),
+        
+        // Completed today
+        this.prisma.order.count({
+          where: {
+            status: 'COMPLETED',
+            completedAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            },
+          },
+        }),
+        
+        // Overdue orders
+        this.prisma.order.count({
+          where: {
+            dueDate: {
+              lt: new Date(),
+            },
+            status: {
+              notIn: ['COMPLETED', 'PICKED_UP'],
+            },
+          },
+        }),
+        
+        // Total revenue from active orders
+        this.prisma.order.aggregate({
+          where: {
+            status: {
+              notIn: ['PICKED_UP'],
+            },
+          },
+          _sum: {
+            price: true,
+          },
+        }),
+        
+        // Pending materials
+        this.prisma.material.count({
+          where: {
+            ordered: true,
+            arrived: false,
+          },
+        }),
+      ]);
+
+      return {
+        totalOrders,
+        activeOrders,
+        completedToday,
+        overdueOrders,
+        totalRevenue: totalRevenue._sum.price || 0,
+        pendingMaterials,
+      };
+    } catch (error) {
+      console.error('Error fetching dashboard metrics:', error);
+      return {
+        totalOrders: 0,
+        activeOrders: 0,
+        completedToday: 0,
+        overdueOrders: 0,
+        totalRevenue: 0,
+        pendingMaterials: 0,
+      };
+    }
+  }
+
+  /**
+   * Get orders needing attention
+   */
+  async getOrdersNeedingAttention() {
+    try {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const urgentOrders = await this.prisma.order.findMany({
+        where: {
+          OR: [
+            // Overdue orders
+            {
+              dueDate: {
+                lt: new Date(),
+              },
+              status: {
+                notIn: ['COMPLETED', 'PICKED_UP'],
+              },
+            },
+            // Orders due within 24 hours
+            {
+              dueDate: {
+                lte: tomorrow,
+                gte: new Date(),
+              },
+              status: {
+                notIn: ['COMPLETED', 'PICKED_UP'],
+              },
+            },
+            // High priority orders not started
+            {
+              priority: 'URGENT',
+              status: 'ORDER_PROCESSED',
+            },
+          ],
+        },
+        include: {
+          customer: true,
+          materials: true,
+        },
+        orderBy: {
+          dueDate: 'asc',
+        },
+      });
+
+      return urgentOrders;
+    } catch (error) {
+      console.error('Error fetching orders needing attention:', error);
+      return [];
+    }
+  }
+}

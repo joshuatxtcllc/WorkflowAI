@@ -1,0 +1,416 @@
+import { PrismaClient } from '@prisma/client';
+import OpenAI from 'openai';
+import { StorageService } from './storage';
+
+interface WorkloadMetrics {
+  totalOrders: number;
+  totalEstimatedHours: number;
+  averageComplexity: number;
+  onTimePercentage: number;
+  currentCapacityUsage: number;
+  projectedCompletionDate: Date;
+  bottlenecks: string[];
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+}
+
+interface AIAlert {
+  id: string;
+  severity: 'info' | 'warning' | 'urgent' | 'critical';
+  title: string;
+  message: string;
+  orderId?: string;
+  actionRequired: boolean;
+  timestamp: Date;
+}
+
+export class AIService {
+  private prisma: PrismaClient;
+  private openai: OpenAI | null;
+  private storage: StorageService;
+  private dailyCapacityHours: number = 8; // Default working hours per day
+
+  constructor(prisma: PrismaClient) {
+    this.prisma = prisma;
+    this.storage = new StorageService(prisma);
+    
+    // Initialize OpenAI if API key is available
+    if (process.env.OPENAI_API_KEY) {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+    } else {
+      console.warn('OpenAI API key not found. AI features will be limited.');
+      this.openai = null;
+    }
+  }
+
+  /**
+   * Analyze current workload and generate insights
+   */
+  async analyzeWorkload(): Promise<WorkloadMetrics> {
+    try {
+      // Fetch all active orders
+      const activeOrders = await this.prisma.order.findMany({
+        where: {
+          status: {
+            notIn: ['COMPLETED', 'PICKED_UP'],
+          },
+        },
+        include: {
+          materials: true,
+          timeEntries: true,
+        },
+      });
+
+      // Calculate metrics
+      const totalOrders = activeOrders.length;
+      const totalEstimatedHours = activeOrders.reduce((sum, order) => sum + order.estimatedHours, 0);
+      const averageComplexity = activeOrders.reduce((sum, order) => sum + order.complexity, 0) / totalOrders || 0;
+      
+      // Calculate on-time percentage
+      const overdueOrders = activeOrders.filter(order => new Date(order.dueDate) < new Date()).length;
+      const onTimePercentage = totalOrders > 0 ? ((totalOrders - overdueOrders) / totalOrders) * 100 : 100;
+      
+      // Calculate capacity usage
+      const currentCapacityUsage = (totalEstimatedHours / (this.dailyCapacityHours * 5)) * 100; // 5-day work week
+      
+      // Project completion date
+      const daysNeeded = Math.ceil(totalEstimatedHours / this.dailyCapacityHours);
+      const projectedCompletionDate = new Date();
+      projectedCompletionDate.setDate(projectedCompletionDate.getDate() + daysNeeded);
+      
+      // Identify bottlenecks
+      const bottlenecks = this.identifyBottlenecks(activeOrders);
+      
+      // Determine risk level
+      const riskLevel = this.calculateRiskLevel(currentCapacityUsage, onTimePercentage, overdueOrders);
+      
+      const metrics: WorkloadMetrics = {
+        totalOrders,
+        totalEstimatedHours,
+        averageComplexity,
+        onTimePercentage,
+        currentCapacityUsage,
+        projectedCompletionDate,
+        bottlenecks,
+        riskLevel,
+      };
+
+      // Store analysis in database
+      await this.storage.storeAIAnalysis({
+        metrics,
+        alerts: [],
+        riskLevel,
+      });
+
+      return metrics;
+    } catch (error) {
+      console.error('Error analyzing workload:', error);
+      throw new Error('Failed to analyze workload');
+    }
+  }
+
+  /**
+   * Generate AI alerts based on current situation
+   */
+  async generateAlerts(): Promise<AIAlert[]> {
+    try {
+      const alerts: AIAlert[] = [];
+      
+      // Check for urgent orders
+      const urgentOrders = await this.storage.getOrdersNeedingAttention();
+      
+      for (const order of urgentOrders) {
+        const hoursUntilDue = Math.max(0, (new Date(order.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60));
+        
+        if (hoursUntilDue === 0) {
+          alerts.push({
+            id: `alert-${order.id}-overdue`,
+            severity: 'critical',
+            title: 'OVERDUE ORDER',
+            message: `${order.customer.name} order #${order.trackingId} is OVERDUE! This needs immediate attention. Current status: ${order.status}`,
+            orderId: order.id,
+            actionRequired: true,
+            timestamp: new Date(),
+          });
+        } else if (hoursUntilDue <= 24) {
+          alerts.push({
+            id: `alert-${order.id}-urgent`,
+            severity: 'urgent',
+            title: 'Order Due Soon',
+            message: `${order.customer.name} order #${order.trackingId} is due in ${Math.round(hoursUntilDue)} hours! Estimated ${order.estimatedHours}h remaining.`,
+            orderId: order.id,
+            actionRequired: true,
+            timestamp: new Date(),
+          });
+        }
+      }
+      
+      // Check material status
+      const materialIssues = await this.checkMaterialStatus();
+      alerts.push(...materialIssues);
+      
+      // Check workload capacity
+      const workloadAlerts = await this.checkWorkloadCapacity();
+      alerts.push(...workloadAlerts);
+      
+      // Store alerts in database
+      if (alerts.length > 0) {
+        await this.storage.storeAIAnalysis({
+          metrics: {},
+          alerts: alerts.map(a => ({
+            ...a,
+            timestamp: a.timestamp.toISOString(),
+          })),
+        });
+      }
+
+      return alerts;
+    } catch (error) {
+      console.error('Error generating alerts:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get AI recommendations using OpenAI
+   */
+  async getRecommendations(context: string): Promise<string> {
+    if (!this.openai) {
+      return this.getFallbackRecommendations(context);
+    }
+
+    try {
+      const metrics = await this.analyzeWorkload();
+      const alerts = await this.generateAlerts();
+      
+      const prompt = `
+        You are an AI assistant for Jay's Frames, a custom framing business. 
+        Be assertive and direct when orders are at risk of being late.
+        
+        Current situation:
+        - Total active orders: ${metrics.totalOrders}
+        - Total estimated hours: ${metrics.totalEstimatedHours}
+        - Capacity usage: ${metrics.currentCapacityUsage.toFixed(1)}%
+        - On-time percentage: ${metrics.onTimePercentage.toFixed(1)}%
+        - Risk level: ${metrics.riskLevel.toUpperCase()}
+        - Active alerts: ${alerts.length}
+        
+        User query: ${context}
+        
+        Provide specific, actionable recommendations. If orders are at risk, be firm and direct about what needs to be done NOW.
+      `;
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an assertive production manager AI for a custom framing business. Your job is to ensure orders are completed on time. Be direct and firm when deadlines are at risk.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+
+      return completion.choices[0]?.message?.content || this.getFallbackRecommendations(context);
+    } catch (error) {
+      console.error('Error getting AI recommendations:', error);
+      return this.getFallbackRecommendations(context);
+    }
+  }
+
+  /**
+   * Run scheduled analysis
+   */
+  async runScheduledAnalysis(): Promise<void> {
+    try {
+      console.log('Running scheduled AI analysis...');
+      
+      const metrics = await this.analyzeWorkload();
+      const alerts = await this.generateAlerts();
+      
+      // Log critical alerts
+      const criticalAlerts = alerts.filter(a => a.severity === 'critical' || a.severity === 'urgent');
+      if (criticalAlerts.length > 0) {
+        console.error('CRITICAL ALERTS:', criticalAlerts);
+        
+        // Here you would trigger notifications to the user
+        // For example, send push notifications, emails, or SMS
+      }
+      
+      // Clean up old analyses based on retention policy
+      if (process.env.ANALYTICS_RETENTION_DAYS) {
+        await this.storage.cleanupOldAnalyses(parseInt(process.env.ANALYTICS_RETENTION_DAYS));
+      }
+      
+    } catch (error) {
+      console.error('Error in scheduled analysis:', error);
+    }
+  }
+
+  /**
+   * Analyze workload changes when orders are updated
+   */
+  async analyzeWorkloadChange(): Promise<void> {
+    try {
+      const metrics = await this.analyzeWorkload();
+      
+      // Check if we've crossed any thresholds
+      if (metrics.riskLevel === 'critical' || metrics.currentCapacityUsage > 100) {
+        console.error('CRITICAL: Workload capacity exceeded!');
+        // Trigger immediate alerts
+      }
+    } catch (error) {
+      console.error('Error analyzing workload change:', error);
+    }
+  }
+
+  /**
+   * Private helper methods
+   */
+  private identifyBottlenecks(orders: any[]): string[] {
+    const bottlenecks: string[] = [];
+    
+    // Check for status distribution
+    const statusCounts = orders.reduce((acc, order) => {
+      acc[order.status] = (acc[order.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Identify bottlenecks
+    if (statusCounts['MATERIALS_ORDERED'] > 3) {
+      bottlenecks.push('Multiple orders waiting for materials');
+    }
+    
+    if (statusCounts['MAT_CUT'] > 2) {
+      bottlenecks.push('Mat cutting station backed up');
+    }
+    
+    // Check for overdue materials
+    const overdueeMaterials = orders.filter(order => 
+      order.materials.some((m: any) => m.ordered && !m.arrived && 
+        m.orderedDate && new Date(m.orderedDate) < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+      )
+    );
+    
+    if (overdueeMaterials.length > 0) {
+      bottlenecks.push(`${overdueeMaterials.length} orders have overdue material deliveries`);
+    }
+    
+    return bottlenecks;
+  }
+
+  private calculateRiskLevel(capacityUsage: number, onTimePercentage: number, overdueCount: number): 'low' | 'medium' | 'high' | 'critical' {
+    if (overdueCount > 2 || capacityUsage > 120) return 'critical';
+    if (overdueCount > 0 || capacityUsage > 100 || onTimePercentage < 70) return 'high';
+    if (capacityUsage > 80 || onTimePercentage < 85) return 'medium';
+    return 'low';
+  }
+
+  private async checkMaterialStatus(): Promise<AIAlert[]> {
+    const alerts: AIAlert[] = [];
+    
+    const pendingMaterials = await this.prisma.material.findMany({
+      where: {
+        ordered: true,
+        arrived: false,
+      },
+      include: {
+        order: {
+          include: {
+            customer: true,
+          },
+        },
+      },
+    });
+    
+    const materialsByType = pendingMaterials.reduce((acc, mat) => {
+      const key = `${mat.type}-${mat.subtype || 'standard'}`;
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    if (pendingMaterials.length > 5) {
+      alerts.push({
+        id: 'alert-materials-pending',
+        severity: 'warning',
+        title: 'Multiple Material Orders Pending',
+        message: `${pendingMaterials.length} material orders are in transit. Consider following up with suppliers.`,
+        actionRequired: false,
+        timestamp: new Date(),
+      });
+    }
+    
+    return alerts;
+  }
+
+  private async checkWorkloadCapacity(): Promise<AIAlert[]> {
+    const alerts: AIAlert[] = [];
+    const metrics = await this.analyzeWorkload();
+    
+    if (metrics.currentCapacityUsage > 100) {
+      alerts.push({
+        id: 'alert-capacity-exceeded',
+        severity: 'urgent',
+        title: 'Capacity Exceeded',
+        message: `Workload at ${metrics.currentCapacityUsage.toFixed(0)}% capacity! Consider overtime or rescheduling non-urgent orders.`,
+        actionRequired: true,
+        timestamp: new Date(),
+      });
+    } else if (metrics.currentCapacityUsage > 80) {
+      alerts.push({
+        id: 'alert-capacity-high',
+        severity: 'warning',
+        title: 'High Workload',
+        message: `Operating at ${metrics.currentCapacityUsage.toFixed(0)}% capacity. Stay focused to maintain schedule.`,
+        actionRequired: false,
+        timestamp: new Date(),
+      });
+    }
+    
+    return alerts;
+  }
+
+  private getFallbackRecommendations(context: string): string {
+    const lowContext = context.toLowerCase();
+    
+    if (lowContext.includes('behind') || lowContext.includes('late')) {
+      return `I see you're concerned about falling behind. Here's what you need to do RIGHT NOW:
+
+1. STOP accepting new orders until you catch up
+2. Focus on orders due within 24 hours ONLY
+3. Batch similar tasks together (all mat cutting, then all frame assembly)
+4. Call customers for any orders that will be late - communication is key
+5. Consider working extended hours for the next 2 days
+
+You CAN catch up, but you need to act decisively NOW.`;
+    }
+    
+    if (lowContext.includes('material')) {
+      return `Material management is critical. Here's your action plan:
+
+1. Check all pending material orders NOW
+2. Call suppliers for any orders over 2 days old
+3. Review upcoming orders and pre-order materials
+4. Keep a buffer stock of common materials
+5. Set up automatic reorder points
+
+Don't let material delays cascade into order delays!`;
+    }
+    
+    return `Based on current workload analysis:
+
+1. Prioritize orders by due date and complexity
+2. Batch similar order types for efficiency
+3. Update order statuses immediately after each step
+4. Take short breaks to maintain focus and quality
+5. Review tomorrow's orders before leaving today
+
+Stay proactive, not reactive!`;
+  }
+}
