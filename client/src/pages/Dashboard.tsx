@@ -25,14 +25,17 @@ function ImportSection() {
     try {
       const content = await file.text();
       
-      const response = await apiRequest('/api/import/orders', {
+      const response = await fetch('/api/import/orders', {
         method: 'POST',
-        body: { fileContent: content }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileContent: content })
       });
+
+      const result = await response.json();
 
       toast({
         title: "Import Successful!",
-        description: `Imported ${response.ordersCreated} orders and ${response.customersCreated} customers`,
+        description: `Imported ${result.ordersCreated} orders, ${result.customersCreated} customers, and ${result.materialsCreated} materials`,
       });
 
       // Refresh all data
