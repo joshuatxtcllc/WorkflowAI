@@ -39,7 +39,7 @@ export async function quickImportFromTSV(fileContent: string) {
       orderGroups.get(orderId)!.push(record);
     }
 
-    for (const [orderId, materials] of orderGroups) {
+    for (const [orderId, materials] of Array.from(orderGroups.entries())) {
       try {
         const firstMaterial = materials[0];
         const customerName = firstMaterial['Customer Name'];
@@ -59,8 +59,8 @@ export async function quickImportFromTSV(fileContent: string) {
         }
 
         // Determine order status
-        let status = 'ORDER_PROCESSED';
-        if (firstMaterial['Delivered'] === 'TRUE') status = 'DELIVERED';
+        let status: 'ORDER_PROCESSED' | 'MATERIALS_ORDERED' | 'MATERIALS_ARRIVED' | 'FRAME_CUT' | 'MAT_CUT' | 'PREPPED' | 'COMPLETED' | 'PICKED_UP' = 'ORDER_PROCESSED';
+        if (firstMaterial['Delivered'] === 'TRUE') status = 'PICKED_UP';
         else if (firstMaterial['Done'] === 'TRUE') status = 'COMPLETED';
         else if (firstMaterial['Prepped'] === 'TRUE') status = 'PREPPED';
         else if (firstMaterial['M Cut'] === 'TRUE') status = 'MAT_CUT';
@@ -70,17 +70,16 @@ export async function quickImportFromTSV(fileContent: string) {
 
         // Create order
         const frameSize = firstMaterial['Frame Size'] || '16x20';
-        const [width, height] = frameSize.split('x').map(s => parseInt(s.trim()) || 16);
+        const [width, height] = frameSize.split('x').map((s: string) => parseInt(s.trim()) || 16);
         
         const order = await storage.createOrder({
           trackingId: `TRK-${orderId}`,
           customerId,
-          frameWidth: width,
-          frameHeight: height,
-          totalCost: parseFloat(firstMaterial['Ext cost']) || 100,
           orderType: 'FRAME',
           status,
           dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+          estimatedHours: 4,
+          price: parseFloat(firstMaterial['Ext cost']) || 100,
           notes: firstMaterial['Notes'] || null,
           priority: 'MEDIUM',
         });
@@ -91,12 +90,13 @@ export async function quickImportFromTSV(fileContent: string) {
         for (const materialRow of materials) {
           const material = await storage.createMaterial({
             orderId: order.id,
-            materialType: materialRow['Material'] || 'Frame',
-            description: `${materialRow['Material']} for ${frameSize}`,
-            supplier: materialRow['Vendor'] || 'Unknown',
-            cost: parseFloat(materialRow['Ext cost']) || 0,
+            type: 'FRAME',
+            subtype: materialRow['Material'] || 'Frame',
             quantity: parseInt(materialRow['QTY']) || 1,
-            received: materialRow['Arrived'] === 'TRUE',
+            unit: 'piece',
+            ordered: materialRow['Ordered'] === 'TRUE',
+            arrived: materialRow['Arrived'] === 'TRUE',
+            cost: parseFloat(materialRow['Ext cost']) || 0,
           });
           materialsCreated++;
         }
