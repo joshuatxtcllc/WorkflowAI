@@ -96,15 +96,24 @@ export async function addRealProductionOrders() {
       // Create customer if not exists
       let customerId = customerMap.get(orderData.customerName);
       if (!customerId) {
-        const customer = await storage.createCustomer({
-          name: orderData.customerName,
-          email: `${orderData.customerName.toLowerCase().replace(/\s+/g, '.')}@customer.local`,
-          phone: null,
-          address: null,
-        });
-        customerId = customer.id;
-        customerMap.set(orderData.customerName, customerId);
-        customersCreated++;
+        // Check if customer already exists in database
+        const email = `${orderData.customerName.toLowerCase().replace(/\s+/g, '.')}@customer.local`;
+        let existingCustomer = await storage.getCustomerByEmail(email);
+        
+        if (existingCustomer) {
+          customerId = existingCustomer.id;
+          customerMap.set(orderData.customerName, customerId);
+        } else {
+          const customer = await storage.createCustomer({
+            name: orderData.customerName,
+            email: email,
+            phone: null,
+            address: null,
+          });
+          customerId = customer.id;
+          customerMap.set(orderData.customerName, customerId);
+          customersCreated++;
+        }
       }
 
       // Create order
