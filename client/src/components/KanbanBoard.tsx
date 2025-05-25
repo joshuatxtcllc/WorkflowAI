@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -136,23 +136,23 @@ export default function KanbanBoard() {
     }
   };
 
-  // Handle scroll position updates
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  // Throttled scroll handler for better performance
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const maxScroll = container.scrollWidth - container.clientWidth;
     const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
-    setScrollPosition(scrollPercent);
-  };
+    setScrollPosition(Math.round(scrollPercent));
+  }, []);
 
-  // Handle slider change
-  const handleSliderChange = (value: number) => {
+  // Handle slider change with smooth scrolling
+  const handleSliderChange = useCallback((value: number) => {
     if (scrollContainerRef.current) {
       const maxScroll = scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
       const newScrollLeft = (value / 100) * maxScroll;
-      scrollContainerRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+      scrollContainerRef.current.scrollLeft = newScrollLeft;
       setScrollPosition(value);
     }
-  };
+  }, []);
 
   // Handle WebSocket messages
   if (lastMessage?.type === 'order-updated') {
@@ -223,32 +223,12 @@ export default function KanbanBoard() {
                   max="100"
                   value={scrollPosition}
                   onChange={(e) => handleSliderChange(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  className="w-full navigation-slider cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, #10b981 0%, #10b981 ${scrollPosition}%, #374151 ${scrollPosition}%, #374151 100%)`
                   }}
                 />
-                <style jsx>{`
-                  .slider::-webkit-slider-thumb {
-                    appearance: none;
-                    height: 16px;
-                    width: 16px;
-                    border-radius: 50%;
-                    background: #10b981;
-                    border: 2px solid #ffffff;
-                    cursor: pointer;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                  }
-                  .slider::-moz-range-thumb {
-                    height: 16px;
-                    width: 16px;
-                    border-radius: 50%;
-                    background: #10b981;
-                    border: 2px solid #ffffff;
-                    cursor: pointer;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                  }
-                `}</style>
+
               </div>
               <span className="text-xs text-gray-500">End</span>
             </div>
