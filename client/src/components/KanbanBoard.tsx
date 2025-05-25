@@ -180,17 +180,19 @@ export default function KanbanBoard() {
               />
             ))}
           </div>
-          
-          {/* Horizontal scroll indicator */}
-          <div className="flex items-center justify-center mt-4 text-gray-400 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-[-90deg]"></div>
-              <span>Scroll left to right to view all production stages</span>
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-90"></div>
-            </div>
-          </div>
         </div>
       </main>
+      
+      {/* Fixed horizontal scroll indicator */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-lg px-4 py-2 shadow-lg">
+          <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-[-90deg]"></div>
+            <span>Scroll left to right to view all production stages</span>
+            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-90"></div>
+          </div>
+        </div>
+      </div>
     </DndProvider>
   );
 }
