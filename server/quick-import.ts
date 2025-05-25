@@ -7,21 +7,29 @@ export async function quickImportFromTSV(fileContent: string) {
       throw new Error('File must have header and data rows');
     }
 
-    const headers = lines[0].split('\t');
+    const headers = lines[0].split('\t').map(h => h.trim());
     const records = [];
+
+    console.log('Headers found:', headers);
 
     for (let i = 1; i < lines.length; i++) {
       const values = lines[i].split('\t');
       const record: any = {};
       
       headers.forEach((header, index) => {
-        record[header.trim()] = values[index] ? values[index].trim() : '';
+        record[header] = values[index] ? values[index].trim() : '';
       });
       
-      if (record['Order ID'] && record['Customer Name']) {
+      // Check for order ID and customer name with flexible column matching
+      const orderId = record['Order ID'] || record['OrderID'] || record['order_id'];
+      const customerName = record['Customer Name'] || record['CustomerName'] || record['customer_name'];
+      
+      if (orderId && customerName) {
         records.push(record);
       }
     }
+
+    console.log(`Found ${records.length} valid records from ${lines.length - 1} total lines`);
 
     let customersCreated = 0;
     let ordersCreated = 0;
@@ -32,7 +40,7 @@ export async function quickImportFromTSV(fileContent: string) {
     // Group by Order ID
     const orderGroups = new Map<string, any[]>();
     for (const record of records) {
-      const orderId = record['Order ID'];
+      const orderId = record['Order ID'] || record['OrderID'] || record['order_id'];
       if (!orderGroups.has(orderId)) {
         orderGroups.set(orderId, []);
       }
@@ -42,7 +50,7 @@ export async function quickImportFromTSV(fileContent: string) {
     for (const [orderId, materials] of Array.from(orderGroups.entries())) {
       try {
         const firstMaterial = materials[0];
-        const customerName = firstMaterial['Customer Name'];
+        const customerName = firstMaterial['Customer Name'] || firstMaterial['CustomerName'] || firstMaterial['customer_name'];
 
         // Create customer if needed
         let customerId = customerMap.get(customerName);
@@ -58,7 +66,7 @@ export async function quickImportFromTSV(fileContent: string) {
           customersCreated++;
         }
 
-        // Determine order status
+        // Determine order status based on your actual column names
         let status: 'ORDER_PROCESSED' | 'MATERIALS_ORDERED' | 'MATERIALS_ARRIVED' | 'FRAME_CUT' | 'MAT_CUT' | 'PREPPED' | 'COMPLETED' | 'PICKED_UP' = 'ORDER_PROCESSED';
         if (firstMaterial['Delivered'] === 'TRUE') status = 'PICKED_UP';
         else if (firstMaterial['Done'] === 'TRUE') status = 'COMPLETED';
@@ -67,6 +75,7 @@ export async function quickImportFromTSV(fileContent: string) {
         else if (firstMaterial['F Cut'] === 'TRUE') status = 'FRAME_CUT';
         else if (firstMaterial['Arrived'] === 'TRUE') status = 'MATERIALS_ARRIVED';
         else if (firstMaterial['Ordered'] === 'TRUE') status = 'MATERIALS_ORDERED';
+        else if (firstMaterial['Order Processed'] === 'TRUE') status = 'ORDER_PROCESSED';
 
         // Create order
         const frameSize = firstMaterial['Frame Size'] || '16x20';
@@ -86,12 +95,12 @@ export async function quickImportFromTSV(fileContent: string) {
 
         ordersCreated++;
 
-        // Create materials
+        // Create materials using your actual column names
         for (const materialRow of materials) {
           const material = await storage.createMaterial({
             orderId: order.id,
             type: 'FRAME',
-            subtype: materialRow['Material'] || 'Frame',
+            subtype: materialRow['Material'] || materialRow['Item Number'] || 'Frame',
             quantity: parseInt(materialRow['QTY']) || 1,
             unit: 'piece',
             ordered: materialRow['Ordered'] === 'TRUE',
