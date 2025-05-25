@@ -261,6 +261,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import all real orders from database
+  app.post('/api/import/all-orders', isAuthenticated, async (req, res) => {
+    try {
+      const { importAllRealOrders } = await import('./import-all-orders');
+      const result = await importAllRealOrders();
+      res.json(result);
+    } catch (error) {
+      console.error('Import all orders error:', error);
+      res.status(500).json({ error: 'Failed to import all orders' });
+    }
+  });
+
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
