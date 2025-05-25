@@ -184,9 +184,9 @@ export default function KanbanBoard() {
           {/* Horizontal scroll indicator */}
           <div className="flex items-center justify-center mt-4 text-gray-400 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-jade-500/20 rounded-full"></div>
-              <span>Scroll horizontally to view all production stages</span>
-              <div className="w-3 h-3 bg-jade-500/20 rounded-full"></div>
+              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-[-90deg]"></div>
+              <span>Scroll left to right to view all production stages</span>
+              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-90"></div>
             </div>
           </div>
         </div>
