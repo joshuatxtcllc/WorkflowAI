@@ -51,19 +51,28 @@ export async function quickImportFromTSV(fileContent: string) {
       try {
         const firstMaterial = materials[0];
         const customerName = firstMaterial['Customer Name'] || firstMaterial['CustomerName'] || firstMaterial['customer_name'];
+        
+        console.log(`Processing order ${orderId} for customer ${customerName}`);
 
         // Create customer if needed
         let customerId = customerMap.get(customerName);
         if (!customerId) {
-          const customer = await storage.createCustomer({
-            name: customerName,
-            email: `${customerName.toLowerCase().replace(/\s+/g, '.')}@customer.local`,
-            phone: null,
-            address: null,
-          });
-          customerId = customer.id;
-          customerMap.set(customerName, customerId);
-          customersCreated++;
+          try {
+            const customer = await storage.createCustomer({
+              name: customerName,
+              email: `${customerName.toLowerCase().replace(/\s+/g, '.')}@customer.local`,
+              phone: null,
+              address: null,
+            });
+            customerId = customer.id;
+            customerMap.set(customerName, customerId);
+            customersCreated++;
+            console.log(`Created customer: ${customerName} with ID: ${customerId}`);
+          } catch (customerError) {
+            console.error(`Failed to create customer ${customerName}:`, customerError);
+            errors.push(`Failed to create customer ${customerName}: ${customerError}`);
+            continue;
+          }
         }
 
         // Determine order status based on your actual column names
@@ -81,19 +90,28 @@ export async function quickImportFromTSV(fileContent: string) {
         const frameSize = firstMaterial['Frame Size'] || '16x20';
         const [width, height] = frameSize.split('x').map((s: string) => parseInt(s.trim()) || 16);
         
-        const order = await storage.createOrder({
-          trackingId: `TRK-${orderId}`,
-          customerId,
-          orderType: 'FRAME',
-          status,
-          dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
-          estimatedHours: 4,
-          price: parseFloat(firstMaterial['Ext cost']) || 100,
-          notes: firstMaterial['Notes'] || null,
-          priority: 'MEDIUM',
-        });
+        console.log(`Creating order for ${orderId} with status: ${status}`);
+        
+        try {
+          const order = await storage.createOrder({
+            trackingId: `TRK-${orderId}`,
+            customerId,
+            orderType: 'FRAME',
+            status,
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+            estimatedHours: 4,
+            price: parseFloat(firstMaterial['Ext cost']) || 100,
+            notes: firstMaterial['Notes'] || null,
+            priority: 'MEDIUM',
+          });
 
-        ordersCreated++;
+          console.log(`Successfully created order: ${order.id} for tracking: ${order.trackingId}`);
+          ordersCreated++;
+        } catch (orderError) {
+          console.error(`Failed to create order ${orderId}:`, orderError);
+          errors.push(`Failed to create order ${orderId}: ${orderError}`);
+          continue;
+        }
 
         // Create materials using your actual column names
         for (const materialRow of materials) {
