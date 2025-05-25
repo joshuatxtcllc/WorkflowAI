@@ -1,11 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
 import AIAssistant from '@/components/AIAssistant';
 import OrderDetails from '@/components/OrderDetails';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Clock, BarChart3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, Clock, BarChart3, Upload, CheckCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
 
 function TimeEstimationDashboard() {

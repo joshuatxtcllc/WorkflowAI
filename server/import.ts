@@ -108,11 +108,13 @@ function extractOrderType(notes: string, material: string): 'FRAME' | 'MAT' | 'S
 export async function importOrdersFromTSV(fileContent: string): Promise<{ 
   customersCreated: number; 
   ordersCreated: number; 
+  materialsCreated: number;
   errors: string[] 
 }> {
   const errors: string[] = [];
   let customersCreated = 0;
   let ordersCreated = 0;
+  let materialsCreated = 0;
   
   try {
     // Parse TSV data
@@ -123,20 +125,35 @@ export async function importOrdersFromTSV(fileContent: string): Promise<{
       trim: true
     });
 
-    console.log(`Processing ${records.length} records...`);
+    console.log(`Processing ${records.length} material records...`);
+    
+    // Group records by Order ID to create proper orders
+    const orderGroups = new Map<string, ImportRow[]>();
+    for (const row of records) {
+      if (!row['Order ID'] || !row['Customer Name']) continue;
+      
+      const orderId = row['Order ID'];
+      if (!orderGroups.has(orderId)) {
+        orderGroups.set(orderId, []);
+      }
+      orderGroups.get(orderId)!.push(row);
+    }
+
+    console.log(`Found ${orderGroups.size} unique orders to process...`);
     
     // Track unique customers
     const customerMap = new Map<string, string>();
     
-    for (const row of records) {
+    for (const [orderId, materials] of orderGroups) {
       try {
-        // Skip empty or invalid rows
-        if (!row['Customer Name'] || !row['Order ID']) {
+        // Use the first material record as the base for order info
+        const baseRow = materials[0];
+        if (!baseRow['Customer Name'] || !baseRow['Order ID']) {
           continue;
         }
         
         // Create or get customer
-        const customerName = row['Customer Name'].trim();
+        const customerName = baseRow['Customer Name'].trim();
         let customerId = customerMap.get(customerName);
         
         if (!customerId) {
@@ -214,7 +231,7 @@ export async function importOrdersFromTSV(fileContent: string): Promise<{
               ordered: row['Ordered'] === 'TRUE',
               arrived: row['Arrived'] === 'TRUE',
               cost: price,
-              notes: `Vendor: ${row['Vendor'] || 'Unknown'}. ${row['Stock Savings'] || ''}`.trim()
+              // notes: `Vendor: ${row['Vendor'] || 'Unknown'}. ${row['Stock Savings'] || ''}`.trim()
             });
           }
           
