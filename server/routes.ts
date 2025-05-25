@@ -207,8 +207,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "File content is required" });
       }
 
-      const { importFromTSV } = await import('./simple-import');
-      const result = await importFromTSV(fileContent);
+      const { quickImportFromTSV } = await import('./quick-import');
+      const result = await quickImportFromTSV(fileContent);
       
       res.json({
         message: "Import completed successfully",

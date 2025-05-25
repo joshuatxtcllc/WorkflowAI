@@ -35,12 +35,28 @@ function getOrderStatus(row: SimpleRow): string {
 }
 
 export async function importFromTSV(fileContent: string) {
-  const records: SimpleRow[] = parse(fileContent, {
-    columns: true,
-    delimiter: '\t',
-    skip_empty_lines: true,
-    trim: true
-  });
+  try {
+    // Manual TSV parsing for better control
+    const lines = fileContent.split('\n').filter(line => line.trim());
+    if (lines.length < 2) {
+      throw new Error('File must have at least a header and one data row');
+    }
+
+    const headers = lines[0].split('\t').map(h => h.trim());
+    const records: SimpleRow[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split('\t');
+      const record: any = {};
+      
+      headers.forEach((header, index) => {
+        record[header] = values[index] ? values[index].trim() : '';
+      });
+      
+      if (record['Order ID'] && record['Customer Name']) {
+        records.push(record as SimpleRow);
+      }
+    }
 
   // Group by Order ID
   const orderGroups = new Map<string, SimpleRow[]>();
@@ -151,4 +167,9 @@ export async function importFromTSV(fileContent: string) {
     materialsCreated,
     errors
   };
+
+  } catch (error) {
+    console.error('Import error:', error);
+    throw new Error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
