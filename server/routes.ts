@@ -223,40 +223,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Quick add real customer test
-  app.post('/api/add-real-customer', isAuthenticated, async (req, res) => {
+  // Add real production orders
+  app.post('/api/add-production-orders', isAuthenticated, async (req, res) => {
     try {
-      // Add Adam Brouillard from your actual data
-      const customer = await storage.createCustomer({
-        name: 'Adam Brouillard',
-        email: 'adam.brouillard@customer.local',
-        phone: null,
-        address: null,
-      });
-
-      const order = await storage.createOrder({
-        trackingId: 'TRK-20966',
-        customerId: customer.id,
-        orderType: 'FRAME',
-        status: 'MATERIALS_ORDERED',
-        dueDate: new Date('2024-09-30'),
-        estimatedHours: 4,
-        price: 4131,
-        notes: 'ORDERED!!!',
-        priority: 'MEDIUM',
-      });
-
+      const { addRealProductionOrders } = await import('./manual-add-orders');
+      const result = await addRealProductionOrders();
+      
       res.json({
-        message: "Real customer added successfully",
-        customersCreated: 1,
-        ordersCreated: 1,
-        customer: customer.name,
-        orderTracking: order.trackingId
+        message: "Production orders added successfully",
+        ...result
       });
     } catch (error) {
-      console.error("Failed to add real customer:", error);
+      console.error("Failed to add production orders:", error);
       res.status(500).json({ 
-        message: "Failed to add customer", 
+        message: "Failed to add production orders", 
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }

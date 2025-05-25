@@ -87,27 +87,27 @@ function ImportSection() {
             <Button
               onClick={async () => {
                 try {
-                  const response = await fetch('/api/add-real-customer', {
+                  const response = await fetch('/api/add-production-orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                   });
                   const result = await response.json();
                   toast({
-                    title: "Test Customer Added!",
-                    description: `Added ${result.customer} with tracking ${result.orderTracking}`,
+                    title: "Production Orders Added!",
+                    description: `Added ${result.customersCreated} customers and ${result.ordersCreated} orders`,
                   });
                   queryClient.invalidateQueries();
                 } catch (error) {
                   toast({
-                    title: "Test Failed",
-                    description: "Could not add test customer",
+                    title: "Failed to Add Orders",
+                    description: "Could not populate production data",
                     variant: "destructive",
                   });
                 }
               }}
               className="bg-green-600 hover:bg-green-700"
             >
-              Add Test Customer
+              Add Production Orders
             </Button>
           </div>
         </div>
