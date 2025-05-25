@@ -49,6 +49,23 @@ export async function quickImportFromTSV(fileContent: string) {
 
     console.log(`Grouped into ${orderGroups.size} unique orders`);
 
+    // Test database connection with a simple customer creation
+    try {
+      const testCustomer = await storage.createCustomer({
+        name: 'Test Customer',
+        email: 'test@test.com',
+        phone: null,
+        address: null,
+      });
+      console.log('Database connection successful, test customer created:', testCustomer.id);
+      
+      // Clean up test customer
+      // await storage.deleteCustomer(testCustomer.id); // Uncomment if delete method exists
+    } catch (testError) {
+      console.error('Database connection test failed:', testError);
+      throw new Error(`Database connection failed: ${testError}`);
+    }
+
     for (const [orderId, materials] of Array.from(orderGroups.entries())) {
       try {
         const firstMaterial = materials[0];
