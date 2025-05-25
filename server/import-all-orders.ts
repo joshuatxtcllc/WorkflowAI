@@ -153,7 +153,7 @@ export async function importAllRealOrders() {
     console.log('Starting import of all real orders...');
     
     // Read the TSV file
-    const filePath = './attached_assets/New Custom Frame Datasbase - Moulding (1).tsv';
+    const filePath = '../attached_assets/New Custom Frame Datasbase - Moulding (1).tsv';
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     
     // Parse TSV data
