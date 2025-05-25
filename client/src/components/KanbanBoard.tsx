@@ -106,6 +106,7 @@ export default function KanbanBoard() {
   const { sendMessage, lastMessage } = useWebSocket();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: orders = [], isLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
@@ -136,22 +137,33 @@ export default function KanbanBoard() {
     }
   };
 
-  // Throttled scroll handler for better performance
+  // Only update slider when not dragging
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const maxScroll = container.scrollWidth - container.clientWidth;
-    const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
-    setScrollPosition(Math.round(scrollPercent));
-  }, []);
+    if (!isDragging) {
+      const container = e.currentTarget;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
+      setScrollPosition(Math.round(scrollPercent));
+    }
+  }, [isDragging]);
 
-  // Handle slider change with smooth scrolling
-  const handleSliderChange = useCallback((value: number) => {
+  // Handle slider input with immediate response
+  const handleSliderInput = useCallback((value: number) => {
+    setScrollPosition(value);
     if (scrollContainerRef.current) {
       const maxScroll = scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
       const newScrollLeft = (value / 100) * maxScroll;
       scrollContainerRef.current.scrollLeft = newScrollLeft;
-      setScrollPosition(value);
     }
+  }, []);
+
+  // Handle slider drag start/end
+  const handleSliderMouseDown = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleSliderMouseUp = useCallback(() => {
+    setIsDragging(false);
   }, []);
 
   // Handle WebSocket messages
@@ -222,7 +234,11 @@ export default function KanbanBoard() {
                   min="0"
                   max="100"
                   value={scrollPosition}
-                  onChange={(e) => handleSliderChange(Number(e.target.value))}
+                  onInput={(e) => handleSliderInput(Number((e.target as HTMLInputElement).value))}
+                  onMouseDown={handleSliderMouseDown}
+                  onMouseUp={handleSliderMouseUp}
+                  onTouchStart={handleSliderMouseDown}
+                  onTouchEnd={handleSliderMouseUp}
                   className="w-full navigation-slider cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, #10b981 0%, #10b981 ${scrollPosition}%, #374151 ${scrollPosition}%, #374151 100%)`
