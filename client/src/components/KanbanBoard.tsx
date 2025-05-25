@@ -163,7 +163,13 @@ export default function KanbanBoard() {
     <DndProvider backend={HTML5Backend}>
       <main className="relative z-10 p-6">
         <div className="max-w-[1920px] mx-auto">
-          <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-200px)]">
+          <div 
+            className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-200px)] scroll-smooth"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#4ade80 #1f2937'
+            }}
+          >
             {KANBAN_COLUMNS.map((column) => (
               <KanbanColumn
                 key={column.status}
@@ -173,6 +179,15 @@ export default function KanbanBoard() {
                 onDropOrder={handleDropOrder}
               />
             ))}
+          </div>
+          
+          {/* Horizontal scroll indicator */}
+          <div className="flex items-center justify-center mt-4 text-gray-400 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-jade-500/20 rounded-full"></div>
+              <span>Scroll horizontally to view all production stages</span>
+              <div className="w-3 h-3 bg-jade-500/20 rounded-full"></div>
+            </div>
           </div>
         </div>
       </main>
