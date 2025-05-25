@@ -58,6 +58,7 @@ export const orders = pgTable("orders", {
   orderType: varchar("order_type", { enum: ["FRAME", "MAT", "SHADOWBOX"] }).notNull(),
   status: varchar("status", { 
     enum: [
+      "MYSTERY_UNCLAIMED",
       "ORDER_PROCESSED",
       "MATERIALS_ORDERED", 
       "MATERIALS_ARRIVED",
