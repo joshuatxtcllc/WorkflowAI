@@ -1,11 +1,5 @@
 export const KANBAN_COLUMNS = [
   {
-    title: 'Mystery/Unclaimed',
-    status: 'MYSTERY_UNCLAIMED',
-    description: 'Unclaimed items from mystery drawers',
-    color: 'yellow'
-  },
-  {
     title: 'Order Processed',
     status: 'ORDER_PROCESSED',
     description: 'New orders ready for production',
@@ -58,6 +52,12 @@ export const KANBAN_COLUMNS = [
     status: 'PICKED_UP',
     description: 'Completed and collected',
     color: 'blue'
+  },
+  {
+    title: 'Mystery/Unclaimed',
+    status: 'MYSTERY_UNCLAIMED',
+    description: 'Unclaimed items from mystery drawers',
+    color: 'yellow'
   }
 ] as const;
 
