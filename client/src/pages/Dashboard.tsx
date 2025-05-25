@@ -12,6 +12,82 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
 
+function ImportSection() {
+  const [isImporting, setIsImporting] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const content = await file.text();
+      
+      const response = await apiRequest('/api/import/orders', {
+        method: 'POST',
+        body: { fileContent: content }
+      });
+
+      toast({
+        title: "Import Successful!",
+        description: `Imported ${response.ordersCreated} orders and ${response.customersCreated} customers`,
+      });
+
+      // Refresh all data
+      queryClient.invalidateQueries();
+    } catch (error) {
+      toast({
+        title: "Import Failed",
+        description: "Please check your file format and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  return (
+    <Card className="bg-gray-800 border-gray-700 mb-6">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">Import Production Data</h3>
+            <p className="text-gray-400">Upload your TSV file to populate the system with real orders</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <input
+              type="file"
+              accept=".tsv,.csv"
+              onChange={handleFileUpload}
+              disabled={isImporting}
+              className="hidden"
+              id="file-upload"
+            />
+            <Button
+              asChild
+              disabled={isImporting}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <label htmlFor="file-upload" className="cursor-pointer">
+                {isImporting ? (
+                  <>Processing...</>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Import Orders
+                  </>
+                )}
+              </label>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function TimeEstimationDashboard() {
   const { data: analysis } = useQuery<WorkloadAnalysis>({
     queryKey: ["/api/ai/analysis"],
@@ -137,6 +213,9 @@ export default function Dashboard() {
 
       <Header />
       <AIAlertBar />
+      <div className="container mx-auto px-4 py-6">
+        <ImportSection />
+      </div>
       <KanbanBoard />
       <TimeEstimationDashboard />
       <AIAssistant />
