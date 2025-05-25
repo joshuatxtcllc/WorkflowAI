@@ -1,0 +1,2094 @@
+Date Due	Invoice Number	ID	Qty	Name	Phone	Designer	Location	Description	Status	Paid In Full	Message Sent	SMS Message	SMS Message Storage	Order Processed	Ordered	Arrived	Cut	M. Cut	G. Cut	F. & M. Cut	Prepped	Finalizing	Done	Delivered	Delayed	Order ID	Balance Due	Start Time	Estimated Duration (Hours)	Working Start Time	Estimated Completion Time	Image	Real Due Date	Pick Up SMS	Frame Location
+9/20/2024	301	301	1	Mystery			Mystery Drawer #3	Girl in red dress walking down village road (Paint on Unstretched canvas)	Mystery					FALSE								FALSE				301		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/301.Image.022652.png	9/20/2024		
+9/20/2024	302	302	1	Mystery			Mystery Drawer#3	Golden Hindu templa with Buddha (Lazer cut tapestry)	Mystery					FALSE								FALSE				302		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/302.Image.023148.png			
+9/20/2024	303	303	3	Mystery			Mystery Drawer#3	3 Cathie Kayser illustrations ( landscape, tangled nest, Leonard poem with crows)	Mystery					FALSE								FALSE				303		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/303.Image.023530.jpg			
+9/20/2024	304	304	1	Mystery			Mystery Drawer#3	Millie the true glue ( printed poem on paper)	Mystery					FALSE								FALSE				304		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/304.Image.024357.jpg	9/20/2024		
+9/20/2024	305	305	1	Mystery			Mystery Drawer#3	Woman in red and yellow head dress smiling (photograph)	Mystery					FALSE								FALSE				305		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/305.Image.025312.jpg	9/20/2024		
+9/20/2024	306	306	2	Mystery			Mystery Drawer#3	1.Red handprints on red rock; 2. Cliffs of red and orange sand (Photographs) Same sleeve	Mystery					FALSE								FALSE				306		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/306.Image.031633.jpg			
+9/20/2024	307	307	1	Mystery			Mystery Drawer#3	Woman in Pink Dress looking to The left ( Matted art)	Mystery					FALSE								FALSE				307		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/307.Image.033840.jpg	9/20/2024		
+9/20/2024	308	308	1	Mystery			Mystery Drawer#2	Sail boat on a red sea heading to shore (paint on Un stretched canvas)	Mystery					FALSE								FALSE				308		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/308.Image.034646.jpg	9/20/2024		
+9/20/2024	309	309	1	Mystery			Mystery Drawer 2	Gold and blue flowers (drawn on paper)	Mystery					FALSE								FALSE				309		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/309.Image.041548.jpg	9/20/2024		
+9/20/2024	310	310	1	Mystery			Mystery Drawer #2	Mountain stream scene with birds flying left (drawing on paper)	Mystery					FALSE								FALSE				310		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/310.Image.042117.jpg	9/20/2024		
+9/20/2024	311	311	1	Mystery			Mystery Drawer #2	Abstract Vulture on Wagon w/ gold clouds (print on paper)	Mystery					FALSE								FALSE				311		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/311.Image.042849.jpg	9/20/2024		
+9/20/2024	312	312	1	Mystery			Mystery Drawer #2	Witch in black holding cat (print on paper)	Mystery					FALSE								FALSE				312		9/20/2024		9/20/2024	9/20/2024	Calendar_Images/312.Image.044104.jpg	9/20/2024		
+9/21/2024	313	313	4	Mystery			Mystery Drawer 2	4 infant photos (Haven)	Mystery					FALSE								FALSE				313		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/313.Image.053654.jpg	9/21/2024		
+9/21/2024	314	314	2	Mystery			Mystery Drawer 2	"2 wedding photos (one group, one bride) same sleeve
+Anna Maria Davidson"	Mystery					FALSE								FALSE				314		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/314.Image.055004.jpg	9/21/2024		
+9/21/2024	316	316	1	Mystery			Mystery Drawer 2	Mother and daughter holding baby (Lee wright?)	Mystery					FALSE								FALSE				315		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/316.Image.063333.jpg	9/21/2024		
+9/21/2024	317	317	2	Mystery			Mystery Drawer 2	2 folders with doctor pins ( Patrick k reville)	Mystery					FALSE								FALSE				316		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/317.Image.065656.jpg	9/21/2024		
+9/21/2024	318	318	2	Mystery			Mystery drawer #2	"2 drawings on note paper; 1. Xmas tree, 1. Rose
+Signed by Juan L Ramirez"	Mystery					FALSE								FALSE				317		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/318.Image.070842.jpg	9/21/2024		
+9/21/2024	319	319	1	Mystery			Mystery Drawer 1	Campbell Soup ( Have A Bowl!)	Mystery					FALSE								FALSE				318		9/21/2024		9/21/2024	9/21/2024	Calendar_Images/319.Image.072058.jpg	9/21/2024		
+9/24/2024	320	320	1	Mystery			Drawer#19	Tx inc. Mission Critical. Amanda Mcmillian front page	Mystery					FALSE								FALSE				319		9/24/2024		9/24/2024	9/24/2024	Calendar_Images/320.Image.193911.jpg	9/24/2024		
+9/24/2024	321	321	1	Mystery		JayFrames		Tan image of trees and lake. Framed, matted, needs glass?	Mystery					FALSE								FALSE				326		9/24/2024		9/24/2024	9/24/2024	Calendar_Images/321.Image.200907.jpg	9/24/2024		
+10/1/2024	350	350	1	Mystery			Mystery	Orange and brown tower	Mystery					FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/350.Image.040027.jpg	10/1/2024		
+10/1/2024	351	351	1	Mystery			Mystery	Black house	Mystery					FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/351.Image.040116.jpg	10/1/2024		
+10/1/2024	352	352	1	Mystery			Mystery	Watercolor blue sky	Mystery					FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/352.Image.040618.jpg	10/1/2024		
+10/1/2024	353	353	1	Mystery			Mystery	Tex mex	Mystery					FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/353.Image.040817.jpg	10/1/2024		
+10/1/2024	354	354	1	Nick			Left side under table Mystery	Phish poster						FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/354.Image.041129.jpg	10/1/2024		
+10/1/2024	375	375	1	Madama Butterfly			Drawer 5	Asian woman print on paper	Unknown					FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/375.Image.025303.jpg	10/1/2024		
+10/1/2024	376	376	1	Mystery			Mystery	First moon landing						FALSE								FALSE						10/1/2024		10/1/2024	10/1/2024	Calendar_Images/376.Image.035458.jpg	10/1/2024		
+9/20/2024	200	1212		Angie Marston	4152039036	Jay	H500	Picture Of Boy	Done	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			189		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/19/2019	7008	11422		Houston Methodist Clear Lake	2813848890	Mike H.	H400 #2	Signs For Methodist Clear Lake	Done	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	 	$0.00	10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+12/28/2022	11765	19456		Elisabeth Mcingvale	7133069133	Gabbie H	H400	Mackey Crest	Done	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	2		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+11/2/2023	11806	19526		Randy Reed	7025414025	Lindy Brooks	Unclaimed Art Storage		Done	Y		Hi Randy. It’s Jay with Jays Frames. I went out of business. I have your items in secured storage. I need you to get them asap as I have to downsize my storage units before the end of the month. I don’t have anywhere to put them after that. Please let me know how we can arrange this.		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			10		7:00:00 PM	1.78	12:00:00 AM	10:46:48 AM		9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+2/20/2023	11899	19708		Matt Bosworth	8329956928	Rico	H700 #2	#3 ARVEDI Jerseys	Done	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	4		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/20/2023	11900	19709	1	Valerie Sanchez	7134446285	Rico Rico	H700	Steven Speilberg Letter	1 of 2 Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	3		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+8/8/2023	12175	20167		Alison Coriell	7132058619	JayFrames	J2	ABSTRACT ART PAINTING G100	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	5		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+8/8/2023	12177	20172	1	Matt Duncan	2812241705	AdrianMo	Drawer 6	Yogy Bear cells	Acrylic Fabrication	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	191		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+9/13/2023	12203	20214	1	Ada Peeples	7134101737	Jay101	Drawer #6	Hexagon western art	Acrylic Fabrication	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	6		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20214.Image.045125.jpg	9/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+10/11/2023	12316	20417	2	Joshua Stevens	18328933794	Jay Stevens	Test	Test	Test	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	8	$100.00	5:00:00 PM	1.78	12:00:00 AM	1:46:48 AM	Calendar_Images/20417.Image.195236.jpg	9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+10/25/2023	12351	20475	1	Amber Barger	7138376612	Jay101	Art ??	Blue words on square on paper	Acrylic Fabrication	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	9		6:00:00 PM	1.78	12:00:00 AM	1:46:48 AM		9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12368	20505		Robin Visceglia	8285077308	Adrian 1	H500#2	Deer Eating Cherry Blossoms	Done	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	192		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+11/6/2023	12371	20512		Courtney Schonberger	8473025988	Jay	H500	Small Water Color Architecture	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			11		8:00:00 PM	1.78	12:00:00 AM	1:46:48 AM		9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+11/8/2023	12377	20520	1	Michael Gray	2567777664	JayFrames		Degree	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	13		10:00:00 PM	1.78	12:00:00 AM	1:46:48 AM		9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+11/8/2023	12379	20523	1	Alicia Kahn	8482286944	ChrisG	Need To Print	Algie	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	12		9:00:00 PM	1.78	12:00:00 AM	1:46:48 AM		9/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+11/21/2023	12417	20581		Matt Duncan	2812241705	Adrian 1	H500	Ships In The Moonlight	Done	N		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	14	$92.26	11:00:00 PM	1.78	12:00:00 AM	1:46:48 AM		9/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+11/29/2023	12437	20616	1	Rebecca Chaikin	9175963358	Adrian1	Art ??	Go Cubs, Go!	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	16		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+12/6/2023	12449	20650	1	Rafael Rosengarten	8439913407	Adrian1	Drawer #7	Green Tiger, Girl with Headphones	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	18		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	G
+9/13/2024	12456	20657	1	Joann Storey	7138244043	Jay	Drawer 6	Red Woodblock	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	240		9:00:00 AM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20657.Image.045647.jpg	10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+12/11/2023	12459	20662	1	Jessica Rogers	2813808084	JayFrames		Day Of The Dead	Acrylic Fabrication	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	20		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/19/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12460	20663	1	Judy Hrdlicka	7132016852	ChrisG	Drawer 13	Native American	Specialty	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	237		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20663.Image.211825.jpg	10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+	12482	20697	1	Mercedes Harris			Drawer #7	Blue Abstract	Matted	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			235		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/1/2024	12485	20702	1	Victoria Taylor	4157129044	ChrisG		CANVAS - COLORFUL GIRL BIG HAIR	Canvases	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	22		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/19/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+1/1/2024	12485	20703	1	Victoria Taylor	4157129044	ChrisG		RED HAIR GIRL WITH BW SHIRT CANVAS	Canvases	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	23		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/19/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/1/2024	12485	20704	1	Victoria Taylor	4157129044	ChrisG		LARGE REDHAEAD GIRL W RED DRESS	Canvases	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	24		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/19/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+1/1/2024	12486	20706	1	BRIAN HEITZ	8323308790	JayFrames		FLOWERS BIRDS MOTIF W GOLD	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	26		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	G
+1/1/2024	12489	20709	1	BRIAN HEITZ	8323308790	ChrisG		Flowers on Paper	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	27		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/1/2024	12489	20710	1	BRIAN HEITZ	8323308790	ChrisG		Flowers on Paper	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	25		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/19/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/2/2024	12491	20712	1	Mark Williams	7132618444	ChrisG	Drawer 13	Still Corners Print	Specialty	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	30		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20712.Image.210807.jpg	9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+1/2/2024	12491	20716	1	Mark Williams	7132618444	ChrisG	J2	Man and Boy	Pop Ins	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	29		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/2/2024	12494	20719	1	Pheobie Jenkins	8323307951	JayFrames	Art & FRAME IN DRAWER #1	Orange & red Bird On Blue Poster	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	28		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/3/2024	12496	20722	1	Hannah Gaskill	4097901095	JayFrames	J3	Hermes Scarf Museum	Specialty	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	32		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/3/2024	12497	20724	1	Sonya Rosenbach	9492353990	ChrisG	J3	WHITE TIGER VIETNAM PIECE	Specialty	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	33		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/3/2024	12498	20726		Jeff Crawford	7133407605	A5	Cart	WOMAN WITH PINK ABSTRACT DRESS	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	31		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/20/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/10/2024	12505	20735	1	Rebecca Seidl	7135740258	ChrisG	J3	SQUIRREL AND CAMERA	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	34		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/15/2024	12511	20743	1	Katy Atkiss	3104229226	JayFrames	Drawer #4— J4	Robocop looking on . LEAVING REVIEW.	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	35		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+12/9/2024	12522	20759		Will Boone	8305540702	Jay Frames	H700	Green Abstract On Paper	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	190		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+1/29/2024	12522	20760	1	Will Boone	8305540702	JayFrames		Postcard Cisco Texas	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	36		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/14/2024		20787		Carey pickens	3462658874	Jay	H700	Dance Proof	Done	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			39		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/15/2024	12540	20788	1	Matt Duncan	2812241705	JayFrames	Drawer 10	Disney Cel ( bell, beauty and the beast) PLACE HOLDER FOR THEM UNTIL DESIGNED BY US	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	41		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20788.Image.052729.jpg	9/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/22/2024	12543	20791	1	James kittrell	2142747520	JayFrames	J3	Stanley Cup magazine	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	42		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/23/2024	12545	20793	1	Alice Hickey	7135971295	JayFrames	Storage room at Kefi west wall front	mIRROR REPLACEMENT	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	43		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12545	20794	1	Alice Hickey	7135971295	JayFrames		Small Casnvas	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	193		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/1/2024	12554	20808	1	Shari Perez	8325454442	JayFrames	H800 #2— J4	layered shapes	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	50		11:00:00 AM	1.78	9:00:00 AM	12:00:00 AM		9/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/4/2024	12555	20809	1	Diane McMillen	2817230047	JayFrames		Pink flowers	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	51		12:00:00 PM	1.78	9:00:00 AM	12:00:00 AM		9/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+	12555	20810	1	Diane McMillen	2817230047	JayFrames		Waves	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	195		12:00:00 PM	1.78	9:00:00 AM	12:00:00 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+2/27/2024	12556	20811	60	Corbin Primrose	8324514478	ChrisG	J3?	Blue Sky Quan 60	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	47		8:00:00 AM	1.78	9:00:00 AM	12:00:00 AM		9/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/27/2024	12556	20812	60	Corbin Primrose	8324514478	ChrisG	J3	Birds Quan 60	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	48		9:00:00 AM	1.78	9:00:00 AM	12:00:00 AM		9/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/6/2024	12561	20817	1	Ewa Wilke	3035899118	JayFrames	Drawer 11	Brown and teal green shapes	Float Mount	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	53		2:00:00 PM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20817.Image.160135.jpg	9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+3/6/2024	12562	20818	1	Ewa Wilke	3035899118	JayFrames	Tubes	Canvas cust bringing to us	Canvas	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	54		3:00:00 PM	1.78	9:00:00 AM	12:00:00 AM		9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/7/2024	12564	20822	1	Rebecca Cornwell	8325246867	zaid	J4	Degree	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	56		5:00:00 PM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20822.Image.032902.jpg	9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/7/2024	12564	20823	1	Rebecca Cornwell	8325246867	zaid	J4	Yoda Think Small	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	57		6:00:00 PM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20823.Image.032923.jpg	9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/7/2024	12564	20824	1	Rebecca Cornwell	8325246867	zaid	J4	Andrew Bird	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	58		7:00:00 PM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20824.Image.033023.jpg	9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+3/7/2024	12564	20825	1	Rebecca Cornwell	8325246867	zaid	J4	Calexic poster	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	59		8:00:00 PM	1.78	9:00:00 AM	12:00:00 AM	Calendar_Images/20825.Image.032952.jpg	9/26/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+3/8/2024	12565	20826	1	Roy Mata	8327589065	zaid	Drawer #6	Old Photo of Band	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	60		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+3/8/2024	12565	20827	1	Roy Mata	8327589065	zaid	Drawer #6	Dont pay poster	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	61		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	G
+3/8/2024	12566	20828	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	4 Nuns in a jeep	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	62		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/8/2024	12566	20829	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #4	Little House	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	63		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20829.Image.022748.jpg	9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack: M# 9940/CMI
+3/8/2024	12566	20830	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer 4	Indians	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	64		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20830.Image.024032.jpg	9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/8/2024	12566	20831	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #4	3 Birds facing west	Double Check	Y	TRUE	Hello, Your order is in Que and is being worked on and your new realistic estimated due date is by 9/27/24. Everything is 70% through the production process. Frames all cut, built, glued, sanded, and polished. Talk to you soon.		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	65		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20831.Image.023734.jpg	9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack: M#2003/ Roma
+3/8/2024	12566	20832	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	Birds facing west	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	66		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/27/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+3/8/2024	12566	20833	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	3 Birds facing east	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	67		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack : M# 2003/ Roma
+3/8/2024	12566	20834	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	7 Birds facing	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	68		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack: M# 2003/ Roma
+3/8/2024	12566	20835	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	4 Birds walking	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	69		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack: Roma 2003
+3/8/2024	12566	20836	1	Sally Anne Schmidt	7133769576	JayFrames	Drawer #8	Birds walking	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	70		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/18/2024	12570	20842	1	Will Henry	8322656151	MCheves	Drawer #6	Ed Ruscha Print	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	71		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20842.Image.040355.jpg	9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	G
+3/19/2024	12574	20855	1	Meredith Vela	7136285876	JayFrames		Birds on Paper c800	Acrylic Fabrication	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	72		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/19/2024	12574	20856	1	Meredith Vela	7136285876	JayFrames	Drawer 13	Plant Black and White	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	75		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20856.Image.214104.jpg	10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+3/19/2024	12574	20857	1	Meredith Vela	7136285876	JayFrames	Drawer 13	Flower black and white	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	73		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20857.Image.214039.jpg	10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+	12574	20858	1	Meredith Vela	7136285876	JayFrames		Birds and plants large	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	196		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+3/19/2024	12574	20859	1	Meredith Vela	7136285876	JayFrames	Drawer 11	Brown Fabric	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	74		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20859.Image.204912.jpg	10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+3/20/2024	12575	20860	1	ALI DEASON	9406426049	JayFrames	Drawer #5	Santa Marina Map	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	77		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+3/20/2024	12576	20861	1	Kendall Wright	8322827201	JayFrames	J2	The Nationalist Band Print	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	76		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/25/2024	12577	20862	1	Rachel Nolan	7132544456	JayFrames	H800 -  J2	Religious Art on Canvas	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	78		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/1/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/27/2024	12581	20875		Charles Neath	7135450901	Jay Frames	H800	Bicycle Rider: "I Ride"	Done	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			80		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/2/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+9/25/2024	12584	20878	1	Jean Daly	4159631184	JayFrames		Woodblock print of beach foliage	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	197		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+3/27/2024	12584	20879	1	Jean Daly	4159631184	JayFrames		Woodblock print of beach foliage	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	82		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/2/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/1/2024	12588	20883	1	Usha Shah	7132037803	JayFrames	Drawer #7	Boys in snow painting	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	83		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20883.Image.030532.jpg	10/2/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/2/2024	12589	20884	1	Emily Billing	7278714797	JayFrames		water acrylic on box	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	84		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/2/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/3/2024	12590	20885	1	Arvind Narayanan	8473382459	JayFrames	Tubes	Street art on canvas	Canvases	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	85		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/2/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+4/3/2024	12591	20886	1	Matt Raymer	7704685635	JayFrames	Drawer 8	BLUE BACKING	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	86		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+	12591	20887	1	Matt Raymer	7704685635	JayFrames	Drawer 6	BLUE BACKING SMALL	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	198		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20887.Image.201340.jpg	10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/3/2024	12591	20888	1	Matt Raymer	7704685635	JayFrames	Drawer #8	fAN IN pRE mADE aCRYLIC bOX	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	87		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12591	20889	1	Matt Raymer	7704685635	JayFrames	Drawer 8	YELLOW PAPER WITH GREEN BLOB	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	199		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+	12591	20890	1	Matt Raymer	7704685635	JayFrames	Drawer 8	Colored linework	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	200		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12591	20891	1	Matt Raymer	7704685635	JayFrames	Drawer 8	Black w silver lines	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	201		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12591	20892	1	Matt Raymer	7704685635	JayFrames	Drawer 3	Paris on paper	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	202		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+4/4/2024	12592	20893	1	Faina Baskin	8322286359	JayFrames	Drawer 9	people dancing	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	88		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+	12592	20894	1	Faina Baskin	8322286359	JayFrames	Drawer 9	Man with Candal	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	203		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	G
+	12592	20895	1	Faina Baskin	8322286359	JayFrames	Drawer 9	Large man playing instrument	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	204		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12592	20896	1	Faina Baskin	8322286359	JayFrames	Drawer 9	garage frame	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	205		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/25/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/22/2024	12594	20898	9	Anna Osterling	8327765329	JayFrames	Drawer #7	Photos	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	89		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/23/2024	12595	20899	1	Linda Nguyen	3462883596	JayFrames	Tubes	Woman with purple background	Canvases	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	90		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+4/23/2024	12596	20900	1	Logan Daigle	3373443657	JayFrames	Drawer 11	Wedding Photo	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	91		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20900.Image.204339.jpg	10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+4/23/2024	12596	20901	1	Logan Daigle	3373443657	JayFrames	Drawer 11	Ssmall Wedding Photo	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	92		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20901.Image.204359.jpg	10/3/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+4/23/2024	12597	20902	1	Derek Ybarra	2817991450	JayFrames		Black and White	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	93		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/24/2024	12599	20904	1	Meredith Vela	7136285876	ChrisG	Drawer 4	3 Children - Yellow Back ground (weathered condition on masonite)	Pop Ins	Y	TRUE	Hello, Your orders are 70% completed in the production process and they are in queue to be completed. Your new estimated but confidently calculated. Your new confidently estimated due date is the end of this month or the first couple days of next month at the very latest. I created that estimate due date with some cushion to make sure that I’m able to deliver as promised from this point on I apologize about everything the new place is much more efficient and I’m getting a lot more done every day.		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	96		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20904.Image.023002.jpg	10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/24/2024	12599	20905		Meredith Vela	7136285876	Chris G	H900	Antique Lady	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	94		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/24/2024	12600	20906	1	Denisse Berumen	7138543866	ChrisG	11	Couple Embracing in Water	Pop Ins	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	97		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20906.Image.205344.jpg	10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/24/2024	12600	20907	1	Denisse Berumen	7138543866	ChrisG	J2	Multi-colored Paint Splash - Yellow LIVE (in right corner)	Pop Ins	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	98		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/24/2024	12601	20908	1	Anthony Faillace	6462498362	ChrisG		Canvas Restretch	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	TRUE	FALSE	95		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/25/2024	12602	20909	1	Rachel Nolan	7132544456	JayFrames	Drawer 12	Matisse Print	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	102		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20909.Image.161845.jpg	10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/25/2024	12603	20910	1	Shannon Posey	8322926854	JayFrames	Tubes	Houston Map	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	99		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20910.Image.205802.jpg	10/4/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+4/25/2024	12603	20911	1	Shannon Posey	8322926854	JayFrames	J3	Couple on steps	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	100		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/26/2024	12605	20917	1	Peter Zavodnyik	7132408486	JayFrames		ACROSS THE CONTINENT - Train Old Frontier Print	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	103		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/29/2024	12607	20919	1	Mindy Rippstein	7134438312	Rico	J2	Black & White Family Water Color Portrait at Aggie Game	Pop Ins	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	105		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+4/29/2024	12609	20921	1	Lisa Martinson	7136865170	JayFrames	J3	Mountains and Ski Shawman Reserve	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	104		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/1/2024	12613	20928	1	Connor Long	3184693620	JayFrames	J3	Linewqork of three people	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	108		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/8/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/1/2024	12616	20931	1	Casey Bielenberg	2817882475	ChrisG		1973 Concert poster	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	106		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/7/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/1/2024	12617	20932	1	Kyle Armand	2815075539	JayFrames		Instambul Photo	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	107		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/8/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+5/3/2024	12618	20933	1	Carrie Ball	8323907944	JayFrames		Guts World Tour Poster	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	109		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/8/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/7/2024	12621	20939	2	Kate Lebeau	7133064285	Rico		Harvard Degree	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	154		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+6/8/2024	12623	20942	1	Noelle McCutcheon	3055823100	JayFrames	J4	University of Miami Degree	Pop Ins	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	155		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20942.Image.032645.jpg	10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+5/13/2024	12625	20945	1	Makenzie Jauer	3612157466	JayFrames	J2?	Westernb Image	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	111		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/8/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/13/2024	12625	20946	1	Makenzie Jauer	3612157466	JayFrames	J2	Native American Line Drawing	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	112		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/8/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/15/2024	12627	20950	1	TAYLOR GISSELL	5129140290	JayFrames	Drawer 5	We "heart" Houston (in Corner of Print) with assorted Houston "Logos"	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	158		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/15/2024	12627	20951	1	TAYLOR GISSELL	5129140290	JayFrames	Drawer 5	Val Kilmer as Doc Holiday from Film Tombstone	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	159		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12628	20952	1	Elizabeth Rasmussen	7134089505	Rico	scarf tube rolled up?	Blue Silk Scarf with Christening Gown for infant Baptism	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	114		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12630	20954	1	Zak & Nan Banks	2818441626	Rico	J2	Dessert Plain with Cliffside (in right corner)	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	115		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12630	20955	1	Zak & Nan Banks	2818441626	Rico	J2	Print/Photo: Mountain with Lake (Banner Peak, Thousand Island Lake)	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	116		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12630	20956	1	Zak & Nan Banks	2818441626	Rico	J2	Horizontal Dark Blue/Grays with Pink Hues in the Middle - "Daybreak"	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	117		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12630	20957	1	Zak & Nan Banks	2818441626	Rico	Drawer 11	Dark Browns (at top & bottom) Bluish Grays & Creams (in the middle) - "Polar Sea"	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	118		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20957.Image.105322.jpg	10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/15/2024	12630	20958	1	Zak & Nan Banks	2818441626	Rico	Drawer 11	Dark Gray-blues with soft Pinkish Hues Horizontal Abstracts - "Awakening"	Matted	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	119		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20958.Image.155947.jpg	10/9/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12630	20959	5	Zak & Nan Banks	2818441626	Rico		Prints	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	213		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/28/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/16/2024	12631	20960	1	Raizel Sloane	8326280005	zaid	J4	Katuba	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	121		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20960.Image.031743.jpg	10/10/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/16/2024	12631	20961	1	Raizel Sloane	8326280005	zaid		painting woman in red	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	122		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/10/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+5/16/2024	12633	20966		Adam Brouillard	7164812106	Blocke	H600	Cardio Degree/ Nuclear Degree	Done	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	126	$883.76	3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/10/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/17/2024	12634	20967	1	Liza Garcia	2107242000	JayFrames	Drawer 3	NEW ORLEANS	Double Check	N	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	127		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20967.Image.230448.jpg	10/10/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12634	20968	1	Liza Garcia	2107242000	JayFrames	Drawer 3	tWO fACED cHARACTER	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	214		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20968.Image.230944.jpg	10/28/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12634	20969	1	Liza Garcia	2107242000	JayFrames	Drawer 3	Poodle	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	215		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20969.Image.230909.jpg	10/28/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/15/2024	12635	20970	1	Brandon Renken	2816156516	Rico	Drawer #12	Street Art "Fearless" Nike - Assorted Graffiti - Canvas Stretch & Frame	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	160		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12636	20971	1	Kristi Conner	2819233890	Rico	West wall of Kefi	Rattle Snake Skin	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	221		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	F
+5/20/2024	12638	20974	1	Paul Cone	2816820502	JayFrames	Drawer 11	Orange Mountains	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	132		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20975	1	Paul Cone	2816820502	JayFrames	Drawer 11	Jazz Poster	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	129		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12638	20976	1	Paul Cone	2816820502	JayFrames	Drawer 11	Miro Poster	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	216		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/28/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20977	1	Paul Cone	2816820502	JayFrames	Drawer 11	Bar Cert	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	133		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+5/20/2024	12638	20978	1	Paul Cone	2816820502	JayFrames	Drawer 11	Superman with rain and fire at bottom	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	134		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+5/20/2024	12638	20979	1	Paul Cone	2816820502	JayFrames	Drawer #1	Batman in Rain	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	135		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	C Rack
+5/20/2024	12638	20980	1	Paul Cone	2816820502	JayFrames	Drawer 11	Captain America	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	136		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20981	1	Paul Cone	2816820502	JayFrames	Drawer 11	Superman, Wonder Woman, Batman Matte	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	137		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20982	1	Paul Cone	2816820502	JayFrames	Drawer 11	Batman, Joker, Catwoman, Robin	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	138		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20983	1	Paul Cone	2816820502	JayFrames	Drawer 11	The Whole Gang	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	139		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20984	1	Paul Cone	2816820502	JayFrames	Drawer 11	Wonder Woman with Shield	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	140		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12638	20985	1	Paul Cone	2816820502	JayFrames	Drawer 11	Wonder Woman with Rope	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	234		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20986	1	Paul Cone	2816820502	JayFrames	Drawer 11	Cat in Asia	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	141		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/14/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20987	1	Paul Cone	2816820502	JayFrames	Drawer 11	New Orleans Cartoon of Street Corner	Pop Ins	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	142		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+5/20/2024	12638	20988		Paul Cone	2816820502	Jay Frames	H 900	Kill Bill Cartoon/ Mario Rainbow Road	Done	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	128		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20989	1	Paul Cone	2816820502	JayFrames	Drawer 11	Pokemon Poster	Dry Mounting	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	130		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	D Rack
+	12638	20990	1	Paul Cone	2816820502	JayFrames	Drawer 11	Golf Masters Flag	Specialty	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	238		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12638	20991	1	Paul Cone	2816820502	JayFrames	Drawer 11	Houston Golf  Flag	Specialty	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	239		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12638	20992	1	Paul Cone	2816820502	JayFrames	Drawer 11	Augusta Golf Poster	Pop Ins	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	236		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/31/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/20/2024	12638	20993	1	Paul Cone	2816820502	JayFrames	Drawer 11	The Masters Retro Poster	Float Mount	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."			TRUE	TRUE	TRUE	TRUE	FALSE	TRUE			FALSE			131		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/11/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/21/2024	12639	20994	1	Suzanne Green	2108836873	MCheves		Watercolor reds and blues	Double Check	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	143		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	E Rack
+5/22/2024	12641	20996	1	Maria short	5209817281	JayFrames	Drawer #20	Stream and tree painting w/ Original Frame	Double Check	Y	FALSE			TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	144		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20996.Image.000934.jpg	10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12641	20997	1	Maria short	5209817281	JayFrames	Drawer#20	Painting of face (Red background) w/ Original Frame	Double Check	Y	FALSE			TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	217		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20997.Image.001313.jpg	10/28/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12641	20998	1	Maria short	5209817281	JayFrames	Drawer 19	Orange Linework	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	218		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20998.Image.195807.jpg	10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12641	20999	1	Maria short	5209817281	JayFrames	Drawer 20	Woman with white and gren socks	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	219		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/20999.Image.204727.jpg	10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12641	21000	1	Maria short	5209817281	JayFrames	Drawer 19	Star	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	220		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21000.Image.195847.jpg	10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/23/2024	12642	21001	1	Jennah Beckwith	7139079011	JayFrames	K4	Little Island	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	145		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21001.Image.111402.jpg	10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/23/2024	12642	21002	1	Jennah Beckwith	7139079011	JayFrames	J2	Swirls and musical notes	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	146		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/23/2024	12642	21003	1	Jennah Beckwith	7139079011	JayFrames	J2	Beach and clouds	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	147		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/23/2024	12642	21004	1	Jennah Beckwith	7139079011	JayFrames	J2	abstract woman on red and orange.	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	148		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/15/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+5/23/2024	12642	21005	2	Jennah Beckwith	7139079011	JayFrames	K4	Day of the dead skeleton	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	149		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21005.Image.105659.jpg	10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/23/2024	12642	21006	1	Jennah Beckwith	7139079011	JayFrames	J2	Horse and carrage	Matted	Y	TRUE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	150		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/24/2024	12643	21007	2	Kyle Lawrence	8323268563	JayFrames	Drawer 13	Notre Damn & Chicago Flags	Float Mount	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	151		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21007.Image.210615.jpg	10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+5/27/2024	12645	21009	1	Adam Strax	9123988228	Rico	Drawer 6	Cat in a Coffee Shop BLK & WHT	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	152		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/16/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/17/2024	12646	21010	1	Baker Howry	5124170279	Rico		Brown Horse w/Blue Vase & 3 Sunflowers	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	162		3:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/17/2024	12646	21011	1	Baker Howry	5124170279	Rico		Similar Print to Brown Horse w/ Blue Vase & 3 Sunflowers	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	163		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12649	21015	1	Kristi Conner	2819233890	Rico	Tubes	Desert Plain & Rolling Clouds with 3 Cowboys	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	180		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+7/1/2024	12650	21016	2	Corbin Hughes	2816824979	Rico	Drawer #1 (Same Sleeve)	1)Black & White Nun with Fire instead of Face. 1)Summoning Ritual	Located/ in progress	Y	FALSE			TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	181		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21016.Image.231713.jpg	10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12652	21018	1	Chip Grant	9176125922	Rico	Drawer #3	Off yellow paper & black art of Vietnamese Male sitting on wooden bench	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	175		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21018.Image.225550.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12652	21019	1	Chip Grant	9176125922	Rico	Drawer #3	Off yellow Paper with black art of Vietnamese Woman bending over to smell flowers	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	176		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21019.Image.225601.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+9/26/2024	12652	21020	1	Chip Grant	9176125922	Rico	Tubes	Gray Canvas Oil of Vietnamese Village with Primary Colors	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	227		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+9/25/2024	12652	21021	1	Chip Grant	9176125922	Rico	Tubes	Oil Painting of Vietnam City Scene (predominately Gray with Reds, Oranges, Dark Blues & Light Blues)	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	228		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12653	21022	6	Natalya Mesa	6035026920	Rico	Drawer #1	Photo Prints of Mother, Daughter & Mother & Daughter	Double Check	Y	FALSE			TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	177		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21022.Image.230620.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12654	21023	2	Brandon smaglo	6464835110	Rico	Drawer #3	2024 Paris Olympics World¬s Fair Posters	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	178		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21023.Image.225424.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/30/2024	12655	21024	1	Shannon Richey	5124233488	Rico	Drawer #3	Woman in beach hat looking into Ocean	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	179		8:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21024.Image.230718.jpg	10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/10/2024	12657	21027	1	Patrick Stewart	7137346673	JayFrames		colorful nature canvas	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	156		9:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/17/2024	12660	21030	1	Lisa Sailor	8322025664	JayFrames	Top of Tube Racks	Large Fridda Canvas	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	161		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/17/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12661	21031	1	Leslie Nystrom	2818573222	JayFrames		Soccer tickets and picture	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	222		3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/18/2024	12663	21033	1	Monica Uddin	2102797021	JayFrames	Drawer #3	Disco Balls In a Field	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	164		5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21033.Image.230005.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/18/2024	12663	21034	1	Monica Uddin	2102797021	JayFrames	Drawer #3	Woman Looking to the left	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	165		6:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21034.Image.224733.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/18/2024	12663	21035	1	Monica Uddin	2102797021	JayFrames	Drawer #3	Purple trees and gold angel	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	166		7:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21035.Image.224840.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/18/2024	12663	21036	1	Monica Uddin	2102797021	JayFrames	Drawer #3	Buildings and Clounds	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	167		8:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21036.Image.230247.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/18/2024	12663	21037	1	Monica Uddin	2102797021	JayFrames	Drawer #3	Montrose & Westheimer Comic Card	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	168		9:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21037.Image.230102.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+2/14/2024	12663	21038		Monica Uddin	2102797021	Jay	H600	Haunted House	Done	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE			40		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		9/24/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/19/2024	12664	21039	1	Kathleen reynolds	7135537005	JayFrames	J4	Green abstract	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	169		10:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21039.Image.032056.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12664	21040	1	Kathleen reynolds	7135537005	JayFrames	2	menu with seal	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	223		4:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12664	21041	1	Kathleen reynolds	7135537005	JayFrames	2	Menu	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	224		5:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	B Rack
+	12664	21042	1	Kathleen reynolds	7135537005	JayFrames	2	The Clover Club	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	225		6:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/29/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/19/2024	12665	21043	1	Cooper Dickerson	2817706801	JayFrames	Drawer #5	Hunting	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	170		11:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21043.Image.025423.jpg	10/18/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/20/2024	12666	21044	3	ashleigh Spruell	8323061368	JayFrames		Abstract	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	171		12:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/24/2024	12667	21045	1	John Robrts	6033402728	JayFrames	Drawer 12	Blue dog w abstract triangle	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	172		1:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21045.Image.160850.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+6/25/2024	12669	21047	1	Melissa Caspary	8324437950	JayFrames		childrens art	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	173		2:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12670	21048	1	Angele Lundquist	8323319190	JayFrames		Watercolor of figures orange and yellow	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	229		10:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+7/2/2024	12671	21049	1	Terri Dragojlovic	3102107447	JayFrames		Reglass Guggenheim	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	182		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	A
+7/2/2024	12671	21050	1	Terri Dragojlovic	3102107447	JayFrames	Drawer #6	Soccer Poster	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	183		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21050.Image.055810.jpg	10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12672	21051	1	Jesse Garza	8176918519	JayFrames		Ready made print and frame	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	226		7:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+7/10/2024	12673	21052	1	Brittany Steitz	7137033208	JayFrames		Hunder Twasser Print	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	184		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12673	21053	1	Brittany Steitz	7137033208	JayFrames		"Bad News" print	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	230		11:00:00 PM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12673	21054	1	Brittany Steitz	7137033208	JayFrames		Horses and cowboys orange sun on paper	Matted	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	231		12:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+7/16/2024	12674	21055	1	Greg Sevcik	2672263335	JayFrames	11	American Flag Canvas	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	185		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/22/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12674	21056	1	Greg Sevcik	2672263335	JayFrames	11	Doyly	Double Check	N	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	232		1:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+	12675	21057	1	Elizebeth Preng	7134430522	JayFrames		Suculents Canvas	Double Check	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	233		2:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/30/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+7/17/2024	12676	21058		Cara/Annita Zuraski	2019822348	JayFrames	H100	FAMILY PHOTO	Done	Y	FALSE	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	FALSE	187		4:00:00 AM	1.78	9:00:00 AM	10:46:48 AM		10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+10/2/2024	12678	21060	1	Rolando Abreu	8323506343	Jay	Tubes	Large Rock Figures	Canvas	TRUE	TRUE			FALSE	TRUE							FALSE						10/2/2024		10/2/2024	10/2/2024		10/16/2024		
+8/12/2024	12682	21069	6	Claudia Moreno	7133712781	Jays Frames	Drawer #4	6 Student Paintings	Matted	Y		"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024
+ here is a link to schedule; https://calendly.com/orders-jaysframes/30min  Thank you, Jay."		TRUE	TRUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE			188	$797.40	5:00:00 AM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/21069.Image.023438.jpg	10/23/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	
+10/2/2024	366	22000	1	Matt Duncan			Drawer 6	SPORTS Illustrated	Double check and design					FALSE								FALSE						10/2/2024		10/2/2024	10/2/2024		10/2/2024		
+6/30/2024	12653	210220	1	Natalya Mesa	6035026920	Rico	H000	Mother And Daughter Photo Shoot	1 of 6 Done	N	TRUE			TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	TRUE	174	$938.85	3:00:00 PM	1.78	9:00:00 AM	10:46:48 AM	Calendar_Images/210220.Image.230536.jpg	10/21/2024	"Hello, Your order is ready to pick up. Our new location is 7055 Old Katy Rd. 77024 Here is a link to schedule a pick up; https://calendly.com/jaysframes/15min?month=2024-05
+
+Please let the front desk clerk know when you've arrived, and we’ll take your order out to you. 
+
+We appreciate your patience and understanding while we relocated to improve efficiency. 
+
+We apologize for the extended delays, and we appreciate your business.
+
+Jay."	

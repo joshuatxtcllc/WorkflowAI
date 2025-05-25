@@ -53,6 +53,7 @@ export const orders = pgTable("orders", {
   trackingId: varchar("tracking_id").unique().notNull(),
   customerId: varchar("customer_id").notNull(),
   assignedToId: varchar("assigned_to_id"),
+  invoiceNumber: varchar("invoice_number"),
   
   orderType: varchar("order_type", { enum: ["FRAME", "MAT", "SHADOWBOX"] }).notNull(),
   status: varchar("status", { 

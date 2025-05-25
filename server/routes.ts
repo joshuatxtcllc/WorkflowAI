@@ -242,6 +242,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import real customer data from your business records
+  app.post('/api/import-real-data', isAuthenticated, async (req, res) => {
+    try {
+      const { importRealCustomerData } = await import('./real-data-import');
+      const result = await importRealCustomerData();
+      
+      res.json({
+        message: "Real customer data imported successfully",
+        ...result
+      });
+    } catch (error) {
+      console.error("Failed to import real customer data:", error);
+      res.status(500).json({ 
+        message: "Failed to import real customer data", 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
