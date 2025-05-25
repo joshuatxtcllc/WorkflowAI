@@ -199,6 +199,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import routes
+  app.post('/api/import/orders', isAuthenticated, async (req, res) => {
+    try {
+      const { fileContent } = req.body;
+      if (!fileContent) {
+        return res.status(400).json({ message: "File content is required" });
+      }
+
+      const { importOrdersFromTSV } = await import('./import');
+      const result = await importOrdersFromTSV(fileContent);
+      
+      res.json({
+        message: "Import completed successfully",
+        ...result
+      });
+    } catch (error) {
+      console.error("Import error:", error);
+      res.status(500).json({ 
+        message: "Import failed", 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
