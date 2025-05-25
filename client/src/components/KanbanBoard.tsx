@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -104,6 +104,8 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 export default function KanbanBoard() {
   const queryClient = useQueryClient();
   const { sendMessage, lastMessage } = useWebSocket();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const { data: orders = [], isLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
@@ -131,6 +133,24 @@ export default function KanbanBoard() {
     const order = orders.find(o => o.id === orderId);
     if (order && order.status !== newStatus) {
       updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+    }
+  };
+
+  // Handle scroll position updates
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
+    setScrollPosition(scrollPercent);
+  };
+
+  // Handle slider change
+  const handleSliderChange = (value: number) => {
+    if (scrollContainerRef.current) {
+      const maxScroll = scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
+      const newScrollLeft = (value / 100) * maxScroll;
+      scrollContainerRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+      setScrollPosition(value);
     }
   };
 
@@ -164,11 +184,13 @@ export default function KanbanBoard() {
       <main className="relative z-10 p-6">
         <div className="max-w-[1920px] mx-auto">
           <div 
+            ref={scrollContainerRef}
             className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-200px)] scroll-smooth"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#4ade80 #1f2937'
             }}
+            onScroll={handleScroll}
           >
             {KANBAN_COLUMNS.map((column) => (
               <KanbanColumn
@@ -183,13 +205,53 @@ export default function KanbanBoard() {
         </div>
       </main>
       
-      {/* Fixed horizontal scroll indicator */}
+      {/* Fixed horizontal navigation slider */}
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-lg px-4 py-2 shadow-lg">
-          <div className="flex items-center gap-2 text-gray-400 text-sm">
-            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-[-90deg]"></div>
-            <span>Scroll left to right to view all production stages</span>
-            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-jade-500/40 rotate-90"></div>
+        <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-lg px-6 py-3 shadow-lg min-w-[300px]">
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2 text-gray-400 text-xs">
+              <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-jade-500/40 rotate-[-90deg]"></div>
+              <span>Navigate Production Stages</span>
+              <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-jade-500/40 rotate-90"></div>
+            </div>
+            <div className="w-full flex items-center gap-3">
+              <span className="text-xs text-gray-500">Start</span>
+              <div className="flex-1 relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={scrollPosition}
+                  onChange={(e) => handleSliderChange(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${scrollPosition}%, #374151 ${scrollPosition}%, #374151 100%)`
+                  }}
+                />
+                <style jsx>{`
+                  .slider::-webkit-slider-thumb {
+                    appearance: none;
+                    height: 16px;
+                    width: 16px;
+                    border-radius: 50%;
+                    background: #10b981;
+                    border: 2px solid #ffffff;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                  }
+                  .slider::-moz-range-thumb {
+                    height: 16px;
+                    width: 16px;
+                    border-radius: 50%;
+                    background: #10b981;
+                    border: 2px solid #ffffff;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                  }
+                `}</style>
+              </div>
+              <span className="text-xs text-gray-500">End</span>
+            </div>
           </div>
         </div>
       </div>
