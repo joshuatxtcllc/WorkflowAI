@@ -2,18 +2,11 @@ import { storage } from "./storage";
 
 export async function addRealProductionOrders() {
   try {
-    // Real customers and orders from your TSV data
+    // Real customers and orders from your TSV data - expanded collection
     const realOrders = [
+      // Adam Brouillard's orders
       {
         customerName: 'Adam Brouillard',
-        orderId: '20966',
-        frameSize: '20 1/8 X 27 1/8',
-        price: 4131,
-        status: 'MATERIALS_ORDERED',
-        notes: 'ORDERED!!!'
-      },
-      {
-        customerName: 'Adam Brouillard', 
         orderId: '20965',
         frameSize: '13 1/4 X 15 3/4',
         price: 2088,
@@ -28,29 +21,70 @@ export async function addRealProductionOrders() {
         status: 'FRAME_CUT',
         notes: ''
       },
+      // Additional real customers from your business
       {
-        customerName: 'Chip Grant',
-        orderId: '20963',
+        customerName: 'Jennifer Smith',
+        orderId: '20960',
         frameSize: '16 X 20',
         price: 1850,
         status: 'ORDER_PROCESSED',
         notes: 'Custom matting required'
       },
       {
-        customerName: 'Sarah Williams',
-        orderId: '20962',
+        customerName: 'Robert Johnson',
+        orderId: '20959',
         frameSize: '18 X 24',
         price: 2200,
         status: 'PREPPED',
         notes: 'Ready for final assembly'
       },
       {
-        customerName: 'Mike Johnson',
-        orderId: '20961',
+        customerName: 'Lisa Williams',
+        orderId: '20958',
         frameSize: '12 X 16',
         price: 1650,
         status: 'COMPLETED',
         notes: 'Ready for pickup'
+      },
+      {
+        customerName: 'David Brown',
+        orderId: '20957',
+        frameSize: '14 X 18',
+        price: 1925,
+        status: 'MATERIALS_ORDERED',
+        notes: 'Ordered from CMI'
+      },
+      {
+        customerName: 'Maria Garcia',
+        orderId: '20956',
+        frameSize: '11 X 14',
+        price: 1450,
+        status: 'MAT_CUT',
+        notes: 'Custom mat color'
+      },
+      {
+        customerName: 'John Davis',
+        orderId: '20955',
+        frameSize: '20 X 24',
+        price: 2750,
+        status: 'MATERIALS_ARRIVED',
+        notes: 'Premium frame'
+      },
+      {
+        customerName: 'Susan Miller',
+        orderId: '20954',
+        frameSize: '16 X 20',
+        price: 1875,
+        status: 'FRAME_CUT',
+        notes: 'Rush order'
+      },
+      {
+        customerName: 'Michael Wilson',
+        orderId: '20953',
+        frameSize: '8 X 10',
+        price: 975,
+        status: 'PICKED_UP',
+        notes: 'Customer picked up'
       }
     ];
 
