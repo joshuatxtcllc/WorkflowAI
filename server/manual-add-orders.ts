@@ -2,82 +2,192 @@ import { storage } from "./storage";
 
 export async function addRealProductionOrders() {
   try {
-    // Real customers and orders from your TSV data - showing realistic invoice grouping
+    // Real customers and orders from your actual business data
     const realOrders = [
-      // Adam Brouillard's multiple items under invoice INV-2024-001
+      // Angie Marston - Invoice 200
       {
-        customerName: 'Adam Brouillard',
-        orderId: '20965',
-        invoiceNumber: 'INV-2024-001',
-        frameSize: '13 1/4 X 15 3/4',
-        price: 2088,
-        status: 'MATERIALS_ARRIVED',
-        notes: 'Family portrait - item 1 of 3'
+        customerName: 'Angie Marston',
+        phone: '4152039036',
+        orderId: '1212',
+        invoiceNumber: '200',
+        frameSize: 'Custom',
+        price: 189,
+        status: 'PICKED_UP',
+        notes: 'Picture Of Boy - H500'
       },
+      
+      // Houston Methodist Clear Lake - Invoice 7008
       {
-        customerName: 'Adam Brouillard',
-        orderId: '20964', 
-        invoiceNumber: 'INV-2024-001',
-        frameSize: '15 1/8 X 17 7/8',
-        price: 2436,
-        status: 'FRAME_CUT',
-        notes: 'Family portrait - item 2 of 3'
+        customerName: 'Houston Methodist Clear Lake',
+        phone: '2813848890',
+        orderId: '11422',
+        invoiceNumber: '7008',
+        frameSize: 'Custom Signs',
+        price: 0,
+        status: 'PICKED_UP',
+        notes: 'Signs For Methodist Clear Lake - H400 #2, Designer: Mike H.'
       },
+      
+      // Elisabeth Mcingvale - Invoice 11765
       {
-        customerName: 'Adam Brouillard',
-        orderId: '20963', 
-        invoiceNumber: 'INV-2024-001',
-        frameSize: '11 X 14',
-        price: 1750,
-        status: 'ORDER_PROCESSED',
-        notes: 'Family portrait - item 3 of 3'
+        customerName: 'Elisabeth Mcingvale',
+        phone: '7133069133',
+        orderId: '19456',
+        invoiceNumber: '11765',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'PICKED_UP',
+        notes: 'Mackey Crest - H400, Designer: Gabbie H'
       },
-      // Jennifer Smith with 2 items under one invoice
+      
+      // Randy Reed - Invoice 11806
       {
-        customerName: 'Jennifer Smith',
-        orderId: '20960',
-        invoiceNumber: 'INV-2024-002',
-        frameSize: '16 X 20',
-        price: 1850,
-        status: 'ORDER_PROCESSED',
-        notes: 'Wedding photos - item 1 of 2'
+        customerName: 'Randy Reed',
+        phone: '7025414025',
+        orderId: '19526',
+        invoiceNumber: '11806',
+        frameSize: 'Custom',
+        price: 10,
+        status: 'PICKED_UP',
+        notes: 'Unclaimed Art Storage - Designer: Lindy Brooks'
       },
+      
+      // Matt Bosworth - Invoice 11899
       {
-        customerName: 'Jennifer Smith',
-        orderId: '20959',
-        invoiceNumber: 'INV-2024-002',
-        frameSize: '18 X 24',
-        price: 2200,
-        status: 'PREPPED',
-        notes: 'Wedding photos - item 2 of 2'
+        customerName: 'Matt Bosworth',
+        phone: '8329956928',
+        orderId: '19708',
+        invoiceNumber: '11899',
+        frameSize: 'Custom',
+        price: 4,
+        status: 'PICKED_UP',
+        notes: '#3 ARVEDI Jerseys - H700 #2, Designer: Rico'
       },
-      // Single item customers
+      
+      // Valerie Sanchez - Invoice 11900
       {
-        customerName: 'Robert Johnson',
-        orderId: '20958',
-        invoiceNumber: 'INV-2024-003',
-        frameSize: '12 X 16',
-        price: 1650,
+        customerName: 'Valerie Sanchez',
+        phone: '7134446285',
+        orderId: '19709',
+        invoiceNumber: '11900',
+        frameSize: 'Custom',
+        price: 3,
         status: 'COMPLETED',
-        notes: 'Diploma framing'
+        notes: 'Steven Speilberg Letter - H700, Designer: Rico Rico, 1 of 2 Done'
       },
+      
+      // Alison Coriell - Invoice 12175
       {
-        customerName: 'Lisa Williams',
-        orderId: '20957',
-        invoiceNumber: 'INV-2024-004',
-        frameSize: '14 X 18',
-        price: 1925,
+        customerName: 'Alison Coriell',
+        phone: '7132058619',
+        orderId: '20167',
+        invoiceNumber: '12175',
+        frameSize: 'Custom',
+        price: 5,
+        status: 'PICKED_UP',
+        notes: 'ABSTRACT ART PAINTING G100 - J2, Designer: JayFrames'
+      },
+      
+      // Matt Duncan - Invoice 12177 (in progress)
+      {
+        customerName: 'Matt Duncan',
+        phone: '2812241705',
+        orderId: '20172',
+        invoiceNumber: '12177',
+        frameSize: 'Custom',
+        price: 191,
+        status: 'MATERIALS_ARRIVED',
+        notes: 'Yogy Bear cells - Drawer 6, Designer: AdrianMo, Acrylic Fabrication'
+      },
+      
+      // Mystery orders from your unclaimed drawer items - Invoice 303 (multiple items)
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '303-1',
+        invoiceNumber: '303',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'ORDER_PROCESSED',
+        notes: '3 Cathie Kayser illustrations - landscape (item 1 of 3) - Mystery Drawer#3'
+      },
+      
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '303-2',
+        invoiceNumber: '303',
+        frameSize: 'Custom',
+        price: 0,
         status: 'MATERIALS_ORDERED',
-        notes: 'Artwork print'
+        notes: '3 Cathie Kayser illustrations - tangled nest (item 2 of 3) - Mystery Drawer#3'
       },
+      
       {
-        customerName: 'David Brown',
-        orderId: '20956',
-        invoiceNumber: 'INV-2024-005',
-        frameSize: '11 X 14',
-        price: 1450,
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '303-3',
+        invoiceNumber: '303',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'FRAME_CUT',
+        notes: 'Leonard poem with crows (item 3 of 3) - Mystery Drawer#3'
+      },
+      
+      // Additional mystery orders - single items
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '301',
+        invoiceNumber: '301',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'ORDER_PROCESSED',
+        notes: 'Girl in red dress walking down village road - Paint on Unstretched canvas - Mystery Drawer #3'
+      },
+      
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '302',
+        invoiceNumber: '302',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'MATERIALS_ORDERED',
+        notes: 'Golden Hindu temple with Buddha - Lazer cut tapestry - Mystery Drawer#3'
+      },
+      
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '304',
+        invoiceNumber: '304',
+        frameSize: 'Custom',
+        price: 0,
         status: 'MAT_CUT',
-        notes: 'Custom mat color'
+        notes: 'Millie the true glue - printed poem on paper - Mystery Drawer#3'
+      },
+      
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '305',
+        invoiceNumber: '305',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'PREPPED',
+        notes: 'Woman in red and yellow head dress smiling - photograph - Mystery Drawer#3'
+      },
+      
+      {
+        customerName: 'Mystery Customer',
+        phone: null,
+        orderId: '306',
+        invoiceNumber: '306',
+        frameSize: 'Custom',
+        price: 0,
+        status: 'COMPLETED',
+        notes: '2 photos: Red handprints on red rock; Cliffs of red and orange sand - Same sleeve - Mystery Drawer#3'
       }
     ];
 
@@ -100,7 +210,7 @@ export async function addRealProductionOrders() {
           const customer = await storage.createCustomer({
             name: orderData.customerName,
             email: email,
-            phone: null,
+            phone: orderData.phone,
             address: null,
           });
           customerId = customer.id;
