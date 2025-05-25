@@ -23,7 +23,7 @@ import {
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, ne } from "drizzle-orm";
 import * as crypto from "crypto";
 
 // Interface for storage operations
@@ -388,12 +388,14 @@ export class DatabaseStorage implements IStorage {
     averageComplexity: number;
     onTimePercentage: number;
   }> {
+    // Exclude Mystery/Unclaimed orders from active workload metrics
     const allOrders = await db.select().from(orders);
-    const totalOrders = allOrders.length;
-    const totalHours = allOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const activeOrders = allOrders.filter(order => order.status !== 'MYSTERY_UNCLAIMED');
+    const totalOrders = activeOrders.length;
+    const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
     const averageComplexity = totalHours / totalOrders || 0;
     
-    const completedOrders = allOrders.filter(order => order.status === 'COMPLETED');
+    const completedOrders = activeOrders.filter(order => order.status === 'COMPLETED');
     const onTimeOrders = completedOrders.filter(order => {
       if (!order.dueDate) return true;
       return new Date() <= order.dueDate;
