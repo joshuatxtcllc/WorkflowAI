@@ -82,6 +82,8 @@ export const orders = pgTable("orders", {
   
   dimensions: jsonb("dimensions"), // { width, height, depth }
   notes: text("notes"),
+  description: text("description"),
+  imageUrl: text("image_url"),
   internalNotes: text("internal_notes"),
   
   createdAt: timestamp("created_at").defaultNow(),
