@@ -71,7 +71,7 @@ function ImportSection() {
             <Button
               asChild
               disabled={isImporting}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 mr-3"
             >
               <label htmlFor="file-upload" className="cursor-pointer">
                 {isImporting ? (
@@ -83,6 +83,31 @@ function ImportSection() {
                   </>
                 )}
               </label>
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/add-real-customer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                  });
+                  const result = await response.json();
+                  toast({
+                    title: "Test Customer Added!",
+                    description: `Added ${result.customer} with tracking ${result.orderTracking}`,
+                  });
+                  queryClient.invalidateQueries();
+                } catch (error) {
+                  toast({
+                    title: "Test Failed",
+                    description: "Could not add test customer",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Add Test Customer
             </Button>
           </div>
         </div>
