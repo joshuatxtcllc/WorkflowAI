@@ -47,6 +47,8 @@ export async function quickImportFromTSV(fileContent: string) {
       orderGroups.get(orderId)!.push(record);
     }
 
+    console.log(`Grouped into ${orderGroups.size} unique orders`);
+
     for (const [orderId, materials] of Array.from(orderGroups.entries())) {
       try {
         const firstMaterial = materials[0];
@@ -92,8 +94,9 @@ export async function quickImportFromTSV(fileContent: string) {
         
         console.log(`Creating order for ${orderId} with status: ${status}`);
         
+        let createdOrder;
         try {
-          const order = await storage.createOrder({
+          createdOrder = await storage.createOrder({
             trackingId: `TRK-${orderId}`,
             customerId,
             orderType: 'FRAME',
@@ -105,36 +108,41 @@ export async function quickImportFromTSV(fileContent: string) {
             priority: 'MEDIUM',
           });
 
-          console.log(`Successfully created order: ${order.id} for tracking: ${order.trackingId}`);
+          console.log(`Successfully created order: ${createdOrder.id} for tracking: ${createdOrder.trackingId}`);
           ordersCreated++;
+
+          // Create materials using your actual column names
+          for (const materialRow of materials) {
+            try {
+              const material = await storage.createMaterial({
+                orderId: createdOrder.id,
+                type: 'FRAME',
+                subtype: materialRow['Material'] || materialRow['Item Number'] || 'Frame',
+                quantity: parseInt(materialRow['QTY']) || 1,
+                unit: 'piece',
+                ordered: materialRow['Ordered'] === 'TRUE',
+                arrived: materialRow['Arrived'] === 'TRUE',
+                cost: parseFloat(materialRow['Ext cost']) || 0,
+              });
+              materialsCreated++;
+            } catch (materialError) {
+              console.error(`Failed to create material for order ${orderId}:`, materialError);
+            }
+          }
+
+          // Create status history
+          await storage.createStatusHistory({
+            orderId: createdOrder.id,
+            toStatus: status,
+            changedBy: 'import-system',
+            reason: 'Imported from production data'
+          });
+
         } catch (orderError) {
           console.error(`Failed to create order ${orderId}:`, orderError);
           errors.push(`Failed to create order ${orderId}: ${orderError}`);
           continue;
         }
-
-        // Create materials using your actual column names
-        for (const materialRow of materials) {
-          const material = await storage.createMaterial({
-            orderId: order.id,
-            type: 'FRAME',
-            subtype: materialRow['Material'] || materialRow['Item Number'] || 'Frame',
-            quantity: parseInt(materialRow['QTY']) || 1,
-            unit: 'piece',
-            ordered: materialRow['Ordered'] === 'TRUE',
-            arrived: materialRow['Arrived'] === 'TRUE',
-            cost: parseFloat(materialRow['Ext cost']) || 0,
-          });
-          materialsCreated++;
-        }
-
-        // Create status history
-        await storage.createStatusHistory({
-          orderId: order.id,
-          toStatus: status,
-          changedBy: 'import-system',
-          reason: 'Imported from production data'
-        });
 
       } catch (err) {
         errors.push(`Failed to process order ${orderId}: ${err}`);
