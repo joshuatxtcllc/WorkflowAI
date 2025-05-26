@@ -26,7 +26,7 @@ export default function Header() {
           </div>
 
           {/* Stats Overview - Desktop */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
             <div className="text-center">
               <div className="text-2xl font-bold text-jade-400 flex items-center gap-1">
                 <BarChart3 className="w-5 h-5" />
@@ -58,7 +58,7 @@ export default function Header() {
           </div>
 
           {/* Stats Overview - Mobile Compact */}
-          <div className="flex lg:hidden items-center gap-3 text-sm">
+          <div className="flex lg:hidden items-center gap-3 text-sm flex-1 justify-center">
             <div className="flex items-center gap-1">
               <BarChart3 className="w-4 h-4 text-jade-400" />
               <span className="font-bold text-jade-400">{workloadMetrics?.totalOrders || 0}</span>
