@@ -139,7 +139,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       onDragEnd={handleDragEnd}
       data-draggable="order"
       className={`
-        relative p-4 rounded-lg border cursor-move transition-all duration-200 mb-3 min-h-[100px]
+        relative p-3 rounded-lg border cursor-move transition-all duration-200 mb-2 min-h-[85px]
         ${getPriorityColor(order.priority)}
         ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.01] hover:shadow-lg'}
         ${order.priority === 'URGENT' ? 'ring-1 ring-amber-400/50' : ''}
@@ -199,19 +199,19 @@ export default function OrderCard({ order }: OrderCardProps) {
         <Zap className="w-4 h-4 text-white" />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {/* Header */}
         <div>
-          <h4 className="font-medium text-white text-sm flex items-center gap-1.5">
-            <span className="text-base">{getOrderTypeEmoji(order.orderType)}</span>
+          <h4 className="font-medium text-white text-sm flex items-center gap-1">
+            <span className="text-sm">{getOrderTypeEmoji(order.orderType)}</span>
             <span className="truncate">{order.customer.name}</span>
           </h4>
-          <p className="text-xs text-gray-400 font-mono truncate">{order.trackingId}</p>
+          <p className="text-xs text-gray-400 font-mono truncate mt-0.5">{order.trackingId}</p>
         </div>
 
         {/* Order Type & Time */}
         <div className="flex items-center justify-between text-xs">
-          <span className="px-1.5 py-0.5 bg-jade-500/20 text-jade-300 rounded text-xs font-medium">
+          <span className="px-1 py-0.5 bg-jade-500/20 text-jade-300 rounded text-xs font-medium">
             {order.orderType}
           </span>
           <span className="text-gray-400 flex items-center gap-1">
@@ -221,7 +221,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         </div>
 
         {/* Due Date */}
-        <div className={`flex items-center gap-1.5 text-xs ${getDueDateColor(order.dueDate)}`}>
+        <div className={`flex items-center gap-1 text-xs ${getDueDateColor(order.dueDate)}`}>
           <Calendar className="w-3 h-3" />
           <span className="font-medium truncate">{getDueInDays(order.dueDate)}</span>
         </div>
@@ -236,12 +236,12 @@ export default function OrderCard({ order }: OrderCardProps) {
 
         {/* Price & Notes */}
         <div className="flex items-center justify-between">
-          <span className="text-jade-400 font-medium flex items-center gap-1 text-sm">
+          <span className="text-jade-400 font-medium flex items-center gap-1 text-xs">
             <DollarSign className="w-3 h-3" />
             <span>${order.price}</span>
           </span>
           {order.notes && (
-            <MessageSquare className="w-3 h-3 text-gray-500" title={order.notes} />
+            <MessageSquare className="w-3 h-3 text-gray-500" />
           )}
         </div>
       </div>
