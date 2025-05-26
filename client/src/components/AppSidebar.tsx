@@ -13,6 +13,7 @@ import {
   ChevronUp,
   User2,
 } from "lucide-react";
+import { useState } from "react";
 
 import {
   Sidebar,
@@ -44,7 +45,6 @@ const data = {
       title: "Dashboard",
       url: "#",
       icon: Home,
-      isActive: true,
     },
     {
       title: "Orders",
@@ -175,6 +175,56 @@ export function AppSidebar() {
     queryKey: ["/api/auth/user"],
   });
 
+  const [activeItem, setActiveItem] = useState("Dashboard");
+
+  const handleNavigation = (itemTitle: string, url?: string) => {
+    setActiveItem(itemTitle);
+    
+    // Handle different navigation actions
+    switch (itemTitle) {
+      case "Dashboard":
+        // Already on dashboard - could scroll to top or refresh
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      case "All Orders":
+      case "Orders":
+        // Could implement filtering logic here
+        console.log("Navigate to orders view");
+        break;
+      case "Customers":
+        // Could show customers section
+        console.log("Navigate to customers view");
+        break;
+      case "Analytics":
+        // Could highlight analytics section
+        const analyticsSection = document.querySelector('[data-section="analytics"]');
+        if (analyticsSection) {
+          analyticsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        break;
+      case "Schedule":
+        console.log("Navigate to schedule view");
+        break;
+      case "Time Tracking":
+        console.log("Navigate to time tracking view");
+        break;
+      case "Notifications":
+        console.log("Navigate to notifications view");
+        break;
+      case "Reports":
+        console.log("Navigate to reports view");
+        break;
+      case "Billing":
+        console.log("Navigate to billing view");
+        break;
+      case "Settings":
+        console.log("Navigate to settings view");
+        break;
+      default:
+        console.log(`Navigate to ${itemTitle}`);
+    }
+  };
+
   return (
     <Sidebar variant="sidebar" className="border-r border-gray-800">
       <SidebarContent>
@@ -185,23 +235,24 @@ export function AppSidebar() {
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    asChild
                     tooltip={item.title}
-                    isActive={item.isActive}
+                    isActive={activeItem === item.title}
+                    onClick={() => handleNavigation(item.title, item.url)}
+                    className="cursor-pointer"
                   >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                    <item.icon />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                   {item.items?.length ? (
                     <SidebarMenuSub>
                       {item.items.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
-                              <span>{subItem.title}</span>
-                            </a>
+                          <SidebarMenuSubButton
+                            onClick={() => handleNavigation(subItem.title, subItem.url)}
+                            className="cursor-pointer"
+                            isActive={activeItem === subItem.title}
+                          >
+                            <span>{subItem.title}</span>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -217,11 +268,14 @@ export function AppSidebar() {
             <SidebarMenu>
               {data.settings.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild size="sm">
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                  <SidebarMenuButton 
+                    size="sm"
+                    onClick={() => handleNavigation(item.title, item.url)}
+                    className="cursor-pointer"
+                    isActive={activeItem === item.title}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

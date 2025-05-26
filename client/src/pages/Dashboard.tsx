@@ -286,7 +286,9 @@ export default function Dashboard() {
             <KanbanBoard />
           </main>
           
-          <TimeEstimationDashboard />
+          <div data-section="analytics">
+            <TimeEstimationDashboard />
+          </div>
           <AIAssistant />
 
           {selectedOrder && (
