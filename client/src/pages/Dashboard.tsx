@@ -259,36 +259,41 @@ export default function Dashboard() {
   const setSelectedOrder = useOrderStore((state) => state.setSelectedOrder);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white relative">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none">
-        <div 
-          className="w-full h-full"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen bg-gray-950 text-white relative">
+        {/* Background Pattern */}
+        <div className="fixed inset-0 opacity-30 pointer-events-none">
+          <div 
+            className="w-full h-full"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px'
+            }}
+          />
+        </div>
 
-      <Header />
-      <AIAlertBar />
-      <div className="container mx-auto px-4 py-6">
-        <ImportSection />
-      </div>
-      <KanbanBoard />
-      <TimeEstimationDashboard />
-      <AIAssistant />
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <AIAlertBar />
+          <div className="container mx-auto px-4 py-6">
+            <ImportSection />
+          </div>
+          <KanbanBoard />
+          <TimeEstimationDashboard />
+          <AIAssistant />
 
-      {selectedOrder && (
-        <OrderDetails 
-          order={selectedOrder} 
-          onClose={() => setSelectedOrder(null)} 
-        />
-      )}
-    </div>
+          {selectedOrder && (
+            <OrderDetails 
+              order={selectedOrder} 
+              onClose={() => setSelectedOrder(null)} 
+            />
+          )}
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
