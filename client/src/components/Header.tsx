@@ -13,7 +13,7 @@ export default function Header() {
     <header className="relative z-10 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
       <div className="w-full px-4 py-4">
         <div className="flex items-center gap-6">
-          {/* Brand - Left */}
+          {/* Brand & Actions - Left */}
           <div className="flex items-center gap-4">
             <SidebarTrigger className="text-white hover:bg-gray-800 p-2 rounded-md border border-gray-700 hover:border-gray-600 transition-colors" />
             <div className="w-12 h-12 bg-gradient-to-br from-jade-500 to-jade-600 rounded-xl flex items-center justify-center">
@@ -23,6 +23,10 @@ export default function Header() {
               <h1 className="text-2xl font-bold font-mono tracking-wider text-jade-400">JAY'S FRAMES</h1>
               <p className="text-sm text-gray-400">Smart Production Management</p>
             </div>
+            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold ml-4">
+              <Plus className="w-4 h-4 mr-2" />
+              New Order
+            </Button>
           </div>
 
           {/* Stats Overview - Desktop */}
@@ -75,10 +79,6 @@ export default function Header() {
 
           {/* Actions - Right */}
           <div className="flex items-center gap-4">
-            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold">
-              <Plus className="w-4 h-4 mr-2" />
-              New Order
-            </Button>
             <Button variant="ghost" size="icon">
               <Settings className="w-5 h-5" />
             </Button>
