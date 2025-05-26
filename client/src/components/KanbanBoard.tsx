@@ -140,6 +140,7 @@ export default function KanbanBoard() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: orders = [], isLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
@@ -219,6 +220,87 @@ export default function KanbanBoard() {
   const handleSliderMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
+
+  // Auto-scroll functionality for drag operations
+  const startAutoScroll = useCallback((direction: 'left' | 'right', speed: number = 2) => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+    }
+    
+    autoScrollIntervalRef.current = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        const scrollAmount = direction === 'left' ? -speed : speed;
+        const newScrollLeft = container.scrollLeft + scrollAmount;
+        
+        // Check boundaries
+        if (newScrollLeft >= 0 && newScrollLeft <= container.scrollWidth - container.clientWidth) {
+          container.scrollLeft = newScrollLeft;
+          
+          // Update scroll position for slider
+          const maxScroll = container.scrollWidth - container.clientWidth;
+          const scrollPercent = maxScroll > 0 ? (newScrollLeft / maxScroll) * 100 : 0;
+          setScrollPosition(Math.round(scrollPercent));
+        }
+      }
+    }, 16); // ~60fps
+  }, []);
+
+  const stopAutoScroll = useCallback(() => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = null;
+    }
+  }, []);
+
+  // Handle mouse move for auto-scroll detection
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    
+    const container = scrollContainerRef.current;
+    const rect = container.getBoundingClientRect();
+    const scrollZone = 100; // Distance from edge to trigger scroll
+    const mouseX = e.clientX - rect.left;
+    
+    // Check if mouse is near left or right edge
+    if (mouseX < scrollZone && container.scrollLeft > 0) {
+      // Near left edge, scroll left
+      const speed = Math.max(2, (scrollZone - mouseX) / 10);
+      startAutoScroll('left', speed);
+    } else if (mouseX > rect.width - scrollZone && container.scrollLeft < container.scrollWidth - container.clientWidth) {
+      // Near right edge, scroll right
+      const speed = Math.max(2, (mouseX - (rect.width - scrollZone)) / 10);
+      startAutoScroll('right', speed);
+    } else {
+      // Not near edges, stop scrolling
+      stopAutoScroll();
+    }
+  }, [startAutoScroll, stopAutoScroll]);
+
+  // Set up global drag event listeners
+  useEffect(() => {
+    const handleDragStart = () => {
+      document.addEventListener('mousemove', handleMouseMove);
+    };
+    
+    const handleDragEnd = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      stopAutoScroll();
+    };
+
+    // Listen for drag events on the document
+    document.addEventListener('dragstart', handleDragStart);
+    document.addEventListener('dragend', handleDragEnd);
+    document.addEventListener('drop', handleDragEnd);
+
+    return () => {
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('dragend', handleDragEnd);
+      document.removeEventListener('drop', handleDragEnd);
+      document.removeEventListener('mousemove', handleMouseMove);
+      stopAutoScroll();
+    };
+  }, [handleMouseMove, stopAutoScroll]);
 
   // Handle WebSocket messages
   if (lastMessage?.type === 'order-updated') {

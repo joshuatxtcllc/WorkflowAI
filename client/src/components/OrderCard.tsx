@@ -39,6 +39,14 @@ export default function OrderCard({ order }: OrderCardProps) {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    begin: () => {
+      // Dispatch custom event when drag starts
+      document.dispatchEvent(new CustomEvent('dragstart'));
+    },
+    end: () => {
+      // Dispatch custom event when drag ends
+      document.dispatchEvent(new CustomEvent('dragend'));
+    },
   });
   
   const handleCardClick = () => {
