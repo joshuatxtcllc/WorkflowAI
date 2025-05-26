@@ -23,8 +23,8 @@ import {
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, ne, randomUUID } from "drizzle-orm";
-import * as crypto from "crypto";
+import { eq, desc, ne } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 // Interface for storage operations
 export interface IStorage {
