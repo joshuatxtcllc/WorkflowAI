@@ -139,17 +139,17 @@ export default function OrderCard({ order }: OrderCardProps) {
       onDragEnd={handleDragEnd}
       data-draggable="order"
       className={`
-        relative p-3 sm:p-4 rounded-xl border cursor-move transition-all duration-200 mb-2 min-h-[120px] sm:min-h-[140px]
+        relative p-4 rounded-lg border cursor-move transition-all duration-200 mb-3 min-h-[100px]
         ${getPriorityColor(order.priority)}
-        ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.02] hover:shadow-lg'}
-        ${order.priority === 'URGENT' ? 'animate-pulse' : ''}
+        ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.01] hover:shadow-lg'}
+        ${order.priority === 'URGENT' ? 'ring-1 ring-amber-400/50' : ''}
         ${statusChanged ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
-        bg-gray-800/90 backdrop-blur-md shadow-md hover:shadow-xl
+        bg-gray-900/50 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50 shadow-sm hover:shadow-md
       `}
       whileHover={{ y: -1 }}
-      whileDrag={{ scale: 1.03, rotate: 2, zIndex: 50 }}
+      whileDrag={{ scale: 1.02, rotate: 1, zIndex: 50 }}
       animate={{
-        scale: statusChanged ? [1, 1.02, 1] : 1,
+        scale: statusChanged ? [1, 1.01, 1] : 1,
         borderColor: statusChanged ? ['#10b981', '#34d399', '#10b981'] : undefined,
       }}
       transition={{ 
@@ -199,50 +199,23 @@ export default function OrderCard({ order }: OrderCardProps) {
         <Zap className="w-4 h-4 text-white" />
       </div>
 
-      <div className="space-y-2">
-        {/* Header */}
+      <div className="space-y-3">
+        {/* Header - Customer name only */}
         <div>
-          <h4 className="font-medium text-white text-sm flex items-center gap-1.5">
-            <span className="text-base">{getOrderTypeEmoji(order.orderType)}</span>
-            <span className="truncate">{order.customer.name}</span>
+          <h4 className="font-medium text-white text-base truncate">
+            {order.customer.name}
           </h4>
-          <p className="text-xs text-gray-400 font-mono truncate">{order.trackingId}</p>
+          <p className="text-xs text-gray-500 font-mono mt-1">{order.trackingId}</p>
         </div>
 
-        {/* Order Type & Time */}
-        <div className="flex items-center justify-between text-xs">
-          <span className="px-1.5 py-0.5 bg-jade-500/20 text-jade-300 rounded text-xs font-medium">
-            {order.orderType}
-          </span>
-          <span className="text-gray-400 flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            <span>{order.estimatedHours}h</span>
-          </span>
-        </div>
-
-        {/* Due Date */}
-        <div className={`flex items-center gap-1.5 text-xs ${getDueDateColor(order.dueDate)}`}>
-          <Calendar className="w-3 h-3" />
-          <span className="font-medium truncate">{getDueInDays(order.dueDate)}</span>
-        </div>
-
-        {/* Materials Status */}
-        <div className="flex gap-1 items-center">
-          {getMaterialsProgress()}
-          {order.materials.length === 0 && (
-            <div className="text-xs text-gray-500">No materials</div>
-          )}
-        </div>
-
-        {/* Price & Notes */}
+        {/* Simplified bottom row - just due date and price */}
         <div className="flex items-center justify-between">
-          <span className="text-jade-400 font-medium flex items-center gap-1 text-sm">
-            <DollarSign className="w-3 h-3" />
-            <span>${order.price}</span>
-          </span>
-          {order.notes && (
-            <MessageSquare className="w-3 h-3 text-gray-500" title={order.notes} />
-          )}
+          <div className={`text-xs ${getDueDateColor(order.dueDate)}`}>
+            {getDueInDays(order.dueDate)}
+          </div>
+          <div className="text-jade-400 font-medium text-sm">
+            ${order.price}
+          </div>
         </div>
       </div>
     </motion.div>
