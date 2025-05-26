@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import KanbanBoard from "@/components/KanbanBoard";
 import OrderDetails from "@/components/OrderDetails";
 import AIAssistant from '@/components/AIAssistant';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarInset } from '@/components/ui/sidebar';
 import { useOrderStore } from '@/store/useOrderStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,9 +15,7 @@ import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lu
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
-import { TimeEstimationDashboard } from './components/TimeEstimationDashboard';
-import { ImportSection } from './components/ImportSection';
-import { AIAlertBar } from './components/AIAlertBar';
+
 
 // Component to handle scroll detection
 function ScrollHandler() {
@@ -52,7 +50,7 @@ function ScrollHandler() {
 }
 
 export default function Dashboard() {
-  const { selectedOrder, setSelectedOrder } = useOrderStore();
+  const { ui, setUI } = useOrderStore();
 
   return (
     <SidebarProvider>
@@ -77,22 +75,13 @@ export default function Dashboard() {
         {/* Main content area */}
         <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
           <Header />
-          <AIAlertBar />
           <main className="flex-1 p-4 space-y-6 overflow-hidden">
-            <ImportSection />
             <KanbanBoard />
           </main>
-
-          <div data-section="analytics">
-            <TimeEstimationDashboard />
-          </div>
           <AIAssistant />
 
-          {selectedOrder && (
-            <OrderDetails 
-              order={selectedOrder} 
-              onClose={() => setSelectedOrder(null)} 
-            />
+          {ui.isOrderDetailsOpen && (
+            <OrderDetails />
           )}
         </div>
       </div>
