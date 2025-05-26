@@ -357,39 +357,7 @@ export default function KanbanBoard() {
         </div>
       </main>
 
-      {/* Fixed horizontal navigation slider */}
-      <div className="fixed bottom-3 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-        <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-lg px-3 sm:px-6 py-2 sm:py-3 shadow-xl min-w-[280px] sm:min-w-[300px]">
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-2 text-gray-400 text-xs">
-              <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-jade-500/40 rotate-[-90deg]"></div>
-              <span>Navigate Production Stages</span>
-              <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-jade-500/40 rotate-90"></div>
-            </div>
-            <div className="w-full flex items-center gap-3">
-              <span className="text-xs text-gray-500">Start</span>
-              <div className="flex-1 relative">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={scrollPosition}
-                  onInput={(e) => handleSliderInput(Number((e.target as HTMLInputElement).value))}
-                  onMouseDown={handleSliderMouseDown}
-                  onMouseUp={handleSliderMouseUp}
-                  onTouchStart={handleSliderMouseDown}
-                  onTouchEnd={handleSliderMouseUp}
-                  className="w-full navigation-slider cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${scrollPosition}%, #374151 ${scrollPosition}%, #374151 100%)`
-                  }}
-                />
-              </div>
-              <span className="text-xs text-gray-500">End</span>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </DndProvider>
   );
 }
