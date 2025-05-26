@@ -260,7 +260,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gray-950 text-white relative">
+      <div className="min-h-screen bg-gray-950 text-white relative dark" style={{ backgroundColor: '#0A0A0B' }}>
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-30 pointer-events-none">
           <div 
