@@ -35,14 +35,13 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: { id: order.id },
+    item: () => {
+      document.dispatchEvent(new CustomEvent('dragstart'));
+      return { id: order.id };
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    begin: () => {
-      // Dispatch custom event when drag starts
-      document.dispatchEvent(new CustomEvent('dragstart'));
-    },
     end: () => {
       // Dispatch custom event when drag ends
       document.dispatchEvent(new CustomEvent('dragend'));
@@ -52,6 +51,14 @@ export default function OrderCard({ order }: OrderCardProps) {
   const handleCardClick = () => {
     setSelectedOrderId(order.id);
     setUI({ isOrderDetailsOpen: true });
+  };
+
+  const handleDragStart = () => {
+    document.dispatchEvent(new CustomEvent('dragstart'));
+  };
+
+  const handleDragEnd = () => {
+    document.dispatchEvent(new CustomEvent('dragend'));
   };
 
   const getPriorityColor = (priority: string) => {
@@ -134,6 +141,9 @@ export default function OrderCard({ order }: OrderCardProps) {
   return (
     <motion.div
       ref={drag}
+      onClick={handleCardClick}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       data-draggable="order"
       className={`
         relative p-4 rounded-lg border-2 cursor-move transition-all duration-200
