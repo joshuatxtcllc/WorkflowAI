@@ -279,16 +279,19 @@ export default function KanbanBoard() {
 
   // Set up global drag event listeners
   useEffect(() => {
-    const handleDragStart = () => {
-      document.addEventListener('mousemove', handleMouseMove);
+    const handleDragStart = (e: DragEvent) => {
+      // Only handle if it's an order card being dragged
+      if (e.target && (e.target as HTMLElement).closest('[data-draggable="order"]')) {
+        document.addEventListener('mousemove', handleMouseMove);
+      }
     };
     
-    const handleDragEnd = () => {
+    const handleDragEnd = (e: DragEvent) => {
       document.removeEventListener('mousemove', handleMouseMove);
       stopAutoScroll();
     };
 
-    // Listen for drag events on the document
+    // Listen for native drag events on the document
     document.addEventListener('dragstart', handleDragStart);
     document.addEventListener('dragend', handleDragEnd);
     document.addEventListener('drop', handleDragEnd);

@@ -15,24 +15,24 @@ export default function OrderCard({ order }: OrderCardProps) {
   const [statusChanged, setStatusChanged] = useState(false);
   const [previousStatus, setPreviousStatus] = useState(order.status);
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
-  
+
   // Track status changes for animations
   useEffect(() => {
     if (previousStatus !== order.status) {
       setStatusChanged(true);
       setShowStatusAnimation(true);
       setPreviousStatus(order.status);
-      
+
       // Reset animation after delay
       const timer = setTimeout(() => {
         setStatusChanged(false);
         setShowStatusAnimation(false);
       }, 2000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [order.status, previousStatus]);
-  
+
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
     item: { id: order.id },
@@ -48,7 +48,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       document.dispatchEvent(new CustomEvent('dragend'));
     },
   });
-  
+
   const handleCardClick = () => {
     setSelectedOrderId(order.id);
     setUI({ isOrderDetailsOpen: true });
@@ -86,7 +86,7 @@ export default function OrderCard({ order }: OrderCardProps) {
     const now = new Date();
     const diffTime = due.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return `Overdue by ${Math.abs(diffDays)} days`;
     if (diffDays === 0) return 'Due today';
     if (diffDays === 1) return 'Due tomorrow';
@@ -98,7 +98,7 @@ export default function OrderCard({ order }: OrderCardProps) {
     const now = new Date();
     const diffTime = due.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return 'text-red-400';
     if (diffDays <= 1) return 'text-red-400';
     if (diffDays <= 3) return 'text-orange-400';
@@ -108,11 +108,11 @@ export default function OrderCard({ order }: OrderCardProps) {
   const getMaterialsProgress = () => {
     const materials = order.materials;
     if (!materials || materials.length === 0) return [];
-    
+
     return materials.map((material, index) => {
       let color = 'bg-gray-600'; // Not ordered
       let title = `${material.type} - Not ordered`;
-      
+
       if (material.arrived) {
         color = 'bg-green-500';
         title = `${material.type} - Arrived`;
@@ -120,7 +120,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         color = 'bg-yellow-500';
         title = `${material.type} - Ordered`;
       }
-      
+
       return (
         <div
           key={index}
@@ -134,7 +134,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   return (
     <motion.div
       ref={drag}
-      onClick={handleCardClick}
+      data-draggable="order"
       className={`
         relative p-4 rounded-lg border-2 cursor-move transition-all duration-200
         ${getPriorityColor(order.priority)}
@@ -194,7 +194,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority)} rounded-full flex items-center justify-center`}>
         <Zap className="w-4 h-4 text-white" />
       </div>
-      
+
       <div className="space-y-3">
         {/* Header */}
         <div>
@@ -204,7 +204,7 @@ export default function OrderCard({ order }: OrderCardProps) {
           </h4>
           <p className="text-xs text-gray-400 font-mono">{order.trackingId}</p>
         </div>
-        
+
         {/* Order Type & Time */}
         <div className="flex items-center justify-between text-sm">
           <span className="px-2 py-1 bg-jade-500/20 text-jade-300 rounded-md font-medium">
@@ -215,13 +215,13 @@ export default function OrderCard({ order }: OrderCardProps) {
             <span>{order.estimatedHours}h</span>
           </span>
         </div>
-        
+
         {/* Due Date */}
         <div className={`flex items-center gap-2 text-sm ${getDueDateColor(order.dueDate)}`}>
           <Calendar className="w-3 h-3" />
           <span className="font-medium">{getDueInDays(order.dueDate)}</span>
         </div>
-        
+
         {/* Materials Status */}
         <div className="flex gap-1">
           {getMaterialsProgress()}
@@ -229,7 +229,7 @@ export default function OrderCard({ order }: OrderCardProps) {
             <div className="text-xs text-gray-500">No materials added</div>
           )}
         </div>
-        
+
         {/* Price & Notes */}
         <div className="flex items-center justify-between">
           <span className="text-jade-400 font-semibold flex items-center gap-1">
