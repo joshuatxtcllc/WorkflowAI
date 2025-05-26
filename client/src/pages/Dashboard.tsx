@@ -279,10 +279,10 @@ export default function Dashboard() {
         <SidebarInset>
           <Header />
           <AIAlertBar />
-          <div className="container mx-auto px-4 py-6">
+          <main className="flex-1 p-4 space-y-6">
             <ImportSection />
-          </div>
-          <KanbanBoard />
+            <KanbanBoard />
+          </main>
           <TimeEstimationDashboard />
           <AIAssistant />
 
