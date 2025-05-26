@@ -12,6 +12,26 @@ import { useOrderStore } from '@/store/useOrderStore';
 
 export default function OrderCard({ order }: OrderCardProps) {
   const { setUI, setSelectedOrderId } = useOrderStore();
+  const [statusChanged, setStatusChanged] = useState(false);
+  const [previousStatus, setPreviousStatus] = useState(order.status);
+  const [showStatusAnimation, setShowStatusAnimation] = useState(false);
+  
+  // Track status changes for animations
+  useEffect(() => {
+    if (previousStatus !== order.status) {
+      setStatusChanged(true);
+      setShowStatusAnimation(true);
+      setPreviousStatus(order.status);
+      
+      // Reset animation after delay
+      const timer = setTimeout(() => {
+        setStatusChanged(false);
+        setShowStatusAnimation(false);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [order.status, previousStatus]);
   
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
@@ -112,10 +132,56 @@ export default function OrderCard({ order }: OrderCardProps) {
         ${getPriorityColor(order.priority)}
         ${isDragging ? 'opacity-50 rotate-3 scale-105' : 'hover:scale-102'}
         ${order.priority === 'URGENT' ? 'animate-pulse' : ''}
+        ${statusChanged ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
       `}
       whileHover={{ y: -2 }}
       whileDrag={{ scale: 1.05, rotate: 3 }}
+      animate={{
+        scale: statusChanged ? [1, 1.05, 1] : 1,
+        borderColor: statusChanged ? ['#10b981', '#34d399', '#10b981'] : undefined,
+      }}
+      transition={{ 
+        duration: statusChanged ? 0.6 : 0.2,
+        ease: "easeInOut"
+      }}
     >
+      {/* Status Change Animation Overlay */}
+      <AnimatePresence>
+        {showStatusAnimation && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 bg-green-500/20 rounded-lg border-2 border-green-400 flex items-center justify-center pointer-events-none"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.2, 1] }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="bg-green-500 rounded-full p-2"
+            >
+              <CheckCircle className="w-6 h-6 text-white" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Status Progress Indicator */}
+      <AnimatePresence>
+        {statusChanged && (
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 100, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="absolute top-2 right-2 flex items-center gap-1 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium"
+          >
+            <ArrowRight className="w-3 h-3" />
+            Status Updated
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Priority Badge */}
       <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority)} rounded-full flex items-center justify-center`}>
         <Zap className="w-4 h-4 text-white" />

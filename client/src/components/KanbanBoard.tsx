@@ -30,13 +30,14 @@ interface KanbanColumnProps {
 }
 
 function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps) {
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'order',
     drop: (item: { id: string }) => {
       onDropOrder(item.id, status);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
   });
 
@@ -53,11 +54,16 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   };
 
   return (
-    <div
+    <motion.div
       ref={drop}
-      className={`flex-shrink-0 w-80 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 transition-all duration-200 ${
-        isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5' : ''
+      className={`flex-shrink-0 w-80 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 transition-all duration-300 ${
+        isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105' : ''
       }`}
+      animate={{
+        scale: isOver ? 1.02 : 1,
+        borderColor: isOver ? '#10b981' : '#1f2937',
+      }}
+      transition={{ duration: 0.2 }}
     >
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center justify-between mb-2">
@@ -83,21 +89,46 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
               <p className="text-sm">No orders in this stage</p>
             </div>
           ) : (
-            orders.map((order) => (
+            orders.map((order, index) => (
               <motion.div
                 key={order.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: {
+                    delay: index * 0.05,
+                    duration: 0.3,
+                    ease: "easeOut"
+                  }
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  y: -20, 
+                  scale: 0.9,
+                  transition: { duration: 0.2 }
+                }}
                 layout
+                whileHover={{ scale: 1.02 }}
+                className="relative"
               >
+                {/* Drop zone visual feedback */}
+                <motion.div
+                  className="absolute inset-0 bg-jade-500/10 rounded-lg border-2 border-jade-500/30 opacity-0 pointer-events-none"
+                  animate={{ 
+                    opacity: isOver && canDrop ? 0.8 : 0,
+                    scale: isOver && canDrop ? 1.02 : 1
+                  }}
+                  transition={{ duration: 0.2 }}
+                />
                 <OrderCard order={order} />
               </motion.div>
             ))
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
