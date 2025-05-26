@@ -1,6 +1,7 @@
 import { useDrag } from 'react-dnd';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, DollarSign, MessageSquare, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Clock, DollarSign, MessageSquare, Zap, CheckCircle, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import type { OrderWithDetails } from '@shared/schema';
 
 interface OrderCardProps {
