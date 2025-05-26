@@ -176,7 +176,7 @@ export function AppSidebar() {
   });
 
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="sidebar" className="border-r border-gray-800">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>

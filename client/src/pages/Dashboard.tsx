@@ -260,7 +260,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gray-950 text-white relative dark" style={{ backgroundColor: '#0A0A0B' }}>
+      <div className="min-h-screen bg-gray-950 text-white relative dark flex" style={{ backgroundColor: '#0A0A0B' }}>
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-30 pointer-events-none">
           <div 
@@ -276,15 +276,16 @@ export default function Dashboard() {
         </div>
 
         <AppSidebar />
-        <SidebarInset>
-          <div className="flex flex-col h-full">
-            <Header />
-            <AIAlertBar />
-            <main className="flex-1 p-4 space-y-6 overflow-hidden">
-              <ImportSection />
-              <KanbanBoard />
-            </main>
-          </div>
+        
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <Header />
+          <AIAlertBar />
+          <main className="flex-1 p-4 space-y-6 overflow-hidden">
+            <ImportSection />
+            <KanbanBoard />
+          </main>
+          
           <TimeEstimationDashboard />
           <AIAssistant />
 
@@ -294,7 +295,7 @@ export default function Dashboard() {
               onClose={() => setSelectedOrder(null)} 
             />
           )}
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );

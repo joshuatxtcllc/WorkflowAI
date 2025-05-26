@@ -333,7 +333,7 @@ export default function KanbanBoard() {
   return (
     <DndProvider backend={HTML5Backend}>
       <main className="relative z-10 p-3 sm:p-6 h-full">
-        <div className="max-w-[1920px] mx-auto h-full">
+        <div className="w-full h-full">
           <div 
             ref={scrollContainerRef}
             className="kanban-scroll flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth"
