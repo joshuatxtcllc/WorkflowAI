@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/Dashboard";
-import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
 import CustomerPortal from "@/components/CustomerPortal";
 import NotFound from "@/pages/not-found";
 
@@ -14,20 +14,23 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      {isLoading ? (
+        <Route path="*" component={() => <div className="min-h-screen bg-gray-950 flex items-center justify-center"><div className="text-white">Loading...</div></div>} />
+      ) : !isAuthenticated ? (
         <>
-          <Route path="/" component={Landing} />
+          <Route path="/" component={Login} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
+          <Route component={Login} />
         </>
       ) : (
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
+          <Route component={NotFound} />
         </>
       )}
-      <Route component={NotFound} />
     </Switch>
   );
 }
@@ -36,7 +39,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="dark min-h-screen bg-gray-950" style={{ backgroundColor: '#0A0A0B' }}>
+        <div className="min-h-screen bg-gray-950 text-white">
           <Toaster />
           <Router />
         </div>

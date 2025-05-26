@@ -29,6 +29,7 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique(),
+  password: varchar("password"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
@@ -54,7 +55,7 @@ export const orders = pgTable("orders", {
   customerId: varchar("customer_id").notNull(),
   assignedToId: varchar("assigned_to_id"),
   invoiceNumber: varchar("invoice_number"),
-  
+
   orderType: varchar("order_type", { enum: ["FRAME", "MAT", "SHADOWBOX"] }).notNull(),
   status: varchar("status", { 
     enum: [
@@ -72,20 +73,20 @@ export const orders = pgTable("orders", {
   }).default("ORDER_PROCESSED"),
   priority: varchar("priority", { enum: ["LOW", "MEDIUM", "HIGH", "URGENT"] }).default("MEDIUM"),
   complexity: integer("complexity").default(5), // 1-10 scale
-  
+
   dueDate: timestamp("due_date").notNull(),
   estimatedHours: real("estimated_hours").notNull(),
   actualHours: real("actual_hours"),
-  
+
   price: real("price").notNull(),
   deposit: real("deposit").default(0),
-  
+
   dimensions: jsonb("dimensions"), // { width, height, depth }
   notes: text("notes"),
   description: text("description"),
   imageUrl: text("image_url"),
   internalNotes: text("internal_notes"),
-  
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   completedAt: timestamp("completed_at"),
@@ -95,20 +96,20 @@ export const orders = pgTable("orders", {
 export const materials = pgTable("materials", {
   id: varchar("id").primaryKey().notNull(),
   orderId: varchar("order_id").notNull(),
-  
+
   type: varchar("type", { enum: ["FRAME", "MAT", "GLASS", "HARDWARE", "OTHER"] }).notNull(),
   subtype: varchar("subtype"), // e.g., "museum glass", "oak frame"
   quantity: integer("quantity").notNull(),
   unit: varchar("unit").default("piece"),
-  
+
   ordered: boolean("ordered").default(false),
   arrived: boolean("arrived").default(false),
-  
+
   supplier: varchar("supplier"),
   cost: real("cost"),
   orderedDate: timestamp("ordered_date"),
   arrivedDate: timestamp("arrived_date"),
-  
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -116,24 +117,25 @@ export const materials = pgTable("materials", {
 export const statusHistory = pgTable("status_history", {
   id: varchar("id").primaryKey().notNull(),
   orderId: varchar("order_id").notNull(),
-  
+
   fromStatus: varchar("from_status"),
   toStatus: varchar("to_status").notNull(),
   changedBy: varchar("changed_by").notNull(), // User ID
   reason: text("reason"),
-  
+
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const timeEntries = pgTable("time_entries", {
   id: varchar("id").primaryKey().notNull(),
   orderId: varchar("order_id").notNull(),
-  
+
   userId: varchar("user_id").notNull(), // Who worked on it
   duration: real("duration").notNull(), // In hours
   task: varchar("task").notNull(), // What was done
   notes: text("notes"),
-  
+
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -143,32 +145,32 @@ export const notifications = pgTable("notifications", {
   id: varchar("id").primaryKey().notNull(),
   customerId: varchar("customer_id"),
   orderId: varchar("order_id"),
-  
+
   type: varchar("type", { 
     enum: ["ORDER_CREATED", "STATUS_UPDATE", "READY_FOR_PICKUP", "OVERDUE_REMINDER", "MATERIAL_UPDATE"] 
   }).notNull(),
   channel: varchar("channel", { enum: ["EMAIL", "SMS", "BOTH"] }).notNull(),
   status: varchar("status", { enum: ["PENDING", "SENT", "FAILED"] }).default("PENDING"),
-  
+
   subject: varchar("subject").notNull(),
   content: text("content").notNull(),
   metadata: jsonb("metadata"),
-  
+
   sentAt: timestamp("sent_at"),
   failedAt: timestamp("failed_at"),
   error: text("error"),
-  
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const aiAnalysis = pgTable("ai_analysis", {
   id: varchar("id").primaryKey().notNull(),
-  
+
   date: timestamp("date").defaultNow(),
   metrics: jsonb("metrics").notNull(), // Workload metrics, bottlenecks, etc.
   alerts: jsonb("alerts").notNull(), // Current alerts and warnings
-  
+
   createdAt: timestamp("created_at").defaultNow(),
 });
 

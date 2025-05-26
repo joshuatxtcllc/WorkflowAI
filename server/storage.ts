@@ -23,7 +23,7 @@ import {
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, ne } from "drizzle-orm";
+import { eq, desc, ne, randomUUID } from "drizzle-orm";
 import * as crypto from "crypto";
 
 // Interface for storage operations
@@ -31,14 +31,14 @@ export interface IStorage {
   // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // Customer operations
   getCustomers(): Promise<Customer[]>;
   getCustomer(id: string): Promise<Customer | undefined>;
   getCustomerByEmail(email: string): Promise<Customer | undefined>;
   createCustomer(customer: InsertCustomer): Promise<Customer>;
   updateCustomer(id: string, customer: Partial<InsertCustomer>): Promise<Customer>;
-  
+
   // Order operations
   getOrders(): Promise<OrderWithDetails[]>;
   getOrder(id: string): Promise<OrderWithDetails | undefined>;
@@ -47,12 +47,12 @@ export interface IStorage {
   updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order>;
   getOrdersByStatus(status: string): Promise<OrderWithDetails[]>;
   getOrdersByCustomer(customerId: string): Promise<OrderWithDetails[]>;
-  
+
   // Material operations
   getMaterialsByOrder(orderId: string): Promise<Material[]>;
   createMaterial(material: InsertMaterial): Promise<Material>;
   updateMaterial(id: string, material: Partial<InsertMaterial>): Promise<Material>;
-  
+
   // Status history operations
   createStatusHistory(data: {
     orderId: string;
@@ -61,7 +61,7 @@ export interface IStorage {
     changedBy: string;
     reason?: string;
   }): Promise<StatusHistory>;
-  
+
   // Time entry operations
   createTimeEntry(data: {
     orderId: string;
@@ -72,16 +72,16 @@ export interface IStorage {
     startTime: Date;
     endTime: Date;
   }): Promise<TimeEntry>;
-  
+
   // Notification operations
   createNotification(notification: InsertNotification): Promise<Notification>;
   updateNotification(id: string, data: Partial<Notification>): Promise<Notification>;
   getPendingNotifications(): Promise<Notification[]>;
-  
+
   // AI Analysis operations
   saveAIAnalysis(data: { metrics: any; alerts: any }): Promise<AIAnalysis>;
   getLatestAIAnalysis(): Promise<AIAnalysis | undefined>;
-  
+
   // Analytics operations
   getWorkloadMetrics(): Promise<{
     totalOrders: number;
@@ -89,6 +89,15 @@ export interface IStorage {
     averageComplexity: number;
     onTimePercentage: number;
   }>;
+
+    // Custom Auth methods
+    createUser(userData: {
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+    }): Promise<User>;
+    getUserByEmail(email: string): Promise<User | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -111,6 +120,35 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async createUser(userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  }) {
+    const id = randomUUID();
+    const [result] = await db
+      .insert(users)
+      .values({
+        id,
+        email: userData.email,
+        password: userData.password,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+      })
+      .returning();
+    return result;
+  }
+
+  async getUserByEmail(email: string) {
+    const [result] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    return result || null;
   }
 
   // Customer operations
@@ -153,7 +191,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-    
+
     for (const order of ordersList) {
       const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
       const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
@@ -233,7 +271,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-    
+
     for (const order of ordersList) {
       const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
       const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
@@ -260,7 +298,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(orders.createdAt));
 
     const ordersWithDetails: OrderWithDetails[] = [];
-    
+
     for (const order of ordersList) {
       const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
       const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
@@ -394,7 +432,7 @@ export class DatabaseStorage implements IStorage {
     const totalOrders = activeOrders.length;
     const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
     const averageComplexity = totalHours / totalOrders || 0;
-    
+
     const completedOrders = activeOrders.filter(order => order.status === 'COMPLETED');
     const onTimeOrders = completedOrders.filter(order => {
       if (!order.dueDate) return true;

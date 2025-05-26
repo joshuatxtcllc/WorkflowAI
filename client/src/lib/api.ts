@@ -123,11 +123,19 @@ export const authApi = {
     return response.json();
   },
 
-  login: () => {
-    window.location.href = '/api/login';
+  login: async (email: string, password: string) => {
+    const response = await apiRequest('POST', '/api/auth/login', { email, password });
+    return response.json();
   },
 
-  logout: () => {
-    window.location.href = '/api/logout';
+  register: async (email: string, password: string, firstName: string, lastName: string) => {
+    const response = await apiRequest('POST', '/api/auth/register', { email, password, firstName, lastName });
+    return response.json();
+  },
+
+  logout: async () => {
+    const response = await apiRequest('POST', '/api/auth/logout');
+    window.location.href = '/';
+    return response.json();
   },
 };
