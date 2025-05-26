@@ -12,9 +12,9 @@ export default function Header() {
   return (
     <header className="relative z-10 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
       <div className="max-w-[1920px] mx-auto px-6 py-4">
-        <div className="grid grid-cols-3 items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           {/* Brand - Left */}
-          <div className="flex items-center gap-4 justify-start">
+          <div className="flex items-center gap-4">
             <SidebarTrigger className="text-white hover:bg-gray-800 p-2 rounded-md border border-gray-700 hover:border-gray-600 transition-colors" />
             <div className="w-12 h-12 bg-gradient-to-br from-jade-500 to-jade-600 rounded-xl flex items-center justify-center">
               <Frame className="w-6 h-6 text-white" />
@@ -25,8 +25,8 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Stats Overview - Center */}
-          <div className="hidden lg:flex items-center gap-6 justify-center">
+          {/* Stats Overview - Desktop */}
+          <div className="hidden lg:flex items-center gap-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-jade-400 flex items-center gap-1">
                 <BarChart3 className="w-5 h-5" />
@@ -58,7 +58,7 @@ export default function Header() {
           </div>
 
           {/* Stats Overview - Mobile Compact */}
-          <div className="flex lg:hidden items-center gap-3 text-sm justify-center">
+          <div className="flex lg:hidden items-center gap-3 text-sm">
             <div className="flex items-center gap-1">
               <BarChart3 className="w-4 h-4 text-jade-400" />
               <span className="font-bold text-jade-400">{workloadMetrics?.totalOrders || 0}</span>
