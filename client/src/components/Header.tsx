@@ -27,6 +27,22 @@ export default function Header() {
               <Plus className="w-4 h-4 mr-2" />
               New Order
             </Button>
+            <Button 
+              className="bg-blue-500 hover:bg-blue-400 text-white font-semibold"
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/import-real-data', { method: 'POST' });
+                  const result = await response.json();
+                  console.log('Import result:', result);
+                  window.location.reload(); // Refresh to show new orders
+                } catch (error) {
+                  console.error('Import failed:', error);
+                }
+              }}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Import Orders
+            </Button>
           </div>
 
           {/* Stats Overview - Desktop */}
