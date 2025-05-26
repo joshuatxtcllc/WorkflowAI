@@ -22,8 +22,8 @@ export default function Header() {
               <p className="text-sm text-gray-400">Smart Production Management</p>
             </div>
           </div>
-          
-          {/* Stats Overview */}
+
+          {/* Stats Overview - Desktop */}
           <div className="hidden lg:flex items-center gap-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-jade-400 flex items-center gap-1">
@@ -40,14 +40,37 @@ export default function Header() {
               <div className="text-xs text-gray-400">Total Hours</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
+              <div className="text-2xl font-bold text-blue-400 flex items-center gap-1">
                 <TrendingUp className="w-5 h-5" />
-                {workloadMetrics?.onTimePercentage || 0}%
+                {workloadMetrics?.efficiency || 85}%
               </div>
-              <div className="text-xs text-gray-400">On Time</div>
+              <div className="text-xs text-gray-400">Efficiency</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
+                <DollarSign className="w-5 h-5" />
+                ${workloadMetrics?.totalValue?.toLocaleString() || '0'}
+              </div>
+              <div className="text-xs text-gray-400">Total Value</div>
             </div>
           </div>
-          
+
+          {/* Stats Overview - Mobile Compact */}
+          <div className="flex lg:hidden items-center gap-3 text-sm">
+            <div className="flex items-center gap-1">
+              <BarChart3 className="w-4 h-4 text-jade-400" />
+              <span className="font-bold text-jade-400">{workloadMetrics?.totalOrders || 0}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4 text-orange-400" />
+              <span className="font-bold text-orange-400">{workloadMetrics?.totalHours || 0}h</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4 text-blue-400" />
+              <span className="font-bold text-blue-400">{workloadMetrics?.efficiency || 85}%</span>
+            </div>
+          </div>
+
           {/* Actions */}
           <div className="flex items-center gap-4">
             <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold">
