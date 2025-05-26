@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign } from "lucide-react";
 
@@ -14,6 +15,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center gap-4">
+            <SidebarTrigger className="text-white hover:bg-gray-800" />
             <div className="w-12 h-12 bg-gradient-to-br from-jade-500 to-jade-600 rounded-xl flex items-center justify-center">
               <Frame className="w-6 h-6 text-white" />
             </div>

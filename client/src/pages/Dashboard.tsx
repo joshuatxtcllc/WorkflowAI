@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
-import AIAssistant from '@/components/AIAssistant';
 import OrderDetails from '@/components/OrderDetails';
-import { Card, CardContent } from '@/components/ui/card';
+import AIAssistant from '@/components/AIAssistant';
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { useOrderStore } from '@/store/useOrderStore';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -24,7 +26,7 @@ function ImportSection() {
     setIsImporting(true);
     try {
       const content = await file.text();
-      
+
       const response = await fetch('/api/import/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +120,7 @@ function ImportSection() {
 
 function TimeEstimationDashboard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  
+
   const { data: analysis } = useQuery<WorkloadAnalysis>({
     queryKey: ["/api/ai/analysis"],
     refetchInterval: 30000,
@@ -163,7 +165,7 @@ function TimeEstimationDashboard() {
           </motion.div>
         </Button>
       </div>
-      
+
       <motion.div
         initial={false}
         animate={{ 
@@ -193,7 +195,7 @@ function TimeEstimationDashboard() {
               {analysis?.onTimePercentage || 0}%
             </span>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="mt-3">
             <div className="flex justify-between text-xs text-gray-400 mb-1">
@@ -251,31 +253,46 @@ function AIAlertBar() {
 }
 
 export default function Dashboard() {
-  return (
-    <div className="min-h-screen bg-gray-950 text-white relative">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none">
-        <div 
-          className="w-full h-full"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
+  const [showTimeEstimator, setShowTimeEstimator] = useState(true);
+  const selectedOrder = useOrderStore((state) => state.selectedOrder);
+  const setSelectedOrder = useOrderStore((state) => state.setSelectedOrder);
 
-      <Header />
-      <AIAlertBar />
-      <div className="container mx-auto px-4 py-6">
-        <ImportSection />
-      </div>
-      <KanbanBoard />
-      <TimeEstimationDashboard />
-      <AIAssistant />
-      <OrderDetails />
-    </div>
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <div className="min-h-screen bg-gray-950 text-white relative">
+          {/* Background Pattern */}
+          <div className="fixed inset-0 opacity-30 pointer-events-none">
+            <div 
+              className="w-full h-full"
+              style={{
+                backgroundImage: `
+                  linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
+                `,
+                backgroundSize: '50px 50px'
+              }}
+            />
+          </div>
+
+          <Header />
+          <AIAlertBar />
+          <div className="container mx-auto px-4 py-6">
+            <ImportSection />
+          </div>
+          <KanbanBoard />
+          <TimeEstimationDashboard />
+          <AIAssistant />
+
+          {selectedOrder && (
+            <OrderDetails 
+              order={selectedOrder} 
+              onClose={() => setSelectedOrder(null)} 
+            />
+          )}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
