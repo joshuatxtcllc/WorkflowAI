@@ -9,6 +9,7 @@ import OrderCard from './OrderCard';
 import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const columnIcons = {
   'ORDER_PROCESSED': Package,
@@ -135,6 +136,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 export default function KanbanBoard() {
   const queryClient = useQueryClient();
   const { sendMessage, lastMessage } = useWebSocket();
+  const { toast } = useToast();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -149,9 +151,30 @@ export default function KanbanBoard() {
       const response = await apiRequest('PATCH', `/api/orders/${orderId}/status`, { status });
       return response.json();
     },
-    onSuccess: (updatedOrder) => {
+    onSuccess: (updatedOrder, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
+      
+      // Find the order and show success notification
+      const order = orders.find(o => o.id === variables.orderId);
+      if (order) {
+        const statusNames: Record<string, string> = {
+          'ORDER_PROCESSED': 'Order Processed',
+          'MATERIALS_ORDERED': 'Materials Ordered',
+          'MATERIALS_ARRIVED': 'Materials Arrived',
+          'FRAME_CUT': 'Frame Cut',
+          'MAT_CUT': 'Mat Cut',
+          'ASSEMBLY_COMPLETE': 'Assembly Complete',
+          'READY_FOR_PICKUP': 'Ready for Pickup',
+          'PICKED_UP': 'Picked Up'
+        };
+        
+        toast({
+          title: "Order Status Updated! 🎉",
+          description: `${order.customer.name}'s order moved to: ${statusNames[variables.status] || variables.status}`,
+          duration: 3000,
+        });
+      }
       
       // Send WebSocket update
       sendMessage({
