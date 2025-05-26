@@ -277,12 +277,14 @@ export default function Dashboard() {
 
         <AppSidebar />
         <SidebarInset>
-          <Header />
-          <AIAlertBar />
-          <main className="flex-1 p-4 space-y-6">
-            <ImportSection />
-            <KanbanBoard />
-          </main>
+          <div className="flex flex-col h-full">
+            <Header />
+            <AIAlertBar />
+            <main className="flex-1 p-4 space-y-6 overflow-hidden">
+              <ImportSection />
+              <KanbanBoard />
+            </main>
+          </div>
           <TimeEstimationDashboard />
           <AIAssistant />
 

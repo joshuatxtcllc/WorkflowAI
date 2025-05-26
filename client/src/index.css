@@ -284,12 +284,29 @@
 
   /* Glass morphism effect */
   .glass {
-    @apply bg-gray-900/50 backdrop-blur-sm border border-gray-800;
+    @apply bg-gray-900/60 backdrop-blur-md border border-gray-700/50;
+  }
+
+  .glass-strong {
+    @apply bg-gray-900/80 backdrop-blur-lg border border-gray-600/30;
   }
 
   /* Gradient text */
   .gradient-text {
     @apply bg-gradient-to-r from-jade-400 to-jade-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, rgba(0, 166, 147, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  }
+
+  /* Enhanced shadows */
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(0, 166, 147, 0.15), 0 4px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .shadow-glow-hover:hover {
+    box-shadow: 0 0 30px rgba(0, 166, 147, 0.25), 0 8px 40px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -355,7 +372,7 @@
 /* Mobile-specific optimizations */
 @media (max-width: 768px) {
   /* Ensure touch targets are at least 44px */
-  button, .cursor-pointer {
+  button, .cursor-pointer, .cursor-move {
     min-height: 44px;
     min-width: 44px;
   }
@@ -364,12 +381,19 @@
   body {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    font-size: 16px;
   }
   
   /* Optimize scrolling */
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none;
   }
   
   /* Prevent zoom on input focus */
@@ -380,6 +404,21 @@
   /* Mobile-friendly card spacing */
   .space-y-3 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 0.5rem;
+  }
+  
+  /* Better mobile kanban columns */
+  .kanban-column {
+    min-width: 280px;
+    width: 280px;
+  }
+  
+  /* Improve touch scrolling */
+  .kanban-scroll {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .kanban-scroll > div {
+    scroll-snap-align: start;
   }
 }
 

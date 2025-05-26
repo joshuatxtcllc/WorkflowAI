@@ -57,8 +57,8 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   return (
     <motion.div
       ref={drop}
-      className={`flex-shrink-0 w-80 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 transition-all duration-300 ${
-        isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105' : ''
+      className={`kanban-column flex-shrink-0 w-72 sm:w-80 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
+        isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105 shadow-jade-500/20' : 'shadow-glow-hover hover:border-gray-600/50'
       }`}
       animate={{
         scale: isOver ? 1.02 : 1,
@@ -332,14 +332,15 @@ export default function KanbanBoard() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <main className="relative z-10 p-6">
-        <div className="max-w-[1920px] mx-auto">
+      <main className="relative z-10 p-3 sm:p-6 h-full">
+        <div className="max-w-[1920px] mx-auto h-full">
           <div 
             ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-200px)] scroll-smooth"
+            className="kanban-scroll flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth"
             style={{
               scrollbarWidth: 'thin',
-              scrollbarColor: '#4ade80 #1f2937'
+              scrollbarColor: '#10b981 #1f2937',
+              minHeight: 'calc(100vh - 280px)'
             }}
             onScroll={handleScroll}
           >
@@ -357,8 +358,8 @@ export default function KanbanBoard() {
       </main>
 
       {/* Fixed horizontal navigation slider */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-lg px-6 py-3 shadow-lg min-w-[300px]">
+      <div className="fixed bottom-3 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-lg px-3 sm:px-6 py-2 sm:py-3 shadow-xl min-w-[280px] sm:min-w-[300px]">
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2 text-gray-400 text-xs">
               <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-jade-500/40 rotate-[-90deg]"></div>

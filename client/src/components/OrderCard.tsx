@@ -35,7 +35,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: () => ({ id: order.id, status: order.status }),
+    item: { id: order.id, status: order.status },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -139,12 +139,12 @@ export default function OrderCard({ order }: OrderCardProps) {
       onDragEnd={handleDragEnd}
       data-draggable="order"
       className={`
-        relative p-3 rounded-lg border cursor-move transition-all duration-200 mb-2
+        relative p-3 sm:p-4 rounded-xl border cursor-move transition-all duration-200 mb-2 min-h-[120px] sm:min-h-[140px]
         ${getPriorityColor(order.priority)}
-        ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.02]'}
+        ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.02] hover:shadow-lg'}
         ${order.priority === 'URGENT' ? 'animate-pulse' : ''}
-        ${statusChanged ? 'ring-1 ring-green-400 ring-opacity-75' : ''}
-        bg-gray-800/80 backdrop-blur-sm
+        ${statusChanged ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
+        bg-gray-800/90 backdrop-blur-md shadow-md hover:shadow-xl
       `}
       whileHover={{ y: -1 }}
       whileDrag={{ scale: 1.03, rotate: 2, zIndex: 50 }}
