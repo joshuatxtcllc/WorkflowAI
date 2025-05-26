@@ -57,7 +57,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   return (
     <motion.div
       ref={drop}
-      className={`kanban-column flex-shrink-0 w-72 sm:w-80 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
+      className={`kanban-column flex-shrink-0 w-64 sm:w-72 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
         isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105 shadow-jade-500/20' : 'shadow-glow-hover hover:border-gray-600/50'
       }`}
       animate={{
