@@ -35,7 +35,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: { id: order.id, status: order.status },
+    item: () => ({ id: order.id, status: order.status }),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

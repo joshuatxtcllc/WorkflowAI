@@ -144,7 +144,7 @@ function TimeEstimationDashboard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-6 left-6 bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-xl max-w-sm z-40 overflow-hidden"
+      className="fixed bottom-20 left-6 bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-xl max-w-sm z-20 overflow-hidden"
     >
       {/* Header with collapse button */}
       <div className="flex items-center justify-between p-4 pb-3">

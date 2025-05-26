@@ -66,7 +66,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
       }}
       transition={{ duration: 0.2 }}
     >
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-3 sm:p-4 border-b border-gray-800">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Icon className={`w-5 h-5 ${getStatusColor(status)}`} />
@@ -82,7 +82,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
         </div>
       </div>
 
-      <div className="p-4 space-y-3 min-h-[300px]">
+      <div className="p-2 sm:p-3 space-y-2 sm:space-y-3 min-h-[300px] max-h-[calc(100vh-400px)] overflow-y-auto">
         <AnimatePresence>
           {orders.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
@@ -358,7 +358,7 @@ export default function KanbanBoard() {
       </main>
 
       {/* Fixed horizontal navigation slider */}
-      <div className="fixed bottom-3 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="fixed bottom-3 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-30">
         <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-lg px-3 sm:px-6 py-2 sm:py-3 shadow-xl min-w-[280px] sm:min-w-[300px]">
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2 text-gray-400 text-xs">
@@ -384,7 +384,6 @@ export default function KanbanBoard() {
                     background: `linear-gradient(to right, #10b981 0%, #10b981 ${scrollPosition}%, #374151 ${scrollPosition}%, #374151 100%)`
                   }}
                 />
-
               </div>
               <span className="text-xs text-gray-500">End</span>
             </div>

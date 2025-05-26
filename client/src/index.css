@@ -415,10 +415,21 @@
   /* Improve touch scrolling */
   .kanban-scroll {
     scroll-snap-type: x mandatory;
+    padding-bottom: 100px; /* Extra space for mobile navigation */
   }
   
   .kanban-scroll > div {
     scroll-snap-align: start;
+  }
+  
+  /* Prevent overlapping with fixed elements */
+  main {
+    padding-bottom: 120px !important;
+  }
+  
+  /* Adjust fixed element positioning on mobile */
+  .fixed {
+    z-index: 999;
   }
 }
 
