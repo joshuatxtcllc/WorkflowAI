@@ -11,8 +11,8 @@ export default function Header() {
 
   return (
     <header className="relative z-10 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
-      <div className="max-w-[1920px] mx-auto px-6 py-4">
-        <div className="flex items-center gap-8">
+      <div className="w-full px-4 py-4">
+        <div className="flex items-center gap-6">
           {/* Brand - Left */}
           <div className="flex items-center gap-4">
             <SidebarTrigger className="text-white hover:bg-gray-800 p-2 rounded-md border border-gray-700 hover:border-gray-600 transition-colors" />
