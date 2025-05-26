@@ -81,7 +81,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
           <span>{totalHours.toFixed(1)}h total</span>
         </div>
       </div>
-      
+
       <div className="p-4 space-y-3 min-h-[300px]">
         <AnimatePresence>
           {orders.length === 0 ? (
@@ -155,7 +155,7 @@ export default function KanbanBoard() {
     onSuccess: (updatedOrder, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
-      
+
       // Find the order and show success notification
       const order = orders.find(o => o.id === variables.orderId);
       if (order) {
@@ -169,14 +169,14 @@ export default function KanbanBoard() {
           'READY_FOR_PICKUP': 'Ready for Pickup',
           'PICKED_UP': 'Picked Up'
         };
-        
+
         toast({
           title: "Order Status Updated! 🎉",
           description: `${order.customer.name}'s order moved to: ${statusNames[variables.status] || variables.status}`,
           duration: 3000,
         });
       }
-      
+
       // Send WebSocket update
       sendMessage({
         type: 'order-status-update',
@@ -226,17 +226,17 @@ export default function KanbanBoard() {
     if (autoScrollIntervalRef.current) {
       clearInterval(autoScrollIntervalRef.current);
     }
-    
+
     autoScrollIntervalRef.current = setInterval(() => {
       if (scrollContainerRef.current) {
         const container = scrollContainerRef.current;
         const scrollAmount = direction === 'left' ? -speed : speed;
         const newScrollLeft = container.scrollLeft + scrollAmount;
-        
+
         // Check boundaries
         if (newScrollLeft >= 0 && newScrollLeft <= container.scrollWidth - container.clientWidth) {
           container.scrollLeft = newScrollLeft;
-          
+
           // Update scroll position for slider
           const maxScroll = container.scrollWidth - container.clientWidth;
           const scrollPercent = maxScroll > 0 ? (newScrollLeft / maxScroll) * 100 : 0;
@@ -256,12 +256,12 @@ export default function KanbanBoard() {
   // Handle mouse move for auto-scroll detection
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!scrollContainerRef.current) return;
-    
+
     const container = scrollContainerRef.current;
     const rect = container.getBoundingClientRect();
     const scrollZone = 100; // Distance from edge to trigger scroll
     const mouseX = e.clientX - rect.left;
-    
+
     // Check if mouse is near left or right edge
     if (mouseX < scrollZone && container.scrollLeft > 0) {
       // Near left edge, scroll left
@@ -285,7 +285,7 @@ export default function KanbanBoard() {
         document.addEventListener('mousemove', handleMouseMove);
       }
     };
-    
+
     const handleDragEnd = (e: DragEvent) => {
       document.removeEventListener('mousemove', handleMouseMove);
       stopAutoScroll();
@@ -355,7 +355,7 @@ export default function KanbanBoard() {
           </div>
         </div>
       </main>
-      
+
       {/* Fixed horizontal navigation slider */}
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
         <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-lg px-6 py-3 shadow-lg min-w-[300px]">

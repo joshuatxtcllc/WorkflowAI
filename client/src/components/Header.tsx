@@ -74,16 +74,18 @@ export default function Header() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
-            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold">
-              <Plus className="w-4 h-4 mr-2" />
-              New Order
+          <div className="flex items-center gap-2 lg:gap-4">
+            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold text-sm lg:text-base px-3 lg:px-4 h-9 lg:h-10">
+              <Plus className="w-4 h-4 mr-1 lg:mr-2" />
+              <span className="hidden sm:inline">New Order</span>
+              <span className="sm:hidden">New</span>
             </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="h-9 w-9 lg:h-10 lg:w-10">
+              <Settings className="w-4 h-4 lg:w-5 lg:h-5" />
             </Button>
-            <Button variant="ghost" onClick={() => window.location.href = "/api/logout"}>
-              Logout
+            <Button variant="ghost" onClick={() => window.location.href = "/api/logout"} className="text-sm lg:text-base px-2 lg:px-4 h-9 lg:h-10">
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Exit</span>
             </Button>
           </div>
         </div>

@@ -35,17 +35,10 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: () => {
-      document.dispatchEvent(new CustomEvent('dragstart'));
-      return { id: order.id };
-    },
+    item: { id: order.id, status: order.status },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: () => {
-      // Dispatch custom event when drag ends
-      document.dispatchEvent(new CustomEvent('dragend'));
-    },
   });
 
   const handleCardClick = () => {
