@@ -7,7 +7,7 @@ import AIAssistant from '@/components/AIAssistant';
 import OrderDetails from '@/components/OrderDetails';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Clock, BarChart3, Upload, CheckCircle } from 'lucide-react';
+import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
@@ -117,6 +117,8 @@ function ImportSection() {
 }
 
 function TimeEstimationDashboard() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
   const { data: analysis } = useQuery<WorkloadAnalysis>({
     queryKey: ["/api/ai/analysis"],
     refetchInterval: 30000,
@@ -139,48 +141,74 @@ function TimeEstimationDashboard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-6 left-6 bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-xl p-4 max-w-sm z-40"
+      className="fixed bottom-6 left-6 bg-gray-900/90 backdrop-blur-sm border border-gray-800 rounded-xl max-w-sm z-40 overflow-hidden"
     >
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="w-5 h-5 text-jade-400" />
-        <h3 className="font-semibold text-white">Time Estimation</h3>
+      {/* Header with collapse button */}
+      <div className="flex items-center justify-between p-4 pb-3">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-jade-400" />
+          <h3 className="font-semibold text-white">Time Estimation</h3>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="p-1 h-6 w-6 hover:bg-gray-800 rounded text-gray-400 hover:text-white"
+        >
+          <motion.div
+            animate={{ rotate: isCollapsed ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronUp className="w-4 h-4" />
+          </motion.div>
+        </Button>
       </div>
       
-      <div className="space-y-3 text-sm">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-400">Total Remaining:</span>
-          <span className="text-white font-semibold">{analysis?.totalHours || 0}h</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-400">Projected Completion:</span>
-          <span className="text-jade-400 font-semibold">
-            {analysis?.projectedCompletion 
-              ? new Date(analysis.projectedCompletion).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-              : 'TBD'
-            }
-          </span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-400">On-Time Rate:</span>
-          <span className={`font-semibold ${getEfficiencyColor(analysis?.onTimePercentage || 0)}`}>
-            {analysis?.onTimePercentage || 0}%
-          </span>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="mt-3">
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
-            <span>Daily Progress</span>
-            <span>{Math.min(dailyProgress, 100).toFixed(1)}%</span>
+      <motion.div
+        initial={false}
+        animate={{ 
+          height: isCollapsed ? 0 : 'auto',
+          opacity: isCollapsed ? 0 : 1
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <div className="px-4 pb-4 space-y-3 text-sm">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Total Remaining:</span>
+            <span className="text-white font-semibold">{analysis?.totalHours || 0}h</span>
           </div>
-          <div className="w-full bg-gray-800 rounded-full h-2">
-            <div 
-              className="bg-jade-500 h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${Math.min(dailyProgress, 100)}%` }}
-            ></div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Projected Completion:</span>
+            <span className="text-jade-400 font-semibold">
+              {analysis?.projectedCompletion 
+                ? new Date(analysis.projectedCompletion).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                : 'TBD'
+              }
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">On-Time Rate:</span>
+            <span className={`font-semibold ${getEfficiencyColor(analysis?.onTimePercentage || 0)}`}>
+              {analysis?.onTimePercentage || 0}%
+            </span>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span>Daily Progress</span>
+              <span>{Math.min(dailyProgress, 100).toFixed(1)}%</span>
+            </div>
+            <div className="w-full bg-gray-800 rounded-full h-2">
+              <div 
+                className="bg-jade-500 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${Math.min(dailyProgress, 100)}%` }}
+              ></div>
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
