@@ -43,13 +43,14 @@ export default function QuickWins() {
       filteredOrders = filterOrdersByTime(orders, maxHours);
     }
 
-    // 30-minute lunch break orders
-    const lunchOrders = filterOrdersByTime(orders, 0.5);
+    // 30-minute lunch break orders - prioritized by due date (oldest first)
+    const lunchOrders = filterOrdersByTime(orders, 0.5)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     if (lunchOrders.length > 0) {
       quickWins.push({
         id: "lunch-break",
         title: "🥪 Lunch Break Orders",
-        description: `${lunchOrders.length} orders you can finish in 30 minutes or less`,
+        description: `${lunchOrders.length} orders you can finish in 30 minutes or less (oldest first)`,
         estimatedTime: lunchOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: lunchOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -58,13 +59,14 @@ export default function QuickWins() {
       });
     }
 
-    // 1-hour window orders
-    const oneHourOrders = filterOrdersByTime(orders, 1);
+    // 1-hour window orders - prioritized by due date (oldest first)
+    const oneHourOrders = filterOrdersByTime(orders, 1)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     if (oneHourOrders.length > 0) {
       quickWins.push({
         id: "one-hour",
         title: "⏰ One Hour Orders",
-        description: `${oneHourOrders.length} orders perfect for a focused hour`,
+        description: `${oneHourOrders.length} orders perfect for a focused hour (oldest first)`,
         estimatedTime: oneHourOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: oneHourOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -73,13 +75,14 @@ export default function QuickWins() {
       });
     }
 
-    // 1.5-hour end-of-day orders
-    const endOfDayOrders = filterOrdersByTime(orders, 1.5);
+    // 1.5-hour end-of-day orders - prioritized by due date (oldest first)
+    const endOfDayOrders = filterOrdersByTime(orders, 1.5)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     if (endOfDayOrders.length > 0) {
       quickWins.push({
         id: "end-of-day",
         title: "🏁 Before You Leave",
-        description: `${endOfDayOrders.length} orders to finish before leaving for the day`,
+        description: `${endOfDayOrders.length} orders to finish before leaving for the day (oldest first)`,
         estimatedTime: endOfDayOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: endOfDayOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -128,12 +131,12 @@ export default function QuickWins() {
       });
     }
 
-    // Overdue Orders
+    // Overdue Orders - prioritized by how overdue they are (most overdue first)
     const now = new Date();
     const overdueOrders = orders.filter(
       order => new Date(order.dueDate) < now && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
-    );
+    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     
     if (overdueOrders.length > 0) {
       quickWins.push({
