@@ -67,7 +67,7 @@ export default function QuickWins() {
     const now = new Date();
     const overdueOrders = orders.filter(
       order => new Date(order.dueDate) < now && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status)
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     );
     
     if (overdueOrders.length > 0) {
@@ -261,9 +261,9 @@ export default function QuickWins() {
                       </div>
                     </div>
                   ))}
-                  {win.orders.length < quickWins.find(w => w.id === win.id)?.orders.length && (
+                  {win.orders.length < 5 && (
                     <p className="text-xs text-muted-foreground">
-                      +{orders?.filter(o => win.orders.some(wo => wo.id === o.id)).length! - win.orders.length} more orders
+                      +{Math.max(0, (orders?.length || 0) - win.orders.length)} more orders
                     </p>
                   )}
                 </div>
