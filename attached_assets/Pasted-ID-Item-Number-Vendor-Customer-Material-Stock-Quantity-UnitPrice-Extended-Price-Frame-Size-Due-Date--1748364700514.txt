@@ -1,0 +1,117 @@
+ID	Item Number	Vendor	Customer	Material	Stock	Quantity	UnitPrice	Extended Price	Frame Size	Due Date	Date Placed	Stock Savings	Notes	Size Bracket	OrderProgress	Order ID	Progress Display	Customer Number	Order Processed	Ordered	Arrived	Fcut	Mcut	F&Mcut	Prepped	Finalizing	Completed	Delayed	Delivered	
+20616	CBR34987	Crescent	Chaikin, Rebecca	Mat		1.00	$9.81	$9.81	9 1/4 X 8 1/4	11/28/2023	11/4/2023	$9.81		Greater Than 40X60			██████████ 100%	2												Rebecca Chaikin
+20616	CBR14987	Crescent	Chaikin, Rebecca	Mat		1.00	$9.81	$9.81	9 1/4 X 8 1/4	11/28/2023	11/4/2023	$9.81		40X60- 32X40			████████░░ 80%	3												Rebecca Chaikin
+20709	C87529	Crescent	HEITZ, BRIAN	Mat		1.00	$13.34	$186.76	30 1/2 X 43 1/2	12/31/2023	12/5/2023			32X40-22X28				5												BRIAN HEITZ
+20710	C87529	Crescent	HEITZ, BRIAN	Mat		1.00	$63.57	$63.57	31 7/8 X 45 1/8	12/31/2023	12/5/2023			32X40-22X28			█████░░░░░ 50%	6												BRIAN HEITZ
+20790	C89502	Crescent	Davidson, Nathan	Mat		1.00	$20.26	$20.26	41 3/4 X 28 3/4	2/20/2024	1/27/2024		Need to find or order frame. Cut wrong one. This one may work for Will Wakefield.	33				8												Nathan Davidson
+20791	C9837	Crescent	kittrell, James	Mat		1.00	$7.69	$7.69	24 7/8 X 14 7/8	2/21/2024	1/28/2024	$7.69		32X40-22X28			███░░░░░░░ 30%	9												James kittrell
+20811	C9804	Crescent	Coastal Conservation Association	Mat		1.00	$8.66	$250.00	18X24	2/26/2024	2/6/2024	$250.00		32X40-22X28			████████░░ 80%	12												#VALUE!
+20812	C9804	Crescent	Coastal Conservation Association	Mat		1.00	$6.93	$200.00	16 X 20	2/26/2024	2/6/2024	$200.00		32X40-22X28			████████░░ 80%	13												#VALUE!
+20807	C9505	Crescent	Marston, Angie	Mat		1.00	$5.58	$5.58	13 X 15 3/4	2/27/2024	2/3/2024	$5.58		32X40-22X28			████████░░ 80%	14												Angie Marston
+20806	PSM6814	Peterboro Cardboards Ltd	brodbeck, Sarah	Mat		1.00	$58.45	$58.45	54 X 40	2/27/2024	2/3/2024			33			████████░░ 80%	15												Sarah brodbeck
+20808	C9502	Crescent	Perez, Shari	Mat		1.00	$8.46	$8.46	25 X 19	2/29/2024	2/5/2024	$8.46		32X40-22X28				16												Shari Perez
+20815	C9502	Crescent	Nichols, Amy	Mat		1.00	$6.93	$6.93	17 5/8 X 17 5/8	3/4/2024	2/9/2024	$6.93		32X40-22X28				17												Amy Nichols
+20822	C5579	Crescent	Cornwell, Rebecca	Mat		1.00	$11.88	$11.88	19 3/8 X 22 3/8	3/6/2024	2/10/2024			32X40-22X28				21												Rebecca Cornwell
+20822	C9854	Crescent	Cornwell, Rebecca	Mat		1.00	$9.37	$9.37	19 3/8 X 22 3/8	3/6/2024	2/10/2024			32X40-22X28			███░░░░░░░ 30%	22												Rebecca Cornwell
+20823	C9631	Crescent	Cornwell, Rebecca	Mat		1.00	$6.16	$6.16	17 3/8 X 13 7/8	3/6/2024	2/10/2024			32X40-22X28			█████░░░░░ 50%	23												Rebecca Cornwell
+20823	C5714	Crescent	Cornwell, Rebecca	Mat		1.00	$8.75	$8.75	17 3/8 X 13 7/8	3/6/2024	2/10/2024			32X40-22X28			████░░░░░░ 40%	24												Rebecca Cornwell
+20826	A3508	Artique	Mata, Roy	Mat		1.00	$14.52	$14.52	14 1/8 X 17	3/7/2024	2/12/2024	$14.52		32X40-22X28				25												Roy Mata
+20827	C9502	Crescent	Mata, Roy	Mat		1.00	$8.85	$8.85	24 1/2 X 20 3/4	3/7/2024	2/12/2024	$8.85		32X40-22X28				26												Roy Mata
+20828	C5702	Crescent	Schmidt, Sally Anne	Mat		1.00	$13.04	$13.04	28 5/8 X 24 5/8	3/7/2024	2/12/2024	$13.04		32X40-22X28			█████░░░░░ 50%	27												Sally Anne Schmidt
+20830	C5714	Crescent	Schmidt, Sally Anne	Mat		1.00	$12.03	$12.03	19 1/4 X 24 1/4	3/7/2024	2/12/2024	$12.03		32X40-22X28			███░░░░░░░ 30%	28												Sally Anne Schmidt
+20829	PM265	Peterboro Cardboards Ltd	Schmidt, Sally Anne	Mat		1.00	$14.18	$14.18	13 X 17	3/7/2024	2/12/2024	$14.18		32X40-22X28				29												Sally Anne Schmidt
+20859	C9601	Crescent	Vela, Meredith	Mat		1.00	$11.35	$11.35	28 X 30 1/2	3/18/2024	2/23/2024			32X40-22X28			█████░░░░░ 50%	30												Meredith Vela
+20860	C9502	Crescent	DEASON, ALI	Mat		1.00	$5.96	$5.96	17 3/4 X 12 5/8	3/19/2024	2/24/2024	$5.96		32X40-22X28			█████░░░░░ 50%	31												ALI DEASON
+20861	C9889	Crescent	Wright, Kendall	Mat		1.00	$10.00	$10.00	28 5/8 X 22 5/8	3/19/2024	2/24/2024			32X40-22X28			███░░░░░░░ 30%	32												Kendall Wright
+20862	A3502	Artique	Nolan, Rachel	Mat		1.00	$15.88	$15.88	20 X 15	3/24/2024	2/28/2024	$15.88		32X40-22X28			█████░░░░░ 50%	33												Rachel Nolan
+20875	B4360	Bainbridge	Neath, Charles	Mat		1.00	$19.31	$19.31	24 3/8 X 18 3/8	3/26/2024	2/29/2024			32X40-22X28			█████░░░░░ 50%	35												Charles Neath
+20875	C9634	Crescent	Neath, Charles	Mat		1.00	$8.27	$8.27	24 3/8 X 18 3/8	3/26/2024	2/29/2024			32X40-22X28			█████░░░░░ 50%	36												Charles Neath
+20877	C9834	Crescent	Nelson, Dina	Mat		1.00	$8.46	$8.46	19 X 24 1/2	3/26/2024	3/2/2024			32X40-22X28			███░░░░░░░ 30%	37												Dina Nelson
+20878	C229502	Crescent	Daly, Jean	Mat		1.00	$9.59	$9.59	15 X 14	3/26/2024	3/2/2024	$9.59		32X40-22X28				38												Jean Daly
+20879	C229502	Crescent	Daly, Jean	Mat		1.00	$10.26	$10.26	15 X 15 1/4	3/26/2024	3/2/2024	$10.26		32X40-22X28			█████░░░░░ 50%	39												Jean Daly
+20883	C229502	Crescent	Shah, Usha	Mat		1.00	$12.24	$12.24	16 1/8 X 20 1/8	3/31/2024	3/6/2024	$12.24		32X40-22X28			█████░░░░░ 50%	40												Usha Shah
+20883	PM268	Peterboro Cardboards Ltd	Shah, Usha	Mat		1.00	$17.49	$17.49	16 1/8 X 20 1/8	3/31/2024	3/6/2024	$17.49		32X40-22X28			█████░░░░░ 50%	41												Usha Shah
+20890	B4836	Bainbridge	Raymer, Matt	Mat		1.00	$20.38	$20.38	10 1/4 X 13	4/2/2024	3/9/2024	$20.38		32X40-22X28			█████░░░░░ 50%	42												Matt Raymer
+20886	C9502	Crescent	Raymer, Matt	Mat		1.00	$10.20	$10.20	23 3/4 X 29	4/2/2024	3/9/2024	$10.20		32X40-22X28			█████░░░░░ 50%	43												Matt Raymer
+20887	C9502	Crescent	Raymer, Matt	Mat		1.00	$5.96	$5.96	16 1/2 X 13 3/4	4/2/2024	3/9/2024	$5.96		32X40-22X28			█████░░░░░ 50%	44												Matt Raymer
+20889	C9634	Crescent	Raymer, Matt	Mat		1.00	$4.62	$4.62	11 X 12 3/8	4/2/2024	3/9/2024	$4.62		32X40-22X28			█████░░░░░ 50%	45												Matt Raymer
+20891	C9945	Crescent	Raymer, Matt	Mat		1.00	$5.94	$5.94	11 3/8 X 9	4/2/2024	3/9/2024	$5.94		32X40-22X28			█████░░░░░ 50%	46												Matt Raymer
+20892	C5703	Crescent	Raymer, Matt	Mat		1.00	$6.52	$6.52	15 1/4 X 11 3/4	4/2/2024	3/9/2024	$6.52		32X40-22X28			█████░░░░░ 50%	47												Matt Raymer
+20892	C9912	Crescent	Raymer, Matt	Mat		1.00	$6.58	$6.58	15 1/4 X 11 3/4	4/2/2024	3/9/2024	$6.58		32X40-22X28			█████░░░░░ 50%	48												Matt Raymer
+20893	C9804	Crescent	Baskin, Faina	Mat		1.00	$5.58	$5.58	15 X 14	4/3/2024	3/9/2024	$5.58		32X40-22X28			█████░░░░░ 50%	49												Faina Baskin
+20894	C9944	Crescent	Baskin, Faina	Mat		1.00	$10.96	$10.96	24 X 20 1/8	4/3/2024	3/9/2024			32X40-22X28			█████░░░░░ 50%	50												Faina Baskin
+20895	C9804	Crescent	Baskin, Faina	Mat		1.00	$9.62	$9.62	27 3/4 X 21 5/8	4/3/2024	3/9/2024			32X40-22X28			█████░░░░░ 50%	51												Faina Baskin
+20896	C9804	Crescent	Baskin, Faina	Mat		1.00	$6.35	$6.35	18 X 14 1/2	4/3/2024	3/9/2024			32X40-22X28			█████░░░░░ 50%	52												Faina Baskin
+20898	C9502	Crescent	Osterling, Anna	Mat		9.00	$9.43	$84.87	21 1/2 X 27	4/21/2024	3/27/2024	$84.87		32X40-22X28				53												Anna Osterling
+20912	B4356	Bainbridge	Ryan, Mathew	Mat		1.00	$25.15	$25.15	24 3/4 X 30 3/4	4/24/2024	3/30/2024						█████░░░░░ 50%	54												Mathew Ryan
+20912	C9599	Crescent	Ryan, Mathew	Mat		1.00	$10.77	$10.77	24 3/4 X 30 3/4	4/24/2024	3/30/2024						███░░░░░░░ 30%	55												Mathew Ryan
+20932	A6200	Artique	Armand, Kyle	Mat		1.00	$8.34	$8.34	15 3/8 X 13 3/8	4/30/2024	4/6/2024	$8.34					█████░░░░░ 50%	56												Kyle Armand
+20932	C9551	Crescent	Armand, Kyle	Mat		1.00	$5.58	$5.58	15 3/8 X 13 3/8	4/30/2024	4/6/2024	$5.58					█████░░░░░ 50%	57												Kyle Armand
+20995	C9502	Crescent	Evans, John	Mat		1.00	$8.46	$16.92	24 X 20	4/30/2024	4/26/2024	$16.92						58												John Evans
+20933	PM154	Peterboro Cardboards Ltd	Ball, Carrie	Mat		1.00	$28.78	$28.78	28 X 22	5/2/2024	4/8/2024						███████░░░ 70%	59												Carrie Ball
+20945	A3508	Artique	Jauer, Makenzie	Mat		1.00	$23.59	$23.59	23 X 28 1/8	5/12/2024	4/16/2024	$23.59						60												Makenzie Jauer
+20946	A3508	Artique	Jauer, Makenzie	Mat		1.00	$17.70	$17.70	21 3/8 X 17 3/8	5/12/2024	4/16/2024	$17.70					███░░░░░░░ 30%	61												Makenzie Jauer
+20943	C9502	Crescent	Jen Kolb Interiors	Mat		1.00	$8.66	$8.66	23 X 21 1/2	5/12/2024	4/16/2024						███░░░░░░░ 30%	62												#VALUE!
+20944	C9502	Crescent	Jen Kolb Interiors	Mat		1.00	$8.08	$16.16	21 X 21	5/12/2024	4/16/2024						█████░░░░░ 50%	63												#VALUE!
+20952	C89808	Crescent	Rasmussen, Elizabeth	Mat		1.00	$23.97	$23.97	47 3/4 X 36	5/14/2024	4/18/2024							67												Elizabeth Rasmussen
+20954	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$7.00	$7.00	12 5/8 X 15 5/8	5/14/2024	4/19/2024	$7.00					█████░░░░░ 50%	68												Zak & Nan Banks
+20955	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$7.00	$7.00	12 1/4 X 16	5/14/2024	4/19/2024	$7.00					█████░░░░░ 50%	69												Zak & Nan Banks
+20956	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$7.73	$7.73	13 7/8 X 17 15/16	5/14/2024	4/19/2024	$7.73					█████░░░░░ 50%	70												Zak & Nan Banks
+20957	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$11.59	$11.59	20 X 27 3/4	5/14/2024	4/19/2024						███░░░░░░░ 30%	71												Zak & Nan Banks
+20958	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$11.59	$11.59	20 X 27 3/4	5/14/2024	4/19/2024							72												Zak & Nan Banks
+20959	C5706	Crescent	Banks, Zak & Nan	Mat		1.00	$7.00	$35.00	12 1/4 X 16	5/14/2024	4/19/2024						███░░░░░░░ 30%	73												Zak & Nan Banks
+20960	C9850	Crescent	Sloane, Raizel	Mat		1.00	$9.60	$9.60	18 3/8 X 24 1/8	5/15/2024	4/20/2024						█████░░░░░ 50%	74												Raizel Sloane
+20964	C7560	Crescent	Brouillard, Adam	Mat		1.00	$19.15	$19.15	15 1/8 X 17 7/8	5/15/2024	4/20/2024						█████░░░░░ 50%	76												Adam Brouillard
+20964	C5579	Crescent	Brouillard, Adam	Mat		1.00	$9.33	$9.33	15 1/8 X 17 7/8	5/15/2024	4/20/2024	$9.33					█████░░░░░ 50%	77												Adam Brouillard
+20960	PM303	Peterboro Cardboards Ltd	Sloane, Raizel	Mat		1.00	$20.33	$20.33	18 3/8 X 24 1/8	5/15/2024	4/20/2024							78												Raizel Sloane
+20965	C5526	Peterboro Cardboards Ltd	Brouillard, Adam	Mat		1.00	$16.70	$16.70	13 1/4 X 15 3/4	5/15/2024	4/20/2024						███░░░░░░░ 30%	79												Adam Brouillard
+20967	C229502	Crescent	Garcia, Liza	Mat		1.00	$15.88	$15.88	24 X 23 5/8	5/16/2024	4/20/2024						█████░░░░░ 50%	80												Liza Garcia
+20978	B8094	Bainbridge	Cone, Paul	Mat		1.00	$13.44	$13.44	23 1/2 X 17 1/2	5/19/2024	4/25/2024	$13.44					████░░░░░░ 40%	81												Paul Cone
+20983	B8093	Bainbridge	Cone, Paul	Mat		1.00	$13.12	$13.12	16 5/8 X 22 5/8	5/19/2024	4/25/2024	$13.12						82												Paul Cone
+20984	B4436	Bainbridge	Cone, Paul	Mat		1.00	$36.15	$36.15	22 5/8 X 16 5/8	5/19/2024	4/25/2024	$36.15					████░░░░░░ 40%	83												Paul Cone
+20985	B4436	Bainbridge	Cone, Paul	Mat		1.00	$36.15	$36.15	22 7/8 X 16 7/8	5/19/2024	4/25/2024	$36.15						84												Paul Cone
+20990	B4310	Bainbridge	Cone, Paul	Mat		1.00	$33.58	$33.58	17 X 21	5/19/2024	4/25/2024	$33.58					█████░░░░░ 50%	85												Paul Cone
+20991	B4310	Bainbridge	Cone, Paul	Mat		1.00	$33.58	$33.58	17 X 21	5/19/2024	4/25/2024	$33.58						86												Paul Cone
+20972	C9508	Crescent	Cordray, Howard	Mat		1.00	$4.62	$4.62	12 X 12	5/19/2024	4/24/2024	$4.62					███░░░░░░░ 30%	87												Howard Cordray
+20973	C9508	Crescent	Cordray, Howard	Mat		1.00	$4.42	$4.42	11 1/4 X 11 5/8	5/19/2024	4/24/2024	$4.42					████████░░ 80%	88												Howard Cordray
+20974	C25700	Crescent	Cone, Paul	Mat		1.00	$21.66	$21.66	21 1/4 X 29 1/4	5/19/2024	4/25/2024						███░░░░░░░ 30%	89												Paul Cone
+20975	C229502	Crescent	Cone, Paul	Mat		1.00	$19.19	$19.19	33 X 24 1/8	5/19/2024	4/25/2024							90												Paul Cone
+20976	C229502	Crescent	Cone, Paul	Mat		1.00	$20.51	$20.51	35 X 27	5/19/2024	4/25/2024						███░░░░░░░ 30%	91												Paul Cone
+20978	C9888	Crescent	Cone, Paul	Mat		1.00	$7.89	$7.89	23 1/2 X 17 1/2	5/19/2024	4/25/2024						█████░░░░░ 50%	92												Paul Cone
+20978	C9576	Crescent	Cone, Paul	Mat		1.00	$7.89	$7.89	23 1/2 X 17 1/2	5/19/2024	4/25/2024							93												Paul Cone
+20980	C9610	Crescent	Cone, Paul	Mat		1.00	$8.27	$8.27	24 X 18 1/8	5/19/2024	4/25/2024	$8.27					███░░░░░░░ 30%	94												Paul Cone
+20980	C7580	Crescent	Cone, Paul	Mat		1.00	$24.95	$24.95	24 X 18 1/8	5/19/2024	4/25/2024						███░░░░░░░ 30%	95												Paul Cone
+20981	C9888	Crescent	Cone, Paul	Mat		1.00	$7.89	$7.89	23 1/2 X 17 1/2	5/19/2024	4/25/2024						███░░░░░░░ 30%	96												Paul Cone
+20981	C9576	Crescent	Cone, Paul	Mat		1.00	$7.89	$7.89	23 1/2 X 17 1/2	5/19/2024	4/25/2024						███░░░░░░░ 30%	97												Paul Cone
+20982	C9827	Crescent	Cone, Paul	Mat		1.00	$8.27	$8.27	24 1/8 X 18 1/4	5/19/2024	4/25/2024	$8.27					████░░░░░░ 40%	98												Paul Cone
+20983	C9523	Crescent	Cone, Paul	Mat		1.00	$7.69	$7.69	16 5/8 X 22 5/8	5/19/2024	4/25/2024							99												Paul Cone
+20984	C9522	Crescent	Cone, Paul	Mat		1.00	$7.69	$7.69	22 5/8 X 16 5/8	5/19/2024	4/25/2024							100												Paul Cone
+20985	C9522	Crescent	Cone, Paul	Mat		1.00	$7.69	$7.69	22 7/8 X 16 7/8	5/19/2024	4/25/2024						███░░░░░░░ 30%	101												Paul Cone
+20985	C9888	Crescent	Cone, Paul	Mat		1.00	$7.69	$7.69	22 7/8 X 16 7/8	5/19/2024	4/25/2024							102												Paul Cone
+20977	PM74421	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$13.25	$13.25	21 1/2 X 15 1/2	5/19/2024	4/25/2024	$13.25					████░░░░░░ 40%	103												Paul Cone
+20979	PM250	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$19.38	$19.38	23 1/4 X 17 1/4	5/19/2024	4/25/2024							104												Paul Cone
+20979	PM154	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$23.60	$23.60	23 1/4 X 17 1/4	5/19/2024	4/25/2024						███░░░░░░░ 30%	105												Paul Cone
+20980	PM250	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$20.33	$20.33	24 X 18 1/8	5/19/2024	4/25/2024						███░░░░░░░ 30%	106												Paul Cone
+20982	PM154	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$24.75	$24.75	24 1/8 X 18 1/4	5/19/2024	4/25/2024						███░░░░░░░ 30%	107												Paul Cone
+20986	PM179	Peterboro Cardboards Ltd	Cone, Paul	Mat		1.00	$28.21	$28.21	28 X 20 1/4	5/19/2024	4/25/2024						███░░░░░░░ 30%	108												Paul Cone
+20994	C87580	Crescent	Green, Suzanne	Mat		1.00	$61.09	$61.09	41 3/4 X 32	5/20/2024	4/26/2024						███░░░░░░░ 30%	109												Suzanne Green
+20998	C9508	Crescent	short, Maria	Mat		1.00	$5.77	$5.77	13 1/8 X 16 1/8	5/21/2024	4/27/2024						███░░░░░░░ 30%	110												Maria short
+20999	C9512	Crescent	short, Maria	Mat		1.00	$7.69	$7.69	23 X 17	5/21/2024	4/27/2024						█████░░░░░ 50%	111												Maria short
+21006	A6203	Artique	Beckwith, Jennah	Mat		1.00	$9.43	$9.43	12 3/4 X 17 1/2	5/22/2024	4/27/2024						█████░░░░░ 50%	112												Jennah Beckwith
+21001	PM9078	Peterboro Cardboards Ltd	Beckwith, Jennah	Mat		1.00	$14.84	$14.84	10 X 12 1/4	5/22/2024	4/27/2024							113												Jennah Beckwith
+21002	PM9078	Peterboro Cardboards Ltd	Beckwith, Jennah	Mat		1.00	$16.77	$16.77	11 1/4 X 14 1/4	5/22/2024	4/27/2024						██████░░░░ 60%	114												Jennah Beckwith
+21003	PM9078	Peterboro Cardboards Ltd	Beckwith, Jennah	Mat		1.00	$14.19	$14.19	8 1/8 X 13 1/4	5/22/2024	4/27/2024						█████░░░░░ 50%	115												Jennah Beckwith
+21004	PM9078	Peterboro Cardboards Ltd	Beckwith, Jennah	Mat		1.00	$21.93	$21.93	18 3/4 X 15 1/4	5/22/2024	4/27/2024							116												Jennah Beckwith
+21005	PM9078	Peterboro Cardboards Ltd	Beckwith, Jennah	Mat		1.00	$13.55	$13.55	11 1/8 X 9 1/8	5/22/2024	4/27/2024							117												Jennah Beckwith
+21011	B4834	Bainbridge	Howry, Baker	Mat		1.00	$29.72	$29.72	19 3/8 X 14 3/4	5/26/2024	4/29/2024	$29.72					█████░░░░░ 50%	118												Baker Howry
+21009	C5598	Crescent	Strax, Adam	Mat		1.00	$5.58	$5.58	12 1/4 X 12 1/4	5/26/2024	4/29/2024						█████░░░░░ 50%	119												Adam Strax
+21009	PM9078	Peterboro Cardboards Ltd	Strax, Adam	Mat		1.00	$16.13	$16.13	12 1/4 X 12 1/4	5/26/2024	4/29/2024						█████░░░░░ 50%	120												Adam Strax
+21010	PM254	Peterboro Cardboards Ltd	Howry, Baker	Mat		1.00	$16.55	$16.55	19 3/8 X 14 3/4	5/26/2024	4/29/2024							121												Baker Howry
+20939	C25711	Crescent	Lebeau, Kate	Mat		1.00	$15.82	$31.64	17 3/4 X 14 3/4	6/6/2024	4/11/2024						███░░░░░░░ 30%	122												Kate Lebeau
+20951	C9502	Crescent	GISSELL, TAYLOR	Mat		1.00	$5.96	$5.96	16 1/2 X 14 1/2	6/14/2024	4/18/2024						███░░░░░░░ 30%	123												TAYLOR GISSELL
+20971	C89500	Crescent	Conner, Kristi	Mat		1.00	$23.68	$23.68	13 3/8 X 69 3/8	6/14/2024	4/20/2024						███░░░░░░░ 30%	124												Kristi Conner
+20950	PM271	Peterboro Cardboards Ltd	GISSELL, TAYLOR	Mat		1.00	$12.77	$12.77	12 X 15	6/14/2024	4/18/2024							125												TAYLOR GISSELL
+20912	A3508	Artique	Ryan, Mathew	Mat		1.00	$25.41	$25.41	24 3/4 X 30 3/4	4/24/2024	3/30/2024						█████░░░░░ 50%	126												Mathew Ryan
+20912	B4356	Bainbridge	Ryan, Mathew	Mat		1.00	$25.15	$25.15	24 3/4 X 30 3/4	4/24/2024	3/30/2024							127												Mathew Ryan
+20912	C9599	Crescent	Ryan, Mathew	Mat		1.00	$10.77	$10.77	24 3/4 X 30 3/4	4/24/2024	3/30/2024						█████░░░░░ 50%	128												Mathew Ryan
+20952	C89808	Crescent	Rasmussen, Elizabeth	Mat		1.00	$23.97	$23.97	47 3/4 X 36	5/14/2024	4/18/2024							134												Elizabeth Rasmussen
