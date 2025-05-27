@@ -7,6 +7,9 @@ import { AIService } from "./services/aiService";
 import { NotificationService } from "./services/notificationService";
 import { insertOrderSchema, insertCustomerSchema, insertMaterialSchema } from "@shared/schema";
 import { z } from "zod";
+import fs from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { db, customers, orders, statusHistory } from "./db";
 
 interface WebSocketMessage {
   type: string;
@@ -26,11 +29,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       const result = await loginUser(email, password);
-      
+
       if (!result) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
-      
+
       res.json(result);
     } catch (error) {
       console.error("Login error:", error);
@@ -97,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderData = insertOrderSchema.parse(req.body);
       const order = await storage.createOrder(orderData);
-      
+
       // Create status history entry
       await storage.createStatusHistory({
         orderId: order.id,
@@ -223,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { directImportFromTSV } = await import('./direct-import');
       const result = await directImportFromTSV(fileContent);
-      
+
       res.json({
         message: "Import completed successfully",
         ...result
@@ -242,7 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { addRealProductionOrders } = await import('./manual-add-orders');
       const result = await addRealProductionOrders();
-      
+
       res.json({
         message: "Production orders added successfully",
         ...result
@@ -261,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { importRealCustomerData } = await import('./real-data-import');
       const result = await importRealCustomerData();
-      
+
       res.json({
         message: "Real customer data imported successfully",
         ...result
@@ -303,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { trackingId } = req.params;
       const order = await storage.getOrderByTrackingId(trackingId);
-      
+
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
@@ -321,13 +324,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email } = req.params;
       const customer = await storage.getCustomerByEmail(email);
-      
+
       if (!customer) {
         return res.status(404).json({ message: "Customer not found" });
       }
 
       const orders = await storage.getOrdersByCustomer(customer.id);
-      
+
       // Remove sensitive data
       const safeOrders = orders.map(({ internalNotes, assignedToId, ...order }) => order);
       res.json(safeOrders);
@@ -349,12 +352,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ws.on('message', async (data: Buffer) => {
       try {
         const message: WebSocketMessage = JSON.parse(data.toString());
-        
+
         switch (message.type) {
           case 'join-room':
             // Add client to specific room (could be enhanced with room management)
             break;
-            
+
           case 'order-status-update':
             // Broadcast order status update to all connected clients
             const updatedOrder = message.data;
@@ -363,7 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               data: updatedOrder
             });
             break;
-            
+
           case 'ai-alert':
             // Broadcast AI alert to all connected clients
             broadcast(wss, {
@@ -404,6 +407,150 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }, 30000); // Every 30 seconds
   }
+
+  // Import endpoint
+  app.post('/api/import/orders', authenticateToken, async (req, res) => {
+    try {
+      const { fileContent } = req.body;
+
+      if (!fileContent) {
+        return res.status(400).json({ error: 'File content is required' });
+      }
+
+      const { directImportFromTSV } = await import('./direct-import');
+      const result = await directImportFromTSV(fileContent);
+      res.json(result);
+    } catch (error) {
+      console.error('Import error:', error);
+      res.status(500).json({ error: 'Import failed' });
+    }
+  });
+
+  // Final import endpoint - one-time use
+  app.post('/api/import/final-authentic', authenticateToken, async (req, res) => {
+    try {
+      console.log('🚀 Starting final authentic import...');
+
+      const filePath = './attached_assets/Pasted-Date-Due-Invoice-Order-ID-Qty-Name-Phone-Designer-Location-Description-Order-Type-Order-Progress-Pai-1748309997681.txt';
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+
+      const lines = fileContent.split('\n');
+      const customerMap = new Map();
+      let importedCustomers = 0;
+      let importedOrders = 0;
+
+      // Filter real order lines (those starting with date pattern)
+      const orderLines = lines.filter(line => /^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/.test(line.trim()));
+      console.log(`✅ Found ${orderLines.length} authentic order records`);
+
+      for (const line of orderLines) {
+        const parts = line.split('\t');
+        if (parts.length < 10) continue;
+
+        try {
+          const [dateDue, invoice, orderId, qty, name, phone, designer, location, description, orderType] = parts;
+
+          if (!name?.trim() || !orderId?.trim()) continue;
+
+          // Create unique customer
+          const customerKey = `${name.trim()}-${phone || 'no-phone'}`;
+          let customerId;
+
+          if (!customerMap.has(customerKey)) {
+            customerId = randomUUID();
+            await db.insert(customers).values({
+              id: customerId,
+              name: name.trim(),
+              email: `${name.toLowerCase().replace(/\s+/g, '.')}@customer.com`,
+              phone: phone?.trim() || null,
+              address: location?.trim() || null,
+              preferences: {},
+            });
+            customerMap.set(customerKey, customerId);
+            importedCustomers++;
+          } else {
+            customerId = customerMap.get(customerKey);
+          }
+
+          // Determine status from completion flags (parts 12-22 contain status flags)
+          let status = 'ORDER_PROCESSED';
+          if (parts[21] === 'Y' || parts[20] === 'Y') status = 'PICKED_UP'; // Delivered/Done
+          else if (parts[19] === 'Y') status = 'COMPLETED'; // Prepped
+          else if (parts[18] === 'Y' || (parts[15] === 'Y' && parts[16] === 'Y')) status = 'PREPPED'; // F&M Cut or Cut+MCut
+          else if (parts[16] === 'Y') status = 'MAT_CUT'; // M Cut
+          else if (parts[15] === 'Y') status = 'FRAME_CUT'; // Cut
+          else if (parts[14] === 'Y') status = 'MATERIALS_ARRIVED'; // Arrived
+          else if (parts[13] === 'Y') status = 'MATERIALS_ORDERED'; // Ordered
+
+          // Map order type
+          const mappedType = orderType?.toLowerCase().includes('canvas') || orderType?.toLowerCase().includes('acrylic') 
+            ? 'SHADOWBOX' 
+            : orderType?.toLowerCase().includes('mat') || orderType?.toLowerCase().includes('check')
+              ? 'MAT' 
+              : 'FRAME';
+
+          // Parse due date
+          let dueDate = new Date();
+          if (dateDue?.includes('/')) {
+            try {
+              dueDate = new Date(dateDue);
+              if (isNaN(dueDate.getTime())) dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            } catch (e) {
+              dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            }
+          }
+
+          // Create order
+          const orderDbId = randomUUID();
+          await db.insert(orders).values({
+            id: orderDbId,
+            trackingId: `TRK-${orderId.trim()}`,
+            customerId: customerId,
+            orderType: mappedType,
+            status: status,
+            dueDate: dueDate,
+            estimatedHours: mappedType === 'SHADOWBOX' ? 4.5 : mappedType === 'MAT' ? 1.5 : 3.0,
+            price: mappedType === 'SHADOWBOX' ? 450 : mappedType === 'MAT' ? 150 : 275,
+            description: description?.trim() || '',
+            priority: status === 'PICKED_UP' ? 'LOW' : dueDate < new Date() ? 'URGENT' : 'MEDIUM',
+            invoiceNumber: invoice?.trim() || '',
+          });
+
+          // Create status history
+          await db.insert(statusHistory).values({
+            id: randomUUID(),
+            orderId: orderDbId,
+            fromStatus: null,
+            toStatus: status,
+            changedBy: 'production-system',
+            reason: 'Final authentic production data import',
+            changedAt: new Date(),
+          });
+
+          importedOrders++;
+
+        } catch (error) {
+          console.log(`⚠️ Skipping problematic row: ${error}`);
+          continue;
+        }
+      }
+
+      console.log(`🎉 Final import completed!`);
+      console.log(`👥 Created ${importedCustomers} customers`);
+      console.log(`📦 Imported ${importedOrders} authentic orders`);
+
+      res.json({ 
+        success: true, 
+        importedCustomers, 
+        importedOrders,
+        message: 'Final authentic import completed successfully!'
+      });
+
+    } catch (error) {
+      console.error('❌ Final import failed:', error);
+      res.status(500).json({ error: 'Final import failed', details: error.message });
+    }
+  });
 
   return httpServer;
 }
