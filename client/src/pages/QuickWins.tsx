@@ -2,9 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Zap, TrendingUp, Target, DollarSign, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Clock, Zap, TrendingUp, Target, DollarSign, Calendar, Coffee, LogOut } from "lucide-react";
 import { OrderWithDetails } from "@shared/schema";
 import { Link } from "wouter";
+import { useState } from "react";
 
 interface QuickWin {
   id: string;
@@ -22,14 +24,72 @@ export default function QuickWins() {
     queryKey: ["/api/orders"],
   });
 
+  const [timeFilter, setTimeFilter] = useState<string>("all");
+
+  const filterOrdersByTime = (orders: OrderWithDetails[], maxHours: number): OrderWithDetails[] => {
+    return orders.filter(
+      order => order.estimatedHours <= maxHours && 
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
+    );
+  };
+
   const generateQuickWins = (orders: OrderWithDetails[]): QuickWin[] => {
     const quickWins: QuickWin[] = [];
 
+    // Time-based filtering
+    let filteredOrders = orders;
+    if (timeFilter !== "all") {
+      const maxHours = parseFloat(timeFilter);
+      filteredOrders = filterOrdersByTime(orders, maxHours);
+    }
+
+    // 30-minute lunch break orders
+    const lunchOrders = filterOrdersByTime(orders, 0.5);
+    if (lunchOrders.length > 0) {
+      quickWins.push({
+        id: "lunch-break",
+        title: "🥪 Lunch Break Orders",
+        description: `${lunchOrders.length} orders you can finish in 30 minutes or less`,
+        estimatedTime: lunchOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: lunchOrders.reduce((sum, order) => sum + order.price, 0),
+        priority: "HIGH",
+        category: "QUICK_COMPLETION",
+        orders: lunchOrders.slice(0, 5)
+      });
+    }
+
+    // 1-hour window orders
+    const oneHourOrders = filterOrdersByTime(orders, 1);
+    if (oneHourOrders.length > 0) {
+      quickWins.push({
+        id: "one-hour",
+        title: "⏰ One Hour Orders",
+        description: `${oneHourOrders.length} orders perfect for a focused hour`,
+        estimatedTime: oneHourOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: oneHourOrders.reduce((sum, order) => sum + order.price, 0),
+        priority: "HIGH",
+        category: "QUICK_COMPLETION",
+        orders: oneHourOrders.slice(0, 5)
+      });
+    }
+
+    // 1.5-hour end-of-day orders
+    const endOfDayOrders = filterOrdersByTime(orders, 1.5);
+    if (endOfDayOrders.length > 0) {
+      quickWins.push({
+        id: "end-of-day",
+        title: "🏁 Before You Leave",
+        description: `${endOfDayOrders.length} orders to finish before leaving for the day`,
+        estimatedTime: endOfDayOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: endOfDayOrders.reduce((sum, order) => sum + order.price, 0),
+        priority: "HIGH",
+        category: "QUICK_COMPLETION",
+        orders: endOfDayOrders.slice(0, 5)
+      });
+    }
+
     // Quick Completion Orders (≤ 2 hours)
-    const quickOrders = orders.filter(
-      order => order.estimatedHours <= 2 && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
-    );
+    const quickOrders = filterOrdersByTime(orders, 2);
     
     if (quickOrders.length > 0) {
       quickWins.push({
@@ -44,11 +104,16 @@ export default function QuickWins() {
       });
     }
 
-    // High Value Orders (≥ $300)
-    const highValueOrders = orders.filter(
+    // High Value Orders (≥ $300) - filtered by time if selected
+    let highValueOrders = orders.filter(
       order => order.price >= 300 && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     );
+    
+    if (timeFilter !== "all") {
+      const maxHours = parseFloat(timeFilter);
+      highValueOrders = highValueOrders.filter(order => order.estimatedHours <= maxHours);
+    }
     
     if (highValueOrders.length > 0) {
       quickWins.push({
@@ -167,9 +232,42 @@ export default function QuickWins() {
           <Zap className="h-6 w-6 text-green-600" />
           <h1 className="text-2xl font-bold">Quick Wins Dashboard</h1>
         </div>
-        <Link href="/">
-          <Button variant="outline">Back to Board</Button>
-        </Link>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Select value={timeFilter} onValueChange={setTimeFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by time available" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Orders</SelectItem>
+                <SelectItem value="0.5">
+                  <div className="flex items-center space-x-2">
+                    <Coffee className="h-4 w-4" />
+                    <span>30 min (Lunch Break)</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="1">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4" />
+                    <span>1 hour (Focused Time)</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="1.5">
+                  <div className="flex items-center space-x-2">
+                    <LogOut className="h-4 w-4" />
+                    <span>1.5 hours (Before Leaving)</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="2">2 hours (Half Day)</SelectItem>
+                <SelectItem value="4">4 hours (Full Day)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Link href="/">
+            <Button variant="outline">Back to Board</Button>
+          </Link>
+        </div>
       </div>
 
       {/* Summary Cards */}
