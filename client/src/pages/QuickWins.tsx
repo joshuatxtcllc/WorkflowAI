@@ -29,8 +29,38 @@ export default function QuickWins() {
   const filterOrdersByTime = (orders: OrderWithDetails[], maxHours: number): OrderWithDetails[] => {
     return orders.filter(
       order => order.estimatedHours <= maxHours && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "") &&
+      isOrderReadyForWork(order)
     );
+  };
+
+  // Smart function to determine if an order is actually ready for work
+  const isOrderReadyForWork = (order: OrderWithDetails): boolean => {
+    const status = order.status;
+    
+    // These statuses mean materials are ready and work can begin
+    const readyStatuses = [
+      "MATERIALS_ARRIVED",  // Materials are here, ready to cut
+      "FRAME_CUT",         // Frame cut, ready for glass/mat cutting
+      "MAT_CUT",           // Mat cut, ready for assembly
+      "PREPPED"            // Everything prepped, ready for final assembly
+    ];
+    
+    return readyStatuses.includes(status || "");
+  };
+
+  const getWorkflowReadinessScore = (order: OrderWithDetails): number => {
+    const status = order.status;
+    // Higher score = more ready for immediate work
+    switch (status) {
+      case "PREPPED": return 100;           // Ready for final assembly
+      case "MAT_CUT": return 90;            // Ready for glass cutting or assembly
+      case "FRAME_CUT": return 80;          // Ready for mat/glass cutting
+      case "MATERIALS_ARRIVED": return 70;  // Ready to start cutting
+      case "MATERIALS_ORDERED": return 20;  // Waiting for materials
+      case "ORDER_PROCESSED": return 10;    // Just started
+      default: return 0;
+    }
   };
 
   const generateQuickWins = (orders: OrderWithDetails[]): QuickWin[] => {
@@ -43,14 +73,19 @@ export default function QuickWins() {
       filteredOrders = filterOrdersByTime(orders, maxHours);
     }
 
-    // 30-minute lunch break orders - prioritized by due date (oldest first)
+    // 30-minute lunch break orders - prioritized by workflow readiness + due date
     const lunchOrders = filterOrdersByTime(orders, 0.5)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => {
+        const readinessA = getWorkflowReadinessScore(a);
+        const readinessB = getWorkflowReadinessScore(b);
+        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
+      });
     if (lunchOrders.length > 0) {
       quickWins.push({
         id: "lunch-break",
         title: "🥪 Lunch Break Orders",
-        description: `${lunchOrders.length} orders you can finish in 30 minutes or less (oldest first)`,
+        description: `${lunchOrders.length} orders ready to work on in 30 minutes or less (materials ready)`,
         estimatedTime: lunchOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: lunchOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -59,14 +94,19 @@ export default function QuickWins() {
       });
     }
 
-    // 1-hour window orders - prioritized by due date (oldest first)
+    // 1-hour window orders - prioritized by workflow readiness + due date
     const oneHourOrders = filterOrdersByTime(orders, 1)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => {
+        const readinessA = getWorkflowReadinessScore(a);
+        const readinessB = getWorkflowReadinessScore(b);
+        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
+      });
     if (oneHourOrders.length > 0) {
       quickWins.push({
         id: "one-hour",
         title: "⏰ One Hour Orders",
-        description: `${oneHourOrders.length} orders perfect for a focused hour (oldest first)`,
+        description: `${oneHourOrders.length} orders ready to work on in one hour (materials ready)`,
         estimatedTime: oneHourOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: oneHourOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -75,14 +115,19 @@ export default function QuickWins() {
       });
     }
 
-    // 1.5-hour end-of-day orders - prioritized by due date (oldest first)
+    // 1.5-hour end-of-day orders - prioritized by workflow readiness + due date
     const endOfDayOrders = filterOrdersByTime(orders, 1.5)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => {
+        const readinessA = getWorkflowReadinessScore(a);
+        const readinessB = getWorkflowReadinessScore(b);
+        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
+      });
     if (endOfDayOrders.length > 0) {
       quickWins.push({
         id: "end-of-day",
         title: "🏁 Before You Leave",
-        description: `${endOfDayOrders.length} orders to finish before leaving for the day (oldest first)`,
+        description: `${endOfDayOrders.length} orders ready to complete before leaving (materials ready)`,
         estimatedTime: endOfDayOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: endOfDayOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -91,14 +136,52 @@ export default function QuickWins() {
       });
     }
 
-    // Quick Completion Orders (≤ 2 hours)
+    // Ready for Final Assembly - highest priority for immediate work
+    const readyForAssembly = orders.filter(
+      order => order.status === "PREPPED" && 
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
+    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    
+    if (readyForAssembly.length > 0) {
+      quickWins.push({
+        id: "ready-for-assembly",
+        title: "🔨 Ready for Final Assembly",
+        description: `${readyForAssembly.length} orders prepped and ready for final assembly (highest priority)`,
+        estimatedTime: readyForAssembly.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: readyForAssembly.reduce((sum, order) => sum + order.price, 0),
+        priority: "HIGH",
+        category: "QUICK_COMPLETION",
+        orders: readyForAssembly.slice(0, 5)
+      });
+    }
+
+    // Materials Ready for Cutting - next highest priority
+    const readyForCutting = orders.filter(
+      order => order.status === "MATERIALS_ARRIVED" && 
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
+    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    
+    if (readyForCutting.length > 0) {
+      quickWins.push({
+        id: "ready-for-cutting",
+        title: "✂️ Materials Ready for Cutting",
+        description: `${readyForCutting.length} orders with materials arrived, ready to start cutting`,
+        estimatedTime: readyForCutting.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: readyForCutting.reduce((sum, order) => sum + order.price, 0),
+        priority: "HIGH",
+        category: "QUICK_COMPLETION",
+        orders: readyForCutting.slice(0, 5)
+      });
+    }
+
+    // Quick Completion Orders (≤ 2 hours) - but only if materials are ready
     const quickOrders = filterOrdersByTime(orders, 2);
     
     if (quickOrders.length > 0) {
       quickWins.push({
         id: "quick-completion",
-        title: "Quick Completion Orders",
-        description: `${quickOrders.length} orders that can be finished in 2 hours or less`,
+        title: "⚡ Quick Completion",
+        description: `${quickOrders.length} orders ready to work on in 2 hours or less (materials ready)`,
         estimatedTime: quickOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: quickOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
