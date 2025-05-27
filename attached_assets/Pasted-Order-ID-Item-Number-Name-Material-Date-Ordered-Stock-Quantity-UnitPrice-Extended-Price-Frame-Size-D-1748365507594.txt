@@ -1,0 +1,82 @@
+Order ID	Item Number	Name	Material	Date Ordered	Stock	Quantity	UnitPrice	Extended Price	Frame Size	Due Date	Stock Savings	Notes	Size Bracket	Progress Display	Glass ID	Ordered	Arrived	Glass Cut	Moulding ID	Mat ID	Calendar ID	Customer ID	Fabric ID	POS ID
+20815	Optium Museum Acrylic®	Nichols, Amy	Glazing	05/27/2025	TRUE	1	$10,599.00	$10,599.00	17 5/8 X 17 5/8	3/4/2024	$10,599.00		18X24		#REF!	FALSE	TRUE	FALSE						
+20824	UltraVue®	Cornwell, Rebecca	Glazing		FALSE	1	$1,827.00	$1,827.00	24 X 18	3/6/2024			22X28	████████░░ 80%	#REF!	FALSE	TRUE	FALSE						
+20825	UltraVue®	Cornwell, Rebecca	Glazing		FALSE	1	$1,827.00	$1,827.00	24 X 18	3/6/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20826	Conservation Clear®	Mata, Roy	Glazing		FALSE	1	$551.00	$551.00	14 1/8 X 17	3/7/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20827	Conservation Clear®	Mata, Roy	Glazing		FALSE	1	$1,056.00	$1,056.00	24 1/2 X 20 3/4	3/7/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20828	Museum Glass®	Schmidt, Sally Anne	Glazing		FALSE	1	$3,743.00	$3,743.00	28 5/8 X 24 5/8	3/7/2024			32X40		#REF!	FALSE	TRUE	FALSE						
+20829	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$1,174.00	$1,174.00	13 X 17	3/7/2024	$1,174.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20830	Museum Glass®	Schmidt, Sally Anne	Glazing		FALSE	1	$2,479.00	$2,479.00	19 1/4 X 24 1/4	3/7/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20831	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$992.00	$992.00	12 1/4 X 15 1/4	3/7/2024	$992.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20832	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$569.00	$569.00	12 1/4 X 8 3/4	3/7/2024	$569.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20833	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$667.00	$667.00	10 1/4 X 12 1/4	3/7/2024	$667.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20834	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$984.00	$984.00	15 1/8 X 12 1/4	3/7/2024	$984.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20835	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$596.00	$596.00	9 1/4 X 12 1/8	3/7/2024	$596.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20836	Museum Glass®	Schmidt, Sally Anne	Glazing	05/27/2025	TRUE	1	$596.00	$596.00	9 1/4 X 12 1/8	3/7/2024	$596.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20837	Museum Glass®	Cummings, Alex	Glazing	05/27/2025	TRUE	1	$1,072.00	$1,072.00	13 1/8 X 15 3/8	3/10/2024	$1,072.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20838	Museum Glass®	Cummings, Alex	Glazing		FALSE	1	$2,294.00	$2,294.00	24 X 18	3/10/2024			18X24		#REF!	FALSE	TRUE	FALSE						
+20856	UltraVue®	Vela, Meredith	Glazing	05/27/2025	TRUE	1	$2,117.00	$2,117.00	25 1/2 X 19 5/8	3/18/2024	$2,117.00		22X28		#REF!	FALSE	TRUE	FALSE						
+20857	UltraVue®	Vela, Meredith	Glazing	05/27/2025	TRUE	1	$1,966.00	$1,966.00	24 5/8 X 18 7/8	3/18/2024	$1,966.00		22X28		#REF!	FALSE	TRUE	TRUE						
+20858	Premium Clear Acrylic	Vela, Meredith	Glazing	05/27/2025	TRUE	1	$5,464.00	$5,464.00	46 3/4 X 46 3/4	3/18/2024	$5,464.00		48X96		#REF!	TRUE	FALSE	FALSE						
+20859	UltraVue®	Vela, Meredith	Glazing		FALSE	1	$3,612.00	$3,612.00	28 X 30 1/2	3/18/2024			32X40		#REF!	FALSE	TRUE	TRUE						
+20860	Conservation Clear®	DEASON, ALI	Glazing		FALSE	1	$458.00	$458.00	17 3/4 X 12 5/8	3/19/2024			16X20		#REF!	FALSE	TRUE	TRUE						
+20861	Museum Glass®	Wright, Kendall	Glazing		FALSE	1	$3,439.00	$3,439.00	28 5/8 X 22 5/8	3/19/2024			24X36		#REF!	FALSE	TRUE	FALSE						
+20878	Museum Glass®	Daly, Jean	Glazing	05/27/2025	TRUE	1	$1,115.00	$1,115.00	15 X 14	3/26/2024	$1,115.00		16X20	█████░░░░░ 50%	#REF!	FALSE	TRUE	FALSE						
+20879	Museum Glass®	Daly, Jean	Glazing	05/27/2025	TRUE	1	$1,215.00	$1,215.00	15 X 15 1/4	3/26/2024	$1,215.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20883	Museum Glass®	Shah, Usha	Glazing	05/27/2025	TRUE	1	$1,723.00	$1,723.00	16 1/8 X 20 1/8	3/31/2024	$1,723.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20886	Museum Glass®	Raymer, Matt	Glazing		FALSE	1	$3,657.00	$3,657.00	23 3/4 X 29	4/2/2024			24X36		#REF!	FALSE	TRUE	FALSE						
+20887	Museum Glass®	Raymer, Matt	Glazing	05/27/2025	TRUE	1	$1,205.00	$1,205.00	16 1/2 X 13 3/4	4/2/2024	$1,205.00		16X20	█████░░░░░ 50%	#REF!	FALSE	TRUE	FALSE						
+20889	Museum Glass®	Raymer, Matt	Glazing	05/27/2025	TRUE	1	$723.00	$723.00	11 X 12 3/8	4/2/2024	$723.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20890	Museum Glass®	Raymer, Matt	Glazing	05/27/2025	TRUE	1	$708.00	$708.00	10 1/4 X 13	4/2/2024	$708.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20891	Museum Glass®	Raymer, Matt	Glazing	05/27/2025	TRUE	1	$544.00	$544.00	11 3/8 X 9	4/2/2024	$544.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20892	Museum Glass®	Raymer, Matt	Glazing	05/27/2025	TRUE	1	$951.00	$951.00	15 1/4 X 11 3/4	4/2/2024	$951.00		16X20		#REF!	FALSE	TRUE	TRUE						
+20893	Museum Glass®	Baskin, Faina	Glazing	05/27/2025	TRUE	1	$1,115.00	$1,115.00	15 X 14	4/3/2024	$1,115.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20894	Museum Glass®	Baskin, Faina	Glazing		FALSE	1	$2,565.00	$2,565.00	24 X 20 1/8	4/3/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20895	Museum Glass®	Baskin, Faina	Glazing		FALSE	1	$3,186.00	$3,186.00	27 3/4 X 21 5/8	4/3/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20896	Museum Glass®	Baskin, Faina	Glazing		FALSE	1	$1,386.00	$1,386.00	18 X 14 1/2	4/3/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20898	Museum Glass®	Osterling, Anna	Glazing		FALSE	9	$3,082.00	$27,738.00	21 1/2 X 27	4/21/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20900	Museum Glass®	Daigle, Logan	Glazing		FALSE	1	$2,092.00	$2,092.00	24 1/4 X 16 1/4	4/22/2024			22X28		#REF!	FALSE	TRUE	FALSE						
+20901	Museum Glass®	Daigle, Logan	Glazing		FALSE	1	$804.00	$804.00	14 1/4 X 10 5/8	4/22/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20912	Conservation Clear®	Ryan, Mathew	Glazing		FALSE	1	$1,408.00	$1,408.00	24 3/4 X 30 3/4	4/24/2024			32X40		#REF!	FALSE	TRUE	FALSE						
+20931	Museum Glass®	Bielenberg, Casey	Glazing		FALSE	1	$4,588.00	$4,588.00	36 X 24	4/30/2024			24X36		#REF!	FALSE	TRUE	FALSE						
+20933	Museum Glass®	Ball, Carrie	Glazing		FALSE	1	$3,271.00	$3,271.00	28 X 22	5/2/2024			22X28		#REF!	FALSE	FALSE	FALSE						
+20939	Museum Glass®	Lebeau, Kate	Glazing		FALSE	1	$1,390.00	$2,780.00	17 3/4 X 14 3/4	6/6/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20942	Museum Glass®	Noelle McCutcheon	Glazing		FALSE	1	$1,572.00	$1,572.00	16 X 18 1/2	6/7/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20950	Museum Glass®	GISSELL, TAYLOR	Glazing		FALSE	1	$956.00	$956.00	12 X 15	6/14/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20951	Museum Glass®	GISSELL, TAYLOR	Glazing		FALSE	1	$1,270.00	$1,270.00	16 1/2 X 14 1/2	6/14/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20954	Museum Glass®	Banks, Zak & Nan	Glazing		FALSE	1	$1,047.00	$1,047.00	12 5/8 X 15 5/8	5/14/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20955	Museum Glass®	Banks, Zak & Nan	Glazing	05/27/2025	TRUE	1	$1,041.00	$1,041.00	12 1/4 X 16	5/14/2024	$1,041.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20956	Museum Glass®	Banks, Zak & Nan	Glazing		FALSE	1	$1,322.00	$1,322.00	13 7/8 X 17 15/16	5/14/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20957	Museum Glass®	Banks, Zak & Nan	Glazing		FALSE	1	$2,947.00	$2,947.00	20 X 27 3/4	5/14/2024			22X28		#REF!	FALSE	FALSE	FALSE						
+20958	Museum Glass®	Banks, Zak & Nan	Glazing		FALSE	1	$2,947.00	$2,947.00	20 X 27 3/4	5/14/2024			22X28	███████░░░ 70%	#REF!	FALSE	FALSE	FALSE						
+20959	Museum Glass®	Banks, Zak & Nan	Glazing		FALSE	1	$1,041.00	$5,205.00	12 1/4 X 16	5/14/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20967	Museum Glass®	Garcia, Liza	Glazing		FALSE	1	$3,011.00	$3,011.00	24 X 23 5/8	5/16/2024			24X36		#REF!	FALSE	FALSE	FALSE						
+20968	Museum Glass®	Garcia, Liza	Glazing	05/27/2025	TRUE	1	$496.00	$496.00	11 X 8 1/2	5/16/2024	$496.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20969	Museum Glass®	Garcia, Liza	Glazing	05/27/2025	TRUE	1	$496.00	$496.00	11 X 8 1/2	5/16/2024	$496.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20971	PLEXI Sandwich OP3	Conner, Kristi	Glazing		FALSE	1	$9,279.00	$9,279.00	13 3/8 X 69 3/8	6/14/2024			48X96		#REF!	FALSE	TRUE	FALSE						
+20974	Museum Glass®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$3,300.00	$3,300.00	21 1/4 X 29 1/4	5/19/2024	$3,300.00		24X36		#REF!	FALSE	FALSE	FALSE						
+20975	Museum Glass®	Cone, Paul	Glazing		FALSE	1	$4,227.00	$4,227.00	33 X 24 1/8	5/19/2024			32X40		#REF!	FALSE	FALSE	FALSE						
+20976	Museum Glass®	Cone, Paul	Glazing		FALSE	1	$5,018.00	$5,018.00	35 X 27	5/19/2024			32X40		#REF!	FALSE	FALSE	TRUE						
+20977	Museum Glass®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$1,770.00	$1,770.00	21 1/2 X 15 1/2	5/19/2024	$1,770.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20978	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	23 1/2 X 17 1/2	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20979	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	23 1/4 X 17 1/4	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20980	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$844.00	$844.00	24 X 18 1/8	5/19/2024	$844.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20981	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	23 1/2 X 17 1/2	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20982	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$1,056.00	$1,056.00	24 1/8 X 18 1/4	5/19/2024	$1,056.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20983	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	16 5/8 X 22 5/8	5/19/2024	$746.00		18X24		#REF!	FALSE	TRUE	FALSE						
+20984	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	22 5/8 X 16 5/8	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20985	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	22 7/8 X 16 7/8	5/19/2024	$746.00		18X24	████████░░ 80%	#REF!	FALSE	FALSE	FALSE						
+20986	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$1,056.00	$1,056.00	28 X 20 1/4	5/19/2024	$1,056.00		22X28		#REF!	FALSE	FALSE	FALSE						
+20987	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$350.00	$350.00	10 X 7	5/19/2024	$350.00		16X20		#REF!	FALSE	TRUE	FALSE						
+20988	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$458.00	$916.00	17 X 11	5/19/2024	$916.00		16X20		#REF!	FALSE	FALSE	FALSE						
+20990	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	17 X 21	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20991	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	17 X 21	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20992	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$1,267.00	$1,267.00	24 X 30	5/19/2024	$1,267.00		24X36		#REF!	FALSE	FALSE	FALSE						
+20993	Conservation Clear®	Cone, Paul	Glazing	05/27/2025	TRUE	1	$746.00	$746.00	24 X 18	5/19/2024	$746.00		18X24		#REF!	FALSE	FALSE	FALSE						
+20995	Optium Museum Acrylic®	Evans, John	Glazing		FALSE	1	$10,599.00	$21,198.00	24 X 20	4/30/2024			32X40		#REF!	FALSE	FALSE	FALSE						
+20996	Conservation Clear®	short, Maria	Glazing		FALSE	1	$551.00	$551.00	16 X 20	5/21/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20997	Conservation Clear®	short, Maria	Glazing		FALSE	1	$551.00	$551.00	16 X 20	5/21/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20998	Conservation Clear®	short, Maria	Glazing		FALSE	1	$458.00	$458.00	13 1/8 X 16 1/8	5/21/2024			16X20		#REF!	FALSE	TRUE	FALSE						
+20999	Conservation Clear®	short, Maria	Glazing		FALSE	1	$746.00	$746.00	23 X 17	5/21/2024			22X28		#REF!	FALSE	FALSE	FALSE						
+21007	Museum Glass®	Lawrence, Kyle	Glazing	05/27/2025	TRUE	1	$2,652.00	$5,304.00	13 1/2 X 37	5/23/2024	$5,304.00		32X40		#REF!	FALSE	TRUE	FALSE						
+21009	Museum Glass®	Strax, Adam	Glazing		FALSE	1	$797.00	$797.00	12 1/4 X 12 1/4	5/26/2024			16X20		#REF!	FALSE	TRUE	FALSE						
