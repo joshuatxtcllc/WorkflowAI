@@ -1,0 +1,249 @@
+ID	Name	Phone	Email	Retail	Order Date	Due Date	Order Status																	
+20172	Matt Duncan	281-224-1705	leydy@uscoinsandjewelry.com	$536.36	6/9/2023	8/8/2023	Acrylic Fabrication																	
+20167	Alison Coriell	713-205-8619	abcoriell@gmail.com	$769.44	6/7/2023	8/8/2023	Acrylic Fabrication																	
+20283	Ryan Taylor	281-435-3616	N/A	$274.06	8/11/2023	8/11/2023	Waiting On Customer																	
+20275	Meghan McAlpine	832-515-0385	meghanmcalpine4@gmail.com	$498.32	8/10/2023	9/12/2023	Waiting On Customer																	
+20214	Ada Peeples	713-410-1737	ACOSBORN90@GMAIL.COM	$639.36	7/15/2023	9/13/2023	Acrylic Fabrication																	
+20409	Aaron Shisler	713-392-1397	aaron.shisler@gmail.com	$1,056.84	9/9/2023	10/10/2023	Waiting On Customer																	
+20417	Kenneth Finch	713-459-2120	kenneth@finchcreative.com	$1,131.98	9/11/2023	10/11/2023	Specialty																	
+20460	Shannon Rodriguez	832-206-1570	Shannon.Rodriguez@cheniere.com	$814.25	9/22/2023	10/23/2023	Waiting On Customer																	
+20475	Amber Barger	713-837-6612	bergeras@gmail.com	$312.07	9/23/2023	10/25/2023	Acrylic Fabrication																	
+20523	Alicia Kahn	848-228-6944	NANNOPLANKTON@GMAIL.COM	$139.99	10/9/2023	11/8/2023	Double Check																	
+20520	Michael Gray	256-777-7664	mjgray301@gmail.com	$25.00	10/9/2023	11/8/2023	Matted																	
+20592	Lu Wang	832-773-8086	luwang5588@gmail.com	$349.64	10/28/2023	11/22/2023	Mat Cut																	
+20616	Rebecca Chaikin	917-596-3358	rbctwo@gmail.com	$263.50	11/4/2023	11/29/2023	Matted																	
+20637	Amy Cann	713-240-9126	amyzolkoski@yahoo.com	$696.69	11/10/2023	12/5/2023	Double Check																	
+20655	TYLER SHOULTZ	225-278-3828	TYLERLEESHOULTZ@YAHOO.COM	$711.88	11/11/2023	12/6/2023	Specialty																	
+20650	Rafael Rosengarten	843-991-3407	rafecooks@gmail.com	$342.80	11/10/2023	12/6/2023	Matted																	
+20662	Jessica Rogers	281-380-8084	Jess@tutorvilletutors.com	$635.72	11/14/2023	12/11/2023	Acrylic Fabrication																	
+20663	Judy Hrdlicka	713-201-6852	judithrose1231@sbcglobal.net	$202.23	11/15/2023	12/11/2023	Specialty																	
+20710	BRIAN HEITZ	832-330-8790	BHEITZ@GMAIL.COM	$1,200.46	12/5/2023	1/1/2024	Double Check																	
+20709	BRIAN HEITZ	832-330-8790	BHEITZ@GMAIL.COM	$1,067.75	12/5/2023	1/1/2024	Matted																	
+20706	BRIAN HEITZ	832-330-8790	BHEITZ@GMAIL.COM	$1,241.31	12/5/2023	1/1/2024	Matted																	
+20704	Victoria Taylor	415-712-9044	victoria.taylor@francescas	$173.76	12/5/2023	1/1/2024	Canvases																	
+20703	Victoria Taylor	415-712-9044	victoria.taylor@francescas	$148.12	12/5/2023	1/1/2024	Canvases																	
+20702	Victoria Taylor	415-712-9044	victoria.taylor@francescas	$111.96	12/5/2023	1/1/2024	Canvases																	
+20719	Pheobie Jenkins	832-330-7951	pheobiejenkins@gmail.com	$466.15	12/8/2023	1/2/2024	Matted																	
+20712	Mark Williams	713-261-8444	markwil27@yahoo.com	$345.62	12/6/2023	1/2/2024	Specialty																	
+20716	Mark Williams	713-261-8444	markwil27@yahoo.com	$116.20	12/6/2023	1/2/2024	Pop Ins																	
+20724	Sonya Rosenbach	949-235-3990	srosenbach77@gmail.com	$663.80	12/9/2023	1/3/2024	Specialty																	
+20726	Jeff Crawford	713-340-7605	jeffcra@gmail.com	$257.44	12/9/2023	1/3/2024	Matted																	
+20722	Hannah Gaskill	409-790-1095	hannah.r.gaskill@gmail.com	$1,058.65	12/8/2023	1/3/2024	Specialty																	
+20734	EILEEN LOUVIER	832-603-3536	EILEENLOUVIER@YAHOO.COM	$373.87	12/15/2023	1/9/2024	Waiting On Customer																	
+20735	Rebecca Seidl	713-574-0258	rebeccarsiedl@gmai.com	$107.68	12/16/2023	1/10/2024	Pop Ins																	
+20743	Katy Atkiss	310-422-9226	katyatkiss@gmail.com	$281.81	12/19/2023	1/15/2024	Matted																	
+20749	Sanam Loghavi	310-990-3703	sanamche@yahoo.com	$185.17	12/21/2023	1/15/2024	Matted																	
+20760	Will Boone	830-554-0702	willboonewillboone@gmail.com	$135.44	1/2/2024	1/29/2024	Double Check																	
+20764	PAIGE COLEMAN-RODRIGUEZ	713-582-9610	PAIGEHARRIS@GMAIL.COM	$436.82	1/10/2024	2/5/2024	Specialty																	
+20781	Will Wakefield	915-433-4301	willwake13@utexas.edu	$692.23	1/13/2024	2/7/2024	Double Check																	
+20788	Matt Duncan	281-224-1705	leydy@uscoinsandjewelry.com	$20.85	1/21/2024	2/15/2024	Double Check																	
+20789	Courtney Ford	281-818-7853	courtneycary@hotmail.com	$1,086.86	1/25/2024	2/19/2024	Matted																	
+20791	James kittrell	214-274-7520		$301.62	1/28/2024	2/22/2024	Matted																	
+20793	Alice Hickey	713-597-1295	alice.hickey@gmail.com	$211.48	1/29/2024	2/23/2024	Double Check																	
+20794	Alice Hickey	713-597-1295	alice.hickey@gmail.com	$289.11	1/29/2024	2/23/2024	Double Check																	
+20802	Scott Novich	401-257-9460	scott.novich@gmail.com	$293.01	1/31/2024	2/26/2024	Double Check																	
+20801	Scott Novich	401-257-9460	scott.novich@gmail.com	$365.75	1/31/2024	2/26/2024	Specialty																	
+20803	JIM HOPKINS	713-298-4663		$688.42	2/1/2024	2/27/2024	Double Check																	
+20812	Corbin Primrose	832-451-4478	cprimrose@ccatexas.org	$4,674.00	2/6/2024	2/27/2024	Matted																	
+20804	JIM HOPKINS	713-298-4663		$350.18	2/1/2024	2/27/2024	Double Check																	
+20811	Corbin Primrose	832-451-4478	cprimrose@ccatexas.org	$3,465.00	2/6/2024	2/27/2024	Matted																	
+20806	Sarah brodbeck	303-618-1197	brodbeck_sarah@yahoo.com	$1,049.24	2/3/2024	2/28/2024	Double Check																	
+20808	Shari Perez	832-545-4442	SHARIPEREZ01@GMAIL.COM	$480.95	2/5/2024	3/1/2024	Double Check																	
+20810	Diane McMillen	281-723-0047	dianemcmillentx@gmail.com	$121.79	2/6/2024	3/4/2024	Double Check																	
+20809	Diane McMillen	281-723-0047	dianemcmillentx@gmail.com	$129.41	2/6/2024	3/4/2024	Double Check																	
+20815	Amy Nichols	214-448-9969	schoenbrun@gmail.com	$291.40	2/9/2024	3/5/2024	Double Check																	
+20820	Christina Tran	832-606-9586	christina@happenhouston.com	$255.30	2/10/2024	3/6/2024	Matted																	
+20817	Ewa Wilke	303-589-9118	EWAMALUTKA.WILKE@GMAIL.COM	$283.51	2/10/2024	3/6/2024	Double Check																	
+20818	Ewa Wilke	303-589-9118	EWAMALUTKA.WILKE@GMAIL.COM	$306.93	2/10/2024	3/6/2024	Double Check																	
+20822	Rebecca Cornwell	832-524-6867		$271.65	2/10/2024	3/7/2024	Matted																	
+20824	Rebecca Cornwell	832-524-6867		$154.43	2/10/2024	3/7/2024	Pop Ins																	
+20825	Rebecca Cornwell	832-524-6867		$154.43	2/10/2024	3/7/2024	Pop Ins																	
+20823	Rebecca Cornwell	832-524-6867		$235.88	2/10/2024	3/7/2024	Matted																	
+20831	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$235.92	2/12/2024	3/8/2024	Double Check																	
+20828	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$236.50	2/12/2024	3/8/2024	Double Check																	
+20830	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$540.00	2/12/2024	3/8/2024	Double Check																	
+20826	Roy Mata	832-758-9065		$225.12	2/12/2024	3/8/2024	Double Check																	
+20833	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$191.78	2/12/2024	3/8/2024	Double Check																	
+20836	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$184.98	2/12/2024	3/8/2024	Double Check																	
+20834	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$259.17	2/12/2024	3/8/2024	Double Check																	
+20835	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$184.98	2/12/2024	3/8/2024	Double Check																	
+20827	Roy Mata	832-758-9065		$183.22	2/12/2024	3/8/2024	Double Check																	
+20832	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$207.67	2/12/2024	3/8/2024	Double Check																	
+20829	Sally Anne Schmidt	713-376-9576	sallyanne.schmidt@gmail.com	$211.84	2/12/2024	3/8/2024	Double Check																	
+20842	Will Henry	832-265-6151		$288.13	2/20/2024	3/18/2024	Double Check																	
+20858	Meredith Vela	713-628-5876		$451.25	2/23/2024	3/19/2024	Double Check																	
+20857	Meredith Vela	713-628-5876		$138.03	2/23/2024	3/19/2024	Double Check																	
+20855	Meredith Vela	713-628-5876		$245.25	2/23/2024	3/19/2024	Acrylic Fabrication																	
+20856	Meredith Vela	713-628-5876		$146.12	2/23/2024	3/19/2024	Pop Ins																	
+20859	Meredith Vela	713-628-5876		$430.47	2/23/2024	3/19/2024	Double Check																	
+20860	ALI DEASON	940-642-6049	DEASONALI@UTEXAS.EDU	$103.87	2/24/2024	3/20/2024	Matted																	
+20861	Kendall Wright	832-282-7201	kendallmwright@gmail.com	$433.43	2/24/2024	3/20/2024	Double Check																	
+20862	Rachel Nolan	713-254-4456	rachelpack13@gmail.com	$155.01	2/28/2024	3/25/2024	Double Check																	
+20872	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$125.40	2/28/2024	3/26/2024	Waiting On Customer																	
+20871	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$1,293.91	2/28/2024	3/26/2024	Waiting On Customer																	
+20869	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$171.35	2/28/2024	3/26/2024	Waiting On Customer																	
+20873	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$148.26	2/28/2024	3/26/2024	Waiting On Customer																	
+20870	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$521.62	2/28/2024	3/26/2024	Waiting On Customer																	
+20874	Samantha Knecht	713-397-4625	samanthaknecht@gmail.com	$196.98	2/28/2024	3/26/2024	Waiting On Customer																	
+20868	Madox Winters	713-401-8423	madoxlwinters@gmail.com	$813.81	2/28/2024	3/26/2024	Double Check																	
+20879	Jean Daly	415-963-1184	jeanclaredaly@gmail.com	$169.80	3/2/2024	3/27/2024	Double Check																	
+20878	Jean Daly	415-963-1184	jeanclaredaly@gmail.com	$159.68	3/2/2024	3/27/2024	Double Check																	
+20877	Dina Nelson	713-471-4067	dinaf011@gmail.com	$294.42	3/2/2024	3/27/2024	Double Check																	
+20883	Usha Shah	713-203-7803		$315.99	3/6/2024	4/1/2024	Double Check																	
+20884	Emily Billing	727-871-4797	emily.j.billing@gmail.com	$156.59	3/8/2024	4/2/2024	Double Check																	
+20891	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$153.39	3/9/2024	4/3/2024	Double Check																	
+20886	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$412.57	3/9/2024	4/3/2024	Double Check																	
+20888	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$199.99	3/9/2024	4/3/2024	Double Check																	
+20885	Arvind Narayanan	847-338-2459	arvindsn10@gmail.com	$658.40	3/9/2024	4/3/2024	Canvases																	
+20890	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$371.26	3/9/2024	4/3/2024	Double Check																	
+20892	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$331.70	3/9/2024	4/3/2024	Double Check																	
+20887	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$200.57	3/9/2024	4/3/2024	Double Check																	
+20889	Matt Raymer	770-468-5635	matthewpaulraymer@gmail.com	$211.81	3/9/2024	4/3/2024	Double Check																	
+20896	Faina Baskin	832-228-6359	faina.baskin@gmail.com	$115.79	3/9/2024	4/4/2024	Double Check																	
+20893	Faina Baskin	832-228-6359	faina.baskin@gmail.com	$117.67	3/9/2024	4/4/2024	Double Check																	
+20895	Faina Baskin	832-228-6359	faina.baskin@gmail.com	$422.36	3/9/2024	4/4/2024	Double Check																	
+20894	Faina Baskin	832-228-6359	faina.baskin@gmail.com	$210.05	3/9/2024	4/4/2024	Double Check																	
+20898	Anna Osterling	832-776-5329	brujitas1952@gmail.com	$1,841.67	3/27/2024	4/22/2024	Double Check																	
+20902	Derek Ybarra	281-799-1450	dmy986@yahoo.com	$219.73	3/28/2024	4/23/2024	Double Check																	
+20899	Linda Nguyen	346-288-3596	lindaajadee@gmail.com	$200.00	3/27/2024	4/23/2024	Canvases																	
+20900	Logan Daigle	337-344-3657	logandaigle99@gmail.com	$636.87	3/28/2024	4/23/2024	Double Check																	
+20901	Logan Daigle	337-344-3657	logandaigle99@gmail.com	$286.22	3/28/2024	4/23/2024	Double Check																	
+20908	Anthony Faillace	646-249-8362	faillace@drakemanagement.com	$279.83	3/29/2024	4/24/2024	Double Check																	
+20904	Meredith Vela	713-628-5876		$74.21	3/29/2024	4/24/2024	Pop Ins																	
+20906	Denisse Berumen	713-854-3866	berumend7@gmail.com	$476.45	3/29/2024	4/24/2024	Pop Ins																	
+20907	Denisse Berumen	713-854-3866	berumend7@gmail.com	$210.65	3/29/2024	4/24/2024	Pop Ins																	
+20913	Mathew Ryan	423-259-1120	matthew.ryan123987@hotmail.com	$510.46	3/30/2024	4/25/2024	Double Check																	
+20910	Shannon Posey	832-292-6854	sdreynolds1966@yahoo.com	$298.61	3/30/2024	4/25/2024	Double Check																	
+20916	Mathew Ryan	423-259-1120	matthew.ryan123987@hotmail.com	$234.19	3/30/2024	4/25/2024	Double Check																	
+20914	Mathew Ryan	423-259-1120	matthew.ryan123987@hotmail.com	$328.47	3/30/2024	4/25/2024	Double Check																	
+20912	Mathew Ryan	423-259-1120	matthew.ryan123987@hotmail.com	$553.92	3/30/2024	4/25/2024	Double Check																	
+20909	Rachel Nolan	713-254-4456	rachelpack13@gmail.com	$248.26	3/30/2024	4/25/2024	Pop Ins																	
+20911	Shannon Posey	832-292-6854	sdreynolds1966@yahoo.com	$156.05	3/30/2024	4/25/2024	Double Check																	
+20915	Mathew Ryan	423-259-1120	matthew.ryan123987@hotmail.com	$281.85	3/30/2024	4/25/2024	Double Check																	
+20917	Peter Zavodnyik	713-240-8486		$640.26	4/1/2024	4/26/2024	Matted																	
+20919	Mindy Rippstein	713-443-8312		$152.96	4/2/2024	4/29/2024	Pop Ins																	
+20921	Lisa Martinson	713-686-5170		$308.94	4/3/2024	4/29/2024	Matted																	
+20925	Richard Lunan	832-922-2353	rlunan@gmail.com	$282.29	4/4/2024	4/30/2024	Matted																	
+20931	Casey Bielenberg	281-788-2475	caseybielenberg@yahoo.com	$382.27	4/6/2024	5/1/2024	Double Check																	
+20928	Connor Long	318-469-3620	connorlong10@gmail.com	$89.49	4/5/2024	5/1/2024	Pop Ins																	
+20932	Kyle Armand	281-507-5539	karmand@gmail.com	$203.57	4/6/2024	5/1/2024	Double Check																	
+20929	Amy Norris	979-864-9574	amy@forlifeandfamily.org	$421.42	4/5/2024	5/1/2024	Printing																	
+20933	Carrie Ball	832-390-7944	carrieinnola@yahoo.com	$560.66	4/8/2024	5/3/2024	Double Check																	
+20938	Lari Dunn	906-430-7110	larianna.dunn@gmail.com	$75.00	4/10/2024	5/6/2024	RUSH																	
+21013	Scott Pharr	281-773-4364	scottpharr71@gmail.com	$1,289.73	5/1/2024	5/8/2024	Specialty																	
+20945	Makenzie Jauer	361-215-7466	makenziejauer@gmail.com	$248.33	4/16/2024	5/13/2024	Matted																	
+20943	Jen Kolb	832-205-8756	info@jenkolbinteriors.com	$637.53	4/16/2024	5/13/2024	Double Check																	
+20944	Jen Kolb	832-205-8756	info@jenkolbinteriors.com	$1,176.24	4/16/2024	5/13/2024	Double Check																	
+20946	Makenzie Jauer	361-215-7466	makenziejauer@gmail.com	$171.34	4/16/2024	5/13/2024	Matted																	
+20948	Brittney Locke	713-775-7116	brit.locke@yahoo.com	$902.24	4/17/2024	5/14/2024	Double Check																	
+20949	Brittney Locke	713-775-7116	brit.locke@yahoo.com	$789.54	4/17/2024	5/14/2024	Double Check																	
+20947	Brittney Locke	713-775-7116	brit.locke@yahoo.com	$394.07	4/17/2024	5/14/2024	Double Check																	
+20959	Zak & Nan Banks	281-844-1626		$973.20	4/19/2024	5/15/2024	Double Check																	
+20954	Zak & Nan Banks	281-844-1626		$194.84	4/19/2024	5/15/2024	Matted																	
+20958	Zak & Nan Banks	281-844-1626		$338.35	4/19/2024	5/15/2024	Matted																	
+20956	Zak & Nan Banks	281-844-1626		$217.34	4/19/2024	5/15/2024	Matted																	
+20955	Zak & Nan Banks	281-844-1626		$194.64	4/19/2024	5/15/2024	Matted																	
+20952	Elizabeth Rasmussen	713-408-9505	elras2012@gmail.com	$768.06	4/18/2024	5/15/2024	Double Check																	
+20957	Zak & Nan Banks	281-844-1626		$338.35	4/19/2024	5/15/2024	Matted																	
+20961	Raizel Sloane	832-628-0005	raizelsloane@gmail.com	$109.37	4/20/2024	5/16/2024	Double Check																	
+20962	Thomas Etzel	512-921-1421		$304.00	4/20/2024	5/16/2024	Double Check																	
+20960	Raizel Sloane	832-628-0005	raizelsloane@gmail.com	$541.52	4/20/2024	5/16/2024	Double Check																	
+20966	Adam Brouillard	716-481-2106	adbrouillard@gmail.com	$424.33	4/20/2024	5/16/2024	Mat Cut																	
+20963	Thomas Etzel	512-921-1421		$515.74	4/20/2024	5/16/2024	Double Check																	
+20967	Liza Garcia	210-724-2000	lbgg638@gmail.com	$541.18	4/20/2024	5/17/2024	Double Check																	
+20969	Liza Garcia	210-724-2000	lbgg638@gmail.com	$50.00	4/20/2024	5/17/2024	Double Check																	
+20968	Liza Garcia	210-724-2000	lbgg638@gmail.com	$84.42	4/20/2024	5/17/2024	Double Check																	
+20985	Paul Cone	281-682-0502	paul@coneploc.com	$322.76	4/25/2024	5/20/2024	Matted																	
+20982	Paul Cone	281-682-0502	paul@coneploc.com	$273.42	4/25/2024	5/20/2024	Matted																	
+20977	Paul Cone	281-682-0502	paul@coneploc.com	$182.95	4/25/2024	5/20/2024	Matted																	
+20975	Paul Cone	281-682-0502	paul@coneploc.com	$205.50	4/25/2024	5/20/2024	Double Check																	
+20990	Paul Cone	281-682-0502	paul@coneploc.com	$272.32	4/25/2024	5/20/2024	Specialty																	
+20979	Paul Cone	281-682-0502	paul@coneploc.com	$295.77	4/25/2024	5/20/2024	Matted																	
+20991	Paul Cone	281-682-0502	paul@coneploc.com	$268.39	4/25/2024	5/20/2024	Specialty																	
+20989	Paul Cone	281-682-0502	paul@coneploc.com	$99.36	4/25/2024	5/20/2024	Dry Mounting																	
+20986	Paul Cone	281-682-0502	paul@coneploc.com	$398.78	4/25/2024	5/20/2024	Matted																	
+20993	Paul Cone	281-682-0502	paul@coneploc.com	$147.75	4/25/2024	5/20/2024	Float Mount																	
+20980	Paul Cone	281-682-0502	paul@coneploc.com	$328.66	4/25/2024	5/20/2024	Matted																	
+20984	Paul Cone	281-682-0502	paul@coneploc.com	$248.60	4/25/2024	5/20/2024	Matted																	
+20974	Paul Cone	281-682-0502	paul@coneploc.com	$432.96	4/25/2024	5/20/2024	Matted																	
+20981	Paul Cone	281-682-0502	paul@coneploc.com	$190.44	4/25/2024	5/20/2024	Matted																	
+20976	Paul Cone	281-682-0502	paul@coneploc.com	$669.63	4/25/2024	5/20/2024	Double Check																	
+20987	Paul Cone	281-682-0502	paul@coneploc.com	$77.52	4/25/2024	5/20/2024	Pop Ins																	
+20983	Paul Cone	281-682-0502	paul@coneploc.com	$297.37	4/25/2024	5/20/2024	Matted																	
+20992	Paul Cone	281-682-0502	paul@coneploc.com	$176.16	4/25/2024	5/20/2024	Pop Ins																	
+20978	Paul Cone	281-682-0502	paul@coneploc.com	$249.28	4/25/2024	5/20/2024	Matted																	
+20994	Suzanne Green	210-883-6873	gesftx@gmail.com	$1,471.34	4/26/2024	5/21/2024	Double Check																	
+21014	Suzanne Green	210-883-6873	gesftx@gmail.com	$0.00	4/26/2024	5/21/2024	Double Check																	
+20999	Maria short	520-981-7281	m.louiseshort@gmail.com	$106.10	4/27/2024	5/22/2024	Double Check																	
+20996	Maria short	520-981-7281	m.louiseshort@gmail.com	$63.74	4/27/2024	5/22/2024	Double Check																	
+20997	Maria short	520-981-7281	m.louiseshort@gmail.com	$63.74	4/27/2024	5/22/2024	Double Check																	
+20998	Maria short	520-981-7281	m.louiseshort@gmail.com	$85.16	4/27/2024	5/22/2024	Double Check																	
+21000	Maria short	520-981-7281	m.louiseshort@gmail.com	$33.43	4/27/2024	5/22/2024	Double Check																	
+21001	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$161.87	4/27/2024	5/23/2024	Matted																	
+21002	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$181.78	4/27/2024	5/23/2024	Matted																	
+21003	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$150.44	4/27/2024	5/23/2024	Matted																	
+21005	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$107.39	4/27/2024	5/23/2024	Matted																	
+21004	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$165.63	4/27/2024	5/23/2024	Matted																	
+21006	Jennah Beckwith	713-907-9011	jennahbeckwith@gmail.com	$123.48	4/27/2024	5/23/2024	Matted																	
+21007	Kyle Lawrence	832-326-8563	CKLAWRENCEFAMILY@GMAIL.COM	$767.36	4/29/2024	5/24/2024	Float Mount																	
+21009	Adam Strax	912-398-8228	detrum@gmail.com	$157.00	4/29/2024	5/27/2024	Matted																	
+21017	Josetta Jones	703-798-3535	josettajones@sbcglobal.net	$747.14	5/4/2024	5/29/2024	Double Check																	
+21046	Tanya Sukhija-Cohen	408-623-2350		$0.00	5/29/2024	6/1/2024	Waiting On Customer																	
+20939	Kate Lebeau	713-306-4285	kate.fiorenzi@gmail.com	$405.30	4/11/2024	6/7/2024	Double Check																	
+20942	Noelle McCutcheon	305-582-3100	noelle.mccutcheon@gmail.com	$283.42	4/13/2024	6/8/2024	Pop Ins																	
+21027	Patrick Stewart	713-734-6673	Patrick_Stewart@kindermorgan.com	$679.11	5/16/2024	6/10/2024	Double Check																	
+21028	Gilbert Perez	713-256-3880	gilbert@bespokebygjcd.com	$257.80	5/16/2024	6/10/2024	Pop Ins																	
+20950	TAYLOR GISSELL	512-914-0290	TAY.GISS@GMAIL.COM	$435.31	4/18/2024	6/15/2024	Double Check																	
+20970	Brandon Renken	281-615-6516	brenken911@hotmail.com	$1,879.11	4/20/2024	6/15/2024	Double Check																	
+20971	Kristi Conner	281-923-3890	kconner@texican.com	$1,505.54	4/20/2024	6/15/2024	Double Check																	
+20951	TAYLOR GISSELL	512-914-0290	TAY.GISS@GMAIL.COM	$258.71	4/18/2024	6/15/2024	Double Check																	
+21031	Leslie Nystrom	281-857-3222	lesnystrom@hotmail.com	$216.10	5/21/2024	6/17/2024	Double Check																	
+21010	Baker Howry	512-417-0279	baker.howry1@gmail.com	$231.88	4/29/2024	6/17/2024	Matted																	
+21030	Lisa Sailor	832-202-5664	lisasailor626@gmail.com	$874.60	5/21/2024	6/17/2024	Double Check																	
+21032	Austin Kayser	713-702-4799		$169.48	5/22/2024	6/17/2024	Double Check																	
+21011	Baker Howry	512-417-0279	baker.howry1@gmail.com	$231.88	4/29/2024	6/17/2024	Matted																	
+21034	Monica Uddin	210-279-7021	monicau@gmail.com	$287.56	5/24/2024	6/18/2024	Double Check																	
+21036	Monica Uddin	210-279-7021	monicau@gmail.com	$154.14	5/24/2024	6/18/2024	Double Check																	
+21037	Monica Uddin	210-279-7021	monicau@gmail.com	$64.09	5/24/2024	6/18/2024	Double Check																	
+21035	Monica Uddin	210-279-7021	monicau@gmail.com	$166.20	5/24/2024	6/18/2024	Double Check																	
+21033	Monica Uddin	210-279-7021	monicau@gmail.com	$226.07	5/24/2024	6/18/2024	Double Check																	
+21043	Cooper Dickerson	281-770-6801	COOPD05@SBCGLOBAL.NET	$781.78	5/25/2024	6/19/2024	Double Check																	
+21051	Jesse Garza	817-691-8519	jesseg66@live.com	$123.83	6/14/2024	6/19/2024	Double Check																	
+21040	Kathleen reynolds	713-553-7005	katymae820@gmail.com	$125.39	5/25/2024	6/19/2024	Double Check																	
+21041	Kathleen reynolds	713-553-7005	katymae820@gmail.com	$178.79	5/25/2024	6/19/2024	Double Check																	
+21042	Kathleen reynolds	713-553-7005	katymae820@gmail.com	$149.73	5/25/2024	6/19/2024	Double Check																	
+21039	Kathleen reynolds	713-553-7005	katymae820@gmail.com	$357.14	5/25/2024	6/19/2024	Double Check																	
+21044	ashleigh Spruell	832-306-1368	ashleighspruell@gmail.com	$296.64	5/25/2024	6/20/2024	Double Check																	
+21045	John Robrts	603-340-2728		$295.82	5/29/2024	6/24/2024	Double Check																	
+21047	Melissa Caspary	832-443-7950	melissacaspary@gmail.com	$200.26	5/31/2024	6/25/2024	Double Check																	
+21022	Natalya Mesa	603-502-6920	natalyamesa@myyahoo.com	$867.30	5/4/2024	6/30/2024	Double Check																	
+21020	Chip Grant	917-612-5922	candgrant@gmail.com	$823.10	5/4/2024	6/30/2024	Double Check																	
+21023	Brandon smaglo	646-483-5110		$449.88	5/4/2024	6/30/2024	Double Check																	
+21015	Kristi Conner	281-923-3890	kconner@texican.com	$1,338.78	5/3/2024	6/30/2024	Matted																	
+21018	Chip Grant	917-612-5922	candgrant@gmail.com	$548.88	5/4/2024	6/30/2024	Double Check																	
+21019	Chip Grant	917-612-5922	candgrant@gmail.com	$618.88	5/4/2024	6/30/2024	Double Check																	
+21021	Chip Grant	917-612-5922	candgrant@gmail.com	$457.93	5/4/2024	6/30/2024	Double Check																	
+21024	Shannon Richey	512-423-3488	shannonrichey87@gmail.com	$348.60	5/4/2024	6/30/2024	Double Check																	
+21048	Angele Lundquist	832-331-9190	angelelundquist99@gmail.com	$231.03	6/6/2024	7/1/2024	Double Check																	
+21016	Corbin Hughes	281-682-4979	corbintron@gmail.com	$859.82	5/3/2024	7/1/2024	Double Check																	
+21050	Terri Dragojlovic	310-210-7447	terri.kohanbashiri@gmail.com	$194.76	6/7/2024	7/2/2024	Double Check																	
+21049	Terri Dragojlovic	310-210-7447	terri.kohanbashiri@gmail.com	$123.95	6/7/2024	7/2/2024	Double Check																	
+21053	Brittany Steitz	713-703-3208	brittanysteitz@gmail.com	$598.91	6/15/2024	7/10/2024	Double Check																	
+21052	Brittany Steitz	713-703-3208	brittanysteitz@gmail.com	$539.17	6/15/2024	7/10/2024	Double Check																	
+21054	Brittany Steitz	713-703-3208	brittanysteitz@gmail.com	$392.16	6/15/2024	7/10/2024	Double Check																	
+21056	Greg Sevcik	267-226-3335	gregorysevcik@gmail.com	$191.68	6/21/2024	7/16/2024	Double Check																	
+21057	Elizebeth Preng	713-443-0522		$150.00	6/21/2024	7/16/2024	Double Check																	
+21055	Greg Sevcik	267-226-3335	gregorysevcik@gmail.com	$372.74	6/21/2024	7/16/2024	Double Check																	
+21058	Cara/Annita Zuraski	201-982-2348	czuraski@nfsmith.com	$720.20	6/22/2024	7/17/2024	Matted																	
+21059	Leo Bayarena	832-451-7336		$2,276.26	7/3/2024	7/29/2024	Double Check																	
+21068	Leo Bayarena	832-451-7336		$1,023.38	7/3/2024	7/29/2024	Double Check																	
+21060	Rolando Abreu	832-350-6343	rolando_abreu@yahoo.com	$1,088.38	7/13/2024	8/7/2024	Double Check																	
+21062	Sara Perkins	318-542-1290	selampert26@gmail.com	$686.04	7/13/2024	8/7/2024	Double Check																	
+21061	Mara Wissinger	832-727-3858		$127.57	7/13/2024	8/7/2024	Pop Ins																	
+21065	Sara Perkins	318-542-1290	selampert26@gmail.com	$401.20	7/13/2024	8/7/2024	Double Check																	
+21066	Sara Perkins	318-542-1290	selampert26@gmail.com	$402.26	7/13/2024	8/7/2024	Double Check																	
+21067	Sara Perkins	318-542-1290	selampert26@gmail.com	$804.52	7/13/2024	8/7/2024	Double Check																	
+21069	Claudia Moreno	713-867-5210	cmoreno3@houstonisd.org	$797.40	7/16/2024	8/12/2024	Matted																	
+21070	Sara Penual	713-973-5992	spenuel@quantaservices.com	$424.69	7/23/2024	8/19/2024	Double Check																	
+21071	Sara Penual	713-973-5992	spenuel@quantaservices.com	$327.55	7/23/2024	8/19/2024	Double Check																	
+test	Joshua Stevens	832-893-3794	joshuastevens100@gmail.com		9/10/2024	9/10/2024	test																	
