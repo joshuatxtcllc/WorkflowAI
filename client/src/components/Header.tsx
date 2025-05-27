@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign } from "lucide-react";
+import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign, Zap } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Header() {
   const { data: workloadMetrics } = useQuery({
@@ -27,22 +28,12 @@ export default function Header() {
               <Plus className="w-4 h-4 mr-2" />
               New Order
             </Button>
-            <Button 
-              className="bg-blue-500 hover:bg-blue-400 text-white font-semibold"
-              onClick={async () => {
-                try {
-                  const response = await fetch('/api/import-real-data', { method: 'POST' });
-                  const result = await response.json();
-                  console.log('Import result:', result);
-                  window.location.reload(); // Refresh to show new orders
-                } catch (error) {
-                  console.error('Import failed:', error);
-                }
-              }}
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Import Orders
-            </Button>
+            <Link href="/quick-wins">
+              <Button className="bg-orange-500 hover:bg-orange-400 text-white font-semibold">
+                <Zap className="w-4 h-4 mr-2" />
+                Quick Wins
+              </Button>
+            </Link>
           </div>
 
           {/* Stats Overview - Desktop */}
