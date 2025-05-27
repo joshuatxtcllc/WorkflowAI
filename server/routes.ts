@@ -9,7 +9,8 @@ import { insertOrderSchema, insertCustomerSchema, insertMaterialSchema } from "@
 import { z } from "zod";
 import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { db, customers, orders, statusHistory } from "./db";
+import { db } from "./db";
+import { customers, orders, statusHistory } from "../shared/schema";
 
 interface WebSocketMessage {
   type: string;
