@@ -427,6 +427,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Batch import endpoint - processes orders in small batches
+  app.post('/api/import/batch', authenticateToken, async (req, res) => {
+    try {
+      const { batchSize = 5 } = req.body;
+      console.log(`🚀 Starting batch import with batch size: ${batchSize}`);
+      
+      const { batchImportOrders } = await import('./batch-import');
+      const result = await batchImportOrders(batchSize);
+      
+      res.json({
+        success: true,
+        message: `Successfully imported ${result.totalImported} orders in ${result.batchCount} batches`,
+        totalImported: result.totalImported,
+        batchCount: result.batchCount
+      });
+      
+    } catch (error) {
+      console.error('Batch import error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Batch import failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Final import endpoint - one-time use
   app.post('/api/import/final-authentic', authenticateToken, async (req, res) => {
     try {
