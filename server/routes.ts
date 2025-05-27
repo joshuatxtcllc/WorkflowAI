@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { authenticateToken, loginUser, createDefaultUser } from "./simpleAuth";
 import { AIService } from "./services/aiService";
 import { NotificationService } from "./services/notificationService";
+import { vendorOrderService } from "./vendor-orders";
 import { insertOrderSchema, insertCustomerSchema, insertMaterialSchema } from "@shared/schema";
 import { z } from "zod";
 import fs from 'node:fs/promises';
@@ -214,6 +215,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating AI response:", error);
       res.status(500).json({ message: "Failed to generate response" });
+    }
+  });
+
+  // Vendor ordering routes
+  app.get('/api/vendor/orders', authenticateToken, async (req, res) => {
+    try {
+      const vendorOrders = await vendorOrderService.generateVendorOrders();
+      res.json(vendorOrders);
+    } catch (error) {
+      console.error("Error generating vendor orders:", error);
+      res.status(500).json({ message: "Failed to generate vendor orders" });
+    }
+  });
+
+  app.post('/api/vendor/mark-ordered', authenticateToken, async (req, res) => {
+    try {
+      const { orderIds } = req.body;
+      await vendorOrderService.markMaterialsOrdered(orderIds);
+      res.json({ message: "Orders marked as materials ordered" });
+    } catch (error) {
+      console.error("Error marking orders:", error);
+      res.status(500).json({ message: "Failed to mark orders" });
     }
   });
 
