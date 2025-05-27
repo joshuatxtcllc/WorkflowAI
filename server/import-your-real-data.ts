@@ -111,7 +111,7 @@ export async function importYourRealOrders(): Promise<void> {
           const customerData: InsertCustomer = {
             name: customerName,
             phone: phone || null,
-            email: null,
+            email: `${customerName.toLowerCase().replace(/\s+/g, '.')}@customer.com`,
           };
           
           [customer] = await db
@@ -139,7 +139,7 @@ export async function importYourRealOrders(): Promise<void> {
         priority: 'MEDIUM',
         dueDate: parseYourDueDate(dueDate),
         estimatedHours: estimateYourOrderHours(description, orderType),
-        estimatedPrice: estimateYourOrderPrice(orderType, description),
+        price: estimateYourOrderPrice(orderType, description),
         notes: `Invoice: ${invoice}`,
       };
       
