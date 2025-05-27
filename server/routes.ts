@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { authenticateToken, loginUser, createDefaultUser } from "./simpleAuth";
 import { AIService } from "./services/aiService";
 import { NotificationService } from "./services/notificationService";
 import { insertOrderSchema, insertCustomerSchema, insertMaterialSchema } from "@shared/schema";
@@ -14,19 +14,33 @@ interface WebSocketMessage {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Create default admin user on startup
+  await createDefaultUser();
 
   // Initialize services
   const aiService = new AIService();
   const notificationService = new NotificationService();
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.post('/api/auth/login', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      const { email, password } = req.body;
+      const result = await loginUser(email, password);
+      
+      if (!result) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.get('/api/auth/user', authenticateToken, async (req: any, res) => {
+    try {
+      res.json(req.user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -34,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Customer routes
-  app.get('/api/customers', isAuthenticated, async (req, res) => {
+  app.get('/api/customers', authenticateToken, async (req, res) => {
     try {
       const customers = await storage.getCustomers();
       res.json(customers);
@@ -44,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/customers', isAuthenticated, async (req, res) => {
+  app.post('/api/customers', authenticateToken, async (req, res) => {
     try {
       const customerData = insertCustomerSchema.parse(req.body);
       const customer = await storage.createCustomer(customerData);
@@ -56,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Order routes
-  app.get('/api/orders', isAuthenticated, async (req, res) => {
+  app.get('/api/orders', authenticateToken, async (req, res) => {
     try {
       const orders = await storage.getOrders();
       res.json(orders);
@@ -66,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/orders/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/:id', authenticateToken, async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
       if (!order) {
@@ -79,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders', isAuthenticated, async (req, res) => {
+  app.post('/api/orders', authenticateToken, async (req, res) => {
     try {
       const orderData = insertOrderSchema.parse(req.body);
       const order = await storage.createOrder(orderData);
@@ -102,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/orders/:id/status', isAuthenticated, async (req, res) => {
+  app.patch('/api/orders/:id/status', authenticateToken, async (req, res) => {
     try {
       const { status } = req.body;
       const orderId = req.params.id;
@@ -143,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Material routes
-  app.get('/api/orders/:orderId/materials', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/:orderId/materials', authenticateToken, async (req, res) => {
     try {
       const materials = await storage.getMaterialsByOrder(req.params.orderId);
       res.json(materials);
@@ -153,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders/:orderId/materials', isAuthenticated, async (req, res) => {
+  app.post('/api/orders/:orderId/materials', authenticateToken, async (req, res) => {
     try {
       const materialData = insertMaterialSchema.parse({
         ...req.body,
@@ -167,7 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/materials/:id', isAuthenticated, async (req, res) => {
+  app.patch('/api/materials/:id', authenticateToken, async (req, res) => {
     try {
       const material = await storage.updateMaterial(req.params.id, req.body);
       res.json(material);
@@ -178,7 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI routes
-  app.get('/api/ai/analysis', isAuthenticated, async (req, res) => {
+  app.get('/api/ai/analysis', authenticateToken, async (req, res) => {
     try {
       const analysis = await aiService.generateWorkloadAnalysis();
       res.json(analysis);
@@ -188,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/ai/chat', isAuthenticated, async (req, res) => {
+  app.post('/api/ai/chat', authenticateToken, async (req, res) => {
     try {
       const { message } = req.body;
       const response = await aiService.generateChatResponse(message);
@@ -200,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import routes
-  app.post('/api/import/orders', isAuthenticated, async (req, res) => {
+  app.post('/api/import/orders', authenticateToken, async (req, res) => {
     try {
       const { fileContent } = req.body;
       if (!fileContent) {
@@ -224,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Add real production orders
-  app.post('/api/add-production-orders', isAuthenticated, async (req, res) => {
+  app.post('/api/add-production-orders', authenticateToken, async (req, res) => {
     try {
       const { addRealProductionOrders } = await import('./manual-add-orders');
       const result = await addRealProductionOrders();
@@ -243,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import real customer data from your business records
-  app.post('/api/import-real-data', isAuthenticated, async (req, res) => {
+  app.post('/api/import-real-data', authenticateToken, async (req, res) => {
     try {
       const { importRealCustomerData } = await import('./real-data-import');
       const result = await importRealCustomerData();
@@ -262,7 +276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import all real orders from database
-  app.post('/api/import/all-orders', isAuthenticated, async (req, res) => {
+  app.post('/api/import/all-orders', authenticateToken, async (req, res) => {
     try {
       const { importAllRealOrders } = await import('./import-all-orders');
       const result = await importAllRealOrders();
@@ -274,7 +288,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics routes
-  app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
+  app.get('/api/analytics/workload', authenticateToken, async (req, res) => {
     try {
       const metrics = await storage.getWorkloadMetrics();
       res.json(metrics);
