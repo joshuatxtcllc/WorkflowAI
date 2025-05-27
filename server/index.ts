@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { setupAuth } from "./auth";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { importAuthenticOrders } from './import-authentic-orders.js';
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -46,6 +47,58 @@ app.use((req, res, next) => {
 
     res.status(status).json({ message });
     throw err;
+  });
+
+  // Customer portal endpoint
+  app.get('/api/track/:trackingId', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const order = await storage.getOrderByTrackingId(trackingId);
+
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      res.json({
+        id: order.id,
+        trackingId: order.trackingId,
+        status: order.status,
+        orderType: order.orderType,
+        dueDate: order.dueDate,
+        customer: {
+          name: order.customer.name,
+          email: order.customer.email,
+        },
+        statusHistory: order.statusHistory.map(h => ({
+          status: h.toStatus,
+          changedAt: h.changedAt,
+          reason: h.reason,
+        })),
+      });
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      res.status(500).json({ error: 'Failed to fetch order' });
+    }
+  });
+
+  // Import all authentic orders endpoint
+  app.post('/api/import/all-orders', async (req, res) => {
+    try {
+      console.log('🚀 Starting import of all authentic orders...');
+      const result = await importAuthenticOrders();
+      res.json({
+        success: true,
+        message: 'All authentic orders imported successfully',
+        ...result
+      });
+    } catch (error) {
+      console.error('❌ Import failed:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Import failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   });
 
   // importantly only setup vite in development and after
