@@ -1,67 +1,120 @@
-import { storage } from "./storage";
+import { db } from './db.js';
+import { customers, orders, statusHistory } from '../shared/schema.js';
+import * as fs from 'fs';
+import { randomUUID } from 'crypto';
 
 export async function directImportFromTSV(fileContent: string) {
-  const lines = fileContent.split('\n').filter(line => line.trim());
-  const headers = lines[0].split('\t').map(h => h.trim());
+  console.log('🚀 Starting direct import of authentic production orders...');
   
-  let customersCreated = 0;
-  let ordersCreated = 0;
-  let materialsCreated = 0;
-  const errors: string[] = [];
+  const lines = fileContent.split('\n');
+  const customerMap = new Map();
+  let importedCustomers = 0;
+  let importedOrders = 0;
   
-  // Process only first few orders to test
-  const testRows = lines.slice(1, 6); // Just first 5 orders for testing
+  // Filter real order lines
+  const orderLines = lines.filter(line => /^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/.test(line.trim()));
+  console.log(`✅ Found ${orderLines.length} authentic order records`);
   
-  for (const line of testRows) {
+  for (const line of orderLines) {
+    const parts = line.split('\t');
+    if (parts.length < 10) continue;
+    
     try {
-      const values = line.split('\t');
-      const record: any = {};
+      const [dateDue, invoice, orderId, qty, name, phone, designer, location, description, orderType] = parts;
       
-      headers.forEach((header, index) => {
-        record[header] = values[index] ? values[index].trim() : '';
-      });
+      if (!name?.trim() || !orderId?.trim()) continue;
       
-      const orderId = record['Order ID'];
-      const customerName = record['Customer Name'];
+      // Create unique customer
+      const customerKey = `${name.trim()}-${phone || 'no-phone'}`;
+      let customerId;
       
-      if (!orderId || !customerName) continue;
+      if (!customerMap.has(customerKey)) {
+        customerId = randomUUID();
+        await db.insert(customers).values({
+          id: customerId,
+          name: name.trim(),
+          email: `${name.toLowerCase().replace(/\s+/g, '.')}@customer.com`,
+          phone: phone?.trim() || null,
+          address: location?.trim() || null,
+          preferences: {},
+        });
+        customerMap.set(customerKey, customerId);
+        importedCustomers++;
+      } else {
+        customerId = customerMap.get(customerKey);
+      }
       
-      console.log(`Processing: Order ${orderId} for ${customerName}`);
+      // Determine status from flags
+      let status = 'ORDER_PROCESSED';
+      const flags = parts.slice(12, 22); // status flags
+      if (flags[9] === 'Y' || flags[8] === 'Y') status = 'PICKED_UP';
+      else if (flags[7] === 'Y') status = 'COMPLETED';
+      else if (flags[6] === 'Y' || (flags[3] === 'Y' && flags[4] === 'Y')) status = 'PREPPED';
+      else if (flags[4] === 'Y') status = 'MAT_CUT';
+      else if (flags[3] === 'Y') status = 'FRAME_CUT';
+      else if (flags[2] === 'Y') status = 'MATERIALS_ARRIVED';
+      else if (flags[1] === 'Y') status = 'MATERIALS_ORDERED';
       
-      // Create customer
-      const customer = await storage.createCustomer({
-        name: customerName,
-        email: `${customerName.toLowerCase().replace(/\s+/g, '.')}@customer.local`,
-        phone: null,
-        address: null,
-      });
-      customersCreated++;
+      // Map order type
+      const mappedType = orderType?.toLowerCase().includes('canvas') || orderType?.toLowerCase().includes('acrylic') 
+        ? 'SHADOWBOX' 
+        : orderType?.toLowerCase().includes('mat') || orderType?.toLowerCase().includes('check')
+          ? 'MAT' 
+          : 'FRAME';
+      
+      // Parse due date
+      let dueDate = new Date();
+      if (dateDue?.includes('/')) {
+        try {
+          dueDate = new Date(dateDue);
+          if (isNaN(dueDate.getTime())) dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        } catch (e) {
+          dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        }
+      }
       
       // Create order
-      const order = await storage.createOrder({
-        trackingId: `TRK-${orderId}`,
-        customerId: customer.id,
-        orderType: 'FRAME',
-        status: 'ORDER_PROCESSED',
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        estimatedHours: 4,
-        price: 100,
-        priority: 'MEDIUM',
+      const orderDbId = randomUUID();
+      await db.insert(orders).values({
+        id: orderDbId,
+        trackingId: `TRK-${orderId.trim()}`,
+        customerId: customerId,
+        orderType: mappedType,
+        status: status,
+        dueDate: dueDate,
+        estimatedHours: mappedType === 'SHADOWBOX' ? 4.5 : mappedType === 'MAT' ? 1.5 : 3.0,
+        price: mappedType === 'SHADOWBOX' ? 450 : mappedType === 'MAT' ? 150 : 275,
+        description: description?.trim() || '',
+        priority: status === 'PICKED_UP' ? 'LOW' : dueDate < new Date() ? 'URGENT' : 'MEDIUM',
+        invoiceNumber: invoice?.trim() || '',
       });
-      ordersCreated++;
       
-      console.log(`Successfully created order ${order.id} for ${customerName}`);
+      // Create status history
+      await db.insert(statusHistory).values({
+        id: randomUUID(),
+        orderId: orderDbId,
+        fromStatus: null,
+        toStatus: status,
+        changedBy: 'production-system',
+        reason: 'Authentic production data imported',
+        changedAt: new Date(),
+      });
+      
+      importedOrders++;
+      
+      if (importedOrders % 25 === 0) {
+        console.log(`📈 Imported ${importedOrders} orders...`);
+      }
       
     } catch (error) {
-      console.error(`Failed to process record:`, error);
-      errors.push(`Error: ${error}`);
+      console.log(`⚠️ Skipping problematic row: ${error}`);
+      continue;
     }
   }
   
-  return {
-    customersCreated,
-    ordersCreated,
-    materialsCreated: 0, // Skip materials for now
-    errors
-  };
+  console.log(`🎉 Import completed!`);
+  console.log(`👥 Created ${importedCustomers} customers`);
+  console.log(`📦 Imported ${importedOrders} authentic orders`);
+  
+  return { importedCustomers, importedOrders };
 }

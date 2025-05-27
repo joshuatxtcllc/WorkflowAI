@@ -105,6 +105,7 @@ export async function importAuthenticOrders() {
         
         // Create order
         const order = {
+          id: `ord-${orderId.trim()}`,
           trackingId: `TRK-${orderId}`,
           customerId: customer.id,
           orderType: mappedOrderType,
