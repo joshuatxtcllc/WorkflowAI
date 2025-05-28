@@ -161,8 +161,8 @@ export class DashboardIntegration {
   private apiKey: string;
 
   constructor() {
-    this.baseUrl = process.env.DASHBOARD_API_URL || '';
-    this.apiKey = process.env.DASHBOARD_API_KEY || '';
+    this.baseUrl = process.env.DASHBOARD_API_URL || 'https://0ac8a328-32f3-4362-9a16-8018d89af012-00-17hqj8k6x7wac.worf.replit.dev';
+    this.apiKey = process.env.DASHBOARD_API_KEY || 'jf_kanban_admin_2025_full_access_key_12345';
   }
 
   async syncMetrics() {
@@ -195,11 +195,11 @@ export class DashboardIntegration {
         source: 'Frame Shop Management System'
       };
 
-      const response = await fetch(`${this.baseUrl}/metrics/frame-shop`, {
+      const response = await fetch(`${this.baseUrl}/api/metrics/frame-shop`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'X-API-Key': this.apiKey
         },
         body: JSON.stringify(metrics)
       });
@@ -231,11 +231,11 @@ export class DashboardIntegration {
         source: 'Frame Shop Management'
       };
 
-      const response = await fetch(`${this.baseUrl}/events/order-update`, {
+      const response = await fetch(`${this.baseUrl}/api/events/order-update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'X-API-Key': this.apiKey
         },
         body: JSON.stringify(updateData)
       });
