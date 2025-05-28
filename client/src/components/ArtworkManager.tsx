@@ -225,13 +225,13 @@ export default function ArtworkManager({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               onBlur={() => {
-                if (location !== artworkLocation && location.trim().length > 0) {
-                  locationMutation.mutate(location.trim());
+                if (location !== artworkLocation) {
+                  locationMutation.mutate(location);
                 }
               }}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && location.trim().length > 0) {
-                  locationMutation.mutate(location.trim());
+                if (e.key === 'Enter') {
+                  locationMutation.mutate(location);
                 }
               }}
               placeholder="Enter artwork location..."
