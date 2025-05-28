@@ -715,6 +715,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Batch update order status
+  app.patch('/api/orders/batch-status', async (req, res) => {
+    try {
+      const { orderIds, status } = req.body;
+      
+      if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        return res.status(400).json({ error: 'Order IDs array is required' });
+      }
+      
+      if (!status) {
+        return res.status(400).json({ error: 'Status is required' });
+      }
+
+      const updatedOrders = [];
+      for (const orderId of orderIds) {
+        try {
+          const updatedOrder = await storage.updateOrder(orderId, { status });
+          updatedOrders.push(updatedOrder);
+        } catch (error) {
+          console.error(`Failed to update order ${orderId}:`, error);
+        }
+      }
+
+      // Broadcast update to connected clients
+      broadcast(wss, {
+        type: 'batch_status_update',
+        data: { orderIds, status, count: updatedOrders.length }
+      });
+
+      res.json({ 
+        message: `Updated ${updatedOrders.length} orders successfully`,
+        updatedCount: updatedOrders.length,
+        totalRequested: orderIds.length
+      });
+    } catch (error) {
+      console.error('Error batch updating order status:', error);
+      res.status(500).json({ error: 'Failed to batch update order status' });
+    }
+  });
+
   // Integration API Routes
   
   // SMS Integration Routes
