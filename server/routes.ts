@@ -236,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  app.post('/api/orders/:orderId/artwork/upload', authenticateToken, upload.single('artwork'), async (req, res) => {
+  app.post('/api/orders/:orderId/artwork/upload', upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
       console.log("Upload request received for order:", orderId);
@@ -261,7 +261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ imageUrl, message: "Image uploaded successfully" });
     } catch (error) {
       console.error("Error uploading artwork image:", error);
-      res.status(500).json({ message: "Failed to upload image", error: error.message });
+      res.status(500).json({ message: "Failed to upload image", error: (error as Error).message });
     }
   });
 
