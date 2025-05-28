@@ -715,6 +715,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Integration API Routes
+  
+  // SMS Integration Routes
+  app.post('/api/integrations/sms/send', async (req, res) => {
+    try {
+      const { orderId, message, phoneNumber } = req.body;
+      const result = await smsIntegration.sendOrderNotification(orderId, message, phoneNumber);
+      res.json(result);
+    } catch (error) {
+      console.error('SMS send error:', error);
+      res.status(500).json({ error: 'Failed to send SMS' });
+    }
+  });
+
+  // SMS Webhook endpoint
+  app.post('/api/webhooks/sms', (req, res) => {
+    smsIntegration.handleWebhook(req, res);
+  });
+
+  // POS Integration Routes
+  app.post('/api/integrations/pos/sync/:orderId', async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const result = await posIntegration.syncOrder(orderId);
+      res.json(result);
+    } catch (error) {
+      console.error('POS sync error:', error);
+      res.status(500).json({ error: 'Failed to sync with POS' });
+    }
+  });
+
+  // POS Webhook endpoint
+  app.post('/api/webhooks/pos', (req, res) => {
+    posIntegration.handleWebhook(req, res);
+  });
+
+  // Dashboard Integration Routes
+  app.post('/api/integrations/dashboard/sync', async (req, res) => {
+    try {
+      const result = await dashboardIntegration.syncMetrics();
+      res.json(result);
+    } catch (error) {
+      console.error('Dashboard sync error:', error);
+      res.status(500).json({ error: 'Failed to sync with dashboard' });
+    }
+  });
+
+  app.post('/api/integrations/dashboard/order-update', async (req, res) => {
+    try {
+      const { orderId, updateType, details } = req.body;
+      const result = await dashboardIntegration.sendOrderUpdate(orderId, updateType, details);
+      res.json(result);
+    } catch (error) {
+      console.error('Dashboard update error:', error);
+      res.status(500).json({ error: 'Failed to send dashboard update' });
+    }
+  });
+
+  // Configuration endpoint to check integration status
+  app.get('/api/integrations/status', (req, res) => {
+    const status = {
+      sms: {
+        configured: !!(process.env.SMS_API_URL && process.env.SMS_API_KEY),
+        url: process.env.SMS_API_URL ? 'configured' : 'not set'
+      },
+      pos: {
+        configured: !!(process.env.POS_API_URL && process.env.POS_API_KEY),
+        url: process.env.POS_API_URL ? 'configured' : 'not set'
+      },
+      dashboard: {
+        configured: !!(process.env.DASHBOARD_API_URL && process.env.DASHBOARD_API_KEY),
+        url: process.env.DASHBOARD_API_URL ? 'configured' : 'not set'
+      }
+    };
+    res.json(status);
+  });
+
+  // Auto-sync dashboard metrics every 15 minutes
+  setInterval(async () => {
+    try {
+      await autoSyncMetrics();
+    } catch (error) {
+      console.error('Auto-sync failed:', error);
+    }
+  }, 15 * 60 * 1000);
+
   return httpServer;
 }
 
