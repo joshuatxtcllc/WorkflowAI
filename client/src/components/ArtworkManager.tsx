@@ -219,18 +219,39 @@ export default function ArtworkManager({
             <MapPin className="h-4 w-4 mr-1" />
             Artwork Location
           </Label>
-          <Select value={location} onValueChange={handleLocationUpdate}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select artwork location..." />
-            </SelectTrigger>
-            <SelectContent>
-              {locations.map((loc: string) => (
-                <SelectItem key={loc} value={loc}>
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              onBlur={() => {
+                if (location !== artworkLocation) {
+                  locationMutation.mutate(location);
+                }
+              }}
+              placeholder="Enter artwork location..."
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-jade-500"
+              disabled={locationMutation.isPending}
+            />
+            <div className="flex flex-wrap gap-1">
+              {[
+                "Front Counter", "Storage Room A", "Storage Room B", 
+                "Work Station 1", "Work Station 2", "Framing Area"
+              ].map((loc) => (
+                <button
+                  key={loc}
+                  onClick={() => {
+                    setLocation(loc);
+                    locationMutation.mutate(loc);
+                  }}
+                  className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded border border-gray-600"
+                  disabled={locationMutation.isPending}
+                >
                   {loc}
-                </SelectItem>
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
           {location && (
             <Badge variant="outline" className="w-fit">
               <Package className="h-3 w-3 mr-1" />
