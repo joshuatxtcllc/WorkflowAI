@@ -298,35 +298,48 @@ export default function ArtworkManager({
         {/* Artwork Images Gallery */}
         {artworkImages.length > 0 && (
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Artwork Images</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <Label className="text-sm font-medium flex items-center">
+              <ImageIcon className="h-4 w-4 mr-1" />
+              Customer Artwork ({artworkImages.length} {artworkImages.length === 1 ? 'image' : 'images'})
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
               {artworkImages.map((imageUrl, index) => (
                 <div key={index} className="relative group">
-                  <img
-                    src={imageUrl}
-                    alt={`Artwork ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg border"
-                  />
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => removeMutation.mutate(imageUrl)}
-                    disabled={removeMutation.isPending}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+                  <div className="relative bg-gray-800 rounded-lg border border-gray-600 overflow-hidden">
+                    <img
+                      src={imageUrl}
+                      alt={`Customer Artwork ${index + 1}`}
+                      className="w-full h-32 object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
+                      onClick={() => window.open(imageUrl, '_blank')}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200" />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeMutation.mutate(imageUrl)}
+                      disabled={removeMutation.isPending}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1 text-center">
+                    Image {index + 1}
+                  </p>
                 </div>
               ))}
             </div>
+            <p className="text-xs text-gray-500">
+              Click images to view full size • Hover and click X to remove
+            </p>
           </div>
         )}
 
         {artworkImages.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">No artwork images uploaded yet</p>
-            <p className="text-xs">Upload images to keep track of customer artwork</p>
+          <div className="text-center py-6 border-2 border-dashed border-gray-600 rounded-lg bg-gray-800/20">
+            <ImageIcon className="h-8 w-8 mx-auto mb-2 text-gray-500" />
+            <p className="text-sm text-gray-400 font-medium">No artwork images uploaded yet</p>
+            <p className="text-xs text-gray-500">Upload photos of customer artwork to keep visual records for each order</p>
           </div>
         )}
       </CardContent>
