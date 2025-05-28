@@ -847,6 +847,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auto-sync dashboard metrics every 15 minutes
   setInterval(async () => {
     try {
+      const { autoSyncMetrics } = await import('./integrations');
       await autoSyncMetrics();
     } catch (error) {
       console.error('Auto-sync failed:', error);
