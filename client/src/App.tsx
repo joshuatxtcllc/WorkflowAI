@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/Dashboard";
 import QuickWins from "@/pages/QuickWins";
+import VendorOrders from "@/pages/VendorOrders";
 import Login from "@/pages/Login";
 import CustomerPortal from "@/components/CustomerPortal";
 import NotFound from "@/pages/not-found";
@@ -28,6 +29,7 @@ function Router() {
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/quick-wins" component={QuickWins} />
+          <Route path="/vendor-orders" component={VendorOrders} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route component={NotFound} />

@@ -12,6 +12,7 @@ import {
   CreditCard,
   ChevronUp,
   User2,
+  ShoppingCart,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -116,6 +117,11 @@ const data = {
       title: "Time Tracking",
       url: "#",
       icon: Clock,
+    },
+    {
+      title: "Vendor Orders",
+      url: "/vendor-orders",
+      icon: ShoppingCart,
     },
     {
       title: "Notifications",
