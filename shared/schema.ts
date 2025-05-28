@@ -85,6 +85,10 @@ export const orders = pgTable("orders", {
   notes: text("notes"),
   description: text("description"),
   imageUrl: text("image_url"),
+  artworkImages: jsonb("artwork_images"), // Array of image URLs for customer artwork
+  artworkLocation: varchar("artwork_location"), // Physical location of artwork
+  artworkReceived: boolean("artwork_received").default(false),
+  artworkReceivedDate: timestamp("artwork_received_date"),
   internalNotes: text("internal_notes"),
 
   createdAt: timestamp("created_at").defaultNow(),

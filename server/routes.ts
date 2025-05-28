@@ -6,10 +6,13 @@ import { authenticateToken, loginUser, createDefaultUser } from "./simpleAuth";
 import { AIService } from "./services/aiService";
 import { NotificationService } from "./services/notificationService";
 import { vendorOrderService } from "./vendor-orders";
+import { artworkManager } from "./artwork-manager";
 import { insertOrderSchema, insertCustomerSchema, insertMaterialSchema } from "@shared/schema";
 import { z } from "zod";
 import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
+import multer from 'multer';
+import path from 'node:path';
 import { db } from "./db";
 import { customers, orders, statusHistory } from "../shared/schema";
 
@@ -25,6 +28,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   const aiService = new AIService();
   const notificationService = new NotificationService();
+
+  // Configure multer for image uploads
+  const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
+    }
+  });
 
   // Auth routes
   app.post('/api/auth/login', async (req, res) => {
@@ -215,6 +232,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating AI response:", error);
       res.status(500).json({ message: "Failed to generate response" });
+    }
+  });
+
+  // Artwork management routes
+  app.post('/api/orders/:orderId/artwork/upload', authenticateToken, upload.single('artwork'), async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const imageUrl = await artworkManager.uploadArtworkImage(
+        orderId, 
+        req.file.buffer, 
+        req.file.originalname
+      );
+
+      res.json({ imageUrl, message: "Image uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading artwork image:", error);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  });
+
+  app.get('/api/artwork/:filename', async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const imageBuffer = await artworkManager.getArtworkImage(filename);
+      
+      const ext = path.extname(filename).toLowerCase();
+      const contentType = ext === '.png' ? 'image/png' : 
+                         ext === '.gif' ? 'image/gif' : 'image/jpeg';
+      
+      res.setHeader('Content-Type', contentType);
+      res.send(imageBuffer);
+    } catch (error) {
+      res.status(404).json({ message: "Image not found" });
+    }
+  });
+
+  app.put('/api/orders/:orderId/artwork/location', authenticateToken, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { location } = req.body;
+      
+      await artworkManager.updateArtworkLocation(orderId, location);
+      res.json({ message: "Artwork location updated" });
+    } catch (error) {
+      console.error("Error updating artwork location:", error);
+      res.status(500).json({ message: "Failed to update location" });
+    }
+  });
+
+  app.put('/api/orders/:orderId/artwork/received', authenticateToken, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { received } = req.body;
+      
+      await artworkManager.markArtworkReceived(orderId, received);
+      res.json({ message: "Artwork received status updated" });
+    } catch (error) {
+      console.error("Error updating artwork received status:", error);
+      res.status(500).json({ message: "Failed to update received status" });
+    }
+  });
+
+  app.delete('/api/orders/:orderId/artwork/:imageUrl', authenticateToken, async (req, res) => {
+    try {
+      const { orderId, imageUrl } = req.params;
+      const decodedImageUrl = decodeURIComponent(imageUrl);
+      
+      await artworkManager.removeArtworkImage(orderId, decodedImageUrl);
+      res.json({ message: "Image removed successfully" });
+    } catch (error) {
+      console.error("Error removing artwork image:", error);
+      res.status(500).json({ message: "Failed to remove image" });
+    }
+  });
+
+  app.get('/api/artwork/locations', authenticateToken, async (req, res) => {
+    try {
+      const locations = artworkManager.getCommonLocations();
+      res.json(locations);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get locations" });
     }
   });
 
