@@ -30,6 +30,12 @@ export default function ArtworkManager({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  // File selection handler
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(e.target.files);
+  };
+
   const [location, setLocation] = useState(artworkLocation || "");
 
   // Get common locations
@@ -159,11 +165,7 @@ export default function ArtworkManager({
     }
   });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles(event.target.files);
-  };
-
-  const handleUpload = () => {
+  const handleUploadFile = () => {
     if (selectedFiles && selectedFiles.length > 0) {
       uploadMutation.mutate(selectedFiles[0]);
     }
@@ -279,7 +281,7 @@ export default function ArtworkManager({
               className="flex-1"
             />
             <Button 
-              onClick={handleUpload}
+              onClick={handleUploadFile}
               disabled={!selectedFiles || uploadMutation.isPending}
               size="sm"
               className="bg-jade-600 hover:bg-jade-700"
