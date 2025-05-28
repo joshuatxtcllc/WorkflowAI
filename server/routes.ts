@@ -751,6 +751,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     posIntegration.handleWebhook(req, res);
   });
 
+  // Dashboard Webhook endpoint
+  app.post('/api/webhooks/dashboard', (req, res) => {
+    try {
+      console.log('Dashboard webhook received:', req.body);
+      // Handle any dashboard events or notifications here
+      res.status(200).json({ received: true, timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error('Dashboard webhook error:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
   // Dashboard Integration Routes
   app.post('/api/integrations/dashboard/sync', async (req, res) => {
     try {
