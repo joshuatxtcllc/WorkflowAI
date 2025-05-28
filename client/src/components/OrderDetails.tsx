@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { apiRequest } from '@/lib/queryClient';
 import { useOrderStore } from '@/store/useOrderStore';
+import ArtworkManager from '@/components/ArtworkManager';
 import type { OrderWithDetails, Material } from '@shared/schema';
 
 export default function OrderDetails() {
@@ -118,6 +119,7 @@ export default function OrderDetails() {
             <TabsList className="w-full bg-gray-800">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="materials">Materials</TabsTrigger>
+              <TabsTrigger value="artwork">Artwork</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
               <TabsTrigger value="customer">Customer</TabsTrigger>
             </TabsList>
@@ -371,6 +373,16 @@ export default function OrderDetails() {
                   Add Material
                 </Button>
               </div>
+            </TabsContent>
+            
+            <TabsContent value="artwork" className="pt-4">
+              <ArtworkManager 
+                orderId={order.id}
+                artworkImages={order.artworkImages as string[] || []}
+                artworkLocation={order.artworkLocation || ""}
+                artworkReceived={order.artworkReceived || false}
+                artworkReceivedDate={order.artworkReceivedDate?.toString()}
+              />
             </TabsContent>
             
             <TabsContent value="history" className="pt-4">

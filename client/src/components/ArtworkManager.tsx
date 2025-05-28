@@ -33,7 +33,7 @@ export default function ArtworkManager({
   const [location, setLocation] = useState(artworkLocation || "");
 
   // Get common locations
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<string[]>({
     queryKey: ['/api/artwork/locations']
   });
 
@@ -73,11 +73,15 @@ export default function ArtworkManager({
 
   // Update location mutation
   const locationMutation = useMutation({
-    mutationFn: (newLocation: string) => 
-      apiRequest(`/api/orders/${orderId}/artwork/location`, {
+    mutationFn: async (newLocation: string) => {
+      const response = await fetch(`/api/orders/${orderId}/artwork/location`, {
         method: 'PUT',
-        body: { location: newLocation }
-      }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location: newLocation })
+      });
+      if (!response.ok) throw new Error('Failed to update location');
+      return response.json();
+    },
     onSuccess: () => {
       toast({
         title: "Location Updated",
@@ -89,11 +93,15 @@ export default function ArtworkManager({
 
   // Update received status mutation
   const receivedMutation = useMutation({
-    mutationFn: (received: boolean) => 
-      apiRequest(`/api/orders/${orderId}/artwork/received`, {
+    mutationFn: async (received: boolean) => {
+      const response = await fetch(`/api/orders/${orderId}/artwork/received`, {
         method: 'PUT',
-        body: { received }
-      }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ received })
+      });
+      if (!response.ok) throw new Error('Failed to update status');
+      return response.json();
+    },
     onSuccess: () => {
       toast({
         title: "Status Updated",
