@@ -281,11 +281,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/orders/:orderId/artwork/location', authenticateToken, async (req, res) => {
+  app.put('/api/orders/:orderId/artwork/location', async (req, res) => {
     try {
       const { orderId } = req.params;
       const { location } = req.body;
       
+      console.log("Updating artwork location for order:", orderId, "to:", location);
       await artworkManager.updateArtworkLocation(orderId, location);
       res.json({ message: "Artwork location updated" });
     } catch (error) {
@@ -294,11 +295,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/orders/:orderId/artwork/received', authenticateToken, async (req, res) => {
+  app.put('/api/orders/:orderId/artwork/received', async (req, res) => {
     try {
       const { orderId } = req.params;
       const { received } = req.body;
       
+      console.log("Updating artwork received status for order:", orderId, "to:", received);
       await artworkManager.markArtworkReceived(orderId, received);
       res.json({ message: "Artwork received status updated" });
     } catch (error) {

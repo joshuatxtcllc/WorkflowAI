@@ -79,12 +79,17 @@ export default function ArtworkManager({
   // Update location mutation
   const locationMutation = useMutation({
     mutationFn: async (newLocation: string) => {
+      console.log("Updating location to:", newLocation);
       const response = await fetch(`/api/orders/${orderId}/artwork/location`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ location: newLocation })
       });
-      if (!response.ok) throw new Error('Failed to update location');
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Location update failed:", error);
+        throw new Error('Failed to update location');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -93,18 +98,32 @@ export default function ArtworkManager({
         description: "Artwork location has been updated"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+    },
+    onError: (error) => {
+      console.error("Location mutation error:", error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update artwork location",
+        variant: "destructive"
+      });
     }
   });
 
   // Update received status mutation
   const receivedMutation = useMutation({
     mutationFn: async (received: boolean) => {
+      console.log("Updating received status to:", received);
       const response = await fetch(`/api/orders/${orderId}/artwork/received`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ received })
       });
-      if (!response.ok) throw new Error('Failed to update status');
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Received status update failed:", error);
+        throw new Error('Failed to update status');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -113,6 +132,15 @@ export default function ArtworkManager({
         description: "Artwork received status has been updated"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+    },
+    onError: (error) => {
+      console.error("Received status mutation error:", error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update received status",
+        variant: "destructive"
+      });
     }
   });
 
