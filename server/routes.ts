@@ -236,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  app.post('/api/orders/:orderId/artwork/upload', upload.single('artwork'), async (req, res) => {
+  app.post('/api/orders/:orderId/artwork/upload', authenticateToken, upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
       console.log("Upload request received for order:", orderId);

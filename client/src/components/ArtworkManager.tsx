@@ -216,21 +216,10 @@ export default function ArtworkManager({
         {/* Image Upload */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">Upload Artwork Images</Label>
-          <div className="flex items-center space-x-2">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              disabled={uploadMutation.isPending}
-            />
-            <Button 
-              onClick={handleUpload}
-              disabled={!selectedFiles || uploadMutation.isPending}
-              size="sm"
-            >
-              <Upload className="h-4 w-4 mr-1" />
-              {uploadMutation.isPending ? 'Uploading...' : 'Upload'}
-            </Button>
+          <div className="p-4 border-2 border-dashed border-gray-600 rounded-lg text-center">
+            <ImageIcon className="h-8 w-8 mx-auto mb-2 text-gray-500" />
+            <p className="text-sm text-gray-400 mb-2">Image upload functionality coming soon</p>
+            <p className="text-xs text-gray-500">For now, use the location tracking below to manage physical artwork</p>
           </div>
         </div>
 
