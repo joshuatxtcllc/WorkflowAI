@@ -43,13 +43,18 @@ export default function ArtworkManager({
       const formData = new FormData();
       formData.append('artwork', file);
       
+      const token = localStorage.getItem('token');
       const response = await fetch(`/api/orders/${orderId}/artwork/upload`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to upload image');
       }
       
       return response.json();

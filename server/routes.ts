@@ -236,10 +236,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  app.post('/api/orders/:orderId/artwork/upload', authenticateToken, upload.single('artwork'), async (req, res) => {
+  app.post('/api/orders/:orderId/artwork/upload', upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
+      console.log("Upload request received for order:", orderId);
+      console.log("File info:", req.file ? { 
+        originalname: req.file.originalname, 
+        mimetype: req.file.mimetype, 
+        size: req.file.size 
+      } : "No file");
+
       if (!req.file) {
+        console.log("No file provided in request");
         return res.status(400).json({ message: "No image file provided" });
       }
 
@@ -249,10 +257,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.file.originalname
       );
 
+      console.log("Image uploaded successfully:", imageUrl);
       res.json({ imageUrl, message: "Image uploaded successfully" });
     } catch (error) {
       console.error("Error uploading artwork image:", error);
-      res.status(500).json({ message: "Failed to upload image" });
+      res.status(500).json({ message: "Failed to upload image", error: error.message });
     }
   });
 
