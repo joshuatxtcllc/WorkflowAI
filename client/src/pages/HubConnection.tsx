@@ -14,9 +14,11 @@ export default function HubConnection() {
   const testConnection = useMutation({
     mutationFn: async () => {
       const response = await fetch('https://0ac8a328-32f3-4362-9a16-8018d89af012-00-17hqj8k6x7wac.worf.replit.dev/api/test/auth', {
+        method: 'GET',
         headers: {
           'X-API-Key': 'kanban_admin_key_2025_full_access',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
