@@ -755,6 +755,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test endpoint for hub connection verification
+  app.get('/api/test/auth', (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'];
+      
+      if (!apiKey) {
+        return res.status(401).json({ error: 'API key required' });
+      }
+      
+      if (apiKey !== 'kanban_admin_key_2025_full_access') {
+        return res.status(403).json({ error: 'Invalid API key' });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Hub connection authenticated successfully',
+        timestamp: new Date().toISOString(),
+        server: 'Jay\'s Frames Central Hub',
+        status: 'operational'
+      });
+    } catch (error) {
+      console.error('Hub auth test error:', error);
+      res.status(500).json({ error: 'Hub authentication test failed' });
+    }
+  });
+
   // Dashboard Webhook endpoint
   app.post('/api/webhooks/dashboard', (req, res) => {
     try {
