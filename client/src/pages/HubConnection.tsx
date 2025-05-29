@@ -15,7 +15,7 @@ export default function HubConnection() {
     mutationFn: async () => {
       const response = await fetch('https://0ac8a328-32f3-4362-9a16-8018d89af012-00-17hqj8k6x7wac.worf.replit.dev/api/test/auth', {
         headers: {
-          'X-API-Key': 'jf_kanban_admin_2025_full_access_key_12345',
+          'X-API-Key': 'kanban_admin_key_2025_full_access',
           'Content-Type': 'application/json'
         }
       });
@@ -137,7 +137,7 @@ export default function HubConnection() {
               <div className="text-sm">
                 <span className="font-medium">API Key:</span>
                 <div className="text-xs text-muted-foreground font-mono">
-                  jf_kanban_admin_2025_***
+                  kanban_admin_key_2025_***
                 </div>
               </div>
             </div>
