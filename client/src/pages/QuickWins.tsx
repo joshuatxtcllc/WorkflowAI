@@ -35,154 +35,36 @@ export default function QuickWins() {
     );
   };
 
-  // Smart function to determine if an order is actually ready for work
   const isOrderReadyForWork = (order: OrderWithDetails): boolean => {
     const status = order.status;
-
-    // These statuses mean materials are ready and work can begin
     const readyStatuses = [
-      "MATERIALS_ARRIVED",  // Materials are here, ready to cut
-      "FRAME_CUT",         // Frame cut, ready for glass/mat cutting
-      "MAT_CUT",           // Mat cut, ready for assembly
-      "PREPPED"            // Everything prepped, ready for final assembly
+      "MATERIALS_ARRIVED",
+      "FRAME_CUT",
+      "MAT_CUT",
+      "PREPPED"
     ];
-
     return readyStatuses.includes(status || "");
-  };
-
-  const getWorkflowReadinessScore = (order: OrderWithDetails): number => {
-    const status = order.status;
-    // Higher score = more ready for immediate work
-    switch (status) {
-      case "PREPPED": return 100;           // Ready for final assembly
-      case "MAT_CUT": return 90;            // Ready for glass cutting or assembly
-      case "FRAME_CUT": return 80;          // Ready for mat/glass cutting
-      case "MATERIALS_ARRIVED": return 70;  // Ready to start cutting
-      case "MATERIALS_ORDERED": return 20;  // Waiting for materials
-      case "ORDER_PROCESSED": return 10;    // Just started
-      default: return 0;
-    }
   };
 
   const generateQuickWins = (orders: OrderWithDetails[]): QuickWin[] => {
     const quickWins: QuickWin[] = [];
 
-    // Time-based filtering
-    let filteredOrders = orders;
+    let quickOrders = orders.filter(order => 
+      order.estimatedHours <= 2 && 
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "") &&
+      isOrderReadyForWork(order)
+    );
+
     if (timeFilter !== "all") {
       const maxHours = parseFloat(timeFilter);
-      filteredOrders = filterOrdersByTime(orders, maxHours);
+      quickOrders = filterOrdersByTime(orders, maxHours);
     }
-
-    // 30-minute lunch break orders - prioritized by workflow readiness + due date
-    const lunchOrders = filterOrdersByTime(orders, 0.5)
-      .sort((a, b) => {
-        const readinessA = getWorkflowReadinessScore(a);
-        const readinessB = getWorkflowReadinessScore(b);
-        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
-      });
-    if (lunchOrders.length > 0) {
-      quickWins.push({
-        id: "lunch-break",
-        title: "🥪 Lunch Break Orders",
-        description: `${lunchOrders.length} orders ready to work on in 30 minutes or less (materials ready)`,
-        estimatedTime: lunchOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: lunchOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "QUICK_COMPLETION",
-        orders: lunchOrders.slice(0, 5)
-      });
-    }
-
-    // 1-hour window orders - prioritized by workflow readiness + due date
-    const oneHourOrders = filterOrdersByTime(orders, 1)
-      .sort((a, b) => {
-        const readinessA = getWorkflowReadinessScore(a);
-        const readinessB = getWorkflowReadinessScore(b);
-        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
-      });
-    if (oneHourOrders.length > 0) {
-      quickWins.push({
-        id: "one-hour",
-        title: "⏰ One Hour Orders",
-        description: `${oneHourOrders.length} orders ready to work on in one hour (materials ready)`,
-        estimatedTime: oneHourOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: oneHourOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "QUICK_COMPLETION",
-        orders: oneHourOrders.slice(0, 5)
-      });
-    }
-
-    // 1.5-hour end-of-day orders - prioritized by workflow readiness + due date
-    const endOfDayOrders = filterOrdersByTime(orders, 1.5)
-      .sort((a, b) => {
-        const readinessA = getWorkflowReadinessScore(a);
-        const readinessB = getWorkflowReadinessScore(b);
-        if (readinessA !== readinessB) return readinessB - readinessA; // Higher readiness first
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Then oldest first
-      });
-    if (endOfDayOrders.length > 0) {
-      quickWins.push({
-        id: "end-of-day",
-        title: "🏁 Before You Leave",
-        description: `${endOfDayOrders.length} orders ready to complete before leaving (materials ready)`,
-        estimatedTime: endOfDayOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: endOfDayOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "QUICK_COMPLETION",
-        orders: endOfDayOrders.slice(0, 5)
-      });
-    }
-
-    // Ready for Final Assembly - highest priority for immediate work
-    const readyForAssembly = orders.filter(
-      order => order.status === "PREPPED" && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
-    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
-    if (readyForAssembly.length > 0) {
-      quickWins.push({
-        id: "ready-for-assembly",
-        title: "🔨 Ready for Final Assembly",
-        description: `${readyForAssembly.length} orders prepped and ready for final assembly (highest priority)`,
-        estimatedTime: readyForAssembly.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: readyForAssembly.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "QUICK_COMPLETION",
-        orders: readyForAssembly.slice(0, 5)
-      });
-    }
-
-    // Materials Ready for Cutting - next highest priority
-    const readyForCutting = orders.filter(
-      order => order.status === "MATERIALS_ARRIVED" && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
-    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
-    if (readyForCutting.length > 0) {
-      quickWins.push({
-        id: "ready-for-cutting",
-        title: "✂️ Materials Ready for Cutting",
-        description: `${readyForCutting.length} orders with materials arrived, ready to start cutting`,
-        estimatedTime: readyForCutting.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: readyForCutting.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "QUICK_COMPLETION",
-        orders: readyForCutting.slice(0, 5)
-      });
-    }
-
-    // Quick Completion Orders (≤ 2 hours) - but only if materials are ready
-    const quickOrders = filterOrdersByTime(orders, 2);
 
     if (quickOrders.length > 0) {
       quickWins.push({
         id: "quick-completion",
-        title: "⚡ Quick Completion",
-        description: `${quickOrders.length} orders ready to work on in 2 hours or less (materials ready)`,
+        title: "Quick Completions",
+        description: `${quickOrders.length} orders under 2 hours`,
         estimatedTime: quickOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
         revenue: quickOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
@@ -191,10 +73,10 @@ export default function QuickWins() {
       });
     }
 
-    // High Value Orders (≥ $300) - filtered by time if selected
-    let highValueOrders = orders.filter(
-      order => order.price >= 300 && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
+    let highValueOrders = orders.filter(order => 
+      order.price >= 300 && 
+      !["PICKED_UP", "COMPLETED"].includes(order.status || "") &&
+      isOrderReadyForWork(order)
     );
 
     if (timeFilter !== "all") {
@@ -215,7 +97,6 @@ export default function QuickWins() {
       });
     }
 
-    // Overdue Orders - prioritized by how overdue they are (most overdue first)
     const now = new Date();
     const overdueOrders = orders.filter(
       order => new Date(order.dueDate) < now && 
@@ -235,7 +116,6 @@ export default function QuickWins() {
       });
     }
 
-    // Batch Ready Orders (same type, similar requirements)
     const frameOrders = orders.filter(
       order => order.orderType === "FRAME" && 
       order.status === "MATERIALS_ARRIVED"
@@ -246,7 +126,7 @@ export default function QuickWins() {
         id: "batch-frames",
         title: "Batch Frame Processing",
         description: `${frameOrders.length} frames ready for cutting`,
-        estimatedTime: frameOrders.reduce((sum, order) => sum + order.estimatedHours, 0) * 0.8, // 20% efficiency gain
+        estimatedTime: frameOrders.reduce((sum, order) => sum + order.estimatedHours, 0) * 0.8,
         revenue: frameOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "MEDIUM",
         category: "BATCH_READY",
@@ -255,8 +135,9 @@ export default function QuickWins() {
     }
 
     return quickWins.sort((a, b) => {
-      const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 };
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
+      if (a.priority === "HIGH" && b.priority !== "HIGH") return -1;
+      if (b.priority === "HIGH" && a.priority !== "HIGH") return 1;
+      return b.revenue - a.revenue;
     });
   };
 
@@ -292,15 +173,8 @@ export default function QuickWins() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-                </div>
+              <CardContent className="p-6">
+                <div className="h-20 bg-muted rounded"></div>
               </CardContent>
             </Card>
           ))}
@@ -309,93 +183,81 @@ export default function QuickWins() {
     );
   }
 
-  const totalPotentialRevenue = quickWins.reduce((sum, win) => sum + win.revenue, 0);
-  const totalEstimatedTime = quickWins.reduce((sum, win) => sum + win.estimatedTime, 0);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="p-6 space-y-6">
       <Navigation />
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-              ⚡ Quick Wins Dashboard
-            </h1>
-            <p className="text-gray-300 text-lg">
-              AI-powered insights for immediate productivity gains
-            </p>
-          </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Quick Win Opportunities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{quickWins.length}</div>
-            <p className="text-xs text-muted-foreground">Active opportunities</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Potential Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalPotentialRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">From quick wins</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Estimated Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Math.round(totalEstimatedTime)}h</div>
-            <p className="text-xs text-muted-foreground">Total time needed</p>
-          </CardContent>
-        </Card>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Zap className="h-6 w-6 text-green-600" />
+          <h1 className="text-2xl font-bold">Quick Wins Dashboard</h1>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Coffee className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Filter by time:</span>
+          <Select value={timeFilter} onValueChange={setTimeFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All orders" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All orders</SelectItem>
+              <SelectItem value="1">Under 1 hour</SelectItem>
+              <SelectItem value="2">Under 2 hours</SelectItem>
+              <SelectItem value="4">Under 4 hours</SelectItem>
+              <SelectItem value="8">Under 8 hours</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Quick Wins */}
+      <div className="text-sm text-muted-foreground">
+        Find the highest-impact work you can complete right now to maximize efficiency and revenue.
+      </div>
+
       {quickWins.length === 0 ? (
         <Card>
-          <CardContent className="pt-6">
-            <div className="text-center text-muted-foreground">
-              <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-medium mb-2">No Quick Wins Available</h3>
-              <p>All current orders are either completed or require more complex processing.</p>
-            </div>
+          <CardContent className="p-8 text-center">
+            <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">No Quick Wins Available</h3>
+            <p className="text-muted-foreground">
+              All ready orders require significant time investment. Consider checking materials status or working on order processing.
+            </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {quickWins.map((win) => (
-            <Card key={win.id} className="relative">
-              <CardHeader>
+            <Card key={win.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
+                  <CardTitle className="text-lg flex items-center space-x-2">
                     {getCategoryIcon(win.category)}
-                    <CardTitle className="text-lg">{win.title}</CardTitle>
-                  </div>
-                  <Badge variant="secondary" className={getCategoryColor(win.category)}>
+                    <span>{win.title}</span>
+                  </CardTitle>
+                  <Badge className={getCategoryColor(win.category)}>
                     {win.priority}
                   </Badge>
                 </div>
-                <CardDescription>{win.description}</CardDescription>
+                <p className="text-sm text-muted-foreground">{win.description}</p>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>{Math.round(win.estimatedTime)}h total</span>
+                    <div>
+                      <div className="text-sm font-medium">{win.estimatedTime.toFixed(1)}h</div>
+                      <div className="text-xs text-muted-foreground">Est. Time</div>
+                    </div>
                   </div>
+                  
                   <div className="flex items-center space-x-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span>${win.revenue.toLocaleString()}</span>
+                    <div>
+                      <div className="text-sm font-medium">${win.revenue.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground">Revenue</div>
+                    </div>
                   </div>
                 </div>
 
@@ -432,9 +294,6 @@ export default function QuickWins() {
           ))}
         </div>
       )}
-    </div>
-        </div>
-      </div>
     </div>
   );
 }
