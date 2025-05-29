@@ -41,7 +41,8 @@ export function SystemAlerts() {
       return response.json();
     },
     refetchInterval: 60000, // Check every minute
-    retry: false
+    retry: false,
+    enabled: false // Temporarily disable until endpoint is confirmed working
   });
 
   // Check database connectivity
@@ -53,7 +54,8 @@ export function SystemAlerts() {
       return response.json();
     },
     refetchInterval: 45000, // Check every 45 seconds
-    retry: false
+    retry: false,
+    enabled: false // Temporarily disable until we verify this endpoint
   });
 
   useEffect(() => {
