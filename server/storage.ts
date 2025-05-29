@@ -41,6 +41,7 @@ export interface IStorage {
 
   // Order operations
   getOrders(): Promise<OrderWithDetails[]>;
+  getAllOrders(): Promise<OrderWithDetails[]>;
   getOrder(id: string): Promise<OrderWithDetails | undefined>;
   getOrderByTrackingId(trackingId: string): Promise<OrderWithDetails | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
