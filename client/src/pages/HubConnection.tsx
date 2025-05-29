@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
 import { CheckCircle, XCircle, Loader2, Send, Activity, Database } from 'lucide-react';
 
 export default function HubConnection() {
@@ -106,13 +107,15 @@ export default function HubConnection() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Central Hub Connection</h1>
-        <p className="text-muted-foreground">
-          Connect your frame shop to the Central Dashboard Hub
-        </p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold">Central Hub Connection</h1>
+          <p className="text-muted-foreground">
+            Connect your frame shop to the Central Dashboard Hub
+          </p>
+        </div>
 
       <div className="grid gap-6 max-w-2xl mx-auto">
         {/* Connection Status */}
@@ -248,6 +251,7 @@ export default function HubConnection() {
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

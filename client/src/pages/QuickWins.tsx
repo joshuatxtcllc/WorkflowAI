@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Navigation } from '@/components/Navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, Zap, TrendingUp, Target, DollarSign, Calendar, Coffee, LogOut } from "lucide-react";
 import { OrderWithDetails } from "@shared/schema";
 import { Link } from "wouter";
-import { useState } from "react";
 
 interface QuickWin {
   id: string;
@@ -37,7 +38,7 @@ export default function QuickWins() {
   // Smart function to determine if an order is actually ready for work
   const isOrderReadyForWork = (order: OrderWithDetails): boolean => {
     const status = order.status;
-    
+
     // These statuses mean materials are ready and work can begin
     const readyStatuses = [
       "MATERIALS_ARRIVED",  // Materials are here, ready to cut
@@ -45,7 +46,7 @@ export default function QuickWins() {
       "MAT_CUT",           // Mat cut, ready for assembly
       "PREPPED"            // Everything prepped, ready for final assembly
     ];
-    
+
     return readyStatuses.includes(status || "");
   };
 
@@ -141,7 +142,7 @@ export default function QuickWins() {
       order => order.status === "PREPPED" && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-    
+
     if (readyForAssembly.length > 0) {
       quickWins.push({
         id: "ready-for-assembly",
@@ -160,7 +161,7 @@ export default function QuickWins() {
       order => order.status === "MATERIALS_ARRIVED" && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-    
+
     if (readyForCutting.length > 0) {
       quickWins.push({
         id: "ready-for-cutting",
@@ -176,7 +177,7 @@ export default function QuickWins() {
 
     // Quick Completion Orders (≤ 2 hours) - but only if materials are ready
     const quickOrders = filterOrdersByTime(orders, 2);
-    
+
     if (quickOrders.length > 0) {
       quickWins.push({
         id: "quick-completion",
@@ -195,12 +196,12 @@ export default function QuickWins() {
       order => order.price >= 300 && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     );
-    
+
     if (timeFilter !== "all") {
       const maxHours = parseFloat(timeFilter);
       highValueOrders = highValueOrders.filter(order => order.estimatedHours <= maxHours);
     }
-    
+
     if (highValueOrders.length > 0) {
       quickWins.push({
         id: "high-value",
@@ -220,7 +221,7 @@ export default function QuickWins() {
       order => new Date(order.dueDate) < now && 
       !["PICKED_UP", "COMPLETED"].includes(order.status || "")
     ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-    
+
     if (overdueOrders.length > 0) {
       quickWins.push({
         id: "overdue",
@@ -239,7 +240,7 @@ export default function QuickWins() {
       order => order.orderType === "FRAME" && 
       order.status === "MATERIALS_ARRIVED"
     );
-    
+
     if (frameOrders.length >= 3) {
       quickWins.push({
         id: "batch-frames",
@@ -312,49 +313,18 @@ export default function QuickWins() {
   const totalEstimatedTime = quickWins.reduce((sum, win) => sum + win.estimatedTime, 0);
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Zap className="h-6 w-6 text-green-600" />
-          <h1 className="text-2xl font-bold">Quick Wins Dashboard</h1>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <Select value={timeFilter} onValueChange={setTimeFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by time available" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Orders</SelectItem>
-                <SelectItem value="0.5">
-                  <div className="flex items-center space-x-2">
-                    <Coffee className="h-4 w-4" />
-                    <span>30 min (Lunch Break)</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="1">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
-                    <span>1 hour (Focused Time)</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="1.5">
-                  <div className="flex items-center space-x-2">
-                    <LogOut className="h-4 w-4" />
-                    <span>1.5 hours (Before Leaving)</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="2">2 hours (Half Day)</SelectItem>
-                <SelectItem value="4">4 hours (Full Day)</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <Navigation />
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+              ⚡ Quick Wins Dashboard
+            </h1>
+            <p className="text-gray-300 text-lg">
+              AI-powered insights for immediate productivity gains
+            </p>
           </div>
-          <Link href="/">
-            <Button variant="outline">Back to Board</Button>
-          </Link>
-        </div>
-      </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -367,7 +337,7 @@ export default function QuickWins() {
             <p className="text-xs text-muted-foreground">Active opportunities</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Potential Revenue</CardTitle>
@@ -377,7 +347,7 @@ export default function QuickWins() {
             <p className="text-xs text-muted-foreground">From quick wins</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Estimated Time</CardTitle>
@@ -416,7 +386,7 @@ export default function QuickWins() {
                 </div>
                 <CardDescription>{win.description}</CardDescription>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center space-x-2">
@@ -462,6 +432,9 @@ export default function QuickWins() {
           ))}
         </div>
       )}
+    </div>
+        </div>
+      </div>
     </div>
   );
 }

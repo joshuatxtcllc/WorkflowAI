@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Clock, Package, Download, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Navigation } from '@/components/Navigation';
 
 interface MaterialItem {
   vendor: string;
@@ -127,22 +128,14 @@ Notes: Please mark all items with order numbers for easy identification.
   const totalItems = vendorOrders?.reduce((sum: number, order: VendorPurchaseOrder) => sum + order.items.length, 0) || 0;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Vendor Orders</h1>
-          <p className="text-muted-foreground mt-1">
-            Generate purchase orders for processed customer orders
-          </p>
-        </div>
-        <Button 
-          onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/vendor/orders'] })}
-          variant="outline"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendor Orders</h1>
+            <p className="text-gray-600">Manage material orders and vendor relationships</p>
+          </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -157,7 +150,7 @@ Notes: Please mark all items with order numbers for easy identification.
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -169,7 +162,7 @@ Notes: Please mark all items with order numbers for easy identification.
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -212,7 +205,7 @@ Notes: Please mark all items with order numbers for easy identification.
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent>
               <div className="space-y-3">
                 {vendorOrder.items.map((item, itemIndex) => (
@@ -234,9 +227,9 @@ Notes: Please mark all items with order numbers for easy identification.
                   </div>
                 ))}
               </div>
-              
+
               <Separator className="my-4" />
-              
+
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"
@@ -255,7 +248,7 @@ Notes: Please mark all items with order numbers for easy identification.
                     : 'Select for Ordering'
                   }
                 </Button>
-                
+
                 <div className="text-sm text-muted-foreground">
                   {vendorOrder.items.length} order{vendorOrder.items.length !== 1 ? 's' : ''} ready for materials
                 </div>
@@ -306,6 +299,8 @@ Notes: Please mark all items with order numbers for easy identification.
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
     </div>
   );
 }
