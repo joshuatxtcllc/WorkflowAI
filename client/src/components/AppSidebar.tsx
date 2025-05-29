@@ -14,6 +14,7 @@ import {
   User2,
   ShoppingCart,
   Network,
+  Trophy,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -129,6 +130,11 @@ const data = {
       title: "Hub Connection",
       url: "/hub-connection",
       icon: Network,
+    },
+    {
+      title: "Progress Tracking",
+      url: "/progress",
+      icon: Trophy,
     },
     {
       title: "Notifications",
