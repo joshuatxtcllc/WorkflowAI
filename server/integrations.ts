@@ -161,8 +161,8 @@ export class DashboardIntegration {
   private apiKey: string;
 
   constructor() {
-    this.baseUrl = process.env.DASHBOARD_API_URL || 'https://0ac8a328-32f3-4362-9a16-8018d89af012-00-17hqj8k6x7wac.worf.replit.dev';
-    this.apiKey = process.env.DASHBOARD_API_KEY || 'jf_kanban_admin_2025_full_access_key_12345';
+    this.baseUrl = process.env.DASHBOARD_API_URL || '';
+    this.apiKey = process.env.DASHBOARD_API_KEY || 'kanban_admin_key_2025_full_access';
   }
 
   async syncMetrics() {
@@ -212,7 +212,8 @@ export class DashboardIntegration {
       console.log('Metrics synced to dashboard successfully');
       return { success: true, syncId: result.id };
     } catch (error) {
-      console.error('Dashboard sync error:', error);
+      console.error('🚨 CRITICAL: Dashboard sync error:', error);
+      console.error('📊 Business metrics sync FAILED at:', new Date().toISOString());
       return { success: false, error: (error as Error).message };
     }
   }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Navigation } from '@/components/Navigation';
+import { SystemAlerts } from '@/components/SystemAlerts';
 import { CheckCircle, XCircle, Loader2, Send, Activity, Database } from 'lucide-react';
 
 export default function HubConnection() {
@@ -113,9 +114,11 @@ export default function HubConnection() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Central Hub Connection</h1>
           <p className="text-muted-foreground">
-            Connect your frame shop to the Central Dashboard Hub
+            Enterprise Production System - Real Business Operations
           </p>
         </div>
+        
+        <SystemAlerts />
 
       <div className="grid gap-6 max-w-2xl mx-auto">
         {/* Connection Status */}

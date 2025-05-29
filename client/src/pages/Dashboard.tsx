@@ -15,6 +15,7 @@ import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lu
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
+import { SystemAlerts } from '@/components/SystemAlerts';
 
 
 // Component to handle scroll detection
@@ -76,6 +77,7 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
           <Header />
           <main className="flex-1 p-4 space-y-6 overflow-hidden">
+            <SystemAlerts />
             <KanbanBoard />
           </main>
           <AIAssistant />
