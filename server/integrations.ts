@@ -173,7 +173,7 @@ export class DashboardIntegration {
 
     try {
       const orders = await storage.getAllOrders();
-      const customers = await storage.getAllCustomers();
+      const customers = await storage.getCustomers();
       
       const metrics = {
         totalOrders: orders.length,

@@ -16,6 +16,8 @@ import Customers from "@/pages/Customers";
 import Analytics from "@/pages/Analytics";
 import Schedule from "@/pages/Schedule";
 import TimeTracking from "@/pages/TimeTracking";
+import Notifications from "@/pages/Notifications";
+import Reports from "@/pages/Reports";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -46,6 +48,11 @@ function Router() {
           <Route path="/analytics/time-tracking" component={Analytics} />
           <Route path="/schedule" component={Schedule} />
           <Route path="/time-tracking" component={TimeTracking} />
+          <Route path="/notifications" component={Notifications} />
+          <Route path="/reports" component={Reports} />
+          <Route path="/reports/daily" component={Reports} />
+          <Route path="/reports/weekly" component={Reports} />
+          <Route path="/reports/monthly" component={Reports} />
           <Route path="/hub-connection" component={HubConnection} />
           <Route path="/progress" component={Progress} />
           <Route path="/track" component={CustomerPortal} />
