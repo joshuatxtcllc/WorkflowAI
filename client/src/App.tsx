@@ -9,6 +9,7 @@ import QuickWins from "@/pages/QuickWins";
 import VendorOrders from "@/pages/VendorOrders";
 import Login from "@/pages/Login";
 import CustomerPortal from "@/components/CustomerPortal";
+import HubConnection from "@/pages/HubConnection";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/quick-wins" component={QuickWins} />
           <Route path="/vendor-orders" component={VendorOrders} />
+          <Route path="/hub-connection" component={HubConnection} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route component={NotFound} />
