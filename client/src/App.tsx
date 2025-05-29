@@ -37,6 +37,15 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/quick-wins" component={QuickWins} />
           <Route path="/vendor-orders" component={VendorOrders} />
+          <Route path="/orders" component={Orders} />
+          <Route path="/customers" component={Customers} />
+          <Route path="/customers/new" component={Customers} />
+          <Route path="/analytics" component={Analytics} />
+          <Route path="/analytics/workload" component={Analytics} />
+          <Route path="/analytics/performance" component={Analytics} />
+          <Route path="/analytics/time-tracking" component={Analytics} />
+          <Route path="/schedule" component={Schedule} />
+          <Route path="/time-tracking" component={TimeTracking} />
           <Route path="/hub-connection" component={HubConnection} />
           <Route path="/progress" component={Progress} />
           <Route path="/track" component={CustomerPortal} />
