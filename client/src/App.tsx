@@ -11,6 +11,11 @@ import Login from "@/pages/Login";
 import CustomerPortal from "@/components/CustomerPortal";
 import HubConnection from "@/pages/HubConnection";
 import Progress from "@/pages/Progress";
+import Orders from "@/pages/Orders";
+import Customers from "@/pages/Customers";
+import Analytics from "@/pages/Analytics";
+import Schedule from "@/pages/Schedule";
+import TimeTracking from "@/pages/TimeTracking";
 import NotFound from "@/pages/not-found";
 
 function Router() {

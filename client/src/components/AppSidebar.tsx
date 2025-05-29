@@ -47,78 +47,78 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/",
       icon: Home,
     },
     {
       title: "Orders",
-      url: "#",
+      url: "/orders",
       icon: Package,
       items: [
         {
           title: "All Orders",
-          url: "#",
+          url: "/orders",
         },
         {
           title: "Pending",
-          url: "#",
+          url: "/orders?status=pending",
         },
         {
           title: "In Progress",
-          url: "#",
+          url: "/orders?status=in-progress",
         },
         {
           title: "Ready for Pickup",
-          url: "#",
+          url: "/orders?status=ready",
         },
         {
           title: "Completed",
-          url: "#",
+          url: "/orders?status=completed",
         },
       ],
     },
     {
       title: "Customers",
-      url: "#",
+      url: "/customers",
       icon: Users,
       items: [
         {
           title: "All Customers",
-          url: "#",
+          url: "/customers",
         },
         {
           title: "Add New Customer",
-          url: "#",
+          url: "/customers/new",
         },
       ],
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/analytics",
       icon: BarChart3,
       items: [
         {
           title: "Workload Analysis",
-          url: "#",
+          url: "/analytics/workload",
         },
         {
           title: "Performance Reports",
-          url: "#",
+          url: "/analytics/performance",
         },
         {
           title: "Time Tracking",
-          url: "#",
+          url: "/analytics/time-tracking",
         },
       ],
     },
     {
       title: "Schedule",
-      url: "#",
+      url: "/schedule",
       icon: Calendar,
     },
     {
       title: "Time Tracking",
-      url: "#",
+      url: "/time-tracking",
       icon: Clock,
     },
     {
@@ -138,25 +138,25 @@ const data = {
     },
     {
       title: "Notifications",
-      url: "#",
+      url: "/notifications",
       icon: Bell,
     },
     {
       title: "Reports",
-      url: "#",
+      url: "/reports",
       icon: FileText,
       items: [
         {
           title: "Daily Reports",
-          url: "#",
+          url: "/reports/daily",
         },
         {
           title: "Weekly Summary",
-          url: "#",
+          url: "/reports/weekly",
         },
         {
           title: "Monthly Overview",
-          url: "#",
+          url: "/reports/monthly",
         },
       ],
     },
