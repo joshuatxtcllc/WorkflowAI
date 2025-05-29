@@ -13,6 +13,7 @@ import {
   ChevronUp,
   User2,
   ShoppingCart,
+  Network,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -122,6 +123,11 @@ const data = {
       title: "Vendor Orders",
       url: "/vendor-orders",
       icon: ShoppingCart,
+    },
+    {
+      title: "Hub Connection",
+      url: "/hub-connection",
+      icon: Network,
     },
     {
       title: "Notifications",
