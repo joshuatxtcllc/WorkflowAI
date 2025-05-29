@@ -16,6 +16,7 @@ import {
   Network,
 } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "wouter";
 
 import {
   Sidebar,
@@ -187,16 +188,28 @@ export function AppSidebar() {
     queryKey: ["/api/auth/user"],
   });
 
+  const [location, navigate] = useLocation();
   const [activeItem, setActiveItem] = useState("Dashboard");
 
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
     
+    // Handle URL navigation first
+    if (url && url !== "#") {
+      navigate(url);
+      return;
+    }
+    
     // Handle different navigation actions
     switch (itemTitle) {
       case "Dashboard":
-        // Already on dashboard - could scroll to top or refresh
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        navigate("/");
+        break;
+      case "Vendor Orders":
+        navigate("/vendor-orders");
+        break;
+      case "Hub Connection":
+        navigate("/hub-connection");
         break;
       case "All Orders":
       case "Orders":
