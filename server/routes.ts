@@ -715,6 +715,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update mystery orders to show in mystery column
+  app.post('/api/orders/update-mystery', async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      const mysteryOrders = orders.filter(o => 
+        o.notes?.includes('Mystery Drawer') || 
+        o.notes?.includes('mystery') ||
+        o.customerName === 'Mystery Customer'
+      );
+      
+      let updated = 0;
+      for (const order of mysteryOrders) {
+        if (order.status !== 'MYSTERY_UNCLAIMED') {
+          await storage.updateOrder(order.id, { status: 'MYSTERY_UNCLAIMED' });
+          updated++;
+        }
+      }
+      
+      // Broadcast update to connected clients
+      broadcast(wss, {
+        type: 'mystery_orders_updated',
+        data: { updated, total: mysteryOrders.length }
+      });
+      
+      res.json({ 
+        success: true, 
+        message: `Updated ${updated} mystery orders to show in mystery column`,
+        mysteryOrdersFound: mysteryOrders.length,
+        updated
+      });
+    } catch (error) {
+      console.error('Error updating mystery orders:', error);
+      res.status(500).json({ error: 'Failed to update mystery orders' });
+    }
+  });
+
   // Batch update order status
   app.patch('/api/orders/batch-status', async (req, res) => {
     try {
