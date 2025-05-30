@@ -715,9 +715,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add mystery orders from your actual shop
-  app.post('/api/orders/add-mystery', async (req, res) => {
+  // Import all authentic mystery orders from your real shop data
+  app.post('/api/import/all-mysteries', async (req, res) => {
     try {
+      const fs = await import('fs/promises');
+      
       // First, create a Mystery Customer if it doesn't exist
       let mysteryCustomer = await storage.getCustomerByEmail('mystery@shop.local');
       if (!mysteryCustomer) {
@@ -729,61 +731,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const mysteryItems = [
-        {
-          trackingId: 'MYSTERY-301',
-          description: 'Girl in red dress walking down village road',
-          notes: 'Paint on Unstretched canvas - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-301'
-        },
-        {
-          trackingId: 'MYSTERY-302', 
-          description: 'Golden Hindu temple with Buddha',
-          notes: 'Laser cut tapestry - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-302'
-        },
-        {
-          trackingId: 'MYSTERY-303-1',
-          description: 'Cathie Kayser illustration - landscape',
-          notes: 'Item 1 of 3 - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-303'
-        },
-        {
-          trackingId: 'MYSTERY-303-2',
-          description: 'Cathie Kayser illustration - tangled nest', 
-          notes: 'Item 2 of 3 - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-303'
-        },
-        {
-          trackingId: 'MYSTERY-303-3',
-          description: 'Leonard poem with crows',
-          notes: 'Item 3 of 3 - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-303'
-        },
-        {
-          trackingId: 'MYSTERY-304',
-          description: 'Millie the true glue - printed poem',
-          notes: 'Printed poem on paper - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-304'
-        },
-        {
-          trackingId: 'MYSTERY-305',
-          description: 'Woman in red and yellow head dress smiling',
-          notes: 'Photograph - Mystery Drawer #3', 
-          invoiceNumber: 'MYSTERY-305'
-        },
-        {
-          trackingId: 'MYSTERY-306',
-          description: '2 photos: Red handprints on red rock; Cliffs of red and orange sand',
-          notes: 'Same sleeve - Mystery Drawer #3',
-          invoiceNumber: 'MYSTERY-306'
+      // Read and process the authentic mystery data file
+      const filePath = './attached_assets/Pasted-Date-Due-Invoice-Order-ID-Qty-Name-Phone-Designer-Location-Description-Order-Type-Order-Progress-Pai-1748618065100.txt';
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+      
+      const lines = fileContent.split('\n');
+      const mysteryOrders = [];
+      
+      // Process each line to find mystery orders
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const columns = line.split('\t');
+        if (columns.length < 9) continue;
+        
+        const name = columns[4]?.trim();
+        const location = columns[7]?.trim();
+        const description = columns[8]?.trim();
+        const orderId = columns[2]?.trim();
+        const invoice = columns[1]?.trim();
+        const qty = parseInt(columns[3]?.trim()) || 1;
+        
+        // Only process Mystery orders from your authentic data
+        if (name === 'Mystery' && location?.includes('Mystery Drawer')) {
+          mysteryOrders.push({
+            trackingId: `MYSTERY-${orderId}`,
+            description: description || `Mystery item ${orderId}`,
+            notes: `${description} - ${location}`,
+            invoiceNumber: invoice,
+            quantity: qty
+          });
         }
-      ];
+      }
 
       let created = 0;
-      for (const item of mysteryItems) {
+      const existingOrders = await storage.getAllOrders();
+      
+      for (const item of mysteryOrders) {
         // Check if order already exists
-        const existingOrders = await storage.getAllOrders();
         const exists = existingOrders.some(o => o.trackingId === item.trackingId);
         
         if (!exists) {
@@ -792,7 +778,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             customerId: mysteryCustomer.id,
             orderType: 'FRAME',
             status: 'MYSTERY_UNCLAIMED',
-            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
             estimatedHours: 2,
             price: 0,
             description: item.description,
@@ -806,19 +792,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Broadcast update to connected clients
       broadcast(wss, {
-        type: 'mystery_orders_added',
-        data: { created, total: mysteryItems.length }
+        type: 'mystery_orders_imported',
+        data: { created, total: mysteryOrders.length }
       });
       
       res.json({ 
         success: true, 
-        message: `Added ${created} mystery orders to your system`,
+        message: `Imported ${created} authentic mystery orders from your shop data`,
         created,
-        total: mysteryItems.length
+        total: mysteryOrders.length,
+        found: mysteryOrders.length
       });
     } catch (error) {
-      console.error('Error adding mystery orders:', error);
-      res.status(500).json({ error: 'Failed to add mystery orders' });
+      console.error('Error importing mystery orders:', error);
+      res.status(500).json({ error: 'Failed to import mystery orders' });
     }
   });
 
