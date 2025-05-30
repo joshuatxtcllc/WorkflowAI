@@ -21,6 +21,7 @@ const columnIcons = {
   'COMPLETED': CheckCircle,
   'DELAYED': AlertTriangle,
   'PICKED_UP': User,
+  'MYSTERY_UNCLAIMED': AlertTriangle,
 };
 
 interface KanbanColumnProps {
@@ -50,6 +51,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
       case 'COMPLETED': return 'text-green-400';
       case 'DELAYED': return 'text-red-400';
       case 'PICKED_UP': return 'text-blue-400';
+      case 'MYSTERY_UNCLAIMED': return 'text-yellow-400';
       default: return 'text-jade-400';
     }
   };
