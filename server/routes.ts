@@ -715,39 +715,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update mystery orders to show in mystery column
-  app.post('/api/orders/update-mystery', async (req, res) => {
+  // Add mystery orders from your actual shop
+  app.post('/api/orders/add-mystery', async (req, res) => {
     try {
-      const orders = await storage.getAllOrders();
-      const mysteryOrders = orders.filter(o => 
-        o.notes?.includes('Mystery Drawer') || 
-        o.notes?.includes('mystery') ||
-        o.customerName === 'Mystery Customer'
-      );
-      
-      let updated = 0;
-      for (const order of mysteryOrders) {
-        if (order.status !== 'MYSTERY_UNCLAIMED') {
-          await storage.updateOrder(order.id, { status: 'MYSTERY_UNCLAIMED' });
-          updated++;
+      // First, create a Mystery Customer if it doesn't exist
+      let mysteryCustomer = await storage.getCustomerByEmail('mystery@shop.local');
+      if (!mysteryCustomer) {
+        mysteryCustomer = await storage.createCustomer({
+          name: 'Mystery Customer',
+          email: 'mystery@shop.local',
+          phone: null,
+          address: null,
+        });
+      }
+
+      const mysteryItems = [
+        {
+          trackingId: 'MYSTERY-301',
+          description: 'Girl in red dress walking down village road',
+          notes: 'Paint on Unstretched canvas - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-301'
+        },
+        {
+          trackingId: 'MYSTERY-302', 
+          description: 'Golden Hindu temple with Buddha',
+          notes: 'Laser cut tapestry - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-302'
+        },
+        {
+          trackingId: 'MYSTERY-303-1',
+          description: 'Cathie Kayser illustration - landscape',
+          notes: 'Item 1 of 3 - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-303'
+        },
+        {
+          trackingId: 'MYSTERY-303-2',
+          description: 'Cathie Kayser illustration - tangled nest', 
+          notes: 'Item 2 of 3 - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-303'
+        },
+        {
+          trackingId: 'MYSTERY-303-3',
+          description: 'Leonard poem with crows',
+          notes: 'Item 3 of 3 - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-303'
+        },
+        {
+          trackingId: 'MYSTERY-304',
+          description: 'Millie the true glue - printed poem',
+          notes: 'Printed poem on paper - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-304'
+        },
+        {
+          trackingId: 'MYSTERY-305',
+          description: 'Woman in red and yellow head dress smiling',
+          notes: 'Photograph - Mystery Drawer #3', 
+          invoiceNumber: 'MYSTERY-305'
+        },
+        {
+          trackingId: 'MYSTERY-306',
+          description: '2 photos: Red handprints on red rock; Cliffs of red and orange sand',
+          notes: 'Same sleeve - Mystery Drawer #3',
+          invoiceNumber: 'MYSTERY-306'
+        }
+      ];
+
+      let created = 0;
+      for (const item of mysteryItems) {
+        // Check if order already exists
+        const existingOrders = await storage.getAllOrders();
+        const exists = existingOrders.some(o => o.trackingId === item.trackingId);
+        
+        if (!exists) {
+          await storage.createOrder({
+            trackingId: item.trackingId,
+            customerId: mysteryCustomer.id,
+            orderType: 'FRAME',
+            status: 'MYSTERY_UNCLAIMED',
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            estimatedHours: 2,
+            price: 0,
+            description: item.description,
+            notes: item.notes,
+            priority: 'LOW',
+            invoiceNumber: item.invoiceNumber,
+          });
+          created++;
         }
       }
       
       // Broadcast update to connected clients
       broadcast(wss, {
-        type: 'mystery_orders_updated',
-        data: { updated, total: mysteryOrders.length }
+        type: 'mystery_orders_added',
+        data: { created, total: mysteryItems.length }
       });
       
       res.json({ 
         success: true, 
-        message: `Updated ${updated} mystery orders to show in mystery column`,
-        mysteryOrdersFound: mysteryOrders.length,
-        updated
+        message: `Added ${created} mystery orders to your system`,
+        created,
+        total: mysteryItems.length
       });
     } catch (error) {
-      console.error('Error updating mystery orders:', error);
-      res.status(500).json({ error: 'Failed to update mystery orders' });
+      console.error('Error adding mystery orders:', error);
+      res.status(500).json({ error: 'Failed to add mystery orders' });
     }
   });
 
