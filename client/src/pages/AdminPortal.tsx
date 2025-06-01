@@ -25,7 +25,7 @@ import {
   Clock, 
   DollarSign, 
   Package,
-  Sync,
+  RefreshCw,
   Database,
   Settings
 } from 'lucide-react';
@@ -255,7 +255,7 @@ export default function AdminPortal() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => syncToHubMutation.mutate('all')}>
-              <Sync className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2" />
               Sync All to Hub
             </Button>
           </div>
