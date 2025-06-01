@@ -871,8 +871,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Order IDs array is required' });
       }
 
-```text
-      if (!status) {
+if (!status) {
         return res.status(400).json({ error: 'Status is required' });
       }
 
