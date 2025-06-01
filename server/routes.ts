@@ -715,6 +715,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import Grant's live active orders
+  app.post('/api/import/grant-orders', async (req, res) => {
+    try {
+      const { importGrantOrders } = await import('./import-grant-orders.js');
+      const result = await importGrantOrders();
+      
+      broadcast(wss, {
+        type: 'grant_orders_imported',
+        data: result
+      });
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully imported ${result.importedOrders} live Grant orders worth $${result.totalValue.toLocaleString()}`,
+        ...result
+      });
+    } catch (error) {
+      console.error('❌ Grant orders import failed:', error);
+      res.status(500).json({ error: 'Grant orders import failed', details: error.message });
+    }
+  });
+
   // Import all authentic mystery orders from your real shop data
   app.post('/api/import/all-mysteries', async (req, res) => {
     try {
