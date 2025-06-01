@@ -144,9 +144,15 @@ export default function KanbanBoard() {
   const [isDragging, setIsDragging] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Force refresh orders data on component mount
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+  }, [queryClient]);
+
   const { data: orders = [], isLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 30000,
+    refetchInterval: 5000,
+    staleTime: 0,
   });
 
   const updateOrderStatusMutation = useMutation({
