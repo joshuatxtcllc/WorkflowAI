@@ -197,9 +197,9 @@ export async function addRealProductionOrders() {
         orderId: '21018',
         invoiceNumber: '21018',
         frameSize: '27 X 35',
-        price: 22763,
+        price: 227.63,
         status: 'PREPPED',
-        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $227.63 - 80% Complete - Live Order'
       },
       
       {
@@ -208,9 +208,9 @@ export async function addRealProductionOrders() {
         orderId: '21019',
         invoiceNumber: '21019',
         frameSize: '27 X 35',
-        price: 22763,
+        price: 227.63,
         status: 'PREPPED',
-        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $227.63 - 80% Complete - Live Order'
       },
       
       {
@@ -219,9 +219,9 @@ export async function addRealProductionOrders() {
         orderId: '21020',
         invoiceNumber: '21020',
         frameSize: '27 X 35',
-        price: 22763,
+        price: 227.63,
         status: 'PREPPED',
-        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $227.63 - 80% Complete - Live Order'
       },
       
       {
@@ -230,9 +230,9 @@ export async function addRealProductionOrders() {
         orderId: '21021',
         invoiceNumber: '21021',
         frameSize: '27 X 35',
-        price: 22763,
+        price: 227.63,
         status: 'PREPPED',
-        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $227.63 - 80% Complete - Live Order'
       }
     ];
 
