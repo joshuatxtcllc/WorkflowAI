@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Navigation } from '@/components/Navigation';
-import { ArtworkManager } from '@/components/ArtworkManager';
+import { ArtworkManager } from '../components/ArtworkManager';
 import { 
   Plus, 
   Edit, 
