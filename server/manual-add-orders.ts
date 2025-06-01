@@ -188,6 +188,51 @@ export async function addRealProductionOrders() {
         price: 0,
         status: 'COMPLETED',
         notes: '2 photos: Red handprints on red rock; Cliffs of red and orange sand - Same sleeve - Mystery Drawer#3'
+      },
+      
+      // Grant's live active orders - HIGH PRIORITY
+      {
+        customerName: 'Chip Grant',
+        phone: null,
+        orderId: '21018',
+        invoiceNumber: '21018',
+        frameSize: '27 X 35',
+        price: 22763,
+        status: 'PREPPED',
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+      },
+      
+      {
+        customerName: 'Chip Grant',
+        phone: null,
+        orderId: '21019',
+        invoiceNumber: '21019',
+        frameSize: '27 X 35',
+        price: 22763,
+        status: 'PREPPED',
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+      },
+      
+      {
+        customerName: 'Chip Grant',
+        phone: null,
+        orderId: '21020',
+        invoiceNumber: '21020',
+        frameSize: '27 X 35',
+        price: 22763,
+        status: 'PREPPED',
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
+      },
+      
+      {
+        customerName: 'Chip Grant',
+        phone: null,
+        orderId: '21021',
+        invoiceNumber: '21021',
+        frameSize: '27 X 35',
+        price: 22763,
+        status: 'PREPPED',
+        notes: 'Bella Moulding BEL720098 - Stock Savings: $22,763.00 - 80% Complete - Live Order'
       }
     ];
 
@@ -219,17 +264,35 @@ export async function addRealProductionOrders() {
         }
       }
 
+      // Set due dates and priority for Grant's live orders
+      let dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+      let priority = 'MEDIUM';
+      let estimatedHours = 4;
+      
+      if (orderData.customerName === 'Chip Grant') {
+        // Grant's orders have specific due dates and are HIGH priority
+        if (orderData.orderId === '21018' || orderData.orderId === '21019') {
+          dueDate = new Date('2024-10-05');
+        } else if (orderData.orderId === '21020') {
+          dueDate = new Date('2024-10-06');
+        } else if (orderData.orderId === '21021') {
+          dueDate = new Date('2024-10-07');
+        }
+        priority = 'HIGH';
+        estimatedHours = 4.5; // Large custom frames take longer
+      }
+
       // Create order with invoice number
       const order = await storage.createOrder({
         trackingId: `TRK-${orderData.orderId}`,
         customerId,
         orderType: 'FRAME',
         status: orderData.status as any,
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        estimatedHours: 4,
+        dueDate: dueDate,
+        estimatedHours: estimatedHours,
         price: orderData.price,
         notes: orderData.notes || null,
-        priority: 'MEDIUM',
+        priority: priority as any,
         invoiceNumber: orderData.invoiceNumber,
       });
       
