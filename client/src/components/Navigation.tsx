@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -6,7 +5,7 @@ import {
   Package, 
   Users, 
   BarChart3, 
-  Calendar, 
+  Calendar,
   Clock, 
   ShoppingCart, 
   Network, 
@@ -75,7 +74,7 @@ export function Navigation({ className = '' }: NavigationProps) {
               </div>
             </div>
           </div>
-          
+
           <div className="hidden md:block">
             <div className="ml-4 flex items-center space-x-4">
               {navigationItems.slice(6).map((item) => {

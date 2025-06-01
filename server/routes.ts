@@ -964,11 +964,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard Webhook endpoint
-  app.post('/api/webhooks/dashboard', (req, res) => {
+  app.post('/api/webhooks/dashboard', async (req, res) => {
     try {
       console.log('Dashboard webhook received:', req.body);
-      // Handle any dashboard events or notifications here
-      res.status(200).json({ received: true, timestamp: new Date().toISOString() });
+      const { type, orderId, data } = req.body;
+
+      // Handle different webhook types
+      switch (type) {
+        case 'order_status_update':
+          if (orderId && data.status) {
+            // Update order status from hub
+            const orders = await storage.getAllOrders();
+            const order = orders.find(o => o.trackingId === orderId);
+            if (order) {
+              await storage.updateOrder(order.id, { 
+                status: data.status,
+                lastSyncedToHub: new Date()
+              });
+              
+              // Broadcast update to connected clients
+              broadcast(wss, {
+                type: 'order_updated',
+                data: { orderId: order.id, status: data.status }
+              });
+            }
+          }
+          break;
+
+        case 'metrics_request':
+          // Send current metrics to hub
+          await dashboardIntegration.syncMetrics();
+          break;
+
+        case 'full_sync_request':
+          // Perform full data synchronization
+          const allOrders = await storage.getAllOrders();
+          for (const order of allOrders) {
+            await dashboardIntegration.sendOrderUpdate(order.id, 'full_sync', {
+              reason: 'Hub requested full sync'
+            });
+          }
+          break;
+      }
+
+      res.status(200).json({ 
+        received: true, 
+        processed: true,
+        timestamp: new Date().toISOString() 
+      });
     } catch (error) {
       console.error('Dashboard webhook error:', error);
       res.status(500).json({ error: 'Webhook processing failed' });
@@ -1061,6 +1104,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Auto-sync failed:', error);
     }
   }, 15 * 60 * 1000);
+
+  // Auto-sync recent order changes every 5 minutes
+  setInterval(async () => {
+    try {
+      const orders = await storage.getAllOrders();
+      const recentOrders = orders.filter(order => {
+        const updatedAt = new Date(order.updatedAt || order.createdAt);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        return updatedAt > fiveMinutesAgo;
+      });
+
+      for (const order of recentOrders) {
+        // Sync to POS if needed
+        if (!order.posOrderId || new Date(order.updatedAt || order.createdAt) > new Date(order.lastSyncedToPOS || 0)) {
+          await posIntegration.syncOrder(order.id);
+        }
+
+        // Sync to Hub if needed
+        if (new Date(order.updatedAt || order.createdAt) > new Date(order.lastSyncedToHub || 0)) {
+          await dashboardIntegration.sendOrderUpdate(order.id, 'auto_sync', {
+            reason: 'Automatic sync - recent changes detected'
+          });
+        }
+      }
+
+      if (recentOrders.length > 0) {
+        console.log(`Auto-synced ${recentOrders.length} recently updated orders`);
+      }
+    } catch (error) {
+      console.error('Auto order sync failed:', error);
+    }
+  }, 5 * 60 * 1000);
 
   return httpServer;
 }
