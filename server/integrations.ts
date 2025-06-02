@@ -195,16 +195,26 @@ export class DashboardIntegration {
         source: 'Frame Shop Management System'
       };
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await fetch(`${this.baseUrl}/api/metrics/frame-shop`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-API-Key': this.apiKey
         },
-        body: JSON.stringify(metrics)
+        body: JSON.stringify(metrics),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
+        if (response.status === 503) {
+          console.log('Dashboard service temporarily unavailable (503), will retry later');
+          return { success: false, error: 'Dashboard service unavailable', retryable: true };
+        }
         throw new Error(`Dashboard API error: ${response.status}`);
       }
 
@@ -261,5 +271,6 @@ export const dashboardIntegration = new DashboardIntegration();
 // Auto-sync function for dashboard metrics (can be called periodically)
 export async function autoSyncMetrics() {
   console.log('Auto-syncing metrics to dashboard...');
-  await dashboardIntegration.syncMetrics();
+  const result = await dashboardIntegration.syncMetrics();
+  return result;
 }

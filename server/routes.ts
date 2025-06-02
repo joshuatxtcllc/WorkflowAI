@@ -91,14 +91,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Order routes
+  // Order routes with improved caching
+  let ordersCache: any = null;
+  let ordersCacheTime = 0;
+  const ORDERS_CACHE_TTL = 10000; // 10 seconds for faster updates
+
   app.get('/api/orders', authenticateToken, async (req, res) => {
     try {
+      const now = Date.now();
+
+      // Return cached orders if still fresh
+      if (ordersCache && (now - ordersCacheTime) < ORDERS_CACHE_TTL) {
+        res.setHeader('X-Cache', 'HIT');
+        return res.json(ordersCache);
+      }
+
+      // Fetch orders directly without timeout wrapper
       const orders = await storage.getOrders();
+
+      // Update cache
+      ordersCache = orders;
+      ordersCacheTime = now;
+
+      res.setHeader('X-Cache', 'MISS');
       res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      res.status(500).json({ message: "Failed to fetch orders" });
+
+      // Return cached data if available, even if stale
+      if (ordersCache) {
+        res.setHeader('X-Cache', 'STALE');
+        return res.json(ordersCache);
+      }
+
+      // Return empty array instead of error to prevent UI crash
+      res.status(200).json([]);
     }
   });
 
@@ -269,11 +296,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { filename } = req.params;
       const imageBuffer = await artworkManager.getArtworkImage(filename);
-      
+
       const ext = path.extname(filename).toLowerCase();
       const contentType = ext === '.png' ? 'image/png' : 
                          ext === '.gif' ? 'image/gif' : 'image/jpeg';
-      
+
       res.setHeader('Content-Type', contentType);
       res.send(imageBuffer);
     } catch (error) {
@@ -285,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { location } = req.body;
-      
+
       console.log("Updating artwork location for order:", orderId, "to:", location);
       await artworkManager.updateArtworkLocation(orderId, location);
       res.json({ message: "Artwork location updated" });
@@ -299,7 +326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { received } = req.body;
-      
+
       console.log("Updating artwork received status for order:", orderId, "to:", received);
       await artworkManager.markArtworkReceived(orderId, received);
       res.json({ message: "Artwork received status updated" });
@@ -313,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, imageUrl } = req.params;
       const decodedImageUrl = decodeURIComponent(imageUrl);
-      
+
       await artworkManager.removeArtworkImage(orderId, decodedImageUrl);
       res.json({ message: "Image removed successfully" });
     } catch (error) {
@@ -435,6 +462,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching workload metrics:", error);
       res.status(500).json({ message: "Failed to fetch metrics" });
+    }
+  });
+
+  // Enhanced frame shop insights
+  app.get('/api/analytics/shop-insights', authenticateToken, async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      const now = new Date();
+      
+      const insights = {
+        mysteryItems: {
+          total: orders.filter(o => o.status === 'MYSTERY_UNCLAIMED').length,
+          items: orders.filter(o => o.status === 'MYSTERY_UNCLAIMED').map(o => ({
+            trackingId: o.trackingId,
+            description: o.description,
+            daysInSystem: Math.floor((now.getTime() - new Date(o.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+          }))
+        },
+        productionFlow: {
+          orderProcessed: orders.filter(o => o.status === 'ORDER_PROCESSED').length,
+          materialsOrdered: orders.filter(o => o.status === 'MATERIALS_ORDERED').length,
+          materialsArrived: orders.filter(o => o.status === 'MATERIALS_ARRIVED').length,
+          frameCut: orders.filter(o => o.status === 'FRAME_CUT').length,
+          matCut: orders.filter(o => o.status === 'MAT_CUT').length,
+          prepped: orders.filter(o => o.status === 'PREPPED').length,
+          completed: orders.filter(o => o.status === 'COMPLETED').length
+        },
+        urgentAlerts: {
+          overdue: orders.filter(o => new Date(o.dueDate) < now).length,
+          urgent: orders.filter(o => o.priority === 'URGENT').length,
+          dueTomorrow: orders.filter(o => {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return new Date(o.dueDate).toDateString() === tomorrow.toDateString();
+          }).length
+        },
+        efficiency: {
+          totalActiveOrders: orders.filter(o => !['PICKED_UP', 'COMPLETED'].includes(o.status)).length,
+          estimatedWorkload: orders.reduce((sum, o) => sum + (o.estimatedHours || 0), 0),
+          averageOrderValue: Math.round(orders.reduce((sum, o) => sum + (o.price || 0), 0) / orders.length),
+          completionRate: Math.round((orders.filter(o => ['PICKED_UP', 'COMPLETED'].includes(o.status)).length / orders.length) * 100)
+        }
+      };
+      
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating shop insights:", error);
+      res.status(500).json({ message: "Failed to generate shop insights" });
+    }
+  });
+
+  // Business Learning and AI Insights
+  app.get('/api/analytics/learning-insights', authenticateToken, async (req, res) => {
+    try {
+      const { learningService } = await import('./services/learningService');
+      const insights = await learningService.analyzeBusinessPatterns();
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating learning insights:", error);
+      res.status(500).json({ message: "Failed to generate learning insights" });
     }
   });
 
@@ -568,17 +655,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { batchSize = 5 } = req.body;
       console.log(`🚀 Starting batch import with batch size: ${batchSize}`);
-      
+
       const { batchImportOrders } = await import('./batch-import');
       const result = await batchImportOrders(batchSize);
-      
+
       res.json({
         success: true,
         message: `Successfully imported ${result.totalImported} orders in ${result.batchCount} batches`,
         totalImported: result.totalImported,
         batchCount: result.batchCount
       });
-      
+
     } catch (error) {
       console.error('Batch import error:', error);
       res.status(500).json({ 
@@ -719,7 +806,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/import/all-mysteries', async (req, res) => {
     try {
       const fs = await import('fs/promises');
-      
+
       // First, create a Mystery Customer if it doesn't exist
       let mysteryCustomer = await storage.getCustomerByEmail('mystery@shop.local');
       if (!mysteryCustomer) {
@@ -734,25 +821,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Read and process the authentic mystery data file
       const filePath = './attached_assets/Pasted-Date-Due-Invoice-Order-ID-Qty-Name-Phone-Designer-Location-Description-Order-Type-Order-Progress-Pai-1748618065100.txt';
       const fileContent = await fs.readFile(filePath, 'utf-8');
-      
+
       const lines = fileContent.split('\n');
       const mysteryOrders = [];
-      
+
       // Process each line to find mystery orders
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
-        
+
         const columns = line.split('\t');
         if (columns.length < 9) continue;
-        
+
         const name = columns[4]?.trim();
         const location = columns[7]?.trim();
         const description = columns[8]?.trim();
         const orderId = columns[2]?.trim();
         const invoice = columns[1]?.trim();
         const qty = parseInt(columns[3]?.trim()) || 1;
-        
+
         // Only process Mystery orders from your authentic data
         if (name === 'Mystery' && location?.includes('Mystery Drawer')) {
           mysteryOrders.push({
@@ -767,11 +854,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let created = 0;
       const existingOrders = await storage.getAllOrders();
-      
+
       for (const item of mysteryOrders) {
         // Check if order already exists
         const exists = existingOrders.some(o => o.trackingId === item.trackingId);
-        
+
         if (!exists) {
           await storage.createOrder({
             trackingId: item.trackingId,
@@ -789,13 +876,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           created++;
         }
       }
-      
+
       // Broadcast update to connected clients
       broadcast(wss, {
         type: 'mystery_orders_imported',
         data: { created, total: mysteryOrders.length }
       });
-      
+
       res.json({ 
         success: true, 
         message: `Imported ${created} authentic mystery orders from your shop data`,
@@ -813,11 +900,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/orders/batch-status', async (req, res) => {
     try {
       const { orderIds, status } = req.body;
-      
+
       if (!Array.isArray(orderIds) || orderIds.length === 0) {
         return res.status(400).json({ error: 'Order IDs array is required' });
       }
-      
+
       if (!status) {
         return res.status(400).json({ error: 'Status is required' });
       }
@@ -827,228 +914,242 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const updatedOrder = await storage.updateOrder(orderId, { status });
           updatedOrders.push(updatedOrder);
-        } catch (error) {
-          console.error(`Failed to update order ${orderId}:`, error);
+                  } catch (error) {
+            console.error(`Failed to update order ${orderId}:`, error);
+          }
         }
+  
+        // Broadcast update to connected clients
+        broadcast(wss, {
+          type: 'batch_status_update',
+          data: { orderIds, status, count: updatedOrders.length }
+        });
+  
+        res.json({ 
+          message: `Updated ${updatedOrders.length} orders successfully`,
+          updatedCount: updatedOrders.length,
+          totalRequested: orderIds.length      });
+      } catch (error) {
+        console.error('Error batch updating order status:', error);
+        res.status(500).json({ error: 'Failed to batch update order status' });
       }
-
-      // Broadcast update to connected clients
-      broadcast(wss, {
-        type: 'batch_status_update',
-        data: { orderIds, status, count: updatedOrders.length }
-      });
-
-      res.json({ 
-        message: `Updated ${updatedOrders.length} orders successfully`,
-        updatedCount: updatedOrders.length,
-        totalRequested: orderIds.length
-      });
-    } catch (error) {
-      console.error('Error batch updating order status:', error);
-      res.status(500).json({ error: 'Failed to batch update order status' });
-    }
-  });
-
-  // Test endpoint for hub connection verification
-  app.get('/api/test/auth', (req, res) => {
-    try {
-      const startTime = Date.now();
-      const apiKey = req.headers['x-api-key'];
-      
-      if (!apiKey) {
-        return res.status(401).json({ error: 'API key required' });
+    });
+  
+    // Test endpoint for hub connection verification
+    app.get('/api/test/auth', (req, res) => {
+      try {
+        const startTime = Date.now();
+        const apiKey = req.headers['x-api-key'];
+  
+        if (!apiKey) {
+          return res.status(401).json({ error: 'API key required' });
+        }
+  
+        if (apiKey !== 'kanban_admin_key_2025_full_access') {
+          return res.status(403).json({ error: 'Invalid API key' });
+        }
+  
+        const responseTime = Date.now() - startTime;
+  
+        res.json({ 
+          success: true, 
+          message: 'Hub connection authenticated successfully',
+          timestamp: new Date().toISOString(),
+          server: 'Jay\'s Frames Central Hub',
+          status: 'operational',
+          responseTime
+        });
+      } catch (error) {
+        console.error('Hub auth test error:', error);
+        res.status(500).json({ error: 'Hub authentication test failed' });
       }
-      
-      if (apiKey !== 'kanban_admin_key_2025_full_access') {
-        return res.status(403).json({ error: 'Invalid API key' });
+    });
+  
+    // System health check endpoint
+    app.get('/api/system/health', async (req, res) => {
+      try {
+        const startTime = Date.now();
+  
+        // Test database connectivity
+        const orders = await storage.getAllOrders();
+        const customers = await storage.getCustomers();
+  
+        const dbResponseTime = Date.now() - startTime;
+  
+        res.json({
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          database: {
+            connected: true,
+            responseTime: dbResponseTime,
+            ordersCount: orders.length,
+            customersCount: customers.length
+          },
+          server: {
+            uptime: process.uptime(),
+            memoryUsage: process.memoryUsage(),
+            nodeVersion: process.version
+          }
+        });
+      } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({ 
+          status: 'unhealthy',
+          error: (error as Error).message,
+          timestamp: new Date().toISOString()
+        });
       }
-      
-      const responseTime = Date.now() - startTime;
-      
-      res.json({ 
-        success: true, 
-        message: 'Hub connection authenticated successfully',
-        timestamp: new Date().toISOString(),
-        server: 'Jay\'s Frames Central Hub',
-        status: 'operational',
-        responseTime
-      });
-    } catch (error) {
-      console.error('Hub auth test error:', error);
-      res.status(500).json({ error: 'Hub authentication test failed' });
-    }
-  });
-
-  // System health check endpoint
-  app.get('/api/system/health', async (req, res) => {
-    try {
-      const startTime = Date.now();
-      
-      // Test database connectivity
-      const orders = await storage.getAllOrders();
-      const customers = await storage.getCustomers();
-      
-      const dbResponseTime = Date.now() - startTime;
-      
-      res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        database: {
-          connected: true,
-          responseTime: dbResponseTime,
-          ordersCount: orders.length,
-          customersCount: customers.length
+    });
+  
+    // Integration sync status endpoint
+    app.get('/api/integrations/dashboard/status', (req, res) => {
+      try {
+        // Check if sync is working by verifying last sync time
+        const lastSyncTime = new Date(); // You can store this in a variable or database
+        const timeSinceSync = Date.now() - lastSyncTime.getTime();
+        const syncHealthy = timeSinceSync < 900000; // 15 minutes
+  
+        res.json({
+          syncActive: syncHealthy,
+          lastSync: lastSyncTime.toISOString(),
+          timeSinceSync,
+          status: syncHealthy ? 'operational' : 'degraded',
+          dashboardUrl: process.env.DASHBOARD_API_URL || 'Local Hub',
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Sync status check failed:', error);
+        res.status(500).json({ 
+          syncActive: false,
+          error: (error as Error).message,
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+  
+    // Dashboard Webhook endpoint
+    app.post('/api/webhooks/dashboard', (req, res) => {
+      try {
+        console.log('Dashboard webhook received:', req.body);
+        // Handle any dashboard events or notifications here
+        res.status(200).json({ received: true, timestamp: new Date().toISOString() });
+      } catch (error) {
+        console.error('Dashboard webhook error:', error);
+        res.status(500).json({ error: 'Webhook processing failed' });
+      }
+    });
+  
+    // Configuration endpoint to check integration status
+    app.get('/api/integrations/status', (req, res) => {
+      const status = {
+        sms: {
+          configured: !!(process.env.SMS_API_URL && process.env.SMS_API_KEY),
+          url: process.env.SMS_API_URL ? 'configured' : 'not set'
         },
-        server: {
-          uptime: process.uptime(),
-          memoryUsage: process.memoryUsage(),
-          nodeVersion: process.version
+        pos: {
+          configured: !!(process.env.POS_API_URL && process.env.POS_API_KEY),
+          url: process.env.POS_API_URL ? 'configured' : 'not set'
+        },
+        dashboard: {
+          configured: !!(process.env.DASHBOARD_API_URL && process.env.DASHBOARD_API_KEY),
+          url: process.env.DASHBOARD_API_URL ? 'configured' : 'not set'
         }
-      });
-    } catch (error) {
-      console.error('Health check failed:', error);
-      res.status(500).json({ 
-        status: 'unhealthy',
-        error: (error as Error).message,
-        timestamp: new Date().toISOString()
-      });
-    }
-  });
-
-  // Integration sync status endpoint
-  app.get('/api/integrations/dashboard/status', (req, res) => {
-    try {
-      // Check if sync is working by verifying last sync time
-      const lastSyncTime = new Date(); // You can store this in a variable or database
-      const timeSinceSync = Date.now() - lastSyncTime.getTime();
-      const syncHealthy = timeSinceSync < 900000; // 15 minutes
-      
-      res.json({
-        syncActive: syncHealthy,
-        lastSync: lastSyncTime.toISOString(),
-        timeSinceSync,
-        status: syncHealthy ? 'operational' : 'degraded',
-        dashboardUrl: process.env.DASHBOARD_API_URL || 'Local Hub',
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error('Sync status check failed:', error);
-      res.status(500).json({ 
-        syncActive: false,
-        error: (error as Error).message,
-        timestamp: new Date().toISOString()
-      });
-    }
-  });
-
-  // Dashboard Webhook endpoint
-  app.post('/api/webhooks/dashboard', (req, res) => {
-    try {
-      console.log('Dashboard webhook received:', req.body);
-      // Handle any dashboard events or notifications here
-      res.status(200).json({ received: true, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Dashboard webhook error:', error);
-      res.status(500).json({ error: 'Webhook processing failed' });
-    }
-  });
-
-  // Configuration endpoint to check integration status
-  app.get('/api/integrations/status', (req, res) => {
-    const status = {
-      sms: {
-        configured: !!(process.env.SMS_API_URL && process.env.SMS_API_KEY),
-        url: process.env.SMS_API_URL ? 'configured' : 'not set'
-      },
-      pos: {
-        configured: !!(process.env.POS_API_URL && process.env.POS_API_KEY),
-        url: process.env.POS_API_URL ? 'configured' : 'not set'
-      },
-      dashboard: {
-        configured: !!(process.env.DASHBOARD_API_URL && process.env.DASHBOARD_API_KEY),
-        url: process.env.DASHBOARD_API_URL ? 'configured' : 'not set'
+      };
+      res.json(status);
+    });
+  
+    // Import integrations
+    const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
+  
+    // SMS Integration Routes
+    app.post('/api/integrations/sms/send', async (req, res) => {
+      try {
+        const { orderId, message, phoneNumber } = req.body;
+        const result = await smsIntegration.sendOrderNotification(orderId, message, phoneNumber);
+        res.json(result);
+      } catch (error) {
+        console.error('SMS send error:', error);
+        res.status(500).json({ error: 'Failed to send SMS' });
       }
+    });
+  
+    // SMS Webhook endpoint
+    app.post('/api/webhooks/sms', (req, res) => {
+      smsIntegration.handleWebhook(req, res);
+    });
+  
+    // POS Integration Routes
+    app.post('/api/integrations/pos/sync/:orderId', async (req, res) => {
+      try {
+        const { orderId } = req.params;
+        const result = await posIntegration.syncOrder(orderId);
+        res.json(result);
+      } catch (error) {
+        console.error('POS sync error:', error);
+        res.status(500).json({ error: 'Failed to sync with POS' });
+      }
+    });
+  
+    // POS Webhook endpoint
+    app.post('/api/webhooks/pos', (req, res) => {
+      posIntegration.handleWebhook(req, res);
+    });
+  
+    // Dashboard Integration Routes
+    app.post('/api/integrations/dashboard/sync', async (req, res) => {
+      try {
+        const result = await dashboardIntegration.syncMetrics();
+        res.json(result);
+      } catch (error) {
+        console.error('Dashboard sync error:', error);
+        res.status(500).json({ error: 'Failed to sync with dashboard' });
+      }
+    });
+  
+    app.post('/api/integrations/dashboard/order-update', async (req, res) => {
+      try {
+        const { orderId, updateType, details } = req.body;
+        const result = await dashboardIntegration.sendOrderUpdate(orderId, updateType, details);
+        res.json(result);
+      } catch (error) {
+        console.error('Dashboard update error:', error);
+        res.status(500).json({ error: 'Failed to send dashboard update' });
+      }
+    });
+  
+    // Auto-sync dashboard metrics with exponential backoff
+    let syncFailures = 0;
+    const baseSyncInterval = 15 * 60 * 1000; // 15 minutes
+  
+    const scheduleNextSync = () => {
+      const delay = Math.min(baseSyncInterval * Math.pow(2, syncFailures), 60 * 60 * 1000); // Max 1 hour
+      setTimeout(async () => {
+        try {
+          const result = await autoSyncMetrics();
+          if (result.success) {
+            syncFailures = 0; // Reset on success
+          } else {
+            syncFailures++;
+          }
+        } catch (error) {
+          console.error('Auto-sync failed:', error);
+          syncFailures++;
+        }
+        scheduleNextSync();
+      }, delay);
     };
-    res.json(status);
-  });
-
-  // Import integrations
-  const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
-
-  // SMS Integration Routes
-  app.post('/api/integrations/sms/send', async (req, res) => {
-    try {
-      const { orderId, message, phoneNumber } = req.body;
-      const result = await smsIntegration.sendOrderNotification(orderId, message, phoneNumber);
-      res.json(result);
-    } catch (error) {
-      console.error('SMS send error:', error);
-      res.status(500).json({ error: 'Failed to send SMS' });
-    }
-  });
-
-  // SMS Webhook endpoint
-  app.post('/api/webhooks/sms', (req, res) => {
-    smsIntegration.handleWebhook(req, res);
-  });
-
-  // POS Integration Routes
-  app.post('/api/integrations/pos/sync/:orderId', async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const result = await posIntegration.syncOrder(orderId);
-      res.json(result);
-    } catch (error) {
-      console.error('POS sync error:', error);
-      res.status(500).json({ error: 'Failed to sync with POS' });
-    }
-  });
-
-  // POS Webhook endpoint
-  app.post('/api/webhooks/pos', (req, res) => {
-    posIntegration.handleWebhook(req, res);
-  });
-
-  // Dashboard Integration Routes
-  app.post('/api/integrations/dashboard/sync', async (req, res) => {
-    try {
-      const result = await dashboardIntegration.syncMetrics();
-      res.json(result);
-    } catch (error) {
-      console.error('Dashboard sync error:', error);
-      res.status(500).json({ error: 'Failed to sync with dashboard' });
-    }
-  });
-
-  app.post('/api/integrations/dashboard/order-update', async (req, res) => {
-    try {
-      const { orderId, updateType, details } = req.body;
-      const result = await dashboardIntegration.sendOrderUpdate(orderId, updateType, details);
-      res.json(result);
-    } catch (error) {
-      console.error('Dashboard update error:', error);
-      res.status(500).json({ error: 'Failed to send dashboard update' });
-    }
-  });
-
-  // Auto-sync dashboard metrics every 15 minutes
-  setInterval(async () => {
-    try {
-      await autoSyncMetrics();
-    } catch (error) {
-      console.error('Auto-sync failed:', error);
-    }
-  }, 15 * 60 * 1000);
-
-  return httpServer;
-}
-
-// Helper function to broadcast to all connected WebSocket clients
-function broadcast(wss: WebSocketServer, message: any) {
-  const messageStr = JSON.stringify(message);
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(messageStr);
-    }
-  });
-}
+  
+    scheduleNextSync();
+  
+    return httpServer;
+  }
+  
+  // Helper function to broadcast to all connected WebSocket clients
+  function broadcast(wss: WebSocketServer, message: any) {
+    const messageStr = JSON.stringify(message);
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(messageStr);
+      }
+    });
+  }

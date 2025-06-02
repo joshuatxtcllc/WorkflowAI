@@ -149,10 +149,13 @@ export default function KanbanBoard() {
     queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
   }, [queryClient]);
 
-  const { data: orders = [], isLoading } = useQuery<OrderWithDetails[]>({
+  const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 5000,
-    staleTime: 0,
+    refetchInterval: 30000, // Reduced frequency to 30 seconds
+    staleTime: 10000, // Allow 10 seconds of stale data
+    retry: 2, // Reduced retries to prevent endless loops
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -318,12 +321,23 @@ export default function KanbanBoard() {
     queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
   }
 
-  if (isLoading) {
+  if (isLoading && !orders.length) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-jade-500 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-gray-400">Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !orders.length) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-red-400 mb-4">Unable to load orders</div>
+          <p className="text-gray-400">Please check your connection and try again.</p>
         </div>
       </div>
     );

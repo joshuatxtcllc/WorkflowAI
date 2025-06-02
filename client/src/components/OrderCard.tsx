@@ -11,6 +11,11 @@ interface OrderCardProps {
 import { useOrderStore } from '@/store/useOrderStore';
 
 export default function OrderCard({ order }: OrderCardProps) {
+  // Add safety check for order data
+  if (!order || !order.id) {
+    return null;
+  }
+
   const { setUI, setSelectedOrderId } = useOrderStore();
   const [statusChanged, setStatusChanged] = useState(false);
   const [previousStatus, setPreviousStatus] = useState(order.status);
@@ -107,18 +112,20 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const getMaterialsProgress = () => {
     const materials = order.materials;
-    if (!materials || materials.length === 0) return [];
+    if (!materials || !Array.isArray(materials) || materials.length === 0) return [];
 
     return materials.map((material, index) => {
+      if (!material || typeof material !== 'object') return null;
+      
       let color = 'bg-gray-600'; // Not ordered
-      let title = `${material.type} - Not ordered`;
+      let title = `${material.type || 'Material'} - Not ordered`;
 
       if (material.arrived) {
         color = 'bg-green-500';
-        title = `${material.type} - Arrived`;
+        title = `${material.type || 'Material'} - Arrived`;
       } else if (material.ordered) {
         color = 'bg-yellow-500';
-        title = `${material.type} - Ordered`;
+        title = `${material.type || 'Material'} - Ordered`;
       }
 
       return (
@@ -128,7 +135,7 @@ export default function OrderCard({ order }: OrderCardProps) {
           title={title}
         />
       );
-    });
+    }).filter(Boolean);
   };
 
   return (
@@ -140,7 +147,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       data-draggable="order"
       className={`
         relative p-3 rounded-lg border cursor-move transition-all duration-200 mb-2 min-h-[85px]
-        ${getPriorityColor(order.priority)}
+        ${getPriorityColor(order.priority || 'LOW')}
         ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.01] hover:shadow-lg'}
         ${order.priority === 'URGENT' ? 'ring-1 ring-amber-400/50' : ''}
         ${statusChanged ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
@@ -195,7 +202,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         )}
       </AnimatePresence>
       {/* Priority Badge */}
-      <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority)} rounded-full flex items-center justify-center`}>
+      <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority || 'LOW')} rounded-full flex items-center justify-center`}>
         <Zap className="w-4 h-4 text-white" />
       </div>
 
@@ -203,8 +210,8 @@ export default function OrderCard({ order }: OrderCardProps) {
         {/* Header */}
         <div>
           <h4 className="font-medium text-white text-sm flex items-center gap-1">
-            <span className="text-sm">{getOrderTypeEmoji(order.orderType)}</span>
-            <span className="truncate">{order.customer.name}</span>
+            <span className="text-sm">{getOrderTypeEmoji(order.orderType || 'MYSTERY')}</span>
+            <span className="truncate">{order.customer?.name || order.description || 'Mystery Item'}</span>
           </h4>
           <p className="text-xs text-gray-400 font-mono truncate mt-0.5">{order.trackingId}</p>
         </div>
@@ -212,34 +219,38 @@ export default function OrderCard({ order }: OrderCardProps) {
         {/* Order Type & Time */}
         <div className="flex items-center justify-between text-xs">
           <span className="px-1 py-0.5 bg-jade-500/20 text-jade-300 rounded text-xs font-medium">
-            {order.orderType}
+            {order.orderType || 'MYSTERY'}
           </span>
           <span className="text-gray-400 flex items-center gap-1">
             <Clock className="w-3 h-3" />
-            <span>{order.estimatedHours}h</span>
+            <span>{order.estimatedHours || 0}h</span>
           </span>
         </div>
 
         {/* Due Date */}
-        <div className={`flex items-center gap-1 text-xs ${getDueDateColor(order.dueDate)}`}>
-          <Calendar className="w-3 h-3" />
-          <span className="font-medium truncate">{getDueInDays(order.dueDate)}</span>
-        </div>
+        {order.dueDate && (
+          <div className={`flex items-center gap-1 text-xs ${getDueDateColor(order.dueDate)}`}>
+            <Calendar className="w-3 h-3" />
+            <span className="font-medium truncate">{getDueInDays(order.dueDate)}</span>
+          </div>
+        )}
 
         {/* Materials Status */}
         <div className="flex gap-1 items-center">
           {getMaterialsProgress()}
-          {order.materials.length === 0 && (
+          {(!order.materials || order.materials.length === 0) && (
             <div className="text-xs text-gray-500">No materials</div>
           )}
         </div>
 
         {/* Price & Notes */}
         <div className="flex items-center justify-between">
-          <span className="text-jade-400 font-medium flex items-center gap-1 text-xs">
-            <DollarSign className="w-3 h-3" />
-            <span>${order.price}</span>
-          </span>
+          {order.price && (
+            <span className="text-jade-400 font-medium flex items-center gap-1 text-xs">
+              <DollarSign className="w-3 h-3" />
+              <span>${order.price}</span>
+            </span>
+          )}
           {order.notes && (
             <MessageSquare className="w-3 h-3 text-gray-500" />
           )}

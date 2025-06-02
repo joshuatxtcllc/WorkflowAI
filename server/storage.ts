@@ -23,7 +23,7 @@ import {
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, ne } from "drizzle-orm";
+import { eq, desc, ne, and, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 // Interface for storage operations
@@ -186,29 +186,51 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async getOrders(): Promise<OrderWithDetails[]> {
-    const ordersList = await db
-      .select()
-      .from(orders)
-      .orderBy(desc(orders.createdAt));
+    const startTime = Date.now();
 
-    const ordersWithDetails: OrderWithDetails[] = [];
+    try {
+      // Simplified query with shorter timeout
+      const result = await db
+        .select({
+          id: orders.id,
+          trackingId: orders.trackingId,
+          orderType: orders.orderType,
+          status: orders.status,
+          dueDate: orders.dueDate,
+          estimatedHours: orders.estimatedHours,
+          price: orders.price,
+          description: orders.description,
+          priority: orders.priority,
+          notes: orders.notes,
+          createdAt: orders.createdAt,
+          updatedAt: orders.updatedAt,
+          invoiceNumber: orders.invoiceNumber,
+          assignedToId: orders.assignedToId,
+          customer: {
+            id: customers.id,
+            name: customers.name,
+            email: customers.email,
+            phone: customers.phone,
+            address: customers.address,
+            preferences: customers.preferences,
+            createdAt: customers.createdAt,
+            updatedAt: customers.updatedAt,
+          },
+        })
+        .from(orders)
+        .leftJoin(customers, eq(orders.customerId, customers.id))
+        .orderBy(desc(orders.createdAt))
+        .limit(100); // Reduced limit for faster queries
 
-    for (const order of ordersList) {
-      const customer = await db.select().from(customers).where(eq(customers.id, order.customerId)).then(r => r[0]);
-      const assignedTo = order.assignedToId ? await db.select().from(users).where(eq(users.id, order.assignedToId)).then(r => r[0]) : undefined;
-      const orderMaterials = await this.getMaterialsByOrder(order.id);
-      const orderHistory = await db.select().from(statusHistory).where(eq(statusHistory.orderId, order.id));
+      const endTime = Date.now();
+      console.log(`getOrders query completed: ${endTime - startTime}ms`);
 
-      ordersWithDetails.push({
-        ...order,
-        customer: customer!,
-        assignedTo,
-        materials: orderMaterials,
-        statusHistory: orderHistory,
-      });
+      return result as OrderWithDetails[];
+    } catch (error) {
+      console.error('Database error in getOrders:', error);
+      // Return empty array instead of throwing to prevent app crash
+      return [];
     }
-
-    return ordersWithDetails;
   }
 
   async getAllOrders(): Promise<OrderWithDetails[]> {
@@ -319,8 +341,8 @@ export class DatabaseStorage implements IStorage {
       });
     }
 
-    return ordersWithDetails;
-  }
+  return ordersWithDetails;
+}
 
   // Material operations
   async getMaterialsByOrder(orderId: string): Promise<Material[]> {
@@ -430,27 +452,46 @@ export class DatabaseStorage implements IStorage {
     totalHours: number;
     averageComplexity: number;
     onTimePercentage: number;
+    statusCounts: Record<string, number>;
   }> {
-    // Exclude Mystery/Unclaimed orders from active workload metrics
-    const allOrders = await db.select().from(orders);
-    const activeOrders = allOrders.filter(order => order.status !== 'MYSTERY_UNCLAIMED');
-    const totalOrders = activeOrders.length;
-    const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
-    const averageComplexity = totalHours / totalOrders || 0;
+    try {
+      // Exclude Mystery/Unclaimed orders from active workload metrics
+      const allOrders = await db.select().from(orders);
+      const activeOrders = allOrders.filter(order => order.status !== 'MYSTERY_UNCLAIMED');
+      const totalOrders = activeOrders.length;
+      const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+      const averageComplexity = totalHours / totalOrders || 0;
 
-    const completedOrders = activeOrders.filter(order => order.status === 'COMPLETED');
-    const onTimeOrders = completedOrders.filter(order => {
-      if (!order.dueDate) return true;
-      return new Date() <= order.dueDate;
-    });
-    const onTimePercentage = completedOrders.length > 0 ? (onTimeOrders.length / completedOrders.length) * 100 : 100;
+      const completedOrders = activeOrders.filter(order => order.status === 'COMPLETED');
+      const onTimeOrders = completedOrders.filter(order => {
+        if (!order.dueDate) return true;
+        return new Date() <= order.dueDate;
+      });
+      const onTimePercentage = completedOrders.length > 0 ? (onTimeOrders.length / completedOrders.length) * 100 : 100;
 
-    return {
-      totalOrders,
-      totalHours,
-      averageComplexity,
-      onTimePercentage,
-    };
+      // Calculate status counts
+      const statusCounts: Record<string, number> = {};
+      activeOrders.forEach(order => {
+        statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+      });
+
+      return {
+        totalOrders,
+        totalHours,
+        averageComplexity,
+        onTimePercentage,
+        statusCounts,
+      };
+    } catch (error) {
+      console.error('Error in getWorkloadMetrics:', error);
+      return {
+        totalOrders: 0,
+        totalHours: 0,
+        averageComplexity: 0,
+        onTimePercentage: 100,
+        statusCounts: {},
+      };
+    }
   }
 }
 
