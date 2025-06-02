@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
-import SimpleDashboard from "@/pages/SimpleDashboard";
+import Dashboard from "@/pages/Dashboard";
 import QuickWins from "@/pages/QuickWins";
 import VendorOrders from "@/pages/VendorOrders";
 import Login from "@/pages/Login";
@@ -38,7 +38,7 @@ function Router() {
         </>
       ) : (
         <>
-          <Route path="/" component={SimpleDashboard} />
+          <Route path="/" component={Dashboard} />
           <Route path="/quick-wins" component={QuickWins} />
           <Route path="/vendor-orders" component={VendorOrders} />
           <Route path="/orders" component={Orders} />

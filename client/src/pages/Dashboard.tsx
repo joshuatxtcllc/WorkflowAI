@@ -1,62 +1,30 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import Header from "@/components/Header";
-import KanbanBoard from "@/components/KanbanBoard";
-import OrderDetails from "@/components/OrderDetails";
-import AIAssistant from '@/components/AIAssistant';
-import { SidebarInset } from '@/components/ui/sidebar';
-import { useOrderStore } from '@/store/useOrderStore';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
-import type { WorkloadAnalysis } from '@shared/schema';
-import { SystemAlerts } from '@/components/SystemAlerts';
+import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
 
 
-// Component to handle scroll detection
-function ScrollHandler() {
-  const { setOpen, open } = useSidebar();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const lastScrollLeft = useRef(0);
-
-  useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-
-      const currentScrollLeft = target.scrollLeft;
-
-      // If user scrolls to the right and sidebar is open, close it
-      if (currentScrollLeft > lastScrollLeft.current && currentScrollLeft > 50 && open) {
-        setOpen(false);
-      }
-
-      lastScrollLeft.current = currentScrollLeft;
-    };
-
-    // Add scroll listener to the main content area
-    const mainContent = document.querySelector('[data-scroll-container]');
-    if (mainContent) {
-      mainContent.addEventListener('scroll', handleScroll);
-      return () => mainContent.removeEventListener('scroll', handleScroll);
-    }
-  }, [setOpen, open]);
-
-  return null;
+// Simple dashboard component
+function OrderStatusCard({ status, count, icon: Icon }: { status: string; count: number; icon: any }) {
+  return (
+    <Card className="bg-gray-800 border-gray-700">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">{status}</p>
+            <p className="text-2xl font-bold text-white">{count}</p>
+          </div>
+          <Icon className="h-8 w-8 text-jade-400" />
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function Dashboard() {
-  const { ui, setUI } = useOrderStore();
-
   return (
     <SidebarProvider>
-      <ScrollHandler />
-      <div className="min-h-screen bg-gray-950 text-white relative dark flex" style={{ backgroundColor: '#0A0A0B' }}>
+      <div className="min-h-screen bg-gray-950 text-white flex" style={{ backgroundColor: '#0A0A0B' }}>
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-30 pointer-events-none">
           <div 
@@ -71,20 +39,24 @@ export default function Dashboard() {
           />
         </div>
 
-        <AppSidebar />
-
         {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
-          <Header />
-          <main className="flex-1 p-4 space-y-6 overflow-hidden">
-            <SystemAlerts />
-            <KanbanBoard />
-          </main>
-          <AIAssistant />
+        <div className="flex-1 p-8">
+          <header className="mb-8">
+            <h1 className="text-4xl font-bold text-jade-400 mb-2">Jay's Frames</h1>
+            <p className="text-gray-400">Order Management System</p>
+          </header>
 
-          {ui.isOrderDetailsOpen && (
-            <OrderDetails />
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <OrderStatusCard status="Processing" count={12} icon={Package} />
+            <OrderStatusCard status="Materials Ordered" count={8} icon={Truck} />
+            <OrderStatusCard status="Completed" count={24} icon={CheckCircle} />
+            <OrderStatusCard status="Due Today" count={3} icon={Clock} />
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4">Order Tracking Dashboard</h2>
+            <p className="text-gray-300">Your complete order management system is ready.</p>
+          </div>
         </div>
       </div>
     </SidebarProvider>
