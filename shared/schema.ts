@@ -242,55 +242,12 @@ export const insertCustomerSchema = createInsertSchema(customers).omit({
   updatedAt: true,
 });
 
-export const insertOrderSchema = z.object({
-  trackingId: z.string().min(1),
-  customerId: z.string().uuid(),
-  orderType: z.enum(['FRAME', 'MAT', 'SHADOWBOX']),
-  status: z.enum([
-    'ORDER_PROCESSED',
-    'MATERIALS_ORDERED', 
-    'MATERIALS_ARRIVED',
-    'FRAME_CUT',
-    'MAT_CUT',
-    'PREPPED',
-    'COMPLETED',
-    'PICKED_UP',
-    'DELAYED',
-    'MYSTERY_UNCLAIMED'
-  ]).optional(),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
-  dueDate: z.date(),
-  estimatedHours: z.number().positive().optional(),
-  actualHours: z.number().positive().optional(),
-  price: z.number().positive().optional(),
-  totalPrice: z.number().positive().optional(),
-  laborCost: z.number().positive().optional(),
-  materialCost: z.number().positive().optional(),
-  taxAmount: z.number().positive().optional(),
-  description: z.string().optional(),
-  notes: z.string().optional(),
-  internalNotes: z.string().optional(),
-  assignedToId: z.string().optional(),
-  invoiceNumber: z.string().optional(),
-  // Artwork details
-  artworkType: z.string().optional(),
-  artworkDescription: z.string().optional(),
-  artworkImages: z.array(z.string()).optional(),
-  artworkLocation: z.string().optional(),
-  artworkReceived: z.boolean().optional(),
-  // Frame specifications
-  frameSize: z.string().optional(),
-  outerSize: z.string().optional(),
-  glassType: z.string().optional(),
-  spacers: z.boolean().optional(),
-  shadowboxWalls: z.string().optional(),
-  isFloat: z.boolean().optional(),
-  laborHours: z.number().positive().optional(),
-  specialInstructions: z.string().optional(),
-  // Integration tracking
-  posOrderId: z.string().optional(),
-  lastSyncedToPOS: z.date().optional(),
-  lastSyncedToHub: z.date().optional(),
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  completedAt: true,
+  pickedUpAt: true,
 });
 
 export const insertMaterialSchema = createInsertSchema(materials).omit({

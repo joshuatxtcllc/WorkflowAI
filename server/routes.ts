@@ -15,7 +15,6 @@ import multer from 'multer';
 import path from 'node:path';
 import { db } from "./db";
 import { customers, orders, statusHistory } from "../shared/schema";
-import { eq } from "drizzle-orm";
 
 interface WebSocketMessage {
   type: string;
@@ -237,36 +236,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  // Get artwork images for an order
-  app.get('/api/orders/:orderId/artwork', authenticateToken, async (req, res) => {
-    try {
-      const { orderId } = req.params;
-
-      const [order] = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.id, orderId));
-
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-
-      const artworkImages = (order.artworkImages as string[]) || [];
-      const imageData = artworkImages.map((url, index) => ({
-        id: `${orderId}-${index}`,
-        filename: url.split('/').pop() || 'unknown',
-        url: url,
-        uploadedAt: order.updatedAt || new Date().toISOString()
-      }));
-
-      res.json(imageData);
-    } catch (error) {
-      console.error("Error fetching artwork:", error);
-      res.status(500).json({ message: "Failed to fetch artwork" });
-    }
-  });
-
-  // Artwork image upload
   app.post('/api/orders/:orderId/artwork/upload', upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
@@ -300,11 +269,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { filename } = req.params;
       const imageBuffer = await artworkManager.getArtworkImage(filename);
-
+      
       const ext = path.extname(filename).toLowerCase();
       const contentType = ext === '.png' ? 'image/png' : 
                          ext === '.gif' ? 'image/gif' : 'image/jpeg';
-
+      
       res.setHeader('Content-Type', contentType);
       res.send(imageBuffer);
     } catch (error) {
@@ -316,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { location } = req.body;
-
+      
       console.log("Updating artwork location for order:", orderId, "to:", location);
       await artworkManager.updateArtworkLocation(orderId, location);
       res.json({ message: "Artwork location updated" });
@@ -330,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { received } = req.body;
-
+      
       console.log("Updating artwork received status for order:", orderId, "to:", received);
       await artworkManager.markArtworkReceived(orderId, received);
       res.json({ message: "Artwork received status updated" });
@@ -344,7 +313,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, imageUrl } = req.params;
       const decodedImageUrl = decodeURIComponent(imageUrl);
-
+      
       await artworkManager.removeArtworkImage(orderId, decodedImageUrl);
       res.json({ message: "Image removed successfully" });
     } catch (error) {
@@ -599,17 +568,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { batchSize = 5 } = req.body;
       console.log(`🚀 Starting batch import with batch size: ${batchSize}`);
-
+      
       const { batchImportOrders } = await import('./batch-import');
       const result = await batchImportOrders(batchSize);
-
+      
       res.json({
         success: true,
         message: `Successfully imported ${result.totalImported} orders in ${result.batchCount} batches`,
         totalImported: result.totalImported,
         batchCount: result.batchCount
       });
-
+      
     } catch (error) {
       console.error('Batch import error:', error);
       res.status(500).json({ 
@@ -746,70 +715,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check current data status
-  app.get('/api/data/status', async (req, res) => {
-    try {
-      const { checkDataStatus } = await import('./check-data-status.js');
-      const status = await checkDataStatus();
-      res.json(status);
-    } catch (error) {
-      console.error('❌ Data status check failed:', error);
-      res.status(500).json({ error: 'Data status check failed', details: error.message });
-    }
-  });
-
-  // Re-import all authentic data (recovery option)
-  app.post('/api/import/recover-data', async (req, res) => {
-    try {
-      console.log('🔄 Starting data recovery import...');
-      
-      const { importAllRealOrders } = await import('./import-all-orders.js');
-      const result = await importAllRealOrders();
-      
-      broadcast(wss, {
-        type: 'data_recovered',
-        data: result
-      });
-      
-      res.json({ 
-        success: true, 
-        message: 'Data recovery completed',
-        ...result
-      });
-      
-    } catch (error) {
-      console.error('❌ Data recovery failed:', error);
-      res.status(500).json({ error: 'Data recovery failed', details: error.message });
-    }
-  });
-
-  // Import Grant's live active orders
-  app.post('/api/import/grant-orders', async (req, res) => {
-    try {
-      const { importGrantOrders } = await import('./import-grant-orders.js');
-      const result = await importGrantOrders();
-
-      broadcast(wss, {
-        type: 'grant_orders_imported',
-        data: result
-      });
-
-      res.json({ 
-        success: true, 
-        message: `Successfully imported ${result.importedOrders} live Grant orders worth $${result.totalValue.toLocaleString()}`,
-        ...result
-      });
-    } catch (error) {
-      console.error('❌ Grant orders import failed:', error);
-      res.status(500).json({ error: 'Grant orders import failed', details: error.message });
-    }
-  });
-
   // Import all authentic mystery orders from your real shop data
   app.post('/api/import/all-mysteries', async (req, res) => {
     try {
       const fs = await import('fs/promises');
-
+      
       // First, create a Mystery Customer if it doesn't exist
       let mysteryCustomer = await storage.getCustomerByEmail('mystery@shop.local');
       if (!mysteryCustomer) {
@@ -824,25 +734,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Read and process the authentic mystery data file
       const filePath = './attached_assets/Pasted-Date-Due-Invoice-Order-ID-Qty-Name-Phone-Designer-Location-Description-Order-Type-Order-Progress-Pai-1748618065100.txt';
       const fileContent = await fs.readFile(filePath, 'utf-8');
-
+      
       const lines = fileContent.split('\n');
       const mysteryOrders = [];
-
+      
       // Process each line to find mystery orders
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
-
+        
         const columns = line.split('\t');
         if (columns.length < 9) continue;
-
+        
         const name = columns[4]?.trim();
         const location = columns[7]?.trim();
         const description = columns[8]?.trim();
         const orderId = columns[2]?.trim();
         const invoice = columns[1]?.trim();
         const qty = parseInt(columns[3]?.trim()) || 1;
-
+        
         // Only process Mystery orders from your authentic data
         if (name === 'Mystery' && location?.includes('Mystery Drawer')) {
           mysteryOrders.push({
@@ -857,11 +767,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let created = 0;
       const existingOrders = await storage.getAllOrders();
-
+      
       for (const item of mysteryOrders) {
         // Check if order already exists
         const exists = existingOrders.some(o => o.trackingId === item.trackingId);
-
+        
         if (!exists) {
           await storage.createOrder({
             trackingId: item.trackingId,
@@ -879,13 +789,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           created++;
         }
       }
-
+      
       // Broadcast update to connected clients
       broadcast(wss, {
         type: 'mystery_orders_imported',
         data: { created, total: mysteryOrders.length }
       });
-
+      
       res.json({ 
         success: true, 
         message: `Imported ${created} authentic mystery orders from your shop data`,
@@ -903,12 +813,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/orders/batch-status', async (req, res) => {
     try {
       const { orderIds, status } = req.body;
-
+      
       if (!Array.isArray(orderIds) || orderIds.length === 0) {
         return res.status(400).json({ error: 'Order IDs array is required' });
       }
-
-if (!status) {
+      
+      if (!status) {
         return res.status(400).json({ error: 'Status is required' });
       }
 
@@ -944,17 +854,17 @@ if (!status) {
     try {
       const startTime = Date.now();
       const apiKey = req.headers['x-api-key'];
-
+      
       if (!apiKey) {
         return res.status(401).json({ error: 'API key required' });
       }
-
+      
       if (apiKey !== 'kanban_admin_key_2025_full_access') {
         return res.status(403).json({ error: 'Invalid API key' });
       }
-
+      
       const responseTime = Date.now() - startTime;
-
+      
       res.json({ 
         success: true, 
         message: 'Hub connection authenticated successfully',
@@ -973,13 +883,13 @@ if (!status) {
   app.get('/api/system/health', async (req, res) => {
     try {
       const startTime = Date.now();
-
+      
       // Test database connectivity
       const orders = await storage.getAllOrders();
       const customers = await storage.getCustomers();
-
+      
       const dbResponseTime = Date.now() - startTime;
-
+      
       res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
@@ -1012,7 +922,7 @@ if (!status) {
       const lastSyncTime = new Date(); // You can store this in a variable or database
       const timeSinceSync = Date.now() - lastSyncTime.getTime();
       const syncHealthy = timeSinceSync < 900000; // 15 minutes
-
+      
       res.json({
         syncActive: syncHealthy,
         lastSync: lastSyncTime.toISOString(),
@@ -1032,54 +942,11 @@ if (!status) {
   });
 
   // Dashboard Webhook endpoint
-  app.post('/api/webhooks/dashboard', async (req, res) => {
+  app.post('/api/webhooks/dashboard', (req, res) => {
     try {
       console.log('Dashboard webhook received:', req.body);
-      const { type, orderId, data } = req.body;
-
-      // Handle different webhook types
-      switch (type) {
-        case 'order_status_update':
-          if (orderId && data.status) {
-            // Update order status from hub
-            const orders = await storage.getAllOrders();
-            const order = orders.find(o => o.trackingId === orderId);
-            if (order) {
-              await storage.updateOrder(order.id, { 
-                status: data.status,
-                lastSyncedToHub: new Date()
-              });
-
-              // Broadcast update to connected clients
-              broadcast(wss, {
-                type: 'order_updated',
-                data: { orderId: order.id, status: data.status }
-              });
-            }
-          }
-          break;
-
-        case 'metrics_request':
-          // Send current metrics to hub
-          await dashboardIntegration.syncMetrics();
-          break;
-
-        case 'full_sync_request':
-          // Perform full data synchronization
-          const allOrders = await storage.getAllOrders();
-          for (const order of allOrders) {
-            await dashboardIntegration.sendOrderUpdate(order.id, 'full_sync', {
-              reason: 'Hub requested full sync'
-            });
-          }
-          break;
-      }
-
-      res.status(200).json({ 
-        received: true, 
-        processed: true,
-        timestamp: new Date().toISOString() 
-      });
+      // Handle any dashboard events or notifications here
+      res.status(200).json({ received: true, timestamp: new Date().toISOString() });
     } catch (error) {
       console.error('Dashboard webhook error:', error);
       res.status(500).json({ error: 'Webhook processing failed' });
@@ -1172,38 +1039,6 @@ if (!status) {
       console.error('Auto-sync failed:', error);
     }
   }, 15 * 60 * 1000);
-
-  // Auto-sync recent order changes every 5 minutes
-  setInterval(async () => {
-    try {
-      const orders = await storage.getAllOrders();
-      const recentOrders = orders.filter(order => {
-        const updatedAt = new Date(order.updatedAt || order.createdAt);
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        return updatedAt > fiveMinutesAgo;
-      });
-
-      for (const order of recentOrders) {
-        // Sync to POS if needed
-        if (!order.posOrderId || new Date(order.updatedAt || order.createdAt) > new Date(order.lastSyncedToPOS || 0)) {
-          await posIntegration.syncOrder(order.id);
-        }
-
-        // Sync to Hub if needed
-        if (new Date(order.updatedAt || order.createdAt) > new Date(order.lastSyncedToHub || 0)) {
-          await dashboardIntegration.sendOrderUpdate(order.id, 'auto_sync', {
-            reason: 'Automatic sync - recent changes detected'
-          });
-        }
-      }
-
-      if (recentOrders.length > 0) {
-        console.log(`Auto-synced ${recentOrders.length} recently updated orders`);
-      }
-    } catch (error) {
-      console.error('Auto order sync failed:', error);
-    }
-  }, 5 * 60 * 1000);
 
   return httpServer;
 }

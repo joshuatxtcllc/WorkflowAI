@@ -93,73 +93,24 @@ export class POSIntegration {
         throw new Error('Customer not found');
       }
 
-      const materials = await storage.getMaterialsByOrder(orderId);
-
       const posData = {
         orderId: order.trackingId,
-        invoiceNumber: order.invoiceNumber,
-        customerInfo: {
-          name: customer.name,
-          phone: customer.phone,
-          email: customer.email,
-          address: customer.address
-        },
-        orderDetails: {
-          orderType: order.orderType,
-          status: order.status,
-          priority: order.priority,
-          dueDate: order.dueDate,
-          createdAt: order.createdAt,
-          estimatedHours: order.estimatedHours,
-          actualHours: order.actualHours
-        },
-        artworkDetails: {
-          type: order.artworkType,
-          description: order.artworkDescription,
-          images: order.artworkImages || [],
-          location: order.artworkLocation,
-          received: order.artworkReceived
-        },
-        specifications: {
-          frameSize: order.frameSize,
-          outerSize: order.outerSize,
-          glassType: order.glassType,
-          spacers: order.spacers,
-          shadowboxWalls: order.shadowboxWalls,
-          isFloat: order.isFloat,
-          laborHours: order.laborHours,
-          specialInstructions: order.specialInstructions
-        },
-        pricing: {
-          basePrice: order.price,
-          totalPrice: order.totalPrice,
-          laborCost: order.laborCost,
-          materialCost: order.materialCost,
-          taxAmount: order.taxAmount
-        },
-        materials: materials.map(mat => ({
-          id: mat.id,
-          type: mat.type,
-          vendor: mat.vendor,
-          description: mat.description,
-          quantity: mat.quantity,
-          unitPrice: mat.unitPrice,
-          totalPrice: mat.totalPrice,
-          status: mat.status,
-          arrived: mat.arrived,
-          notes: mat.notes
-        })),
+        customerName: customer.name,
+        customerPhone: customer.phone,
+        orderType: order.orderType,
+        totalPrice: order.totalPrice,
+        status: order.status,
+        dueDate: order.dueDate,
+        materials: order.materials,
         notes: order.notes,
-        internalNotes: order.internalNotes,
         lastUpdated: new Date().toISOString()
       };
 
-      const response = await fetch(`${this.baseUrl}/api/orders/sync`, {
+      const response = await fetch(`${this.baseUrl}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'X-Source': 'FrameShop-Management'
+          'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify(posData)
       });
@@ -170,47 +121,9 @@ export class POSIntegration {
 
       const result = await response.json();
       console.log(`Order ${orderId} synced to POS successfully`);
-      
-      // Store POS reference ID in our system
-      await storage.updateOrder(orderId, { 
-        posOrderId: result.posOrderId,
-        lastSyncedToPOS: new Date()
-      });
-
-      return { success: true, posOrderId: result.posOrderId };
+      return { success: true, posOrderId: result.id };
     } catch (error) {
       console.error('POS sync error:', error);
-      return { success: false, error: (error as Error).message };
-    }
-  }
-
-  async syncSalesData() {
-    try {
-      if (!this.baseUrl || !this.apiKey) {
-        return { success: false, error: 'POS credentials not configured' };
-      }
-
-      // Get sales data from POS for revenue tracking
-      const response = await fetch(`${this.baseUrl}/api/sales/export`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'X-Source': 'FrameShop-Management'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`POS API error: ${response.status}`);
-      }
-
-      const salesData = await response.json();
-      
-      // Process and store sales data for analytics
-      console.log(`Retrieved ${salesData.transactions?.length || 0} sales transactions from POS`);
-      
-      return { success: true, salesData };
-    } catch (error) {
-      console.error('POS sales sync error:', error);
       return { success: false, error: (error as Error).message };
     }
   }
@@ -246,20 +159,10 @@ export class POSIntegration {
 export class DashboardIntegration {
   private baseUrl: string;
   private apiKey: string;
-  private syncInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     this.baseUrl = process.env.DASHBOARD_API_URL || '';
     this.apiKey = process.env.DASHBOARD_API_KEY || 'kanban_admin_key_2025_full_access';
-    this.startAutoSync();
-  }
-
-  private startAutoSync() {
-    // Sync every 5 minutes for real-time data
-    this.syncInterval = setInterval(async () => {
-      await this.syncMetrics();
-      await this.syncOrderUpdates();
-    }, 5 * 60 * 1000);
   }
 
   async syncMetrics() {
@@ -321,43 +224,10 @@ export class DashboardIntegration {
     }
 
     try {
-      const order = await storage.getOrder(orderId);
-      if (!order) {
-        throw new Error('Order not found');
-      }
-
-      const customer = await storage.getCustomer(order.customerId);
-      const materials = await storage.getMaterialsByOrder(orderId);
-
       const updateData = {
-        orderId: order.trackingId,
+        orderId,
         updateType,
         details,
-        orderData: {
-          trackingId: order.trackingId,
-          customerName: customer?.name,
-          customerPhone: customer?.phone,
-          orderType: order.orderType,
-          status: order.status,
-          priority: order.priority,
-          totalPrice: order.totalPrice || order.price,
-          dueDate: order.dueDate,
-          artworkType: order.artworkType,
-          artworkDescription: order.artworkDescription,
-          artworkImages: order.artworkImages || [],
-          artworkLocation: order.artworkLocation,
-          frameSize: order.frameSize,
-          outerSize: order.outerSize,
-          glassType: order.glassType,
-          spacers: order.spacers,
-          shadowboxWalls: order.shadowboxWalls,
-          isFloat: order.isFloat,
-          laborHours: order.laborHours,
-          specialInstructions: order.specialInstructions,
-          materials: materials,
-          estimatedHours: order.estimatedHours,
-          actualHours: order.actualHours
-        },
         timestamp: new Date().toISOString(),
         source: 'Frame Shop Management'
       };
@@ -379,29 +249,6 @@ export class DashboardIntegration {
     } catch (error) {
       console.error('Dashboard update error:', error);
       return { success: false, error: (error as Error).message };
-    }
-  }
-
-  async syncOrderUpdates() {
-    try {
-      const orders = await storage.getAllOrders();
-      const recentOrders = orders.filter(order => {
-        const updatedAt = new Date(order.updatedAt || order.createdAt);
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        return updatedAt > fiveMinutesAgo;
-      });
-
-      for (const order of recentOrders) {
-        await this.sendOrderUpdate(order.id, 'status_change', {
-          previousStatus: order.status,
-          newStatus: order.status,
-          updateReason: 'Auto sync'
-        });
-      }
-
-      console.log(`Synced ${recentOrders.length} recent order updates to hub`);
-    } catch (error) {
-      console.error('Order sync error:', error);
     }
   }
 }
