@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Package, Truck, CheckCircle, Clock, Scissors, Layers, Timer, AlertTriangle, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
 
 
 // Simple kanban board with working order management
@@ -22,16 +23,21 @@ function SimpleKanbanColumn({ title, status, icon: Icon, orders = [] }: { title:
       
       <div className="space-y-3 flex-1">
         {orders.map((order, index) => (
-          <Card key={index} className="bg-gray-700 border-gray-600 hover:bg-gray-650 transition-colors cursor-pointer">
+          <Card key={order.id || index} className="bg-gray-700 border-gray-600 hover:bg-gray-650 transition-colors cursor-pointer">
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-medium text-white">{order.customerName}</h4>
-                <span className="text-xs text-gray-400">{order.orderId}</span>
+                <h4 className="font-medium text-white">{order.customer?.name || 'Unknown Customer'}</h4>
+                <span className="text-xs text-gray-400">{order.tracking_id}</span>
               </div>
               <p className="text-sm text-gray-300 mb-2">{order.description}</p>
               <div className="flex justify-between items-center text-xs text-gray-400">
-                <span>Due: {order.dueDate}</span>
+                <span>Due: {new Date(order.due_date).toLocaleDateString()}</span>
                 <span>${order.price}</span>
+              </div>
+              <div className="mt-2">
+                <Badge variant="outline" className="text-xs">
+                  {order.order_type}
+                </Badge>
               </div>
             </CardContent>
           </Card>
@@ -53,22 +59,31 @@ function SimpleKanbanColumn({ title, status, icon: Icon, orders = [] }: { title:
 }
 
 export default function Dashboard() {
-  // Sample orders for demonstration
-  const sampleOrders = {
-    processing: [
-      { customerName: "Sarah Johnson", orderId: "JF-001", description: "Custom 16x20 frame, walnut finish", dueDate: "2025-06-05", price: "125.00" },
-      { customerName: "Mike Rodriguez", orderId: "JF-002", description: "Double mat 11x14 family photo", dueDate: "2025-06-06", price: "89.50" }
-    ],
-    materialsOrdered: [
-      { customerName: "Emily Chen", orderId: "JF-003", description: "Shadow box for military medals", dueDate: "2025-06-08", price: "245.00" }
-    ],
-    framesCut: [
-      { customerName: "David Wilson", orderId: "JF-004", description: "Gallery frame set of 4", dueDate: "2025-06-04", price: "189.00" }
-    ],
-    completed: [
-      { customerName: "Lisa Parker", orderId: "JF-005", description: "Wedding photo triptych", dueDate: "2025-06-03", price: "312.50" }
-    ]
+  // Fetch real orders from your database
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['/api/orders'],
+    enabled: true
+  });
+
+  // Group orders by status for kanban columns
+  const groupedOrders = {
+    processing: orders.filter((order: any) => order.status === 'ORDER_PROCESSED'),
+    materialsOrdered: orders.filter((order: any) => order.status === 'MATERIALS_ORDERED'),
+    materialsArrived: orders.filter((order: any) => order.status === 'MATERIALS_ARRIVED'),
+    framesCut: orders.filter((order: any) => order.status === 'FRAME_CUT'),
+    completed: orders.filter((order: any) => order.status === 'COMPLETED')
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jade-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading your orders...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -95,30 +110,36 @@ export default function Dashboard() {
           </header>
 
           {/* Kanban Board */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <SimpleKanbanColumn 
               title="Order Processing" 
               status="processing" 
               icon={Package} 
-              orders={sampleOrders.processing}
+              orders={groupedOrders.processing}
             />
             <SimpleKanbanColumn 
               title="Materials Ordered" 
               status="materials" 
               icon={Truck} 
-              orders={sampleOrders.materialsOrdered}
+              orders={groupedOrders.materialsOrdered}
+            />
+            <SimpleKanbanColumn 
+              title="Materials Arrived" 
+              status="arrived" 
+              icon={CheckCircle} 
+              orders={groupedOrders.materialsArrived}
             />
             <SimpleKanbanColumn 
               title="Frames Cut" 
               status="frames" 
               icon={Scissors} 
-              orders={sampleOrders.framesCut}
+              orders={groupedOrders.framesCut}
             />
             <SimpleKanbanColumn 
               title="Completed" 
               status="completed" 
               icon={CheckCircle} 
-              orders={sampleOrders.completed}
+              orders={groupedOrders.completed}
             />
           </div>
         </div>
