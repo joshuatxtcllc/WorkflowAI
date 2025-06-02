@@ -7,6 +7,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
 import Login from "@/pages/Login";
 
+// Simple dashboard placeholder to test
+function SimpleDashboard() {
+  return (
+    <div className="min-h-screen bg-gray-950 text-white p-8">
+      <h1 className="text-3xl font-bold">Dashboard Loaded Successfully!</h1>
+      <p className="mt-4">The authentication and routing are working.</p>
+    </div>
+  );
+}
+
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -14,8 +24,10 @@ function Router() {
     <Switch>
       {isLoading ? (
         <Route path="*" component={() => <div className="min-h-screen bg-gray-950 flex items-center justify-center"><div className="text-white">Loading...</div></div>} />
-      ) : (
+      ) : !isAuthenticated ? (
         <Route path="*" component={Login} />
+      ) : (
+        <Route path="*" component={SimpleDashboard} />
       )}
     </Switch>
   );
