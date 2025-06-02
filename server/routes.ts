@@ -746,6 +746,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check current data status
+  app.get('/api/data/status', async (req, res) => {
+    try {
+      const { checkDataStatus } = await import('./check-data-status.js');
+      const status = await checkDataStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ Data status check failed:', error);
+      res.status(500).json({ error: 'Data status check failed', details: error.message });
+    }
+  });
+
+  // Re-import all authentic data (recovery option)
+  app.post('/api/import/recover-data', async (req, res) => {
+    try {
+      console.log('🔄 Starting data recovery import...');
+      
+      const { importAllRealOrders } = await import('./import-all-orders.js');
+      const result = await importAllRealOrders();
+      
+      broadcast(wss, {
+        type: 'data_recovered',
+        data: result
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Data recovery completed',
+        ...result
+      });
+      
+    } catch (error) {
+      console.error('❌ Data recovery failed:', error);
+      res.status(500).json({ error: 'Data recovery failed', details: error.message });
+    }
+  });
+
   // Import Grant's live active orders
   app.post('/api/import/grant-orders', async (req, res) => {
     try {

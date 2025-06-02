@@ -20,6 +20,7 @@ import TimeTracking from "@/pages/TimeTracking";
 import Notifications from "@/pages/Notifications";
 import Reports from "@/pages/Reports";
 import AdminPortal from './pages/AdminPortal';
+import DataRecovery from "./pages/DataRecovery";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -60,6 +61,7 @@ function Router() {
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route path="/admin-portal" component={AdminPortal} />
+          <Route path="/data-recovery" component={DataRecovery} />
           <Route component={NotFound} />
         </>
       )}
