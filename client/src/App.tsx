@@ -40,8 +40,9 @@ function Router() {
         <>
           <Route path="/" component={() => (
             <div className="min-h-screen bg-gray-950 text-white p-8">
-              <h1 className="text-3xl font-bold">Jay's Frames Dashboard</h1>
-              <p className="mt-4">Application is working. Testing components...</p>
+              <h1 className="text-3xl font-bold">Jay's Frames Dashboard - Version 2.0</h1>
+              <p className="mt-4">Cache cleared - Application updated and working properly!</p>
+              <p className="mt-2 text-green-400">Timestamp: {new Date().toLocaleTimeString()}</p>
             </div>
           )} />
           <Route path="/quick-wins" component={QuickWins} />
