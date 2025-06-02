@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
-import Dashboard from "@/pages/Dashboard";
+import SimpleDashboard from "@/pages/SimpleDashboard";
 import QuickWins from "@/pages/QuickWins";
 import VendorOrders from "@/pages/VendorOrders";
 import Login from "@/pages/Login";
@@ -38,13 +38,7 @@ function Router() {
         </>
       ) : (
         <>
-          <Route path="/" component={() => (
-            <div className="min-h-screen bg-gray-950 text-white p-8">
-              <h1 className="text-3xl font-bold">Jay's Frames Dashboard - Version 2.0</h1>
-              <p className="mt-4">Cache cleared - Application updated and working properly!</p>
-              <p className="mt-2 text-green-400">Timestamp: {new Date().toLocaleTimeString()}</p>
-            </div>
-          )} />
+          <Route path="/" component={SimpleDashboard} />
           <Route path="/quick-wins" component={QuickWins} />
           <Route path="/vendor-orders" component={VendorOrders} />
           <Route path="/orders" component={Orders} />
