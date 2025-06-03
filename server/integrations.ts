@@ -193,27 +193,34 @@ export class POSIntegration {
     }
   }
 
-  // Real-time order synchronization
+  // Real-time order synchronization with retry logic
   async startRealTimeSync() {
     console.log('Starting real-time POS synchronization...');
     
-    // Check initial connection
+    // Check initial connection (non-blocking)
     const connectionTest = await this.fetchNewOrders();
     if (!connectionTest.success) {
       console.log('POS connection failed:', connectionTest.error);
-      return false;
+      console.log('Will continue attempting to connect during periodic sync...');
     }
 
-    // Set up periodic sync (every 30 seconds)
+    // Set up periodic sync with retry logic (every 30 seconds)
     setInterval(async () => {
       try {
         const result = await this.fetchNewOrders();
         if (result.success && result.orders && result.orders.length > 0) {
           console.log(`Processing ${result.orders.length} new orders from POS`);
           // Process new orders here
+        } else if (!result.success && result.error?.includes('503')) {
+          // Silent handling of 503 errors - service temporarily unavailable
+        } else if (!result.success) {
+          console.log('POS sync check:', result.error || 'Connection issue');
         }
       } catch (error) {
-        console.error('Real-time sync error:', error);
+        // Only log unexpected errors, not service unavailable
+        if (!(error as Error).message.includes('503')) {
+          console.error('Real-time sync error:', error);
+        }
       }
     }, 30000);
 
