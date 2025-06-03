@@ -3,6 +3,7 @@ import { setupAuth } from "./auth";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { importAuthenticOrders } from './import-authentic-orders.js';
+import { storage } from './storage';
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -40,6 +41,15 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Initialize POS integration after routes are set up
+  try {
+    const { posIntegration } = await import('./integrations');
+    await posIntegration.startRealTimeSync();
+    console.log('POS integration initialized with real-time sync');
+  } catch (error) {
+    console.error('POS integration initialization failed:', error);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
