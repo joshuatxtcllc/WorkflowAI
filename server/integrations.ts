@@ -72,7 +72,8 @@ export class POSIntegration {
   private apiKey: string;
 
   constructor() {
-    this.baseUrl = process.env.POS_API_URL || '';
+    // Use the Kanban API as POS integration endpoint
+    this.baseUrl = process.env.POS_API_URL || 'https://2ebd6ffd-874c-4bb9-9272-bd3ef5c6dd5f-00-8rjpxe4l5qml.kirk.replit.dev';
     this.apiKey = process.env.POS_API_KEY || '';
   }
 
@@ -106,7 +107,7 @@ export class POSIntegration {
         lastUpdated: new Date().toISOString()
       };
 
-      const response = await fetch(`${this.baseUrl}/orders`, {
+      const response = await fetch(`${this.baseUrl}/api/kanban/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
