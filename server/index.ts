@@ -79,9 +79,9 @@ app.use((req, res, next) => {
           name: order.customer.name,
           email: order.customer.email,
         },
-        statusHistory: order.statusHistory.map(h => ({
+        statusHistory: order.statusHistory.map((h: any) => ({
           status: h.toStatus,
-          changedAt: h.changedAt,
+          changedAt: h.createdAt,
           reason: h.reason,
         })),
       });
