@@ -15,8 +15,11 @@ export function useAuth() {
       });
       
       if (!response.ok) {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
+        // Only clear auth if it's actually unauthorized, not just a network error
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("user");
+        }
         return null;
       }
       
