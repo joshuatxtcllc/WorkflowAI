@@ -397,6 +397,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // POS Integration endpoints
+  app.get('/api/pos/status', authenticateToken, async (req, res) => {
+    try {
+      const { posIntegration } = await import('./integrations');
+      const status = await posIntegration.fetchNewOrders();
+      res.json(status);
+    } catch (error) {
+      console.error("Error checking POS status:", error);
+      res.status(500).json({ message: "Failed to check POS status" });
+    }
+  });
+
+  app.post('/api/pos/sync/:orderId', authenticateToken, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { posIntegration } = await import('./integrations');
+      const result = await posIntegration.syncOrder(orderId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error syncing order to POS:", error);
+      res.status(500).json({ message: "Failed to sync order to POS" });
+    }
+  });
+
+  app.post('/api/pos/start-sync', authenticateToken, async (req, res) => {
+    try {
+      const { posIntegration } = await import('./integrations');
+      const started = await posIntegration.startRealTimeSync();
+      res.json({ success: started, message: started ? 'Real-time sync started' : 'Failed to start sync' });
+    } catch (error) {
+      console.error("Error starting POS sync:", error);
+      res.status(500).json({ message: "Failed to start POS sync" });
+    }
+  });
+
+  // Webhook endpoints for POS system
+  app.post('/api/webhooks/pos', async (req, res) => {
+    try {
+      const { posIntegration } = await import('./integrations');
+      await posIntegration.handleWebhook(req, res);
+    } catch (error) {
+      console.error("POS webhook error:", error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
   // Customer portal routes (no auth required)
   app.get('/api/customer/track/:trackingId', async (req, res) => {
     try {

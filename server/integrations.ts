@@ -99,7 +99,7 @@ export class POSIntegration {
         customerName: customer.name,
         customerPhone: customer.phone,
         orderType: order.orderType,
-        totalPrice: order.totalPrice,
+        totalPrice: order.price,
         status: order.status,
         dueDate: order.dueDate,
         materials: order.materials,
@@ -153,6 +153,71 @@ export class POSIntegration {
       console.error('POS webhook error:', error);
       res.status(500).json({ error: 'Webhook processing failed' });
     }
+  }
+
+  // Fetch new orders from POS/Kanban system
+  async fetchNewOrders() {
+    if (!this.baseUrl) {
+      console.log('POS integration not configured - missing base URL');
+      return { success: false, error: 'POS URL not configured' };
+    }
+
+    try {
+      // Check connection first with health endpoint
+      const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`);
+      if (!healthResponse.ok) {
+        throw new Error(`POS system unreachable: ${healthResponse.status}`);
+      }
+
+      // If API key is available, fetch orders
+      if (this.apiKey) {
+        const ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`
+          }
+        });
+
+        if (ordersResponse.ok) {
+          const newOrders = await ordersResponse.json();
+          console.log(`Fetched ${newOrders.length} orders from POS system`);
+          return { success: true, orders: newOrders };
+        }
+      }
+
+      console.log('POS system connected but API key needed for order sync');
+      return { success: true, connected: true, needsApiKey: true };
+    } catch (error) {
+      console.error('POS fetch error:', error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+
+  // Real-time order synchronization
+  async startRealTimeSync() {
+    console.log('Starting real-time POS synchronization...');
+    
+    // Check initial connection
+    const connectionTest = await this.fetchNewOrders();
+    if (!connectionTest.success) {
+      console.log('POS connection failed:', connectionTest.error);
+      return false;
+    }
+
+    // Set up periodic sync (every 30 seconds)
+    setInterval(async () => {
+      try {
+        const result = await this.fetchNewOrders();
+        if (result.success && result.orders && result.orders.length > 0) {
+          console.log(`Processing ${result.orders.length} new orders from POS`);
+          // Process new orders here
+        }
+      } catch (error) {
+        console.error('Real-time sync error:', error);
+      }
+    }, 30000);
+
+    return true;
   }
 }
 
