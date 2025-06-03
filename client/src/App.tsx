@@ -15,11 +15,11 @@ import Progress from "@/pages/Progress";
 import Orders from "@/pages/Orders";
 import Customers from "@/pages/Customers";
 import Analytics from "@/pages/Analytics";
-import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
 import Schedule from "@/pages/Schedule";
 import TimeTracking from "@/pages/TimeTracking";
 import Notifications from "@/pages/Notifications";
 import Reports from "@/pages/Reports";
+import AdminPortal from './pages/AdminPortal';
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -45,7 +45,6 @@ function Router() {
           <Route path="/customers" component={Customers} />
           <Route path="/customers/new" component={Customers} />
           <Route path="/analytics" component={Analytics} />
-          <Route path="/analytics/dashboard" component={AnalyticsDashboard} />
           <Route path="/analytics/workload" component={Analytics} />
           <Route path="/analytics/performance" component={Analytics} />
           <Route path="/analytics/time-tracking" component={Analytics} />
@@ -60,6 +59,7 @@ function Router() {
           <Route path="/progress" component={Progress} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
+          <Route path="/admin-portal" component={AdminPortal} />
           <Route component={NotFound} />
         </>
       )}
