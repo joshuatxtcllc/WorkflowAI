@@ -33,6 +33,20 @@ const statusLabels = {
   'PICKED_UP': 'Picked Up'
 };
 
+function OrderDetails() {
+  // This is a placeholder for the actual OrderDetails component.
+  // Replace this with the actual implementation of the modal.
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-md">
+        <h2>Order Details</h2>
+        <p>Order details will be displayed here.</p>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-md">Close</button>
+      </div>
+    </div>
+  );
+}
+
 export default function Orders() {
   const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -110,7 +124,7 @@ export default function Orders() {
   return (
     <div className="p-6 space-y-6">
       <Navigation />
-      
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Orders Management</h1>
@@ -138,7 +152,7 @@ export default function Orders() {
                 />
               </div>
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
                 <Filter className="h-4 w-4 mr-2" />
@@ -190,12 +204,12 @@ export default function Orders() {
                 </Badge>
               </div>
             </CardHeader>
-            
+
             <CardContent className="space-y-3">
               <div className="text-sm text-muted-foreground line-clamp-2">
                 {order.description || 'No description available'}
               </div>
-              
+
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -206,12 +220,12 @@ export default function Orders() {
                   <span>${order.price.toLocaleString()}</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Package className="h-4 w-4" />
                 <span>{order.orderType} • {order.estimatedHours}h estimated</span>
               </div>
-              
+
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -239,6 +253,9 @@ export default function Orders() {
           </CardContent>
         </Card>
       )}
+
+      {/* Order Details Modal */}
+      <OrderDetails />
     </div>
   );
 }
