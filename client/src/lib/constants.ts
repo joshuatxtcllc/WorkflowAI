@@ -68,10 +68,46 @@ export const ORDER_TYPES = [
 ] as const;
 
 export const PRIORITY_LEVELS = [
-  { value: 'LOW', label: 'Low', color: 'gray' },
-  { value: 'MEDIUM', label: 'Medium', color: 'yellow' },
-  { value: 'HIGH', label: 'High', color: 'orange' },
-  { value: 'URGENT', label: 'Urgent', color: 'red' }
+  { 
+    value: 'LOW', 
+    label: 'Low', 
+    color: 'gray',
+    bgColor: 'bg-gray-500',
+    textColor: 'text-gray-600',
+    borderColor: 'border-gray-300',
+    icon: '📋',
+    urgencyScore: 1
+  },
+  { 
+    value: 'MEDIUM', 
+    label: 'Medium', 
+    color: 'yellow',
+    bgColor: 'bg-yellow-500',
+    textColor: 'text-yellow-600',
+    borderColor: 'border-yellow-300',
+    icon: '⚠️',
+    urgencyScore: 2
+  },
+  { 
+    value: 'HIGH', 
+    label: 'High', 
+    color: 'orange',
+    bgColor: 'bg-orange-500',
+    textColor: 'text-orange-600',
+    borderColor: 'border-orange-300',
+    icon: '🔥',
+    urgencyScore: 3
+  },
+  { 
+    value: 'URGENT', 
+    label: 'Urgent', 
+    color: 'red',
+    bgColor: 'bg-red-500',
+    textColor: 'text-red-600',
+    borderColor: 'border-red-300',
+    icon: '🚨',
+    urgencyScore: 4
+  }
 ] as const;
 
 export const MATERIAL_TYPES = [

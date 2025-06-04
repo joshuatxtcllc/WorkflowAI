@@ -841,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderIds, status } = req.body;
 
-      if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
         return res.status(400).json({ error: 'Order IDs array is required' });
       }
 
@@ -849,48 +849,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Status is required' });
       }
 
-      const updatedOrders = [];
-      for (const orderId of orderIds) {
-        try {
-          const updatedOrder = await storage.updateOrder(orderId, { status });
-          updatedOrders.push(updatedOrder);
-                  } catch (error) {
-            console.error(`Failed to update order ${orderId}:`, error);
-          }
-        }
-  
-        // Broadcast update to connected clients
-        broadcast(wss, {
-          type: 'batch_status_update',
-          data: { orderIds, status, count: updatedOrders.length }
-        });
-  
-        res.json({ 
-          message: `Updated ${updatedOrders.length} orders successfully`,
-          updatedCount: updatedOrders.length,
-          totalRequested: orderIds.length      });
-      } catch (error) {
-        console.error('Error batch updating order status:', error);
-        res.status(500).json({ error: 'Failed to batch update order status' });
+      const updates = await Promise.all(
+        orderIds.map(id => 
+          storage.updateOrder(id, { status })
+        )
+      );
+
+      res.json({ 
+        success: true, 
+        updatedCount: updates.length,
+        updates 
+      });
+    } catch (error) {
+      console.error('Batch status update error:', error);
+      res.status(500).json({ error: 'Failed to update order statuses' });
+    }
+  });
+
+  // Batch priority update
+  app.patch('/api/orders/batch-priority', async (req, res) => {
+    try {
+      const { orderIds, priority } = req.body;
+
+      if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
+        return res.status(400).json({ error: 'Order IDs array is required' });
+            }
+
+      if (!priority) {
+        return res.status(400).json({ error: 'Priority is required' });
       }
-    });
-  
+
+      const validPriorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+      if (!validPriorities.includes(priority)) {
+        return res.status(400).json({ error: 'Invalid priority level' });
+      }
+
+      const updates = await Promise.all(
+        orderIds.map(id => 
+          storage.updateOrder(id, { priority })
+        )
+      );
+
+      res.json({ 
+        success: true, 
+        updatedCount: updates.length,
+        updates 
+      });
+    } catch (error) {
+      console.error('Batch priority update error:', error);
+      res.status(500).json({ error: 'Failed to update order priorities' });
+    }
+  });
+
+  // Auto-assign priorities based on due dates and status
+  app.post('/api/orders/auto-assign-priorities', async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      const now = new Date();
+      const oneDayMs = 24 * 60 * 60 * 1000;
+      const threeDayMs = 3 * oneDayMs;
+      const sevenDayMs = 7 * oneDayMs;
+
+      const updates = [];
+
+      for (const order of orders) {
+        if (!order.dueDate) continue;
+
+        const dueDate = new Date(order.dueDate);
+        const timeDiff = dueDate.getTime() - now.getTime();
+        let newPriority = order.priority;
+
+        // Overdue orders
+        if (timeDiff < 0) {
+          newPriority = 'URGENT';
+        }
+        // Due within 24 hours
+        else if (timeDiff <= oneDayMs) {
+          newPriority = 'URGENT';
+        }
+        // Due within 3 days
+        else if (timeDiff <= threeDayMs) {
+          newPriority = 'HIGH';
+        }
+        // Due within a week
+        else if (timeDiff <= sevenDayMs) {
+          newPriority = 'MEDIUM';
+        }
+        // Due later
+        else {
+          newPriority = 'LOW';
+        }
+
+        // Higher priority for orders in later stages
+        if (['PREPPED', 'COMPLETED'].includes(order.status || '')) {
+          if (newPriority === 'LOW') newPriority = 'MEDIUM';
+          if (newPriority === 'MEDIUM') newPriority = 'HIGH';
+        }
+
+        if (newPriority !== order.priority) {
+          const updated = await storage.updateOrder(order.id, { priority: newPriority });
+          updates.push(updated);
+        }
+      }
+
+      res.json({ 
+        success: true, 
+        updatedCount: updates.length,
+        updates 
+      });
+    } catch (error) {
+      console.error('Auto-assign priorities error:', error);
+      res.status(500).json({ error: 'Failed to auto-assign priorities' });
+    }
+  });
+
     // Test endpoint for hub connection verification
     app.get('/api/test/auth', (req, res) => {
       try {
         const startTime = Date.now();
         const apiKey = req.headers['x-api-key'];
-  
+
         if (!apiKey) {
           return res.status(401).json({ error: 'API key required' });
         }
-  
+
         if (apiKey !== 'kanban_admin_key_2025_full_access') {
           return res.status(403).json({ error: 'Invalid API key' });
         }
-  
+
         const responseTime = Date.now() - startTime;
-  
+
         res.json({ 
           success: true, 
           message: 'Hub connection authenticated successfully',
@@ -904,18 +992,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Hub authentication test failed' });
       }
     });
-  
+
     // System health check endpoint
     app.get('/api/system/health', async (req, res) => {
       try {
         const startTime = Date.now();
-  
+
         // Test database connectivity
         const orders = await storage.getAllOrders();
         const customers = await storage.getCustomers();
-  
+
         const dbResponseTime = Date.now() - startTime;
-  
+
         res.json({
           status: 'healthy',
           timestamp: new Date().toISOString(),
@@ -940,7 +1028,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
     });
-  
+
     // Integration sync status endpoint
     app.get('/api/integrations/dashboard/status', (req, res) => {
       try {
@@ -948,7 +1036,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const lastSyncTime = new Date(); // You can store this in a variable or database
         const timeSinceSync = Date.now() - lastSyncTime.getTime();
         const syncHealthy = timeSinceSync < 900000; // 15 minutes
-  
+
         res.json({
           syncActive: syncHealthy,
           lastSync: lastSyncTime.toISOString(),
@@ -966,7 +1054,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
     });
-  
+
     // Dashboard Webhook endpoint
     app.post('/api/webhooks/dashboard', (req, res) => {
       try {
@@ -978,7 +1066,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Webhook processing failed' });
       }
     });
-  
+
     // Configuration endpoint to check integration status
     app.get('/api/integrations/status', (req, res) => {
       const status = {
@@ -997,10 +1085,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       res.json(status);
     });
-  
+
     // Import integrations
     const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
-  
+
     // SMS Integration Routes
     app.post('/api/integrations/sms/send', async (req, res) => {
       try {
@@ -1012,12 +1100,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Failed to send SMS' });
       }
     });
-  
+
     // SMS Webhook endpoint
     app.post('/api/webhooks/sms', (req, res) => {
       smsIntegration.handleWebhook(req, res);
     });
-  
+
     // POS Integration Routes
     app.post('/api/integrations/pos/sync/:orderId', async (req, res) => {
       try {
@@ -1029,12 +1117,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Failed to sync with POS' });
       }
     });
-  
+
     // POS Webhook endpoint
     app.post('/api/webhooks/pos', (req, res) => {
       posIntegration.handleWebhook(req, res);
     });
-  
+
     // Dashboard Integration Routes
     app.post('/api/integrations/dashboard/sync', async (req, res) => {
       try {
@@ -1045,7 +1133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Failed to sync with dashboard' });
       }
     });
-  
+
     app.post('/api/integrations/dashboard/order-update', async (req, res) => {
       try {
         const { orderId, updateType, details } = req.body;
@@ -1056,11 +1144,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: 'Failed to send dashboard update' });
       }
     });
-  
+
     // Auto-sync dashboard metrics with exponential backoff
     let syncFailures = 0;
     const baseSyncInterval = 15 * 60 * 1000; // 15 minutes
-  
+
     const scheduleNextSync = () => {
       const delay = Math.min(baseSyncInterval * Math.pow(2, syncFailures), 60 * 60 * 1000); // Max 1 hour
       setTimeout(async () => {
@@ -1078,12 +1166,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         scheduleNextSync();
       }, delay);
     };
-  
+
     scheduleNextSync();
-  
+
     return httpServer;
   }
-  
+
   // Helper function to broadcast to all connected WebSocket clients
   function broadcast(wss: WebSocketServer, message: any) {
     const messageStr = JSON.stringify(message);

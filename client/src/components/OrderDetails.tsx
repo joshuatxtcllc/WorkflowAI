@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { apiRequest } from '@/lib/queryClient';
 import { useOrderStore } from '@/store/useOrderStore';
 import ArtworkManager from '@/components/ArtworkManager';
+import { useToast } from '@/hooks/use-toast';
+import { PRIORITY_LEVELS } from '@/lib/constants';
 import type { OrderWithDetails, Material } from '@shared/schema';
 
 export default function OrderDetails() {
@@ -91,7 +92,7 @@ export default function OrderDetails() {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {order && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <div>
@@ -123,7 +124,7 @@ export default function OrderDetails() {
               <TabsTrigger value="history">History</TabsTrigger>
               <TabsTrigger value="customer">Customer</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="details" className="pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="bg-gray-800 border-gray-700">
@@ -154,7 +155,7 @@ export default function OrderDetails() {
                     )}
                   </CardContent>
                 </Card>
-                
+
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
@@ -179,7 +180,7 @@ export default function OrderDetails() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
@@ -202,7 +203,7 @@ export default function OrderDetails() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 {order.dimensions && (
                   <Card className="bg-gray-800 border-gray-700">
                     <CardHeader>
@@ -231,7 +232,7 @@ export default function OrderDetails() {
                   </Card>
                 )}
               </div>
-              
+
               {(order.notes || order.internalNotes) && (
                 <div className="mt-6 space-y-4">
                   {order.notes && (
@@ -247,7 +248,7 @@ export default function OrderDetails() {
                       </CardContent>
                     </Card>
                   )}
-                  
+
                   {order.internalNotes && (
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
@@ -264,7 +265,7 @@ export default function OrderDetails() {
                 </div>
               )}
             </TabsContent>
-            
+
             <TabsContent value="materials" className="pt-4">
               <div className="space-y-4">
                 <Card className="bg-gray-800 border-gray-700">
@@ -296,32 +297,32 @@ export default function OrderDetails() {
                                 </Badge>
                               </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                               <div className="text-gray-400">Quantity:</div>
                               <div className="text-white">{material.quantity} {material.unit}</div>
-                              
+
                               {material.supplier && (
                                 <>
                                   <div className="text-gray-400">Supplier:</div>
                                   <div className="text-white">{material.supplier}</div>
                                 </>
                               )}
-                              
+
                               {material.cost !== null && material.cost !== undefined && (
                                 <>
                                   <div className="text-gray-400">Cost:</div>
                                   <div className="text-white">${material.cost}</div>
                                 </>
                               )}
-                              
+
                               {material.ordered && material.orderedDate && (
                                 <>
                                   <div className="text-gray-400">Ordered Date:</div>
                                   <div className="text-white">{formatDate(material.orderedDate)}</div>
                                 </>
                               )}
-                              
+
                               {material.arrived && material.arrivedDate && (
                                 <>
                                   <div className="text-gray-400">Arrived Date:</div>
@@ -329,7 +330,7 @@ export default function OrderDetails() {
                                 </>
                               )}
                             </div>
-                            
+
                             <div className="flex gap-2 mt-2">
                               {!material.ordered && (
                                 <Button 
@@ -344,7 +345,7 @@ export default function OrderDetails() {
                                   Mark as Ordered
                                 </Button>
                               )}
-                              
+
                               {material.ordered && !material.arrived && (
                                 <Button 
                                   size="sm" 
@@ -365,7 +366,7 @@ export default function OrderDetails() {
                     )}
                   </CardContent>
                 </Card>
-                
+
                 <Button 
                   variant="outline" 
                   className="w-full text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
@@ -374,7 +375,7 @@ export default function OrderDetails() {
                 </Button>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="artwork" className="pt-4">
               <ArtworkManager 
                 orderId={order.id}
@@ -384,7 +385,7 @@ export default function OrderDetails() {
                 artworkReceivedDate={order.artworkReceivedDate?.toString()}
               />
             </TabsContent>
-            
+
             <TabsContent value="history" className="pt-4">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
@@ -394,7 +395,7 @@ export default function OrderDetails() {
                   <div className="relative">
                     {/* Timeline line */}
                     <div className="absolute left-3.5 top-0 h-full w-px bg-gray-700"></div>
-                    
+
                     <div className="space-y-4">
                       {order.statusHistory.length === 0 ? (
                         <p className="text-gray-400 text-sm">No status history available</p>
@@ -412,7 +413,7 @@ export default function OrderDetails() {
                                   <div className={`w-3 h-3 rounded-full ${getStatusBadgeColor(history.toStatus)}`} />
                                 )}
                               </div>
-                              
+
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
                                   <p className="text-sm font-medium text-white">
@@ -433,7 +434,7 @@ export default function OrderDetails() {
                                     })}
                                   </span>
                                 </div>
-                                
+
                                 {history.reason && (
                                   <p className="text-sm text-gray-400">{history.reason}</p>
                                 )}
@@ -446,7 +447,7 @@ export default function OrderDetails() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="customer" className="pt-4">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
@@ -478,7 +479,7 @@ export default function OrderDetails() {
                       </div>
                     )}
                   </div>
-                  
+
                   {order.customer.preferences && (
                     <div className="mt-4">
                       <p className="text-gray-400 mb-2">Customer Preferences</p>
@@ -491,7 +492,7 @@ export default function OrderDetails() {
                   )}
                 </CardContent>
               </Card>
-              
+
               <Button 
                 variant="outline" 
                 className="w-full mt-4 text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
@@ -505,7 +506,7 @@ export default function OrderDetails() {
             Order not found or has been deleted.
           </div>
         )}
-        
+
         <DialogFooter className="mt-4">
           <Button variant="ghost" onClick={handleClose}>Close</Button>
         </DialogFooter>
