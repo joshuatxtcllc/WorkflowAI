@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Navigation } from '@/components/Navigation';
+import { motion } from 'framer-motion';
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { OrderWithDetails } from '@shared/schema';
-import { Search, Filter, Package, Calendar, DollarSign, User, ArrowRight } from 'lucide-react';
-import { format } from 'date-fns';
+import { Separator } from '@/components/ui/separator';
+import OrderDetails from '@/components/OrderDetails';
+import { SystemAlerts } from '@/components/SystemAlerts';
+import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle } from 'lucide-react';
+import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
 
 const statusColors = {

@@ -40,39 +40,39 @@ export default function Analytics() {
     const now = new Date();
     const last30Days = subDays(now, 30);
     const last7Days = subDays(now, 7);
-    
+
     const recentOrders = orders.filter(order => 
       new Date(order.createdAt) >= last30Days
     );
-    
+
     const weeklyOrders = orders.filter(order => 
       new Date(order.createdAt) >= last7Days
     );
-    
+
     const completedOrders = orders.filter(order => 
       order.status === 'PICKED_UP'
     );
-    
+
     const overdueOrders = orders.filter(order => 
       new Date(order.dueDate) < now && order.status !== 'PICKED_UP'
     );
-    
+
     const totalRevenue = completedOrders.reduce((sum, order) => sum + order.price, 0);
     const averageOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
-    
+
     // Status distribution
     const statusCounts = orders.reduce((acc, order) => {
       const status = order.status || 'UNKNOWN';
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     // Order type distribution
     const typeCounts = orders.reduce((acc, order) => {
       acc[order.orderType] = (acc[order.orderType] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     return {
       totalOrders: orders.length,
       recentOrders: recentOrders.length,
@@ -93,7 +93,7 @@ export default function Analytics() {
   return (
     <div className="p-6 space-y-6">
       <Navigation />
-      
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
@@ -114,7 +114,7 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function Analytics() {
               </div>
               <Progress value={(analytics.averageHours / 10) * 100} className="h-2" />
             </div>
-            
+
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm">Completion Progress</span>
@@ -206,7 +206,7 @@ export default function Analytics() {
               </div>
               <Progress value={analytics.completionRate} className="h-2" />
             </div>
-            
+
             {workloadMetrics && (
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -243,7 +243,7 @@ export default function Analytics() {
                   'COMPLETED': 'Completed',
                   'PICKED_UP': 'Picked Up'
                 };
-                
+
                 return (
                   <div key={status}>
                     <div className="flex items-center justify-between mb-1">
