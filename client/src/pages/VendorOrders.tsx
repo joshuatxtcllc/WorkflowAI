@@ -134,7 +134,7 @@ Notes: Please mark all items with order numbers for easy identification.
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendor Orders</h1>
-            <p className="text-gray-600">Manage material orders and vendor relationships</p>
+            <p className="text-gray-800">Manage material orders and vendor relationships</p>
           </div>
 
       {/* Summary Cards */}
@@ -144,7 +144,7 @@ Notes: Please mark all items with order numbers for easy identification.
             <div className="flex items-center space-x-2">
               <Package className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Vendors</p>
+                <p className="text-sm font-medium text-gray-700">Vendors</p>
                 <p className="text-2xl font-bold">{vendorOrders?.length || 0}</p>
               </div>
             </div>
@@ -156,7 +156,7 @@ Notes: Please mark all items with order numbers for easy identification.
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-orange-600" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Items</p>
+                <p className="text-sm font-medium text-gray-700">Total Items</p>
                 <p className="text-2xl font-bold">{totalItems}</p>
               </div>
             </div>
@@ -168,7 +168,7 @@ Notes: Please mark all items with order numbers for easy identification.
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Value</p>
+                <p className="text-sm font-medium text-gray-700">Total Value</p>
                 <p className="text-2xl font-bold">${totalOrderValue.toLocaleString()}</p>
               </div>
             </div>
@@ -186,7 +186,7 @@ Notes: Please mark all items with order numbers for easy identification.
                   <span className="text-2xl">{getVendorIcon(vendorOrder.vendor)}</span>
                   <div>
                     <CardTitle className="text-xl">{vendorOrder.vendor}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-700">
                       {vendorOrder.items.length} items • Delivery: {vendorOrder.estimatedDelivery}
                     </p>
                   </div>
@@ -217,7 +217,7 @@ Notes: Please mark all items with order numbers for easy identification.
                         </Badge>
                         <span className="font-medium">{item.description}</span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-sm text-gray-700 mt-1">
                         Order {item.orderId} • {item.customerName}
                       </p>
                     </div>
@@ -249,7 +249,7 @@ Notes: Please mark all items with order numbers for easy identification.
                   }
                 </Button>
 
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-700">
                   {vendorOrder.items.length} order{vendorOrder.items.length !== 1 ? 's' : ''} ready for materials
                 </div>
               </div>
@@ -265,7 +265,7 @@ Notes: Please mark all items with order numbers for easy identification.
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">Mark Materials as Ordered</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-700">
                   {selectedOrders.length} order{selectedOrders.length !== 1 ? 's' : ''} selected
                 </p>
               </div>
@@ -290,9 +290,9 @@ Notes: Please mark all items with order numbers for easy identification.
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-12">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Orders Ready for Materials</h3>
-              <p className="text-muted-foreground">
+              <Package className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Orders Ready for Materials</h3>
+              <p className="text-gray-700">
                 All processed orders either have materials ordered or are in later production stages.
               </p>
             </div>
