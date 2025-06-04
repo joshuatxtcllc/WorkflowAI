@@ -82,16 +82,6 @@ const data = {
       title: "Customers",
       url: "/customers",
       icon: Users,
-      items: [
-        {
-          title: "All Customers",
-          url: "/customers",
-        },
-        {
-          title: "Add New Customer",
-          url: "/customers/new",
-        },
-      ],
     },
     {
       title: "Analytics",
@@ -103,12 +93,8 @@ const data = {
           url: "/analytics/workload",
         },
         {
-          title: "Performance Reports",
-          url: "/analytics/performance",
-        },
-        {
           title: "Time Tracking",
-          url: "/analytics/time-tracking",
+          url: "/time-tracking",
         },
       ],
     },
@@ -118,34 +104,29 @@ const data = {
       icon: Calendar,
     },
     {
-      title: "Time Tracking",
-      url: "/time-tracking",
-      icon: Clock,
-    },
-    {
       title: "Vendor Orders",
       url: "/vendor-orders",
       icon: ShoppingCart,
     },
     {
-      title: "Hub Connection",
+      title: "Integrations",
       url: "/hub-connection",
       icon: Network,
-    },
-    {
-      title: "POS Integration",
-      url: "/pos-integration",
-      icon: Link,
+      items: [
+        {
+          title: "Hub Connection",
+          url: "/hub-connection",
+        },
+        {
+          title: "POS Integration",
+          url: "/pos-integration",
+        },
+      ],
     },
     {
       title: "Progress Tracking",
       url: "/progress",
       icon: Trophy,
-    },
-    {
-      title: "Notifications",
-      url: "/notifications",
-      icon: Bell,
     },
     {
       title: "Reports",
@@ -167,29 +148,15 @@ const data = {
       ],
     },
     {
-      title: "Billing",
-      url: "#",
-      icon: CreditCard,
-      items: [
-        {
-          title: "Invoices",
-          url: "#",
-        },
-        {
-          title: "Payments",
-          url: "#",
-        },
-        {
-          title: "Payment History",
-          url: "#",
-        },
-      ],
+      title: "Notifications",
+      url: "/notifications",
+      icon: Bell,
     },
   ],
   settings: [
     {
-      title: "General",
-      url: "#",
+      title: "Settings",
+      url: "/settings",
       icon: Settings,
     },
   ],
@@ -206,59 +173,9 @@ export function AppSidebar() {
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
     
-    // Handle URL navigation first
+    // Handle URL navigation
     if (url && url !== "#") {
       navigate(url);
-      return;
-    }
-    
-    // Handle different navigation actions
-    switch (itemTitle) {
-      case "Dashboard":
-        navigate("/");
-        break;
-      case "Vendor Orders":
-        navigate("/vendor-orders");
-        break;
-      case "Hub Connection":
-        navigate("/hub-connection");
-        break;
-      case "All Orders":
-      case "Orders":
-        // Could implement filtering logic here
-        console.log("Navigate to orders view");
-        break;
-      case "Customers":
-        // Could show customers section
-        console.log("Navigate to customers view");
-        break;
-      case "Analytics":
-        // Could highlight analytics section
-        const analyticsSection = document.querySelector('[data-section="analytics"]');
-        if (analyticsSection) {
-          analyticsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        break;
-      case "Schedule":
-        console.log("Navigate to schedule view");
-        break;
-      case "Time Tracking":
-        console.log("Navigate to time tracking view");
-        break;
-      case "Notifications":
-        console.log("Navigate to notifications view");
-        break;
-      case "Reports":
-        console.log("Navigate to reports view");
-        break;
-      case "Billing":
-        console.log("Navigate to billing view");
-        break;
-      case "Settings":
-        console.log("Navigate to settings view");
-        break;
-      default:
-        console.log(`Navigate to ${itemTitle}`);
     }
   };
 
