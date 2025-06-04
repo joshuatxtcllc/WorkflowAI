@@ -36,21 +36,9 @@ export class AIService {
       const orderProcessed = statusCounts.ORDER_PROCESSED || 0;
       const completed = statusCounts.COMPLETED || 0;
 
-      // Get detailed order analysis for better insights
-      const orders = await storage.getOrders();
-      const mysteryOrders = orders.filter(o => o.status === 'MYSTERY_UNCLAIMED').length;
-      const overdueOrders = orders.filter(o => new Date(o.dueDate) < new Date()).length;
-      const urgentOrders = orders.filter(o => o.priority === 'URGENT').length;
-      
-      const prompt = `Jay's Frames workload analysis:
-- Total: ${workloadMetrics.totalOrders} orders, ${workloadMetrics.totalHours} hours
-- Status breakdown: ${orderProcessed} new orders, ${completed} completed
-- ${mysteryOrders} mystery items awaiting identification
-- ${overdueOrders} overdue orders needing immediate attention
-- ${urgentOrders} urgent priority orders
-- On-time rate: ${workloadMetrics.onTimePercentage}%
-
-As a frame shop operations expert, provide specific actionable recommendations for Jay's Frames in 3-4 bullet points focusing on workflow optimization and customer satisfaction.`;
+      const prompt = `Frame shop workload: ${workloadMetrics.totalOrders} orders, ${workloadMetrics.totalHours} hours. 
+Status: ${orderProcessed} new, ${completed} completed.
+Provide 2-3 bullet points of actionable insights in under 100 words.`;
 
       const completion = await this.openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -64,11 +52,7 @@ As a frame shop operations expert, provide specific actionable recommendations f
       const result = {
         ...workloadMetrics,
         aiInsights: analysis,
-        timestamp: new Date().toISOString(),
-        bottlenecks: this.identifyBottlenecks(orders),
-        recommendations: this.generateRecommendations(orders, workloadMetrics),
-        projectedCompletion: this.calculateProjectedCompletion(orders),
-        riskLevel: this.assessRiskLevel(overdueOrders, urgentOrders, workloadMetrics.totalOrders)
+        timestamp: new Date().toISOString()
       };
 
       // Update cache
@@ -88,72 +72,6 @@ As a frame shop operations expert, provide specific actionable recommendations f
 
       return this.generateFallbackAnalysis();
     }
-  }
-
-  private identifyBottlenecks(orders: any[]): string[] {
-    const bottlenecks = [];
-    const statusCounts = orders.reduce((acc, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1;
-      return acc;
-    }, {});
-
-    // Check for common bottlenecks in frame shop workflow
-    if (statusCounts.MATERIALS_ORDERED > statusCounts.MATERIALS_ARRIVED) {
-      bottlenecks.push("Material delivery delays");
-    }
-    if (statusCounts.FRAME_CUT > 5) {
-      bottlenecks.push("Frame cutting backlog");
-    }
-    if (statusCounts.MAT_CUT > 3) {
-      bottlenecks.push("Mat cutting capacity");
-    }
-    if (statusCounts.MYSTERY_UNCLAIMED > 0) {
-      bottlenecks.push("Mystery items pending identification");
-    }
-
-    return bottlenecks.length > 0 ? bottlenecks : ["No significant bottlenecks detected"];
-  }
-
-  private generateRecommendations(orders: any[], metrics: any): string[] {
-    const recommendations = [];
-    const mysteryCount = orders.filter(o => o.status === 'MYSTERY_UNCLAIMED').length;
-    const overdueCount = orders.filter(o => new Date(o.dueDate) < new Date()).length;
-
-    if (mysteryCount > 0) {
-      recommendations.push(`Process ${mysteryCount} mystery items to free up workflow capacity`);
-    }
-    if (overdueCount > 0) {
-      recommendations.push(`Address ${overdueCount} overdue orders immediately`);
-    }
-    if (metrics.onTimePercentage < 80) {
-      recommendations.push("Review scheduling to improve on-time delivery rate");
-    }
-    if (orders.filter(o => o.priority === 'URGENT').length > 5) {
-      recommendations.push("Consider expanding urgent order processing capacity");
-    }
-
-    return recommendations.length > 0 ? recommendations : ["Operations running smoothly"];
-  }
-
-  private calculateProjectedCompletion(orders: any[]): Date {
-    const activeOrders = orders.filter(o => !['PICKED_UP', 'COMPLETED'].includes(o.status));
-    const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
-    const dailyCapacity = 8; // 8 hours per day capacity
-    const businessDays = Math.ceil(totalHours / dailyCapacity);
-    
-    const completion = new Date();
-    completion.setDate(completion.getDate() + businessDays);
-    return completion;
-  }
-
-  private assessRiskLevel(overdueCount: number, urgentCount: number, totalOrders: number): "low" | "medium" | "high" | "critical" {
-    const overdueRatio = overdueCount / totalOrders;
-    const urgentRatio = urgentCount / totalOrders;
-
-    if (overdueRatio > 0.15 || urgentRatio > 0.2) return "critical";
-    if (overdueRatio > 0.1 || urgentRatio > 0.15) return "high";
-    if (overdueRatio > 0.05 || urgentRatio > 0.1) return "medium";
-    return "low";
   }
 
   async generateChatResponse(userMessage: string): Promise<string> {
