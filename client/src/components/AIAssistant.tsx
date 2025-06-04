@@ -25,6 +25,12 @@ export default function AIAssistant() {
     refetchInterval: 30000,
   });
 
+  // Fetch AI alerts
+  const { data: alertsData } = useQuery<{ alerts: AIMessage[] }>({
+    queryKey: ["/api/ai/alerts"],
+    refetchInterval: 60000,
+  });
+
   // Chat mutation
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -52,7 +58,7 @@ export default function AIAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  // Handle WebSocket messages for AI alerts
+  // Handle WebSocket messages for AI alerts and analysis
   useEffect(() => {
     if (lastMessage?.type === 'ai-alerts') {
       const alerts = lastMessage.data;
@@ -63,7 +69,24 @@ export default function AIAssistant() {
         setMessages(prev => [...prev, ...alerts]);
       }
     }
-  }, [lastMessage, isOpen]);
+    
+    if (lastMessage?.type === 'ai-analysis') {
+      // Trigger refetch of analysis data
+      queryClient.invalidateQueries({ queryKey: ["/api/ai/analysis"] });
+    }
+  }, [lastMessage, isOpen, queryClient]);
+
+  // Load initial alerts
+  useEffect(() => {
+    if (alertsData?.alerts) {
+      const urgentCount = alertsData.alerts.filter(alert => alert.severity === 'urgent').length;
+      setUrgentAlerts(urgentCount);
+      
+      if (isOpen && messages.length === 0) {
+        setMessages(alertsData.alerts);
+      }
+    }
+  }, [alertsData, isOpen, messages.length]);
 
   const sendMessage = async () => {
     if (!input.trim() || chatMutation.isPending) return;

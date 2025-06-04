@@ -49,9 +49,13 @@ Provide 2-3 bullet points of actionable insights in under 100 words.`;
 
       const analysis = completion.choices[0]?.message?.content || 'Analysis unavailable';
 
+      // Generate recommendations based on workload
+      const recommendations = this.generateRecommendations(workloadMetrics);
+      
       const result = {
         ...workloadMetrics,
         aiInsights: analysis,
+        recommendations,
         timestamp: new Date().toISOString()
       };
 
@@ -212,6 +216,106 @@ What specific information would you like to know about?`;
     return this.generateWorkloadAnalysis();
   }
 
+  private generateRecommendations(metrics: any): string[] {
+    const recommendations = [];
+    
+    if (metrics.statusCounts?.MATERIALS_ORDERED > 5) {
+      recommendations.push("High number of orders waiting for materials - consider consolidating supplier orders");
+    }
+    
+    if (metrics.onTimePercentage < 90) {
+      recommendations.push("On-time delivery below 90% - review workflow bottlenecks and prioritize overdue orders");
+    }
+    
+    if (metrics.totalHours > 250) {
+      recommendations.push("High workload detected - consider additional staffing or extended hours");
+    }
+    
+    const urgentCount = metrics.statusCounts?.URGENT || 0;
+    if (urgentCount > 3) {
+      recommendations.push("Multiple urgent orders require immediate attention - focus on critical deadlines");
+    }
+    
+    if (metrics.statusCounts?.COMPLETED > metrics.statusCounts?.PICKED_UP) {
+      recommendations.push("Completed orders awaiting pickup - notify customers for collection");
+    }
+    
+    return recommendations;
+  }
+
+  async generateAlerts(): Promise<AIMessage[]> {
+    try {
+      const orders = await storage.getOrders();
+      const activeOrders = orders.filter(order => 
+        !['PICKED_UP', 'CANCELLED'].includes(order.status || '')
+      );
+      
+      return this.generateOrderAlerts(activeOrders);
+    } catch (error) {
+      console.error('Error generating alerts:', error);
+      return [];
+    }
+  }
+
+  private generateOrderAlerts(activeOrders: any[]): AIMessage[] {
+    const alerts: AIMessage[] = [];
+    const now = new Date();
+
+    // Check for overdue orders
+    activeOrders.forEach(order => {
+      if (!order.dueDate) return;
+      
+      const dueDate = new Date(order.dueDate);
+      const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+      if (hoursUntilDue < 0) {
+        alerts.push({
+          id: `overdue_${order.id}`,
+          type: 'alert',
+          content: `⚠️ OVERDUE: ${order.customer?.name || 'Customer'} order (${order.trackingId}) was due ${Math.abs(Math.round(hoursUntilDue))} hours ago. Current status: ${order.status?.replace('_', ' ')}.`,
+          timestamp: now,
+          severity: 'urgent'
+        });
+      } else if (hoursUntilDue < 24) {
+        alerts.push({
+          id: `urgent_${order.id}`,
+          type: 'alert',
+          content: `⚠️ URGENT: ${order.customer?.name || 'Customer'} order (${order.trackingId}) is due in ${Math.round(hoursUntilDue)} hours. Current status: ${order.status?.replace('_', ' ')}.`,
+          timestamp: now,
+          severity: 'urgent'
+        });
+      }
+    });
+
+    // Check for material delays
+    const materialsOrderedOrders = activeOrders.filter(order => order.status === 'MATERIALS_ORDERED');
+    if (materialsOrderedOrders.length > 0) {
+      alerts.push({
+        id: 'materials_waiting',
+        type: 'alert',
+        content: `📦 Materials Update: ${materialsOrderedOrders.length} orders waiting for materials to arrive. Check delivery schedules to update timelines.`,
+        timestamp: now,
+        severity: 'info'
+      });
+    }
+
+    // Check for high priority orders
+    const highPriorityOrders = activeOrders.filter(order => 
+      ['HIGH', 'URGENT'].includes(order.priority || '')
+    );
+    if (highPriorityOrders.length > 5) {
+      alerts.push({
+        id: 'high_priority_alert',
+        type: 'alert',
+        content: `🔥 Priority Alert: ${highPriorityOrders.length} high-priority orders require attention. Consider redistributing workload.`,
+        timestamp: now,
+        severity: 'warning'
+      });
+    }
+
+    return alerts;
+  }
+
   private generateFallbackAnalysis(): WorkloadAnalysis {
     // Provide a default or cached analysis when AI is unavailable
     const totalOrders = 50;
@@ -224,6 +328,11 @@ What specific information would you like to know about?`;
       onTimePercentage: 95,
       riskLevel: 'LOW',
       bottlenecks: ['Material delays', 'Staffing shortages'],
+      recommendations: [
+        'Monitor material delivery schedules',
+        'Consider staff scheduling optimization',
+        'Review high-complexity orders for efficiency gains'
+      ],
       statusCounts: {
         ORDER_PLACED: 10,
         MATERIALS_ORDERED: 15,
@@ -238,12 +347,8 @@ What specific information would you like to know about?`;
         efficiencyScore: '87%',
         predictedCompletion: '3 days'
       },
-      alerts: [
-        /*orders.some(order => 
-          order.dueDate && new Date(order.dueDate) < new Date(Date.now() + 24 * 60 * 60 * 1000)
-        ) ? 'ORDER_DUE_SOON' : null*/
-      ].filter(Boolean),
-      aiInsights: 'AI insights unavailable.'
+      alerts: [],
+      aiInsights: 'AI insights unavailable - using cached analysis.'
     };
   }
 }

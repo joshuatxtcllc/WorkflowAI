@@ -262,6 +262,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/ai/alerts', authenticateToken, async (req, res) => {
+    try {
+      const alerts = await aiService.generateAlerts();
+      res.json({ alerts });
+    } catch (error) {
+      console.error("Error generating AI alerts:", error);
+      res.status(500).json({ message: "Failed to generate alerts" });
+    }
+  });
+
   // Artwork management routes
   app.post('/api/orders/:orderId/artwork/upload', upload.single('artwork'), async (req, res) => {
     try {
@@ -555,22 +565,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }));
   });
 
-  // Start AI monitoring
-  if (process.env.OPENAI_API_KEY) {
-    setInterval(async () => {
-      try {
-        const analysis = await aiService.analyzeWorkload();
-        if (analysis) {
-          broadcast(wss, {
-            type: 'ai-analysis',
-            data: analysis
-          });
-        }
-      } catch (error) {
-        console.error('AI monitoring error:', error);
+  // Start AI monitoring and alerts
+  setInterval(async () => {
+    try {
+      const analysis = await aiService.analyzeWorkload();
+      const alerts = await aiService.generateAlerts();
+      
+      if (analysis) {
+        broadcast(wss, {
+          type: 'ai-analysis',
+          data: analysis
+        });
       }
-    }, 30000); // Every 30 seconds
-  }
+      
+      if (alerts && alerts.length > 0) {
+        broadcast(wss, {
+          type: 'ai-alerts',
+          data: alerts
+        });
+      }
+    } catch (error) {
+      console.error('AI monitoring error:', error);
+    }
+  }, 30000); // Every 30 seconds
 
   // Import endpoint
   app.post('/api/import/orders', authenticateToken, async (req, res) => {

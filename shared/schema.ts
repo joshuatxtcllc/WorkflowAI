@@ -294,8 +294,18 @@ export type WorkloadAnalysis = {
   onTimePercentage: number;
   bottlenecks: string[];
   recommendations: string[];
-  projectedCompletion: Date;
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  projectedCompletion?: Date;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  statusCounts: Record<string, number>;
+  totalWorkload: number;
+  trends?: {
+    weeklyGrowth: string;
+    efficiencyScore: string;
+    predictedCompletion: string;
+  };
+  alerts: string[];
+  aiInsights: string;
+  timestamp?: string;
 };
 
 export type AIMessage = {
