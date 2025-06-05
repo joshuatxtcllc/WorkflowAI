@@ -131,6 +131,15 @@ export const statusHistory = pgTable("status_history", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const materialOrderHistory = pgTable("material_order_history", {
+  id: varchar("id").primaryKey().notNull(),
+  orderId: varchar("order_id").notNull(),
+  orderedBy: varchar("ordered_by").notNull(),
+  orderedAt: timestamp("ordered_at").defaultNow().notNull(),
+  wasOverridden: boolean("was_overridden").default(false),
+  orderDetails: text("order_details"), // JSON string with materials, vendor info, etc.
+});
+
 export const timeEntries = pgTable("time_entries", {
   id: varchar("id").primaryKey().notNull(),
   orderId: varchar("order_id").notNull(),
@@ -176,6 +185,7 @@ export const aiAnalysis = pgTable("ai_analysis", {
   alerts: jsonb("alerts").notNull(), // Current alerts and warnings
 
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Relations

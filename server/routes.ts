@@ -381,12 +381,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/vendor/mark-ordered', authenticateToken, async (req, res) => {
     try {
-      const { orderIds } = req.body;
-      await vendorOrderService.markMaterialsOrdered(orderIds);
-      res.json({ message: "Orders marked as materials ordered" });
+      const { orderIds, overrideCode, overrideReason } = req.body;
+      const userId = (req.user as any)?.claims?.sub || 'unknown-user';
+
+      // Import the material ordering service
+      const { materialOrderingService } = await import('./services/materialOrderingService');
+      
+      // Process with failsafe checks
+      const result = await materialOrderingService.processMaterialOrder(
+        orderIds, 
+        userId, 
+        overrideCode, 
+        overrideReason
+      );
+
+      if (!result.success) {
+        return res.status(400).json(result);
+      }
+
+      res.json(result);
     } catch (error) {
       console.error("Error marking orders:", error);
       res.status(500).json({ message: "Failed to mark orders" });
+    }
+  });
+
+  // Check for duplicate orders before ordering
+  app.post('/api/vendor/check-duplicates', authenticateToken, async (req, res) => {
+    try {
+      const { orderIds } = req.body;
+      const { materialOrderingService } = await import('./services/materialOrderingService');
+      
+      const duplicateCheck = await materialOrderingService.checkDuplicateOrders(orderIds);
+      res.json(duplicateCheck);
+    } catch (error) {
+      console.error("Error checking duplicates:", error);
+      res.status(500).json({ message: "Failed to check for duplicates" });
+    }
+  });
+
+  // Get recent ordering activity for audit
+  app.get('/api/vendor/ordering-activity', authenticateToken, async (req, res) => {
+    try {
+      const { hours = 24 } = req.query;
+      const { materialOrderingService } = await import('./services/materialOrderingService');
+      
+      const activity = await materialOrderingService.getRecentOrderingActivity(Number(hours));
+      res.json({ activity });
+    } catch (error) {
+      console.error("Error fetching ordering activity:", error);
+      res.status(500).json({ message: "Failed to fetch ordering activity" });
     }
   });
 

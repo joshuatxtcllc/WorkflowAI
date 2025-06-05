@@ -386,6 +386,6 @@ export default function KanbanBoard() {
 
       {/* AI Assistant Chat */}
       <AIAssistant />
-    </div>
+    </DndProvider>
   );
 }
