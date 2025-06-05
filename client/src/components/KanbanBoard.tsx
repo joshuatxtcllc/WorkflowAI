@@ -139,8 +139,30 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 
 export default function KanbanBoard() {
   const queryClient = useQueryClient();
-  const { sendMessage, lastMessage } = useWebSocket();
   const { toast } = useToast();
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // Check URL parameters for filters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const priorityParam = urlParams.get('priority');
+    const statusParam = urlParams.get('status');
+
+    if (priorityParam) {
+      setPriorityFilter(priorityParam);
+    }
+    if (statusParam) {
+      if (statusParam === 'ready_for_work') {
+        setStatusFilter('ready_for_work');
+      } else {
+        setStatusFilter(statusParam);
+      }
+    }
+  }, []);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -354,6 +376,31 @@ export default function KanbanBoard() {
     return acc;
   }, {} as Record<string, OrderWithDetails[]>);
 
+  // Filter orders based on search and filters
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = !searchTerm || 
+      order.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesPriority = priorityFilter === 'all' || order.priority === priorityFilter;
+
+    let matchesStatus = true;
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'active') {
+        matchesStatus = !['PICKED_UP', 'CANCELLED'].includes(order.status || '');
+      } else if (statusFilter === 'completed') {
+        matchesStatus = ['PICKED_UP', 'COMPLETED'].includes(order.status || '');
+      } else if (statusFilter === 'ready_for_work') {
+        matchesStatus = ['MATERIALS_ARRIVED', 'FRAME_CUT', 'MAT_CUT'].includes(order.status || '');
+      } else {
+        matchesStatus = order.status === statusFilter;
+      }
+    }
+
+    return matchesSearch && matchesPriority && matchesStatus;
+  });
+
   return (
     <DndProvider backend={HTML5Backend}>
       <main className="relative z-10 p-3 sm:p-6 h-full">
@@ -376,7 +423,7 @@ export default function KanbanBoard() {
                 key={column.status}
                 title={column.title}
                 status={column.status}
-                orders={ordersByStatus[column.status] || []}
+                orders={filteredOrders.filter(order => order.status === column.status)}
                 onDropOrder={handleDropOrder}
               />
             ))}

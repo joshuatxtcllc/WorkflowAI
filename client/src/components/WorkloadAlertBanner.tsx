@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'wouter';
 import { 
   AlertTriangle, Clock, TrendingUp, Zap, X, ChevronDown, ChevronUp,
   Target, Users, Timer, BarChart3, Brain, Lightbulb 
@@ -66,7 +67,9 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         icon: AlertTriangle,
         text: `IMMEDIATE ACTION: ${workloadMetrics.overdueOrders} overdue orders need priority handling`,
         action: 'Focus on overdue items first',
-        severity: 'critical'
+        severity: 'critical',
+        filterUrl: '/orders?status=overdue',
+        orderCount: workloadMetrics.overdueOrders
       });
     }
 
@@ -75,7 +78,9 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         icon: Zap,
         text: `${workloadMetrics.urgentOrders} urgent orders require immediate attention`,
         action: 'Redistribute urgent workload',
-        severity: 'high'
+        severity: 'high',
+        filterUrl: '/?priority=urgent',
+        orderCount: workloadMetrics.urgentOrders
       });
     }
 
@@ -84,7 +89,9 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         icon: Clock,
         text: `${workloadMetrics.materialWaiting} orders waiting for materials`,
         action: 'Call suppliers for delivery updates',
-        severity: 'medium'
+        severity: 'medium',
+        filterUrl: '/?status=MATERIALS_ORDERED',
+        orderCount: workloadMetrics.materialWaiting
       });
     }
 
@@ -93,7 +100,9 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         icon: Target,
         text: `${workloadMetrics.readyForWork} orders ready for production`,
         action: 'Prioritize by complexity and due date',
-        severity: 'low'
+        severity: 'low',
+        filterUrl: '/?status=ready_for_work',
+        orderCount: workloadMetrics.readyForWork
       });
     }
 
@@ -102,7 +111,9 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         icon: BarChart3,
         text: `High workload: ${analysis.totalHours}h total capacity`,
         action: 'Consider overtime or additional staff',
-        severity: 'medium'
+        severity: 'medium',
+        filterUrl: '/orders',
+        orderCount: workloadMetrics.totalActiveOrders
       });
     }
 
@@ -227,25 +238,35 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="flex items-start gap-3 bg-white/10 rounded-lg p-3"
                       >
-                        <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{rec.text}</p>
-                          <p className="text-xs text-white/80 mt-1">→ {rec.action}</p>
-                        </div>
-                        <Badge 
-                          variant="secondary" 
-                          className={`
-                            text-xs
-                            ${rec.severity === 'critical' ? 'bg-red-500/20 text-red-200' : ''}
-                            ${rec.severity === 'high' ? 'bg-orange-500/20 text-orange-200' : ''}
-                            ${rec.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-200' : ''}
-                            ${rec.severity === 'low' ? 'bg-green-500/20 text-green-200' : ''}
-                          `}
-                        >
-                          {rec.severity}
-                        </Badge>
+                        <Link href={rec.filterUrl || '/orders'}>
+                          <div className="flex items-start gap-3 bg-white/10 rounded-lg p-3 hover:bg-white/20 transition-colors cursor-pointer group">
+                            <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <p className="font-medium text-sm group-hover:text-white/90">{rec.text}</p>
+                              <p className="text-xs text-white/80 mt-1 group-hover:text-white/70">
+                                → {rec.action}
+                                {rec.orderCount && (
+                                  <span className="ml-2 bg-white/20 px-2 py-0.5 rounded text-white font-medium">
+                                    View {rec.orderCount} orders
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                            <Badge 
+                              variant="secondary" 
+                              className={`
+                                text-xs transition-colors
+                                ${rec.severity === 'critical' ? 'bg-red-500/20 text-red-200 group-hover:bg-red-500/30' : ''}
+                                ${rec.severity === 'high' ? 'bg-orange-500/20 text-orange-200 group-hover:bg-orange-500/30' : ''}
+                                ${rec.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-200 group-hover:bg-yellow-500/30' : ''}
+                                ${rec.severity === 'low' ? 'bg-green-500/20 text-green-200 group-hover:bg-green-500/30' : ''}
+                              `}
+                            >
+                              {rec.severity}
+                            </Badge>
+                          </div>
+                        </Link>
                       </motion.div>
                     );
                   })}
