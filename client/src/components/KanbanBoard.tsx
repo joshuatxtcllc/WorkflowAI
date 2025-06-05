@@ -144,6 +144,7 @@ export default function KanbanBoard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [isChatOpen, setIsChatOpen] = useState(false); // Add state for controlling chat visibility
 
   // Check URL parameters for filters
   useEffect(() => {
@@ -167,11 +168,6 @@ export default function KanbanBoard() {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Force refresh orders data on component mount
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-  }, [queryClient]);
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
@@ -340,10 +336,14 @@ export default function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
+  const { sendMessage, lastMessage } = useWebSocket();
+
   // Handle WebSocket messages
-  if (lastMessage?.type === 'order-updated') {
-    queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-  }
+  useEffect(() => {
+    if (lastMessage?.type === 'order-updated') {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    }
+  }, [lastMessage, queryClient]);
 
   if (isLoading && !orders.length) {
     return (
@@ -432,7 +432,10 @@ export default function KanbanBoard() {
       </main>
 
       {/* AI Assistant Chat */}
-      <AIAssistant />
+      <AIAssistant 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)}
+      />
     </DndProvider>
   );
 }
