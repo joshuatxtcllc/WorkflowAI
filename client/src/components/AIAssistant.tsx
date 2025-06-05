@@ -64,12 +64,12 @@ export default function AIAssistant() {
       const alerts = lastMessage.data;
       const urgentCount = alerts.filter((alert: AIMessage) => alert.severity === 'urgent').length;
       setUrgentAlerts(prev => prev + urgentCount);
-      
+
       if (isOpen) {
         setMessages(prev => [...prev, ...alerts]);
       }
     }
-    
+
     if (lastMessage?.type === 'ai-analysis') {
       // Trigger refetch of analysis data
       queryClient.invalidateQueries({ queryKey: ["/api/ai/analysis"] });
@@ -81,7 +81,7 @@ export default function AIAssistant() {
     if (alertsData?.alerts) {
       const urgentCount = alertsData.alerts.filter(alert => alert.severity === 'urgent').length;
       setUrgentAlerts(urgentCount);
-      
+
       if (isOpen && messages.length === 0) {
         setMessages(alertsData.alerts);
       }
@@ -100,7 +100,7 @@ export default function AIAssistant() {
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    
+
     chatMutation.mutate(input);
   };
 
@@ -250,9 +250,9 @@ export default function AIAssistant() {
                           </div>
                         )}
                         <p className="whitespace-pre-line">{message.content}</p>
-                        <p className="text-xs opacity-60 mt-2">
-                          {message.timestamp.toLocaleTimeString()}
-                        </p>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {new Date(message.timestamp).toLocaleTimeString()}
+                        </div>
                       </div>
                     </motion.div>
                   ))
