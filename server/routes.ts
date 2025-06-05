@@ -1175,6 +1175,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+    // HUB status endpoint - returns JSON status without authentication
+    app.get('/api/status', (req, res) => {
+      try {
+        res.setHeader('Content-Type', 'application/json');
+        res.json({ 
+          status: 'operational',
+          service: 'Jay\'s Frames Management System',
+          timestamp: new Date().toISOString(),
+          endpoints: {
+            auth: '/api/test/auth',
+            orders: '/api/orders',
+            health: '/api/system/health'
+          },
+          message: 'API is running and ready to accept requests'
+        });
+      } catch (error) {
+        console.error('Status endpoint error:', error);
+        res.status(500).json({ error: 'Status check failed' });
+      }
+    });
+
     // Test endpoint for hub connection verification
     app.get('/api/test/auth', (req, res) => {
       try {
