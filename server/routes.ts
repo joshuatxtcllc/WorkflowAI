@@ -475,6 +475,201 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 3D Designer Integration API
+  app.post('/api/3d-designer/orders', async (req, res) => {
+    try {
+      const { 
+        customerInfo, 
+        designFiles, 
+        specifications, 
+        designType,
+        estimatedPrice,
+        notes,
+        dueDate 
+      } = req.body;
+
+      // Create or find customer
+      let customer = await storage.getCustomerByEmail(customerInfo.email);
+      if (!customer) {
+        customer = await storage.createCustomer({
+          name: customerInfo.name,
+          email: customerInfo.email,
+          phone: customerInfo.phone || null,
+          address: customerInfo.address || null,
+        });
+      }
+
+      // Create order with 3D design specifications
+      const orderData = {
+        customerId: customer.id,
+        orderType: designType === 'shadowbox' ? 'SHADOWBOX' : designType === 'mat' ? 'MAT' : 'FRAME',
+        status: 'ORDER_PROCESSED',
+        dueDate: new Date(dueDate || Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days default
+        estimatedHours: designType === 'SHADOWBOX' ? 6 : designType === 'MAT' ? 2 : 4,
+        price: estimatedPrice || 200,
+        description: specifications.description || '3D Designer Custom Order',
+        notes: `3D Designer Order - ${notes || ''}\nDesign Files: ${designFiles?.join(', ') || 'None'}`,
+        priority: 'MEDIUM',
+        dimensions: specifications.dimensions || {},
+      };
+
+      const order = await storage.createOrder(orderData);
+
+      // Create status history
+      await storage.createStatusHistory({
+        orderId: order.id,
+        toStatus: 'ORDER_PROCESSED',
+        changedBy: '3d-designer-system',
+        reason: '3D Designer order submission'
+      });
+
+      res.status(201).json({
+        success: true,
+        order: {
+          id: order.id,
+          trackingId: order.trackingId,
+          customerId: customer.id,
+          status: order.status,
+          estimatedCompletion: order.dueDate,
+          price: order.price
+        },
+        message: "Order created successfully"
+      });
+
+    } catch (error) {
+      console.error("3D Designer order creation error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to create order",
+        error: error.message 
+      });
+    }
+  });
+
+  app.get('/api/3d-designer/orders/:trackingId', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const order = await storage.getOrderByTrackingId(trackingId);
+
+      if (!order) {
+        return res.status(404).json({ 
+          success: false, 
+          message: "Order not found" 
+        });
+      }
+
+      res.json({
+        success: true,
+        order: {
+          trackingId: order.trackingId,
+          status: order.status,
+          progress: getOrderProgress(order.status),
+          estimatedCompletion: order.dueDate,
+          price: order.price,
+          customer: order.customer?.name,
+          description: order.description,
+          lastUpdated: order.updatedAt
+        }
+      });
+
+    } catch (error) {
+      console.error("Error fetching 3D designer order:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to fetch order" 
+      });
+    }
+  });
+
+  app.patch('/api/3d-designer/orders/:trackingId/files', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const { designFiles, revisionNotes } = req.body;
+
+      const order = await storage.getOrderByTrackingId(trackingId);
+      if (!order) {
+        return res.status(404).json({ 
+          success: false, 
+          message: "Order not found" 
+        });
+      }
+
+      // Update order with new design files
+      const updatedNotes = `${order.notes || ''}\n\nDesign Update: ${revisionNotes || 'Files updated'}\nNew Files: ${designFiles?.join(', ') || 'None'}`;
+      
+      await storage.updateOrder(order.id, {
+        notes: updatedNotes,
+        updatedAt: new Date()
+      });
+
+      res.json({
+        success: true,
+        message: "Design files updated successfully",
+        trackingId: order.trackingId
+      });
+
+    } catch (error) {
+      console.error("Error updating design files:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to update design files" 
+      });
+    }
+  });
+
+  app.get('/api/3d-designer/pricing/:designType', async (req, res) => {
+    try {
+      const { designType } = req.params;
+      const { dimensions, complexity } = req.query;
+
+      // Calculate pricing based on design type and specifications
+      let basePrice = 150;
+      let estimatedHours = 3;
+
+      switch (designType.toLowerCase()) {
+        case 'frame':
+          basePrice = 200;
+          estimatedHours = 4;
+          break;
+        case 'shadowbox':
+          basePrice = 350;
+          estimatedHours = 6;
+          break;
+        case 'mat':
+          basePrice = 100;
+          estimatedHours = 2;
+          break;
+      }
+
+      // Adjust for complexity
+      if (complexity === 'high') {
+        basePrice *= 1.5;
+        estimatedHours *= 1.5;
+      } else if (complexity === 'medium') {
+        basePrice *= 1.2;
+        estimatedHours *= 1.2;
+      }
+
+      res.json({
+        success: true,
+        pricing: {
+          basePrice,
+          estimatedHours,
+          estimatedCompletion: new Date(Date.now() + estimatedHours * 24 * 60 * 60 * 1000),
+          designType,
+          complexity: complexity || 'standard'
+        }
+      });
+
+    } catch (error) {
+      console.error("Error calculating pricing:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to calculate pricing" 
+      });
+    }
+  });
+
   // Customer portal routes (no auth required)
   app.get('/api/customer/track/:trackingId', async (req, res) => {
     try {
@@ -1187,6 +1382,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     scheduleNextSync();
 
     return httpServer;
+  }
+
+  // Helper function for order progress calculation
+  function getOrderProgress(status: string): number {
+    const progressMap: Record<string, number> = {
+      'ORDER_PROCESSED': 10,
+      'MATERIALS_ORDERED': 25,
+      'MATERIALS_ARRIVED': 40,
+      'FRAME_CUT': 60,
+      'MAT_CUT': 70,
+      'PREPPED': 85,
+      'COMPLETED': 95,
+      'PICKED_UP': 100
+    };
+    return progressMap[status] || 0;
   }
 
   // Helper function to broadcast to all connected WebSocket clients
