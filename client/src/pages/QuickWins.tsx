@@ -49,96 +49,110 @@ export default function QuickWins() {
   const generateQuickWins = (orders: OrderWithDetails[]): QuickWin[] => {
     const quickWins: QuickWin[] = [];
 
-    let quickOrders = orders.filter(order => 
-      order.estimatedHours <= 2 && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "") &&
+    // Get all workable orders (not picked up, cancelled, or completed)
+    const workableOrders = orders.filter(order => 
+      !["PICKED_UP", "COMPLETED", "CANCELLED"].includes(order.status || "") &&
       isOrderReadyForWork(order)
     );
 
-    if (timeFilter !== "all") {
-      const maxHours = parseFloat(timeFilter);
-      quickOrders = filterOrdersByTime(orders, maxHours);
+    // Sort by priority: overdue first, then by due date, then by revenue
+    const prioritizedOrders = workableOrders.sort((a, b) => {
+      const now = new Date();
+      const aDue = new Date(a.dueDate);
+      const bDue = new Date(b.dueDate);
+      
+      // Overdue orders first
+      const aOverdue = aDue < now;
+      const bOverdue = bDue < now;
+      
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      
+      // Then by due date (earliest first)
+      if (aDue.getTime() !== bDue.getTime()) {
+        return aDue.getTime() - bDue.getTime();
+      }
+      
+      // Finally by revenue (highest first)
+      return b.price - a.price;
+    });
+
+    // Select exactly 15 orders that total approximately 8 hours
+    const targetHours = 8;
+    const selectedOrders: OrderWithDetails[] = [];
+    let totalHours = 0;
+
+    for (const order of prioritizedOrders) {
+      const orderHours = order.estimatedHours || 1;
+      
+      // Add order if we haven't reached 15 orders and total hours won't exceed 10
+      if (selectedOrders.length < 15 && (totalHours + orderHours) <= 10) {
+        selectedOrders.push(order);
+        totalHours += orderHours;
+      }
+      
+      // If we have 15 orders or are close to 8 hours, stop
+      if (selectedOrders.length >= 15 || totalHours >= targetHours) {
+        break;
+      }
     }
 
-    if (quickOrders.length > 0) {
+    // If we don't have enough hours but have room for more orders, add smaller ones
+    if (totalHours < 6 && selectedOrders.length < 15) {
+      const remainingOrders = prioritizedOrders.filter(order => 
+        !selectedOrders.includes(order) && order.estimatedHours <= 2
+      );
+      
+      for (const order of remainingOrders) {
+        if (selectedOrders.length >= 15) break;
+        if (totalHours + order.estimatedHours <= 10) {
+          selectedOrders.push(order);
+          totalHours += order.estimatedHours;
+        }
+      }
+    }
+
+    // Create the primary Quick Wins category
+    if (selectedOrders.length > 0) {
+      const overdueCount = selectedOrders.filter(order => 
+        new Date(order.dueDate) < new Date()
+      ).length;
+
       quickWins.push({
-        id: "quick-completion",
-        title: "Quick Completions",
-        description: `${quickOrders.length} orders under 2 hours`,
-        estimatedTime: quickOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: quickOrders.reduce((sum, order) => sum + order.price, 0),
+        id: "priority-queue",
+        title: "Priority Production Queue",
+        description: `15 orders totaling ${totalHours.toFixed(1)} hours${overdueCount > 0 ? ` (${overdueCount} overdue)` : ''}`,
+        estimatedTime: totalHours,
+        revenue: selectedOrders.reduce((sum, order) => sum + order.price, 0),
         priority: "HIGH",
         category: "QUICK_COMPLETION",
-        orders: quickOrders.slice(0, 5)
+        orders: selectedOrders
       });
     }
 
-    let highValueOrders = orders.filter(order => 
-      order.price >= 300 && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "") &&
-      isOrderReadyForWork(order)
-    );
+    // Next 15 orders for material preparation
+    const nextOrders = prioritizedOrders
+      .filter(order => !selectedOrders.includes(order))
+      .slice(0, 15);
 
-    if (timeFilter !== "all") {
-      const maxHours = parseFloat(timeFilter);
-      highValueOrders = highValueOrders.filter(order => order.estimatedHours <= maxHours);
-    }
+    if (nextOrders.length > 0) {
+      const materialsNeeded = nextOrders.filter(order => 
+        ["ORDER_PLACED", "MATERIALS_ORDERED"].includes(order.status || "")
+      );
 
-    if (highValueOrders.length > 0) {
       quickWins.push({
-        id: "high-value",
-        title: "High Value Orders",
-        description: `${highValueOrders.length} orders worth $300+ each`,
-        estimatedTime: highValueOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: highValueOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "HIGH_VALUE",
-        orders: highValueOrders.slice(0, 5)
+        id: "next-queue",
+        title: "Next Production Queue",
+        description: `Next 15 orders (${materialsNeeded.length} need materials)`,
+        estimatedTime: nextOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
+        revenue: nextOrders.reduce((sum, order) => sum + order.price, 0),
+        priority: materialsNeeded.length > 5 ? "HIGH" : "MEDIUM",
+        category: materialsNeeded.length > 5 ? "OVERDUE" : "BATCH_READY",
+        orders: nextOrders
       });
     }
 
-    const now = new Date();
-    const overdueOrders = orders.filter(
-      order => new Date(order.dueDate) < now && 
-      !["PICKED_UP", "COMPLETED"].includes(order.status || "")
-    ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
-    if (overdueOrders.length > 0) {
-      quickWins.push({
-        id: "overdue",
-        title: "Overdue Orders",
-        description: `${overdueOrders.length} orders past their due date`,
-        estimatedTime: overdueOrders.reduce((sum, order) => sum + order.estimatedHours, 0),
-        revenue: overdueOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "HIGH",
-        category: "OVERDUE",
-        orders: overdueOrders.slice(0, 5)
-      });
-    }
-
-    const frameOrders = orders.filter(
-      order => order.orderType === "FRAME" && 
-      order.status === "MATERIALS_ARRIVED"
-    );
-
-    if (frameOrders.length >= 3) {
-      quickWins.push({
-        id: "batch-frames",
-        title: "Batch Frame Processing",
-        description: `${frameOrders.length} frames ready for cutting`,
-        estimatedTime: frameOrders.reduce((sum, order) => sum + order.estimatedHours, 0) * 0.8,
-        revenue: frameOrders.reduce((sum, order) => sum + order.price, 0),
-        priority: "MEDIUM",
-        category: "BATCH_READY",
-        orders: frameOrders.slice(0, 5)
-      });
-    }
-
-    return quickWins.sort((a, b) => {
-      if (a.priority === "HIGH" && b.priority !== "HIGH") return -1;
-      if (b.priority === "HIGH" && a.priority !== "HIGH") return 1;
-      return b.revenue - a.revenue;
-    });
+    return quickWins;
   };
 
   const quickWins = orders ? generateQuickWins(orders) : [];
@@ -262,26 +276,45 @@ export default function QuickWins() {
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Sample Orders:</h4>
-                  {win.orders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-2 bg-muted rounded text-sm">
-                      <div>
-                        <span className="font-medium">{order.trackingId}</span>
-                        <span className="text-muted-foreground ml-2">{order.customer.name}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="text-xs">
-                          {order.orderType}
-                        </Badge>
-                        <span className="text-xs">${order.price}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {win.orders.length < 5 && (
-                    <p className="text-xs text-muted-foreground">
-                      +{Math.max(0, (orders?.length || 0) - win.orders.length)} more orders
-                    </p>
-                  )}
+                  <h4 className="font-medium text-sm">
+                    {win.id === "priority-queue" ? "Production Queue (15 Orders):" : "Orders:"}
+                  </h4>
+                  <div className="max-h-64 overflow-y-auto space-y-1">
+                    {win.orders.map((order) => {
+                      const isOverdue = new Date(order.dueDate) < new Date();
+                      const daysUntilDue = Math.ceil((new Date(order.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                      
+                      return (
+                        <div key={order.id} className={`flex items-center justify-between p-2 rounded text-sm ${
+                          isOverdue ? 'bg-red-100 border border-red-300' : 
+                          daysUntilDue <= 2 ? 'bg-yellow-100 border border-yellow-300' : 
+                          'bg-muted'
+                        }`}>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">{order.trackingId}</span>
+                              <span className="text-muted-foreground truncate">{order.customer.name}</span>
+                            </div>
+                            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                              <span>Due: {new Date(order.dueDate).toLocaleDateString()}</span>
+                              <span>•</span>
+                              <span>{order.estimatedHours}h</span>
+                              <span>•</span>
+                              <Badge variant="outline" className="text-xs">
+                                {order.status?.replace('_', ' ')}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline" className="text-xs">
+                              {order.orderType}
+                            </Badge>
+                            <span className="text-xs font-medium">${order.price}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <Link href="/">

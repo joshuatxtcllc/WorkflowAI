@@ -25,7 +25,7 @@ export class AIService {
       }
 
       if (!this.openai) {
-        return this.generateFallbackAnalysis();
+        return await this.generateFallbackAnalysis();
       }
 
       // Get simplified workload data
@@ -63,7 +63,7 @@ Provide realistic analysis focusing on:
 
       // Generate recommendations based on workload
       const recommendations = this.generateRecommendations(workloadMetrics);
-      
+
       const result = {
         ...workloadMetrics,
         aiInsights: analysis,
@@ -86,7 +86,7 @@ Provide realistic analysis focusing on:
         return this.analysisCache.data;
       }
 
-      return this.generateFallbackAnalysis();
+      return await this.generateFallbackAnalysis();
     }
   }
 
@@ -258,23 +258,23 @@ What specific information would you like to know about?`;
 
   private generateRecommendations(metrics: any): string[] {
     const recommendations = [];
-    
+
     // Realistic material management
     if (metrics.statusCounts?.MATERIALS_ORDERED > 5) {
       recommendations.push("Material Check: Follow up with suppliers on delivery schedules");
     }
-    
+
     // Realistic performance tracking
     if (metrics.onTimePercentage < 85) {
       recommendations.push("Timeline Review: Adjust due dates based on 8-12 orders/day capacity");
     }
-    
+
     // Solo capacity management
     const dailyCapacityDays = Math.ceil(metrics.totalOrders / 10); // Average 10 orders/day
     if (metrics.totalHours > 300) {
       recommendations.push(`Workload Alert: Current backlog requires ~${dailyCapacityDays} days at full capacity`);
     }
-    
+
     // Realistic urgent order management
     const urgentCount = metrics.statusCounts?.URGENT || 0;
     if (urgentCount > 10) {
@@ -282,30 +282,30 @@ What specific information would you like to know about?`;
     } else if (urgentCount > 5) {
       recommendations.push(`Urgent Queue: ${urgentCount} urgent orders = ~${Math.ceil(urgentCount/10)} days at full capacity`);
     }
-    
+
     // Production flow optimization
     if (metrics.statusCounts?.MATERIALS_ARRIVED > 8) {
       recommendations.push("PRODUCTION SLOWDOWN: Too many orders ready but not started - increase cutting capacity");
     }
-    
+
     if (metrics.statusCounts?.FRAME_CUT > metrics.statusCounts?.MAT_CUT) {
       recommendations.push("MAT CUTTING BOTTLENECK: Frames backing up - prioritize mat cutting");
     }
-    
+
     if (metrics.statusCounts?.COMPLETED > metrics.statusCounts?.PICKED_UP) {
       recommendations.push("STORAGE OVERFLOW: Call customers immediately for pickup - space needed");
     }
-    
+
     // Efficiency optimization
     if (metrics.statusCounts?.PREPPED < 3) {
       recommendations.push("LOW PREP BUFFER: Increase assembly preparation to maintain flow");
     }
-    
+
     // Quality control
     if (metrics.statusCounts?.DELAYED > 2) {
       recommendations.push("QUALITY ISSUES: Too many delays - review and fix root causes NOW");
     }
-    
+
     return recommendations;
   }
 
@@ -315,7 +315,7 @@ What specific information would you like to know about?`;
       const activeOrders = orders.filter(order => 
         !['PICKED_UP', 'CANCELLED'].includes(order.status || '')
       );
-      
+
       return this.generateOrderAlerts(activeOrders);
     } catch (error) {
       console.error('Error generating alerts:', error);
@@ -330,7 +330,7 @@ What specific information would you like to know about?`;
     // Check for overdue orders
     activeOrders.forEach(order => {
       if (!order.dueDate) return;
-      
+
       const dueDate = new Date(order.dueDate);
       const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
@@ -382,7 +382,7 @@ What specific information would you like to know about?`;
     return alerts;
   }
 
-  private generateFallbackAnalysis(): WorkloadAnalysis {
+  private async generateFallbackAnalysis(): WorkloadAnalysis {
     // Provide a default or cached analysis when AI is unavailable
     const totalOrders = 50;
     const totalHours = 200;
