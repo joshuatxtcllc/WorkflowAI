@@ -36,12 +36,21 @@ export class AIService {
       const orderProcessed = statusCounts.ORDER_PROCESSED || 0;
       const completed = statusCounts.COMPLETED || 0;
 
-      const prompt = `PRODUCTION MANAGER ALERT: Frame shop has ${workloadMetrics.totalOrders} active orders requiring ${workloadMetrics.totalHours} total hours. 
+      const prompt = `PRODUCTION REALITY CHECK: Jay's Frames has ${workloadMetrics.totalOrders} active orders requiring ${workloadMetrics.totalHours} total hours. 
 Current status: ${orderProcessed} new orders, ${completed} completed today.
 Material delays: ${statusCounts.MATERIALS_ORDERED || 0} orders waiting.
 Overdue risk: ${statusCounts.DELAYED || 0} delayed orders.
 
-As an AGGRESSIVE production manager, analyze this data and provide 3-4 DIRECT, ACTION-ORIENTED commands to maximize throughput and prevent delays. Be specific and demanding about what needs to happen immediately. Focus on bottlenecks, efficiency, and meeting deadlines.`;
+IMPORTANT CONTEXT:
+- Solo operator (Jay) with 8-12 orders/day maximum capacity
+- Current bottleneck: System setup completion
+- Goal: Get production-ready system operational today
+
+Provide realistic analysis focusing on:
+1. Realistic timeline based on solo capacity
+2. Priority orders that can be completed first
+3. System readiness tasks
+4. Efficient workflow suggestions for single operator`;
 
       const completion = await this.openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -124,24 +133,29 @@ PRIORITY ORDERS: ${urgentOrders.slice(0, 3).map(o =>
         messages: [
           {
             role: "system",
-            content: `You are an AGGRESSIVE AI production manager for Jay's Frames. Your job is to maximize efficiency, eliminate bottlenecks, and ensure on-time delivery.
+            content: `You are an AI production assistant for Jay's Frames. Your role is to provide realistic guidance and support.
+
+CURRENT PRODUCTION REALITY:
+- WORKFORCE: Currently only Jay working solo
+- DAILY CAPACITY: 8-12 orders maximum per day when framing full-time
+- CURRENT BOTTLENECK: System setup and implementation (not production)
+- STATUS: Shop is preparing to resume full production once system is ready
 
 CORE DIRECTIVES:
-- Be direct and action-oriented in all responses
-- Prioritize based on due dates, complexity, and material availability
-- Identify and eliminate workflow inefficiencies immediately
-- Group orders strategically for batch processing
-- Maintain 95%+ on-time performance at all costs
-- Call out problems before they become critical
+- Provide realistic timelines based on solo capacity (8-12 orders/day max)
+- Prioritize based on due dates and complexity within realistic constraints
+- Focus on system readiness and workflow optimization
+- Support transition from system setup to production mode
+- Acknowledge current limitations while planning for efficiency
 
 COMMUNICATION STYLE:
-- Use action verbs and specific commands
-- Provide concrete next steps, not suggestions
-- Group similar tasks for efficiency
-- Flag critical issues that need immediate attention
-- Focus on throughput optimization and deadline management
+- Be supportive and realistic, not demanding
+- Provide actionable next steps within capacity constraints
+- Group orders efficiently for solo work
+- Flag urgent items while maintaining realistic expectations
+- Focus on getting the system production-ready first
 
-You have full authority to reorganize workflows and reassign priorities to maximize production efficiency.`
+Remember: The primary goal right now is completing system setup so full production can begin.`
           },
           {
             role: "user",
@@ -245,29 +259,28 @@ What specific information would you like to know about?`;
   private generateRecommendations(metrics: any): string[] {
     const recommendations = [];
     
-    // Aggressive material management
+    // Realistic material management
     if (metrics.statusCounts?.MATERIALS_ORDERED > 5) {
-      recommendations.push("CRITICAL: Call suppliers NOW - too many orders waiting for materials");
+      recommendations.push("Material Check: Follow up with suppliers on delivery schedules");
     }
     
-    // Demanding performance standards
-    if (metrics.onTimePercentage < 95) {
-      recommendations.push("UNACCEPTABLE: On-time performance below 95% - immediate workflow review required");
+    // Realistic performance tracking
+    if (metrics.onTimePercentage < 85) {
+      recommendations.push("Timeline Review: Adjust due dates based on 8-12 orders/day capacity");
     }
     
-    // Capacity management
+    // Solo capacity management
+    const dailyCapacityDays = Math.ceil(metrics.totalOrders / 10); // Average 10 orders/day
     if (metrics.totalHours > 300) {
-      recommendations.push("OVERLOAD ALERT: Consider overtime shifts or temporary staff immediately");
-    } else if (metrics.totalHours > 250) {
-      recommendations.push("HIGH CAPACITY: Monitor closely, prepare for potential overload");
+      recommendations.push(`Workload Alert: Current backlog requires ~${dailyCapacityDays} days at full capacity`);
     }
     
-    // Urgent order management
+    // Realistic urgent order management
     const urgentCount = metrics.statusCounts?.URGENT || 0;
-    if (urgentCount > 5) {
-      recommendations.push("TOO MANY URGENT ORDERS: Stop accepting rush jobs until backlog clears");
-    } else if (urgentCount > 3) {
-      recommendations.push("URGENT BOTTLENECK: Redistribute urgent workload across all stations");
+    if (urgentCount > 10) {
+      recommendations.push("Priority Focus: Too many urgent orders - consider customer communication about realistic timelines");
+    } else if (urgentCount > 5) {
+      recommendations.push(`Urgent Queue: ${urgentCount} urgent orders = ~${Math.ceil(urgentCount/10)} days at full capacity`);
     }
     
     // Production flow optimization
