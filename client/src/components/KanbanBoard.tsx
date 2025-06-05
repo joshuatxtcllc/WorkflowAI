@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { apiRequest } from '@/lib/queryClient';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import OrderCard from './OrderCard';
+import WorkloadAlertBanner from './WorkloadAlertBanner';
 import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User } from 'lucide-react';
@@ -356,13 +357,16 @@ export default function KanbanBoard() {
     <DndProvider backend={HTML5Backend}>
       <main className="relative z-10 p-3 sm:p-6 h-full">
         <div className="w-full h-full">
+          {/* AI Workload Alert Banner */}
+          <WorkloadAlertBanner orders={orders} />
+          
           <div 
             ref={scrollContainerRef}
             className="kanban-scroll flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
-              minHeight: 'calc(100vh - 280px)'
+              minHeight: 'calc(100vh - 320px)' // Adjusted for banner
             }}
             onScroll={handleScroll}
           >
@@ -378,8 +382,6 @@ export default function KanbanBoard() {
           </div>
         </div>
       </main>
-
-
     </DndProvider>
   );
 }

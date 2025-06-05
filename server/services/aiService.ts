@@ -36,9 +36,12 @@ export class AIService {
       const orderProcessed = statusCounts.ORDER_PROCESSED || 0;
       const completed = statusCounts.COMPLETED || 0;
 
-      const prompt = `Frame shop workload: ${workloadMetrics.totalOrders} orders, ${workloadMetrics.totalHours} hours. 
-Status: ${orderProcessed} new, ${completed} completed.
-Provide 2-3 bullet points of actionable insights in under 100 words.`;
+      const prompt = `PRODUCTION MANAGER ALERT: Frame shop has ${workloadMetrics.totalOrders} active orders requiring ${workloadMetrics.totalHours} total hours. 
+Current status: ${orderProcessed} new orders, ${completed} completed today.
+Material delays: ${statusCounts.MATERIALS_ORDERED || 0} orders waiting.
+Overdue risk: ${statusCounts.DELAYED || 0} delayed orders.
+
+As an AGGRESSIVE production manager, analyze this data and provide 3-4 DIRECT, ACTION-ORIENTED commands to maximize throughput and prevent delays. Be specific and demanding about what needs to happen immediately. Focus on bottlenecks, efficiency, and meeting deadlines.`;
 
       const completion = await this.openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -88,46 +91,69 @@ Provide 2-3 bullet points of actionable insights in under 100 words.`;
       const metrics = await storage.getWorkloadMetrics();
       const analysis = await this.generateWorkloadAnalysis();
 
-      const context = `
-Current Workload Context:
-- Active Orders: ${analysis.totalOrders}
-- Total Hours: ${analysis.totalHours}h
-- On-time Percentage: ${analysis.onTimePercentage}%
-- Risk Level: ${analysis.riskLevel.toUpperCase()}
-- Current Bottlenecks: ${analysis.bottlenecks.join(', ')}
+      // Enhanced workload analysis for aggressive production management
+      const activeOrders = orders.filter(o => !['PICKED_UP', 'CANCELLED'].includes(o.status));
+      const overdueOrders = activeOrders.filter(o => o.dueDate && new Date(o.dueDate) < new Date());
+      const urgentOrders = activeOrders.filter(o => o.priority === 'URGENT');
+      const complexOrders = activeOrders.filter(o => o.estimatedHours > 8);
 
-Recent Orders: ${orders.slice(0, 5).map(o => 
-  `${o.customer.name} (${o.trackingId}) - ${o.orderType} - ${o.status} - Due: ${new Date(o.dueDate).toLocaleDateString()}`
-).join('\n')}
+      const context = `
+PRODUCTION STATUS REPORT:
+- Active Orders: ${analysis.totalOrders} (${activeOrders.length} in production)
+- Total Workload: ${analysis.totalHours}h
+- OVERDUE ORDERS: ${overdueOrders.length} (CRITICAL PRIORITY)
+- URGENT ORDERS: ${urgentOrders.length} (HIGH PRIORITY)
+- Complex Orders (8+ hours): ${complexOrders.length}
+- On-time Performance: ${analysis.onTimePercentage}%
+- Risk Level: ${analysis.riskLevel.toUpperCase()}
+- Active Bottlenecks: ${analysis.bottlenecks.join(', ')}
+
+WORKLOAD DISTRIBUTION:
+- Materials Ordered: ${analysis.statusCounts?.MATERIALS_ORDERED || 0}
+- Ready for Production: ${(analysis.statusCounts?.MATERIALS_ARRIVED || 0) + (analysis.statusCounts?.FRAME_CUT || 0)}
+- In Progress: ${(analysis.statusCounts?.FRAME_CUT || 0) + (analysis.statusCounts?.MAT_CUT || 0)}
+- Awaiting Pickup: ${analysis.statusCounts?.COMPLETED || 0}
+
+PRIORITY ORDERS: ${urgentOrders.slice(0, 3).map(o => 
+  `${o.customer.name} (${o.trackingId}) - ${o.orderType} - Due: ${new Date(o.dueDate).toLocaleDateString()}`
+).join(', ')}
 `;
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: `You are an AI assistant for Jay's Frames, a custom framing shop. You help with production management, order tracking, and workflow optimization. 
+            content: `You are an AGGRESSIVE AI production manager for Jay's Frames. Your job is to maximize efficiency, eliminate bottlenecks, and ensure on-time delivery.
 
-Key responsibilities:
-- Provide status updates on orders and workload
-- Suggest workflow improvements
-- Help prioritize tasks
-- Answer questions about materials and deadlines
-- Offer practical advice for frame shop operations
+CORE DIRECTIVES:
+- Be direct and action-oriented in all responses
+- Prioritize based on due dates, complexity, and material availability
+- Identify and eliminate workflow inefficiencies immediately
+- Group orders strategically for batch processing
+- Maintain 95%+ on-time performance at all costs
+- Call out problems before they become critical
 
-Be helpful, concise, and actionable in your responses. Use the workload context to provide relevant insights.`
+COMMUNICATION STYLE:
+- Use action verbs and specific commands
+- Provide concrete next steps, not suggestions
+- Group similar tasks for efficiency
+- Flag critical issues that need immediate attention
+- Focus on throughput optimization and deadline management
+
+You have full authority to reorganize workflows and reassign priorities to maximize production efficiency.`
           },
           {
             role: "user",
-            content: `${context}\n\nUser Question: ${userMessage}`
+            content: `${context}\n\nProduction Query: ${userMessage}`
           }
         ],
-        max_tokens: 500,
+        max_tokens: 600,
       });
 
-      return response.choices[0].message.content || 'I apologize, but I could not generate a response at this time.';
+      return response.choices[0].message.content || 'Production analysis unavailable. Review workflow manually and address urgent orders first.';
     } catch (error) {
-      console.error('Error generating AI chat response:', error);
+      console.error('Error generating AI production response:', error);
       return this.generateFallbackResponse(userMessage);
     }
   }
@@ -219,25 +245,52 @@ What specific information would you like to know about?`;
   private generateRecommendations(metrics: any): string[] {
     const recommendations = [];
     
+    // Aggressive material management
     if (metrics.statusCounts?.MATERIALS_ORDERED > 5) {
-      recommendations.push("High number of orders waiting for materials - consider consolidating supplier orders");
+      recommendations.push("CRITICAL: Call suppliers NOW - too many orders waiting for materials");
     }
     
-    if (metrics.onTimePercentage < 90) {
-      recommendations.push("On-time delivery below 90% - review workflow bottlenecks and prioritize overdue orders");
+    // Demanding performance standards
+    if (metrics.onTimePercentage < 95) {
+      recommendations.push("UNACCEPTABLE: On-time performance below 95% - immediate workflow review required");
     }
     
-    if (metrics.totalHours > 250) {
-      recommendations.push("High workload detected - consider additional staffing or extended hours");
+    // Capacity management
+    if (metrics.totalHours > 300) {
+      recommendations.push("OVERLOAD ALERT: Consider overtime shifts or temporary staff immediately");
+    } else if (metrics.totalHours > 250) {
+      recommendations.push("HIGH CAPACITY: Monitor closely, prepare for potential overload");
     }
     
+    // Urgent order management
     const urgentCount = metrics.statusCounts?.URGENT || 0;
-    if (urgentCount > 3) {
-      recommendations.push("Multiple urgent orders require immediate attention - focus on critical deadlines");
+    if (urgentCount > 5) {
+      recommendations.push("TOO MANY URGENT ORDERS: Stop accepting rush jobs until backlog clears");
+    } else if (urgentCount > 3) {
+      recommendations.push("URGENT BOTTLENECK: Redistribute urgent workload across all stations");
+    }
+    
+    // Production flow optimization
+    if (metrics.statusCounts?.MATERIALS_ARRIVED > 8) {
+      recommendations.push("PRODUCTION SLOWDOWN: Too many orders ready but not started - increase cutting capacity");
+    }
+    
+    if (metrics.statusCounts?.FRAME_CUT > metrics.statusCounts?.MAT_CUT) {
+      recommendations.push("MAT CUTTING BOTTLENECK: Frames backing up - prioritize mat cutting");
     }
     
     if (metrics.statusCounts?.COMPLETED > metrics.statusCounts?.PICKED_UP) {
-      recommendations.push("Completed orders awaiting pickup - notify customers for collection");
+      recommendations.push("STORAGE OVERFLOW: Call customers immediately for pickup - space needed");
+    }
+    
+    // Efficiency optimization
+    if (metrics.statusCounts?.PREPPED < 3) {
+      recommendations.push("LOW PREP BUFFER: Increase assembly preparation to maintain flow");
+    }
+    
+    // Quality control
+    if (metrics.statusCounts?.DELAYED > 2) {
+      recommendations.push("QUALITY ISSUES: Too many delays - review and fix root causes NOW");
     }
     
     return recommendations;
