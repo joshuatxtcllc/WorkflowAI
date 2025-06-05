@@ -12,9 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import OrderDetails from '@/components/OrderDetails';
 import { SystemAlerts } from '@/components/SystemAlerts';
-import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
+import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
+import { format } from 'date-fns';
 
 const statusColors = {
   'ORDER_PROCESSED': 'bg-blue-100 text-blue-800',
@@ -38,19 +40,7 @@ const statusLabels = {
   'PICKED_UP': 'Picked Up'
 };
 
-function OrderDetails() {
-  // This is a placeholder for the actual OrderDetails component.
-  // Replace this with the actual implementation of the modal.
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-md">
-        <h2>Order Details</h2>
-        <p>Order details will be displayed here.</p>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-md">Close</button>
-      </div>
-    </div>
-  );
-}
+
 
 export default function Orders() {
   const [location] = useLocation();
