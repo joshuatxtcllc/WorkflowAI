@@ -11,6 +11,7 @@ import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AIAssistant from './AIAssistant';
 
 const columnIcons = {
   'ORDER_PROCESSED': Package,
@@ -359,7 +360,7 @@ export default function KanbanBoard() {
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
           <WorkloadAlertBanner orders={orders} />
-          
+
           <div 
             ref={scrollContainerRef}
             className="kanban-scroll flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth"
@@ -382,6 +383,9 @@ export default function KanbanBoard() {
           </div>
         </div>
       </main>
-    </DndProvider>
+
+      {/* AI Assistant Chat */}
+      <AIAssistant />
+    </div>
   );
 }
