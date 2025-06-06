@@ -204,25 +204,26 @@ export class POSIntegration {
       console.log('Will continue attempting to connect during periodic sync...');
     }
 
-    // Set up periodic sync with retry logic (every 30 seconds)
+    // Set up periodic sync with retry logic (every 5 minutes to reduce noise)
     setInterval(async () => {
       try {
         const result = await this.fetchNewOrders();
         if (result.success && result.orders && result.orders.length > 0) {
           console.log(`Processing ${result.orders.length} new orders from POS`);
           // Process new orders here
-        } else if (!result.success && result.error?.includes('503')) {
-          // Silent handling of 503 errors - service temporarily unavailable
+        } else if (!result.success && (result.error?.includes('503') || result.error?.includes('502'))) {
+          // Silent handling of 503/502 errors - service temporarily unavailable
         } else if (!result.success) {
           console.log('POS sync check:', result.error || 'Connection issue');
         }
       } catch (error) {
         // Only log unexpected errors, not service unavailable
-        if (!(error as Error).message.includes('503')) {
+        const errorMsg = (error as Error).message;
+        if (!errorMsg.includes('503') && !errorMsg.includes('502')) {
           console.error('Real-time sync error:', error);
         }
       }
-    }, 30000);
+    }, 300000); // 5 minutes instead of 30 seconds
 
     return true;
   }

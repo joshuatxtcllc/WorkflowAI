@@ -31,7 +31,7 @@ export default function POSIntegration() {
 
   const { data: posStatus, isLoading, refetch } = useQuery<POSStatus>({
     queryKey: ["/api/pos/status"],
-    refetchInterval: 30000, // Check status every 30 seconds
+    refetchInterval: 300000, // Check status every 5 minutes
   });
 
   const startSyncMutation = useMutation({
@@ -153,7 +153,7 @@ export default function POSIntegration() {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              30-second interval polling
+              5-minute interval polling
             </p>
           </CardContent>
         </Card>
@@ -242,10 +242,12 @@ export default function POSIntegration() {
           {posStatus && !posStatus.success && (
             <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <h5 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                Connection Issues
+                Service Status
               </h5>
               <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                {posStatus.error || 'Unable to connect to POS system. Check your network connection and API credentials.'}
+                {posStatus.error?.includes('502') || posStatus.error?.includes('503') 
+                  ? 'Kanban API service is temporarily unavailable. The system will automatically reconnect when service is restored.'
+                  : posStatus.error || 'Unable to connect to POS system. Check your network connection and API credentials.'}
               </p>
             </div>
           )}
