@@ -118,37 +118,37 @@ export function SystemAlerts() {
 
   if (alerts.length === 0) {
     return (
-      <div className="mb-4">
-        <div className="flex items-center gap-2 text-green-600 bg-green-50 border border-green-200 rounded-lg p-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-medium">All Systems Operational</span>
+      <div className="mb-2">
+        <div className="flex items-center gap-2 text-green-600 bg-green-50 border-l-4 border-green-500 rounded-sm px-3 py-1">
+          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-xs font-medium">All Systems Operational</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 space-y-3">
+    <div className="mb-3 space-y-2">
       {alerts.map((alert) => (
         <Alert 
           key={alert.id} 
           variant="destructive" 
-          className={`border-2 ${
+          className={`border-l-4 border-r-0 border-t-0 border-b-0 py-2 px-3 ${
             alert.type === 'critical' 
-              ? 'border-red-600 bg-red-50 shadow-lg shadow-red-200' 
+              ? 'border-red-600 bg-red-50 shadow-sm' 
               : 'border-orange-500 bg-orange-50'
           }`}
         >
           <AlertTriangle className={`h-5 w-5 ${
             alert.type === 'critical' ? 'text-red-600' : 'text-orange-500'
           }`} />
-          <AlertTitle className={`text-lg font-bold ${
+          <AlertTitle className={`text-sm font-semibold ${
             alert.type === 'critical' ? 'text-red-800' : 'text-orange-800'
           }`}>
             🚨 {alert.title}
           </AlertTitle>
-          <AlertDescription className="space-y-2">
-            <p className={`font-medium ${
+          <AlertDescription className="space-y-1">
+            <p className={`text-sm ${
               alert.type === 'critical' ? 'text-red-700' : 'text-orange-700'
             }`}>
               {alert.message}
