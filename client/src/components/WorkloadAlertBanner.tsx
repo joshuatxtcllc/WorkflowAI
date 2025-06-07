@@ -172,30 +172,30 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
           </div>
 
           {/* Quick Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mt-4">
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold">{workloadMetrics.totalActiveOrders}</div>
-              <div className="text-xs text-white/80">Active Orders</div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mt-3">
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold">{workloadMetrics.totalActiveOrders}</div>
+              <div className="text-xs text-white/80">Active</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
               <div className="text-xs text-white/80">Overdue</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
               <div className="text-xs text-white/80">Urgent</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
               <div className="text-xs text-white/80">Materials</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-green-200">{workloadMetrics.readyForWork}</div>
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold text-green-200">{workloadMetrics.readyForWork}</div>
               <div className="text-xs text-white/80">Ready</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-jade-200">{workloadMetrics.completedToday}</div>
-              <div className="text-xs text-white/80">Done Today</div>
+            <div className="bg-white/10 rounded p-2 text-center">
+              <div className="text-lg font-bold text-jade-200">{workloadMetrics.completedToday}</div>
+              <div className="text-xs text-white/80">Today</div>
             </div>
           </div>
 
