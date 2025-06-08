@@ -163,31 +163,60 @@ export class POSIntegration {
     }
 
     try {
+      // Create a controller for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
       // Check connection first with health endpoint
-      const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`);
+      const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Frame-Shop-Integration/1.0'
+        },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
       if (!healthResponse.ok) {
+        if (healthResponse.status === 503) {
+          return { success: false, error: 'POS system temporarily unavailable', retryable: true };
+        }
         throw new Error(`POS system unreachable: ${healthResponse.status}`);
       }
 
       // If API key is available, fetch orders
       if (this.apiKey) {
+        const ordersController = new AbortController();
+        const ordersTimeoutId = setTimeout(() => ordersController.abort(), 5000);
+
         const ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.apiKey}`
-          }
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`,
+            'User-Agent': 'Frame-Shop-Integration/1.0'
+          },
+          signal: ordersController.signal
         });
+
+        clearTimeout(ordersTimeoutId);
 
         if (ordersResponse.ok) {
           const newOrders = await ordersResponse.json();
           console.log(`Fetched ${newOrders.length} orders from POS system`);
-          return { success: true, orders: newOrders };
+          return { success: true, orders: newOrders, connected: true };
         }
       }
 
       console.log('POS system connected but API key needed for order sync');
       return { success: true, connected: true, needsApiKey: true };
     } catch (error) {
+      if ((error as Error).name === 'AbortError') {
+        console.error('POS request timeout');
+        return { success: false, error: 'Request timeout' };
+      }
       console.error('POS fetch error:', error);
       return { success: false, error: (error as Error).message };
     }
@@ -202,28 +231,30 @@ export class POSIntegration {
     if (!connectionTest.success) {
       console.log('POS connection failed:', connectionTest.error);
       console.log('Will continue attempting to connect during periodic sync...');
+    } else {
+      console.log('POS connection established successfully');
     }
 
-    // Set up periodic sync with retry logic (every 5 minutes to reduce noise)
+    // Set up periodic sync with retry logic (every 30 seconds)
     setInterval(async () => {
       try {
         const result = await this.fetchNewOrders();
         if (result.success && result.orders && result.orders.length > 0) {
           console.log(`Processing ${result.orders.length} new orders from POS`);
           // Process new orders here
-        } else if (!result.success && (result.error?.includes('503') || result.error?.includes('502'))) {
-          // Silent handling of 503/502 errors - service temporarily unavailable
-        } else if (!result.success) {
+        } else if (!result.success && (result.error?.includes('503') || result.error?.includes('timeout'))) {
+          // Silent handling of temporary errors
+        } else if (!result.success && !result.retryable) {
           console.log('POS sync check:', result.error || 'Connection issue');
         }
       } catch (error) {
-        // Only log unexpected errors, not service unavailable
-        const errorMsg = (error as Error).message;
-        if (!errorMsg.includes('503') && !errorMsg.includes('502')) {
+        // Only log unexpected errors, not known temporary issues
+        const errorMessage = (error as Error).message;
+        if (!errorMessage.includes('503') && !errorMessage.includes('timeout') && !errorMessage.includes('AbortError')) {
           console.error('Real-time sync error:', error);
         }
       }
-    }, 300000); // 5 minutes instead of 30 seconds
+    }, 30000);
 
     return true;
   }

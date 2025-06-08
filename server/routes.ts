@@ -381,56 +381,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/vendor/mark-ordered', authenticateToken, async (req, res) => {
     try {
-      const { orderIds, overrideCode, overrideReason } = req.body;
-      const userId = (req.user as any)?.claims?.sub || 'unknown-user';
-
-      // Import the material ordering service
-      const { materialOrderingService } = await import('./services/materialOrderingService');
-      
-      // Process with failsafe checks
-      const result = await materialOrderingService.processMaterialOrder(
-        orderIds, 
-        userId, 
-        overrideCode, 
-        overrideReason
-      );
-
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
-      res.json(result);
+      const { orderIds } = req.body;
+      await vendorOrderService.markMaterialsOrdered(orderIds);
+      res.json({ message: "Orders marked as materials ordered" });
     } catch (error) {
       console.error("Error marking orders:", error);
       res.status(500).json({ message: "Failed to mark orders" });
-    }
-  });
-
-  // Check for duplicate orders before ordering
-  app.post('/api/vendor/check-duplicates', authenticateToken, async (req, res) => {
-    try {
-      const { orderIds } = req.body;
-      const { materialOrderingService } = await import('./services/materialOrderingService');
-      
-      const duplicateCheck = await materialOrderingService.checkDuplicateOrders(orderIds);
-      res.json(duplicateCheck);
-    } catch (error) {
-      console.error("Error checking duplicates:", error);
-      res.status(500).json({ message: "Failed to check for duplicates" });
-    }
-  });
-
-  // Get recent ordering activity for audit
-  app.get('/api/vendor/ordering-activity', authenticateToken, async (req, res) => {
-    try {
-      const { hours = 24 } = req.query;
-      const { materialOrderingService } = await import('./services/materialOrderingService');
-      
-      const activity = await materialOrderingService.getRecentOrderingActivity(Number(hours));
-      res.json({ activity });
-    } catch (error) {
-      console.error("Error fetching ordering activity:", error);
-      res.status(500).json({ message: "Failed to fetch ordering activity" });
     }
   });
 
@@ -516,201 +472,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching workload metrics:", error);
       res.status(500).json({ message: "Failed to fetch metrics" });
-    }
-  });
-
-  // 3D Designer Integration API
-  app.post('/api/3d-designer/orders', async (req, res) => {
-    try {
-      const { 
-        customerInfo, 
-        designFiles, 
-        specifications, 
-        designType,
-        estimatedPrice,
-        notes,
-        dueDate 
-      } = req.body;
-
-      // Create or find customer
-      let customer = await storage.getCustomerByEmail(customerInfo.email);
-      if (!customer) {
-        customer = await storage.createCustomer({
-          name: customerInfo.name,
-          email: customerInfo.email,
-          phone: customerInfo.phone || null,
-          address: customerInfo.address || null,
-        });
-      }
-
-      // Create order with 3D design specifications
-      const orderData = {
-        customerId: customer.id,
-        orderType: designType === 'shadowbox' ? 'SHADOWBOX' : designType === 'mat' ? 'MAT' : 'FRAME',
-        status: 'ORDER_PROCESSED',
-        dueDate: new Date(dueDate || Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days default
-        estimatedHours: designType === 'SHADOWBOX' ? 6 : designType === 'MAT' ? 2 : 4,
-        price: estimatedPrice || 200,
-        description: specifications.description || '3D Designer Custom Order',
-        notes: `3D Designer Order - ${notes || ''}\nDesign Files: ${designFiles?.join(', ') || 'None'}`,
-        priority: 'MEDIUM',
-        dimensions: specifications.dimensions || {},
-      };
-
-      const order = await storage.createOrder(orderData);
-
-      // Create status history
-      await storage.createStatusHistory({
-        orderId: order.id,
-        toStatus: 'ORDER_PROCESSED',
-        changedBy: '3d-designer-system',
-        reason: '3D Designer order submission'
-      });
-
-      res.status(201).json({
-        success: true,
-        order: {
-          id: order.id,
-          trackingId: order.trackingId,
-          customerId: customer.id,
-          status: order.status,
-          estimatedCompletion: order.dueDate,
-          price: order.price
-        },
-        message: "Order created successfully"
-      });
-
-    } catch (error) {
-      console.error("3D Designer order creation error:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to create order",
-        error: error.message 
-      });
-    }
-  });
-
-  app.get('/api/3d-designer/orders/:trackingId', async (req, res) => {
-    try {
-      const { trackingId } = req.params;
-      const order = await storage.getOrderByTrackingId(trackingId);
-
-      if (!order) {
-        return res.status(404).json({ 
-          success: false, 
-          message: "Order not found" 
-        });
-      }
-
-      res.json({
-        success: true,
-        order: {
-          trackingId: order.trackingId,
-          status: order.status,
-          progress: getOrderProgress(order.status),
-          estimatedCompletion: order.dueDate,
-          price: order.price,
-          customer: order.customer?.name,
-          description: order.description,
-          lastUpdated: order.updatedAt
-        }
-      });
-
-    } catch (error) {
-      console.error("Error fetching 3D designer order:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to fetch order" 
-      });
-    }
-  });
-
-  app.patch('/api/3d-designer/orders/:trackingId/files', async (req, res) => {
-    try {
-      const { trackingId } = req.params;
-      const { designFiles, revisionNotes } = req.body;
-
-      const order = await storage.getOrderByTrackingId(trackingId);
-      if (!order) {
-        return res.status(404).json({ 
-          success: false, 
-          message: "Order not found" 
-        });
-      }
-
-      // Update order with new design files
-      const updatedNotes = `${order.notes || ''}\n\nDesign Update: ${revisionNotes || 'Files updated'}\nNew Files: ${designFiles?.join(', ') || 'None'}`;
-      
-      await storage.updateOrder(order.id, {
-        notes: updatedNotes,
-        updatedAt: new Date()
-      });
-
-      res.json({
-        success: true,
-        message: "Design files updated successfully",
-        trackingId: order.trackingId
-      });
-
-    } catch (error) {
-      console.error("Error updating design files:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to update design files" 
-      });
-    }
-  });
-
-  app.get('/api/3d-designer/pricing/:designType', async (req, res) => {
-    try {
-      const { designType } = req.params;
-      const { dimensions, complexity } = req.query;
-
-      // Calculate pricing based on design type and specifications
-      let basePrice = 150;
-      let estimatedHours = 3;
-
-      switch (designType.toLowerCase()) {
-        case 'frame':
-          basePrice = 200;
-          estimatedHours = 4;
-          break;
-        case 'shadowbox':
-          basePrice = 350;
-          estimatedHours = 6;
-          break;
-        case 'mat':
-          basePrice = 100;
-          estimatedHours = 2;
-          break;
-      }
-
-      // Adjust for complexity
-      if (complexity === 'high') {
-        basePrice *= 1.5;
-        estimatedHours *= 1.5;
-      } else if (complexity === 'medium') {
-        basePrice *= 1.2;
-        estimatedHours *= 1.2;
-      }
-
-      res.json({
-        success: true,
-        pricing: {
-          basePrice,
-          estimatedHours,
-          estimatedCompletion: new Date(Date.now() + estimatedHours * 24 * 60 * 60 * 1000),
-          designType,
-          complexity: complexity || 'standard'
-        }
-      });
-
-    } catch (error) {
-      console.error("Error calculating pricing:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to calculate pricing" 
-      });
     }
   });
 
@@ -809,14 +570,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const analysis = await aiService.analyzeWorkload();
       const alerts = await aiService.generateAlerts();
-      
+
       if (analysis) {
         broadcast(wss, {
           type: 'ai-analysis',
           data: analysis
         });
       }
-      
+
       if (alerts && alerts.length > 0) {
         broadcast(wss, {
           type: 'ai-alerts',
@@ -1219,27 +980,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-    // HUB status endpoint - returns JSON status without authentication
-    app.get('/api/status', (req, res) => {
-      try {
-        res.setHeader('Content-Type', 'application/json');
-        res.json({ 
-          status: 'operational',
-          service: 'Jay\'s Frames Management System',
-          timestamp: new Date().toISOString(),
-          endpoints: {
-            auth: '/api/test/auth',
-            orders: '/api/orders',
-            health: '/api/system/health'
-          },
-          message: 'API is running and ready to accept requests'
-        });
-      } catch (error) {
-        console.error('Status endpoint error:', error);
-        res.status(500).json({ error: 'Status check failed' });
-      }
-    });
-
     // Test endpoint for hub connection verification
     app.get('/api/test/auth', (req, res) => {
       try {
@@ -1447,21 +1187,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     scheduleNextSync();
 
     return httpServer;
-  }
-
-  // Helper function for order progress calculation
-  function getOrderProgress(status: string): number {
-    const progressMap: Record<string, number> = {
-      'ORDER_PROCESSED': 10,
-      'MATERIALS_ORDERED': 25,
-      'MATERIALS_ARRIVED': 40,
-      'FRAME_CUT': 60,
-      'MAT_CUT': 70,
-      'PREPPED': 85,
-      'COMPLETED': 95,
-      'PICKED_UP': 100
-    };
-    return progressMap[status] || 0;
   }
 
   // Helper function to broadcast to all connected WebSocket clients
