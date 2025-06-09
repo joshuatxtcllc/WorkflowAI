@@ -64,8 +64,8 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     if (workloadMetrics.overdueOrders > 0) {
       recommendations.push({
         icon: AlertTriangle,
-        text: `IMMEDIATE ACTION: ${workloadMetrics.overdueOrders} overdue orders need priority handling`,
-        action: 'Focus on overdue items first',
+        text: `${workloadMetrics.overdueOrders} orders overdue`,
+        action: 'Priority handling needed',
         severity: 'critical',
         filterUrl: '/orders?status=overdue',
         orderCount: workloadMetrics.overdueOrders
@@ -75,8 +75,8 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     if (workloadMetrics.urgentOrders > 3) {
       recommendations.push({
         icon: Zap,
-        text: `${workloadMetrics.urgentOrders} urgent orders require immediate attention`,
-        action: 'Redistribute urgent workload',
+        text: `${workloadMetrics.urgentOrders} urgent orders`,
+        action: 'Redistribute workload',
         severity: 'high',
         filterUrl: '/?priority=urgent',
         orderCount: workloadMetrics.urgentOrders
@@ -86,8 +86,8 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     if (workloadMetrics.materialWaiting > 5) {
       recommendations.push({
         icon: Clock,
-        text: `${workloadMetrics.materialWaiting} orders waiting for materials`,
-        action: 'Call suppliers for delivery updates',
+        text: `${workloadMetrics.materialWaiting} awaiting materials`,
+        action: 'Contact suppliers',
         severity: 'medium',
         filterUrl: '/?status=MATERIALS_ORDERED',
         orderCount: workloadMetrics.materialWaiting
@@ -97,8 +97,8 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     if (workloadMetrics.readyForWork > 0) {
       recommendations.push({
         icon: Target,
-        text: `${workloadMetrics.readyForWork} orders ready for production`,
-        action: 'Prioritize by complexity and due date',
+        text: `${workloadMetrics.readyForWork} ready to start`,
+        action: 'Begin production',
         severity: 'low',
         filterUrl: '/?status=ready_for_work',
         orderCount: workloadMetrics.readyForWork
@@ -108,8 +108,8 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     if (analysis?.totalHours && analysis.totalHours > 300) {
       recommendations.push({
         icon: BarChart3,
-        text: `High workload: ${analysis.totalHours}h total capacity`,
-        action: 'Consider overtime or additional staff',
+        text: `High workload: ${analysis.totalHours}h`,
+        action: 'Consider extra help',
         severity: 'medium',
         filterUrl: '/orders',
         orderCount: workloadMetrics.totalActiveOrders
@@ -138,14 +138,14 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
             <div className="flex items-center gap-3">
               <Brain className="w-6 h-6 animate-pulse" />
               <div>
-                <h3 className="font-bold text-lg flex items-center gap-2">
-                  AI Production Manager
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                <h3 className="font-semibold text-base flex items-center gap-2">
+                  AI Manager
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
                     {severity.toUpperCase()}
                   </Badge>
                 </h3>
-                <p className="text-white/90 text-sm">
-                  Real-time workload analysis and production recommendations
+                <p className="text-white/80 text-xs">
+                  Real-time analysis & recommendations
                 </p>
               </div>
             </div>
@@ -171,43 +171,43 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
           </div>
 
           {/* Quick Metrics */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mt-3">
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold">{workloadMetrics.totalActiveOrders}</div>
-              <div className="text-xs text-white/80">Active</div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-1 mt-2">
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold">{workloadMetrics.totalActiveOrders}</div>
+              <div className="text-xs text-white/70">Active</div>
             </div>
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
-              <div className="text-xs text-white/80">Overdue</div>
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
+              <div className="text-xs text-white/70">Late</div>
             </div>
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
-              <div className="text-xs text-white/80">Urgent</div>
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
+              <div className="text-xs text-white/70">Rush</div>
             </div>
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
-              <div className="text-xs text-white/80">Materials</div>
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
+              <div className="text-xs text-white/70">Waiting</div>
             </div>
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold text-green-200">{workloadMetrics.readyForWork}</div>
-              <div className="text-xs text-white/80">Ready</div>
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold text-green-200">{workloadMetrics.readyForWork}</div>
+              <div className="text-xs text-white/70">Ready</div>
             </div>
-            <div className="bg-white/10 rounded p-2 text-center">
-              <div className="text-lg font-bold text-jade-200">{workloadMetrics.completedToday}</div>
-              <div className="text-xs text-white/80">Today</div>
+            <div className="bg-white/10 rounded p-1 text-center">
+              <div className="text-sm font-bold text-jade-200">{workloadMetrics.completedToday}</div>
+              <div className="text-xs text-white/70">Done</div>
             </div>
           </div>
 
           {/* Progress Bar */}
           {analysis && (
-            <div className="mt-4">
-              <div className="flex justify-between text-sm mb-2">
-                <span>On-Time Performance</span>
+            <div className="mt-2">
+              <div className="flex justify-between text-xs mb-1">
+                <span>On-Time</span>
                 <span>{analysis.onTimePercentage}%</span>
               </div>
               <Progress 
                 value={analysis.onTimePercentage} 
-                className="h-2 bg-white/20"
+                className="h-1 bg-white/20"
               />
             </div>
           )}
@@ -239,31 +239,19 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
                         transition={{ delay: index * 0.1 }}
                       >
                         <Link href={rec.filterUrl || '/orders'}>
-                          <div className="flex items-start gap-3 bg-white/10 rounded-lg p-3 hover:bg-white/20 transition-colors cursor-pointer group">
-                            <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                              <p className="font-medium text-sm group-hover:text-white/90">{rec.text}</p>
-                              <p className="text-xs text-white/80 mt-1 group-hover:text-white/70">
-                                → {rec.action}
-                                {rec.orderCount && (
-                                  <span className="ml-2 bg-white/20 px-2 py-0.5 rounded text-white font-medium">
-                                    View {rec.orderCount} orders
-                                  </span>
-                                )}
+                          <div className="flex items-center gap-2 bg-white/10 rounded p-2 hover:bg-white/20 transition-colors cursor-pointer group">
+                            <Icon className="w-4 h-4 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-xs group-hover:text-white/90 truncate">{rec.text}</p>
+                              <p className="text-xs text-white/70 group-hover:text-white/60">
+                                {rec.action}
                               </p>
                             </div>
-                            <Badge 
-                              variant="secondary" 
-                              className={`
-                                text-xs transition-colors
-                                ${rec.severity === 'critical' ? 'bg-red-500/20 text-red-200 group-hover:bg-red-500/30' : ''}
-                                ${rec.severity === 'high' ? 'bg-orange-500/20 text-orange-200 group-hover:bg-orange-500/30' : ''}
-                                ${rec.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-200 group-hover:bg-yellow-500/30' : ''}
-                                ${rec.severity === 'low' ? 'bg-green-500/20 text-green-200 group-hover:bg-green-500/30' : ''}
-                              `}
-                            >
-                              {rec.severity}
-                            </Badge>
+                            {rec.orderCount && (
+                              <span className="bg-white/20 px-1.5 py-0.5 rounded text-xs font-medium shrink-0">
+                                {rec.orderCount}
+                              </span>
+                            )}
                           </div>
                         </Link>
                       </motion.div>
@@ -273,27 +261,27 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
 
                 {/* AI Insights */}
                 {analysis?.aiInsights && (
-                  <div className="mt-4 bg-white/10 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="w-4 h-4" />
-                      <span className="text-sm font-semibold">AI Analysis</span>
+                  <div className="mt-2 bg-white/10 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      <Brain className="w-3 h-3" />
+                      <span className="text-xs font-medium">AI Insights</span>
                     </div>
-                    <p className="text-sm text-white/90 whitespace-pre-line">
-                      {analysis.aiInsights}
+                    <p className="text-xs text-white/80 line-clamp-3">
+                      {analysis.aiInsights.slice(0, 150)}...
                     </p>
                   </div>
                 )}
 
                 {/* Bottlenecks */}
                 {analysis?.bottlenecks && analysis.bottlenecks.length > 0 && (
-                  <div className="mt-4 bg-white/10 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-sm font-semibold">Detected Bottlenecks</span>
+                  <div className="mt-2 bg-white/10 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TrendingUp className="w-3 h-3" />
+                      <span className="text-xs font-medium">Bottlenecks</span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {analysis.bottlenecks.map((bottleneck, index) => (
-                        <Badge key={index} variant="secondary" className="bg-red-500/20 text-red-200">
+                    <div className="flex flex-wrap gap-1">
+                      {analysis.bottlenecks.slice(0, 3).map((bottleneck, index) => (
+                        <Badge key={index} variant="secondary" className="bg-red-500/20 text-red-200 text-xs px-1 py-0">
                           {bottleneck}
                         </Badge>
                       ))}
