@@ -72,14 +72,17 @@ export class POSIntegration {
   private apiKey: string;
 
   constructor() {
-    // Use the Kanban API as POS integration endpoint
-    this.baseUrl = process.env.POS_API_URL || 'https://2ebd6ffd-874c-4bb9-9272-bd3ef5c6dd5f-00-8rjpxe4l5qml.kirk.replit.dev';
+    // Configure for external POS system integration (not self-integration)
+    this.baseUrl = process.env.POS_API_URL || '';
     this.apiKey = process.env.POS_API_KEY || '';
     
-    // Debug API key configuration
     console.log('POS Integration initialized:');
-    console.log('- Base URL:', this.baseUrl);
+    console.log('- Base URL:', this.baseUrl || 'Not configured - this Kanban system IS the POS');
     console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
+    
+    if (!this.baseUrl) {
+      console.log('- Note: This Kanban app serves as the POS system itself');
+    }
   }
 
   async syncOrder(orderId: string) {
@@ -172,7 +175,7 @@ export class POSIntegration {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      // Check connection first with health endpoint
+      // Check connection first with health endpoint  
       const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`, {
         method: 'GET',
         headers: {
@@ -181,6 +184,8 @@ export class POSIntegration {
         },
         signal: controller.signal
       });
+      
+      console.log('Health check response:', healthResponse.status, healthResponse.statusText);
 
       clearTimeout(timeoutId);
 
@@ -196,7 +201,13 @@ export class POSIntegration {
         const ordersController = new AbortController();
         const ordersTimeoutId = setTimeout(() => ordersController.abort(), 5000);
 
-        const ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
+        // Try different authentication methods
+        let ordersResponse;
+        
+        // Use Bearer token authentication as specified by the API
+        console.log(`Attempting Bearer token authentication with API key: ${this.apiKey.substring(0, 8)}...`);
+        
+        ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -206,6 +217,8 @@ export class POSIntegration {
           signal: ordersController.signal
         });
 
+        console.log(`Authentication result: ${ordersResponse.status} ${ordersResponse.statusText}`);
+
         clearTimeout(ordersTimeoutId);
 
         if (ordersResponse.ok) {
@@ -214,7 +227,17 @@ export class POSIntegration {
           return { success: true, orders: newOrders, connected: true, authenticated: true };
         } else {
           console.log(`Orders fetch failed: ${ordersResponse.status} - ${ordersResponse.statusText}`);
-          return { success: true, connected: true, needsApiKey: false, authError: true };
+          
+          // Try to get more details about the authentication requirements
+          try {
+            const responseText = await ordersResponse.text();
+            console.log('API response body:', responseText);
+          } catch (e) {
+            console.log('Could not read response body');
+          }
+          
+          return { success: true, connected: true, needsApiKey: false, authError: true, 
+                   error: `Authentication failed: ${ordersResponse.status} ${ordersResponse.statusText}` };
         }
       }
 
