@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, X, Calendar, DollarSign, FileText, Truck, User, Clipboard, CheckCircle, AlertCircle, Edit, Save, Cancel } from 'lucide-react';
+import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,6 @@ import ArtworkManager from '@/components/ArtworkManager';
 import { useToast } from '@/hooks/use-toast';
 import { PRIORITY_LEVELS } from '@/lib/constants';
 import type { OrderWithDetails, Material } from '@shared/schema';
-import { Label } from '@radix-ui/react-label';
 
 export default function OrderDetails() {
   const { selectedOrderId, ui, setUI } = useOrderStore();
@@ -286,7 +285,7 @@ export default function OrderDetails() {
                     onClick={handleEditCancel}
                     className="text-red-400 border-red-500/50 hover:bg-red-500/10"
                   >
-                    <Cancel className="h-4 w-4 mr-1" />
+                    <X className="h-4 w-4 mr-1" />
                     Cancel
                   </Button>
                 </div>
@@ -822,7 +821,7 @@ export default function OrderDetails() {
                           </Select>
                         </div>
                         <div>
-                          <Label className="text-gray-400 text-xs">Cost</Label>
+                          <Label className`Name="text-gray-400 text-xs">Cost</Label>
                           <Input
                             type="number"
                             value={newMaterial.cost}
