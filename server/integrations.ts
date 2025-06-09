@@ -75,6 +75,11 @@ export class POSIntegration {
     // Use the Kanban API as POS integration endpoint
     this.baseUrl = process.env.POS_API_URL || 'https://2ebd6ffd-874c-4bb9-9272-bd3ef5c6dd5f-00-8rjpxe4l5qml.kirk.replit.dev';
     this.apiKey = process.env.POS_API_KEY || '';
+    
+    // Debug API key configuration
+    console.log('POS Integration initialized:');
+    console.log('- Base URL:', this.baseUrl);
+    console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
   }
 
   async syncOrder(orderId: string) {
