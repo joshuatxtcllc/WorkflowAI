@@ -18,6 +18,13 @@ export default function OrderDetails() {
   const { selectedOrderId, ui, setUI } = useOrderStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('details');
+  const [tabNotes, setTabNotes] = useState({
+    details: '',
+    material: '',
+    artwork: '',
+    history: '',
+    customer: '',
+  });
 
   // Fetch order details
   const { data: order, isLoading } = useQuery<OrderWithDetails>({
@@ -445,7 +452,24 @@ export default function OrderDetails() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+
+                <Card className="bg-gray-800 border-gray-700 mt-4">
+                  <CardHeader>
+                    <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-400" />
+                      History Notes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm text-white">
+                    <Textarea
+                      value={tabNotes.history}
+                      onChange={(e) => setTabNotes({...tabNotes, history: e.target.value})}
+                      className="min-h-16 text-xs"
+                      placeholder="Add notes about status changes, delays, or important milestones..."
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="customer" className="pt-4">
