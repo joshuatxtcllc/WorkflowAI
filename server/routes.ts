@@ -1154,6 +1154,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // POS Integration Routes
+    app.get('/api/pos/status', async (req, res) => {
+      try {
+        const result = await posIntegration.fetchNewOrders();
+        res.json(result);
+      } catch (error) {
+        console.error('POS status error:', error);
+        res.status(500).json({ error: 'Failed to get POS status' });
+      }
+    });
+
+    app.post('/api/pos/start-sync', async (req, res) => {
+      try {
+        const result = await posIntegration.startRealTimeSync();
+        res.json({ success: true, message: 'Real-time sync started' });
+      } catch (error) {
+        console.error('POS sync start error:', error);
+        res.status(500).json({ error: 'Failed to start sync' });
+      }
+    });
+
     app.post('/api/integrations/pos/sync/:orderId', async (req, res) => {
       try {
         const { orderId } = req.params;
