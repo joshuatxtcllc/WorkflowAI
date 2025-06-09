@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import OrderDetails from '@/components/OrderDetails';
 import { SystemAlerts } from '@/components/SystemAlerts';
 import { Navigation } from '@/components/Navigation';
+import { useOrderStore } from '@/store/useOrderStore';
 import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
@@ -47,6 +48,7 @@ export default function Orders() {
   const { setSelectedOrderId, setUI } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
+  const [location] = useLocation();
 
   // Get status from URL params
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
