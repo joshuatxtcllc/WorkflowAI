@@ -260,8 +260,8 @@ export class POSIntegration {
 
     for (const posOrder of posOrders) {
       try {
-        // Check if order already exists in Kanban system
-        const existingOrder = await storage.getOrderByExternalId?.(posOrder.id);
+        // Check for existing order by tracking ID to avoid duplicates
+        const existingOrder = await storage.getOrderByTrackingId(`POS-${posOrder.id}`);
         if (existingOrder) {
           continue; // Skip duplicates
         }

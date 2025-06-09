@@ -201,19 +201,19 @@ export default function POSIntegration() {
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <Activity className="h-3 w-3 text-blue-500" />
-                Real-time order sync
+                Import new POS orders
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-3 w-3 text-yellow-500" />
-                Webhook notifications
+                Add to Kanban workflow
               </div>
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-3 w-3 text-green-500" />
-                Bidirectional updates
+                Customer data sync
               </div>
               <div className="flex items-center gap-2">
                 <Monitor className="h-3 w-3 text-purple-500" />
-                Status monitoring
+                Duplicate prevention
               </div>
             </div>
           </div>
@@ -238,10 +238,10 @@ export default function POSIntegration() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.open('https://2ebd6ffd-874c-4bb9-9272-bd3ef5c6dd5f-00-8rjpxe4l5qml.kirk.replit.dev', '_blank')}
+              disabled
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              Open Kanban Hub
+              Configure POS System
             </Button>
           </div>
 
