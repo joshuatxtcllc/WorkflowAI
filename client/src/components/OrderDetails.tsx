@@ -31,6 +31,17 @@ export default function OrderDetails() {
     history: '',
     customer: '',
   });
+  const [isAddingMaterial, setIsAddingMaterial] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<string | null>(null);
+  const [newMaterial, setNewMaterial] = useState({
+    type: '',
+    subtype: '',
+    quantity: 1,
+    unit: 'ft',
+    supplier: '',
+    cost: 0,
+    notes: ''
+  });
 
   // Fetch order details
   const { data: order, isLoading } = useQuery<OrderWithDetails>({
@@ -69,6 +80,60 @@ export default function OrderDetails() {
       toast({
         title: "Update Failed",
         description: "Failed to update order details. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Material creation mutation
+  const createMaterialMutation = useMutation({
+    mutationFn: async (materialData: any) => {
+      const response = await apiRequest('POST', `/api/orders/${selectedOrderId}/materials`, materialData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
+      setIsAddingMaterial(false);
+      setNewMaterial({
+        type: '',
+        subtype: '',
+        quantity: 1,
+        unit: 'ft',
+        supplier: '',
+        cost: 0,
+        notes: ''
+      });
+      toast({
+        title: "Material Added",
+        description: "Material has been successfully added to the order.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Add Failed",
+        description: "Failed to add material. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Material deletion mutation
+  const deleteMaterialMutation = useMutation({
+    mutationFn: async (materialId: string) => {
+      const response = await apiRequest('DELETE', `/api/materials/${materialId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
+      toast({
+        title: "Material Deleted",
+        description: "Material has been successfully removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete material. Please try again.",
         variant: "destructive",
       });
     },
@@ -121,6 +186,24 @@ export default function OrderDetails() {
         [dimension]: value ? parseFloat(value) : null
       }
     }));
+  };
+
+  const handleAddMaterial = () => {
+    if (!newMaterial.type || !newMaterial.quantity) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in required fields (type and quantity).",
+        variant: "destructive",
+      });
+      return;
+    }
+    createMaterialMutation.mutate(newMaterial);
+  };
+
+  const handleDeleteMaterial = (materialId: string) => {
+    if (confirm('Are you sure you want to delete this material?')) {
+      deleteMaterialMutation.mutate(materialId);
+    }
   };
 
   const handleClose = () => {
@@ -634,6 +717,26 @@ export default function OrderDetails() {
                                   Mark as Arrived
                                 </Button>
                               )}
+
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="text-xs text-blue-400 border-blue-500/50 hover:bg-blue-500/10"
+                                onClick={() => setEditingMaterial(material.id)}
+                              >
+                                <Edit className="h-3 w-3 mr-1" />
+                                Edit
+                              </Button>
+
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="text-xs text-red-400 border-red-500/50 hover:bg-red-500/10"
+                                onClick={() => handleDeleteMaterial(material.id)}
+                              >
+                                <X className="h-3 w-3 mr-1" />
+                                Delete
+                              </Button>
                             </div>
                           </div>
                         ))}
@@ -642,12 +745,147 @@ export default function OrderDetails() {
                   </CardContent>
                 </Card>
 
-                <Button 
-                  variant="outline" 
-                  className="w-full text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
-                >
-                  Add Material
-                </Button>
+                {!isAddingMaterial ? (
+                  <Button 
+                    variant="outline" 
+                    className="w-full text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
+                    onClick={() => setIsAddingMaterial(true)}
+                  >
+                    Add Material
+                  </Button>
+                ) : (
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-white text-sm font-medium">Add New Material</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-gray-400 text-xs">Type *</Label>
+                          <Select
+                            value={newMaterial.type}
+                            onValueChange={(value) => setNewMaterial({...newMaterial, type: value})}
+                          >
+                            <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-700">
+                              <SelectItem value="FRAME">Frame</SelectItem>
+                              <SelectItem value="MAT">Mat</SelectItem>
+                              <SelectItem value="GLASS">Glass</SelectItem>
+                              <SelectItem value="BACKING">Backing</SelectItem>
+                              <SelectItem value="HARDWARE">Hardware</SelectItem>
+                              <SelectItem value="OTHER">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-gray-400 text-xs">Subtype</Label>
+                          <Input
+                            value={newMaterial.subtype}
+                            onChange={(e) => setNewMaterial({...newMaterial, subtype: e.target.value})}
+                            className="bg-gray-900 border-gray-700 text-white"
+                            placeholder="e.g., R123, Museum Glass"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-gray-400 text-xs">Quantity *</Label>
+                          <Input
+                            type="number"
+                            value={newMaterial.quantity}
+                            onChange={(e) => setNewMaterial({...newMaterial, quantity: parseFloat(e.target.value) || 0})}
+                            className="bg-gray-900 border-gray-700 text-white"
+                            min="0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-400 text-xs">Unit</Label>
+                          <Select
+                            value={newMaterial.unit}
+                            onValueChange={(value) => setNewMaterial({...newMaterial, unit: value})}
+                          >
+                            <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-700">
+                              <SelectItem value="ft">feet</SelectItem>
+                              <SelectItem value="in">inches</SelectItem>
+                              <SelectItem value="sq ft">sq ft</SelectItem>
+                              <SelectItem value="pcs">pieces</SelectItem>
+                              <SelectItem value="sheets">sheets</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-gray-400 text-xs">Cost</Label>
+                          <Input
+                            type="number"
+                            value={newMaterial.cost}
+                            onChange={(e) => setNewMaterial({...newMaterial, cost: parseFloat(e.target.value) || 0})}
+                            className="bg-gray-900 border-gray-700 text-white"
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-gray-400 text-xs">Supplier</Label>
+                        <Input
+                          value={newMaterial.supplier}
+                          onChange={(e) => setNewMaterial({...newMaterial, supplier: e.target.value})}
+                          className="bg-gray-900 border-gray-700 text-white"
+                          placeholder="e.g., Roma Moulding, Larson Juhl"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label className="text-gray-400 text-xs">Notes</Label>
+                        <Textarea
+                          value={newMaterial.notes}
+                          onChange={(e) => setNewMaterial({...newMaterial, notes: e.target.value})}
+                          className="bg-gray-900 border-gray-700 text-white"
+                          placeholder="Additional notes..."
+                          rows={2}
+                        />
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          size="sm"
+                          onClick={handleAddMaterial}
+                          disabled={createMaterialMutation.isPending}
+                          className="bg-jade-600 hover:bg-jade-700 text-white"
+                        >
+                          {createMaterialMutation.isPending ? 'Adding...' : 'Add Material'}
+                        </Button>
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setIsAddingMaterial(false);
+                            setNewMaterial({
+                              type: '',
+                              subtype: '',
+                              quantity: 1,
+                              unit: 'ft',
+                              supplier: '',
+                              cost: 0,
+                              notes: ''
+                            });
+                          }}
+                          className="text-gray-400 border-gray-600 hover:bg-gray-700"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </TabsContent>
 

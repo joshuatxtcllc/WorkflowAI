@@ -1216,6 +1216,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     scheduleNextSync();
 
+    // Material status update endpoint
+    app.patch('/api/materials/:id', async (req, res) => {
+      try {
+        const materialId = req.params.id;
+        const updates = req.body;
+
+        const updatedMaterial = await storage.updateMaterial(materialId, updates);
+        res.json(updatedMaterial);
+      } catch (error) {
+        console.error('Error updating material:', error);
+        res.status(500).json({ error: 'Failed to update material' });
+      }
+    });
+
+    // Create material endpoint
+    app.post('/api/orders/:orderId/materials', async (req, res) => {
+      try {
+        const { orderId } = req.params;
+        const materialData = req.body;
+
+        const newMaterial = await storage.createMaterial(orderId, materialData);
+        res.json(newMaterial);
+      } catch (error) {
+        console.error('Error creating material:', error);
+        res.status(500).json({ error: 'Failed to create material' });
+      }
+    });
+
+    // Delete material endpoint
+    app.delete('/api/materials/:id', async (req, res) => {
+      try {
+        const materialId = req.params.id;
+
+        await storage.deleteMaterial(materialId);
+        res.json({ success: true });
+      } catch (error) {
+        console.error('Error deleting material:', error);
+        res.status(500).json({ error: 'Failed to delete material' });
+      }
+    });
+
     return httpServer;
   }
 
