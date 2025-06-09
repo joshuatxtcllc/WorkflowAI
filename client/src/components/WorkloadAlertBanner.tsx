@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -61,7 +60,7 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
 
   const getActionableRecommendations = () => {
     const recommendations = [];
-    
+
     if (workloadMetrics.overdueOrders > 0) {
       recommendations.push({
         icon: AlertTriangle,
@@ -223,13 +222,13 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
               exit={{ height: 0, opacity: 0 }}
               className="border-t border-white/20 bg-black/10"
             >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className="w-5 h-5" />
-                  <h4 className="font-semibold">IMMEDIATE ACTION ITEMS</h4>
+              <div className="p-2">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb className="w-4 h-4" />
+                  <h4 className="font-medium text-sm">IMMEDIATE ACTION ITEMS</h4>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {recommendations.map((rec, index) => {
                     const Icon = rec.icon;
                     return (
