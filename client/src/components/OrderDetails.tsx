@@ -16,6 +16,7 @@ import ArtworkManager from '@/components/ArtworkManager';
 import { useToast } from '@/hooks/use-toast';
 import { PRIORITY_LEVELS } from '@/lib/constants';
 import type { OrderWithDetails, Material } from '@shared/schema';
+import { Label } from '@radix-ui/react-label';
 
 export default function OrderDetails() {
   const { selectedOrderId, ui, setUI } = useOrderStore();
@@ -789,7 +790,7 @@ export default function OrderDetails() {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-3 gap-3">
                         <div>
                           <Label className="text-gray-400 text-xs">Quantity *</Label>
@@ -832,7 +833,7 @@ export default function OrderDetails() {
                           />
                         </div>
                       </div>
-                      
+
                       <div>
                         <Label className="text-gray-400 text-xs">Supplier</Label>
                         <Input
@@ -842,7 +843,7 @@ export default function OrderDetails() {
                           placeholder="e.g., Roma Moulding, Larson Juhl"
                         />
                       </div>
-                      
+
                       <div>
                         <Label className="text-gray-400 text-xs">Notes</Label>
                         <Textarea
@@ -853,7 +854,7 @@ export default function OrderDetails() {
                           rows={2}
                         />
                       </div>
-                      
+
                       <div className="flex gap-2 pt-2">
                         <Button 
                           size="sm"
