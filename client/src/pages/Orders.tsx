@@ -43,8 +43,8 @@ const statusLabels = {
 
 
 export default function Orders() {
-  const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
+  const { setSelectedOrderId, setUI } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
 
@@ -225,7 +225,10 @@ export default function Orders() {
                 variant="outline" 
                 size="sm" 
                 className="w-full mt-4"
-                onClick={() => window.location.href = `/?order=${order.id}`}
+                onClick={() => {
+                    setSelectedOrderId(order.id);
+                    setUI({ isOrderDetailsOpen: true });
+                  }}
               >
                 View Details
                 <ArrowRight className="h-4 w-4 ml-2" />
