@@ -253,6 +253,56 @@ export class POSIntegration {
     }
   }
 
+  // Import new orders from POS into Kanban system
+  async importNewPOSOrders(posOrders: any[]): Promise<any[]> {
+    const { storage } = await import('./storage');
+    const newOrders = [];
+
+    for (const posOrder of posOrders) {
+      try {
+        // Check if order already exists in Kanban system
+        const existingOrder = await storage.getOrderByExternalId?.(posOrder.id);
+        if (existingOrder) {
+          continue; // Skip duplicates
+        }
+
+        // Convert POS order format to Kanban order format
+        const customer = await storage.upsertCustomer({
+          name: posOrder.customerName || posOrder.customer?.name || 'POS Customer',
+          phone: posOrder.phone || posOrder.customer?.phone || '',
+          email: posOrder.email || posOrder.customer?.email || '',
+        });
+
+        const kanbanOrder = await storage.createOrder({
+          trackingId: `POS-${posOrder.id}`,
+          customerId: customer.id,
+          description: posOrder.description || posOrder.items?.map((i: any) => i.name).join(', ') || 'New POS Order',
+          orderType: this.mapPOSOrderType(posOrder.type || posOrder.orderType || 'frame'),
+          status: 'ORDER_PROCESSED',
+          dueDate: new Date(posOrder.dueDate || Date.now() + 7 * 24 * 60 * 60 * 1000),
+          estimatedHours: posOrder.estimatedHours || 2,
+          price: posOrder.total || posOrder.price || 0,
+          priority: 'MEDIUM',
+          notes: `Imported from POS: ${posOrder.notes || posOrder.id || ''}`
+        });
+
+        newOrders.push(kanbanOrder);
+        console.log(`Imported POS order ${posOrder.id} as Kanban order ${kanbanOrder.id}`);
+      } catch (error) {
+        console.error(`Failed to import POS order ${posOrder.id}:`, error);
+      }
+    }
+
+    return newOrders;
+  }
+
+  private mapPOSOrderType(posType: string): 'FRAME' | 'MAT' | 'SHADOWBOX' {
+    const type = posType?.toLowerCase();
+    if (type?.includes('shadow')) return 'SHADOWBOX';
+    if (type?.includes('mat')) return 'MAT';
+    return 'FRAME';
+  }
+
   // Real-time order synchronization with retry logic
   async startRealTimeSync() {
     console.log('Starting real-time POS synchronization...');
@@ -272,7 +322,10 @@ export class POSIntegration {
         const result = await this.fetchNewOrders();
         if (result.success && result.orders && result.orders.length > 0) {
           console.log(`Processing ${result.orders.length} new orders from POS`);
-          // Process new orders here
+          const importedOrders = await this.importNewPOSOrders(result.orders);
+          if (importedOrders.length > 0) {
+            console.log(`Successfully imported ${importedOrders.length} new orders into Kanban workflow`);
+          }
         } else if (!result.success && (result.error?.includes('503') || result.error?.includes('timeout'))) {
           // Silent handling of temporary errors
         } else if (!result.success && !result.retryable) {

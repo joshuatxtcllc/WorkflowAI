@@ -36,8 +36,10 @@ export interface IStorage {
   getCustomers(): Promise<Customer[]>;
   getCustomer(id: string): Promise<Customer | undefined>;
   getCustomerByEmail(email: string): Promise<Customer | undefined>;
+  getCustomerByPhone(phone: string): Promise<Customer | undefined>;
   createCustomer(customer: InsertCustomer): Promise<Customer>;
   updateCustomer(id: string, customer: Partial<InsertCustomer>): Promise<Customer>;
+  upsertCustomer(customer: InsertCustomer): Promise<Customer>;
 
   // Order operations
   getOrders(): Promise<OrderWithDetails[]>;
@@ -182,6 +184,30 @@ export class DatabaseStorage implements IStorage {
       .where(eq(customers.id, id))
       .returning();
     return updatedCustomer;
+  }
+
+  async getCustomerByPhone(phone: string): Promise<Customer | undefined> {
+    const [customer] = await db.select().from(customers).where(eq(customers.phone, phone));
+    return customer;
+  }
+
+  async upsertCustomer(customerData: InsertCustomer): Promise<Customer> {
+    // Try to find existing customer by email or phone
+    let existingCustomer = null;
+    if (customerData.email) {
+      existingCustomer = await this.getCustomerByEmail(customerData.email);
+    }
+    if (!existingCustomer && customerData.phone) {
+      existingCustomer = await this.getCustomerByPhone(customerData.phone);
+    }
+
+    if (existingCustomer) {
+      // Update existing customer
+      return await this.updateCustomer(existingCustomer.id, customerData);
+    } else {
+      // Create new customer
+      return await this.createCustomer(customerData);
+    }
   }
 
   // Order operations
