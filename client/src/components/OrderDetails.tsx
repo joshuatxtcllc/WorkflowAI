@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, X, Calendar, DollarSign, FileText, Truck, User, Clipboard, CheckCircle, AlertCircle } from 'lucide-react';
+import { Clock, X, Calendar, DollarSign, FileText, Truck, User, Clipboard, CheckCircle, AlertCircle, Edit, Save, Cancel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { apiRequest } from '@/lib/queryClient';
 import { useOrderStore } from '@/store/useOrderStore';
 import ArtworkManager from '@/components/ArtworkManager';
@@ -19,6 +21,9 @@ export default function OrderDetails() {
   const { selectedOrderId, ui, setUI } = useOrderStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('details');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedOrder, setEditedOrder] = useState<Partial<OrderWithDetails>>({});
+  const { toast } = useToast();
   const [tabNotes, setTabNotes] = useState({
     details: '',
     material: '',
@@ -44,12 +49,84 @@ export default function OrderDetails() {
     },
   });
 
+  // Order update mutation
+  const updateOrderMutation = useMutation({
+    mutationFn: async (updates: Partial<OrderWithDetails>) => {
+      const response = await apiRequest('PATCH', `/api/orders/${selectedOrderId}`, updates);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      setIsEditing(false);
+      setEditedOrder({});
+      toast({
+        title: "Order Updated",
+        description: "Order details have been successfully updated.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update order details. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleMaterialStatusChange = (materialId: string, updates: Partial<Material>) => {
     updateMaterialMutation.mutate({ id: materialId, updates });
   };
 
+  const handleEditStart = () => {
+    if (order) {
+      setEditedOrder({
+        description: order.description || '',
+        notes: order.notes || '',
+        internalNotes: order.internalNotes || '',
+        priority: order.priority || 'MEDIUM',
+        estimatedHours: order.estimatedHours || 0,
+        price: order.price || 0,
+        deposit: order.deposit || 0,
+        dueDate: order.dueDate ? new Date(order.dueDate).toISOString().split('T')[0] : '',
+        complexity: order.complexity || 5,
+        dimensions: order.dimensions || { width: null, height: null, depth: null }
+      });
+      setIsEditing(true);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setEditedOrder({});
+  };
+
+  const handleEditSave = () => {
+    const updates = { ...editedOrder };
+    if (updates.dueDate) {
+      updates.dueDate = new Date(updates.dueDate);
+    }
+    updateOrderMutation.mutate(updates);
+  };
+
+  const handleInputChange = (field: string, value: any) => {
+    setEditedOrder(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleDimensionChange = (dimension: string, value: string) => {
+    setEditedOrder(prev => ({
+      ...prev,
+      dimensions: {
+        ...prev.dimensions,
+        [dimension]: value ? parseFloat(value) : null
+      }
+    }));
+  };
+
   const handleClose = () => {
     setUI({ isOrderDetailsOpen: false });
+    setIsEditing(false);
+    setEditedOrder({});
   };
 
   if (!order && !isLoading) return null;
@@ -96,9 +173,44 @@ export default function OrderDetails() {
               <Clipboard className="h-5 w-5 text-jade-400" />
               Order Details
             </DialogTitle>
-            <Button variant="ghost" size="icon" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {!isEditing ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleEditStart}
+                  className="text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleEditSave}
+                    disabled={updateOrderMutation.isPending}
+                    className="text-green-400 border-green-500/50 hover:bg-green-500/10"
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    Save
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleEditCancel}
+                    className="text-red-400 border-red-500/50 hover:bg-red-500/10"
+                  >
+                    <Cancel className="h-4 w-4 mr-1" />
+                    Cancel
+                  </Button>
+                </div>
+              )}
+              <Button variant="ghost" size="icon" onClick={handleClose}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {order && (
@@ -142,14 +254,46 @@ export default function OrderDetails() {
                       Order Information
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    <div className="flex justify-between">
+                  <CardContent className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Order Type:</span>
                       <span className="text-white font-medium">{order.orderType}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Due Date:</span>
-                      <span className="text-white font-medium">{formatDate(order.dueDate)}</span>
+                      {isEditing ? (
+                        <Input
+                          type="date"
+                          value={editedOrder.dueDate || ''}
+                          onChange={(e) => handleInputChange('dueDate', e.target.value)}
+                          className="w-40 h-8 bg-gray-800 border-gray-700 text-white"
+                        />
+                      ) : (
+                        <span className="text-white font-medium">{formatDate(order.dueDate)}</span>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Priority:</span>
+                      {isEditing ? (
+                        <Select
+                          value={editedOrder.priority || order.priority}
+                          onValueChange={(value) => handleInputChange('priority', value)}
+                        >
+                          <SelectTrigger className="w-32 h-8 bg-gray-800 border-gray-700 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-700">
+                            <SelectItem value="LOW">Low</SelectItem>
+                            <SelectItem value="MEDIUM">Medium</SelectItem>
+                            <SelectItem value="HIGH">High</SelectItem>
+                            <SelectItem value="URGENT">Urgent</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge className={`${getPriorityBadgeColor(order.priority)}`}>
+                          {order.priority}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Created:</span>
@@ -171,10 +315,21 @@ export default function OrderDetails() {
                       Time & Complexity
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    <div className="flex justify-between">
+                  <CardContent className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Estimated Hours:</span>
-                      <span className="text-white font-medium">{order.estimatedHours}h</span>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          value={editedOrder.estimatedHours || ''}
+                          onChange={(e) => handleInputChange('estimatedHours', parseFloat(e.target.value) || 0)}
+                          className="w-20 h-8 bg-gray-800 border-gray-700 text-white"
+                          min="0"
+                          step="0.5"
+                        />
+                      ) : (
+                        <span className="text-white font-medium">{order.estimatedHours}h</span>
+                      )}
                     </div>
                     {order.actualHours && (
                       <div className="flex justify-between">
@@ -182,9 +337,20 @@ export default function OrderDetails() {
                         <span className="text-white font-medium">{order.actualHours}h</span>
                       </div>
                     )}
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Complexity:</span>
-                      <span className="text-white font-medium">{order.complexity}/10</span>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          value={editedOrder.complexity || ''}
+                          onChange={(e) => handleInputChange('complexity', parseInt(e.target.value) || 5)}
+                          className="w-16 h-8 bg-gray-800 border-gray-700 text-white"
+                          min="1"
+                          max="10"
+                        />
+                      ) : (
+                        <span className="text-white font-medium">{order.complexity}/10</span>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -196,54 +362,114 @@ export default function OrderDetails() {
                       Financial Details
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    <div className="flex justify-between">
+                  <CardContent className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Price:</span>
-                      <span className="text-white font-medium">${order.price}</span>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          value={editedOrder.price || ''}
+                          onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                          className="w-24 h-8 bg-gray-800 border-gray-700 text-white"
+                          min="0"
+                          step="0.01"
+                        />
+                      ) : (
+                        <span className="text-white font-medium">${order.price}</span>
+                      )}
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-400">Deposit:</span>
-                      <span className="text-white font-medium">${order.deposit || 0}</span>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          value={editedOrder.deposit || ''}
+                          onChange={(e) => handleInputChange('deposit', parseFloat(e.target.value) || 0)}
+                          className="w-24 h-8 bg-gray-800 border-gray-700 text-white"
+                          min="0"
+                          step="0.01"
+                        />
+                      ) : (
+                        <span className="text-white font-medium">${order.deposit || 0}</span>
+                      )}
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Balance:</span>
-                      <span className="text-white font-medium">${order.price - (order.deposit || 0)}</span>
+                      <span className="text-white font-medium">
+                        ${(editedOrder.price || order.price) - (editedOrder.deposit || order.deposit || 0)}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
 
-                {order.dimensions && (
+                {(order.dimensions || isEditing) && (
                   <Card className="bg-gray-800 border-gray-700">
                     <CardHeader>
                       <CardTitle className="text-white text-sm font-medium">Dimensions</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                      {order.dimensions.width && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Width:</span>
-                          <span className="text-white font-medium">{order.dimensions.width}"</span>
-                        </div>
-                      )}
-                      {order.dimensions.height && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Height:</span>
-                          <span className="text-white font-medium">{order.dimensions.height}"</span>
-                        </div>
-                      )}
-                      {order.dimensions.depth && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Depth:</span>
-                          <span className="text-white font-medium">{order.dimensions.depth}"</span>
-                        </div>
-                      )}
+                    <CardContent className="space-y-3 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Width:</span>
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editedOrder.dimensions?.width || ''}
+                            onChange={(e) => handleDimensionChange('width', e.target.value)}
+                            className="w-20 h-8 bg-gray-800 border-gray-700 text-white"
+                            min="0"
+                            step="0.25"
+                            placeholder="Width"
+                          />
+                        ) : (
+                          order.dimensions?.width && (
+                            <span className="text-white font-medium">{order.dimensions.width}"</span>
+                          )
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Height:</span>
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editedOrder.dimensions?.height || ''}
+                            onChange={(e) => handleDimensionChange('height', e.target.value)}
+                            className="w-20 h-8 bg-gray-800 border-gray-700 text-white"
+                            min="0"
+                            step="0.25"
+                            placeholder="Height"
+                          />
+                        ) : (
+                          order.dimensions?.height && (
+                            <span className="text-white font-medium">{order.dimensions.height}"</span>
+                          )
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Depth:</span>
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editedOrder.dimensions?.depth || ''}
+                            onChange={(e) => handleDimensionChange('depth', e.target.value)}
+                            className="w-20 h-8 bg-gray-800 border-gray-700 text-white"
+                            min="0"
+                            step="0.25"
+                            placeholder="Depth"
+                          />
+                        ) : (
+                          order.dimensions?.depth && (
+                            <span className="text-white font-medium">{order.dimensions.depth}"</span>
+                          )
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 )}
               </div>
 
-              {(order.notes || order.internalNotes) && (
+              {(order.notes || order.internalNotes || isEditing) && (
                 <div className="mt-6 space-y-4">
-                  {order.notes && (
+                  {(order.notes || isEditing) && (
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
@@ -252,12 +478,21 @@ export default function OrderDetails() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="text-sm text-white">
-                        {order.notes}
+                        {isEditing ? (
+                          <Textarea
+                            value={editedOrder.notes || ''}
+                            onChange={(e) => handleInputChange('notes', e.target.value)}
+                            className="min-h-20 bg-gray-900 border-gray-700 text-white"
+                            placeholder="Add customer notes..."
+                          />
+                        ) : (
+                          order.notes
+                        )}
                       </CardContent>
                     </Card>
                   )}
 
-                  {order.internalNotes && (
+                  {(order.internalNotes || isEditing) && (
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
@@ -266,7 +501,39 @@ export default function OrderDetails() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="text-sm text-white">
-                        {order.internalNotes}
+                        {isEditing ? (
+                          <Textarea
+                            value={editedOrder.internalNotes || ''}
+                            onChange={(e) => handleInputChange('internalNotes', e.target.value)}
+                            className="min-h-20 bg-gray-900 border-gray-700 text-white"
+                            placeholder="Add internal notes..."
+                          />
+                        ) : (
+                          order.internalNotes
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {(isEditing || order.description) && (
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardHeader>
+                        <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-400" />
+                          Order Description
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-sm text-white">
+                        {isEditing ? (
+                          <Textarea
+                            value={editedOrder.description || ''}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            className="min-h-20 bg-gray-900 border-gray-700 text-white"
+                            placeholder="Add order description..."
+                          />
+                        ) : (
+                          order.description
+                        )}
                       </CardContent>
                     </Card>
                   )}

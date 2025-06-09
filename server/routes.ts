@@ -205,6 +205,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update order details
+  app.patch('/api/orders/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+
+      // Handle dimensions separately if provided
+      if (updates.dimensions) {
+        const dimensions = updates.dimensions;
+        updates.dimensions = {
+          width: dimensions.width ? parseFloat(dimensions.width) : null,
+          height: dimensions.height ? parseFloat(dimensions.height) : null,
+          depth: dimensions.depth ? parseFloat(dimensions.depth) : null
+        };
+      }
+
+      // Convert string dates to Date objects
+      if (updates.dueDate) {
+        updates.dueDate = new Date(updates.dueDate);
+      }
+
+      const order = await storage.updateOrder(id, updates);
+
+      res.json(order);
+    } catch (error) {
+      console.error('Error updating order:', error);
+      res.status(500).json({ error: 'Failed to update order' });
+    }
+  });
+
   // Material routes
   app.get('/api/orders/:orderId/materials', authenticateToken, async (req, res) => {
     try {

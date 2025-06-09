@@ -1,7 +1,13 @@
+
 import { useDrag } from 'react-dnd';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, DollarSign, MessageSquare, Zap, CheckCircle, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, DollarSign, MessageSquare, Zap, CheckCircle, ArrowRight, ChevronDown, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 import type { OrderWithDetails } from '@shared/schema';
 
 interface OrderCardProps {
@@ -9,6 +15,27 @@ interface OrderCardProps {
 }
 
 import { useOrderStore } from '@/store/useOrderStore';
+
+// Status progression map
+const STATUS_PROGRESSION = {
+  'ORDER_PROCESSED': 'MATERIALS_ORDERED',
+  'MATERIALS_ORDERED': 'MATERIALS_ARRIVED', 
+  'MATERIALS_ARRIVED': 'FRAME_CUT',
+  'FRAME_CUT': 'MAT_CUT',
+  'MAT_CUT': 'PREPPED',
+  'PREPPED': 'COMPLETED',
+  'COMPLETED': 'PICKED_UP'
+};
+
+const STATUS_LABELS = {
+  'ORDER_PROCESSED': 'Order Materials',
+  'MATERIALS_ORDERED': 'Mark Materials Arrived',
+  'MATERIALS_ARRIVED': 'Cut Frame',
+  'FRAME_CUT': 'Cut Mat',
+  'MAT_CUT': 'Prep for Assembly',
+  'PREPPED': 'Complete Order',
+  'COMPLETED': 'Mark Picked Up'
+};
 
 export default function OrderCard({ order }: OrderCardProps) {
   // Add safety check for order data
@@ -20,6 +47,8 @@ export default function OrderCard({ order }: OrderCardProps) {
   const [statusChanged, setStatusChanged] = useState(false);
   const [previousStatus, setPreviousStatus] = useState(order.status);
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Track status changes for animations
   useEffect(() => {
@@ -46,9 +75,40 @@ export default function OrderCard({ order }: OrderCardProps) {
     }),
   });
 
-  const handleCardClick = () => {
+  // Status update mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      const response = await apiRequest('PATCH', `/api/orders/${order.id}/status`, { status: newStatus });
+      return response.json();
+    },
+    onSuccess: (updatedOrder) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Status Updated! 🎉",
+        description: `Order moved to: ${STATUS_LABELS[updatedOrder.status as keyof typeof STATUS_LABELS] || updatedOrder.status}`,
+        duration: 3000,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update order status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't open details if clicking on buttons/dropdowns
+    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('[role="menuitem"]')) {
+      return;
+    }
     setSelectedOrderId(order.id);
     setUI({ isOrderDetailsOpen: true });
+  };
+
+  const handleStatusUpdate = (newStatus: string) => {
+    updateStatusMutation.mutate(newStatus);
   };
 
   const handleDragStart = () => {
@@ -130,12 +190,100 @@ export default function OrderCard({ order }: OrderCardProps) {
 
       return (
         <div
-          key={index}
+          key={`material-${order.id}-${index}`}
           className={`w-2 h-2 rounded-full ${color}`}
           title={title}
         />
       );
     }).filter(Boolean);
+  };
+
+  // Determine what the order needs next
+  const getNextAction = () => {
+    const currentStatus = order.status;
+    
+    switch (currentStatus) {
+      case 'ORDER_PROCESSED':
+        return 'Needs materials ordered';
+      case 'MATERIALS_ORDERED':
+        return 'Waiting for materials';
+      case 'MATERIALS_ARRIVED':
+        return 'Needs frame cut';
+      case 'FRAME_CUT':
+        // Check if order has mat materials
+        const hasMat = order.materials?.some(m => m.type?.toLowerCase().includes('mat'));
+        return hasMat ? 'Needs mat cut' : 'Ready for prep';
+      case 'MAT_CUT':
+        return 'Ready for prep';
+      case 'PREPPED':
+        return 'Ready for completion';
+      case 'COMPLETED':
+        return 'Ready for pickup';
+      case 'PICKED_UP':
+        return 'Order complete';
+      default:
+        return 'Status unknown';
+    }
+  };
+
+  const getNextActionColor = () => {
+    const currentStatus = order.status;
+    
+    switch (currentStatus) {
+      case 'ORDER_PROCESSED':
+      case 'MATERIALS_ORDERED':
+        return 'text-blue-400';
+      case 'MATERIALS_ARRIVED':
+      case 'FRAME_CUT':
+      case 'MAT_CUT':
+        return 'text-orange-400';
+      case 'PREPPED':
+        return 'text-green-400';
+      case 'COMPLETED':
+        return 'text-purple-400';
+      case 'PICKED_UP':
+        return 'text-gray-400';
+      default:
+        return 'text-gray-400';
+    }
+  };
+
+  // Get available status transitions
+  const getAvailableTransitions = () => {
+    const currentStatus = order.status;
+    const transitions = [];
+    
+    // Always allow moving to the next status
+    const nextStatus = STATUS_PROGRESSION[currentStatus as keyof typeof STATUS_PROGRESSION];
+    if (nextStatus) {
+      transitions.push({
+        status: nextStatus,
+        label: STATUS_LABELS[nextStatus as keyof typeof STATUS_LABELS] || nextStatus
+      });
+    }
+    
+    // Allow marking as delayed from any status
+    if (currentStatus !== 'DELAYED' && currentStatus !== 'PICKED_UP') {
+      transitions.push({
+        status: 'DELAYED',
+        label: 'Mark as Delayed'
+      });
+    }
+    
+    // Allow moving back to previous status (except from first status)
+    if (currentStatus !== 'ORDER_PROCESSED') {
+      const statusOrder = Object.keys(STATUS_PROGRESSION);
+      const currentIndex = statusOrder.indexOf(currentStatus);
+      if (currentIndex > 0) {
+        const prevStatus = statusOrder[currentIndex - 1];
+        transitions.push({
+          status: prevStatus,
+          label: `Back to ${STATUS_LABELS[prevStatus as keyof typeof STATUS_LABELS] || prevStatus}`
+        });
+      }
+    }
+    
+    return transitions;
   };
 
   return (
@@ -146,7 +294,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       onDragEnd={handleDragEnd}
       data-draggable="order"
       className={`
-        relative p-3 rounded-lg border cursor-move transition-all duration-200 mb-2 min-h-[85px]
+        relative p-3 rounded-lg border cursor-move transition-all duration-200 mb-2 min-h-[120px]
         ${getPriorityColor(order.priority || 'LOW')}
         ${isDragging ? 'opacity-50 rotate-1 scale-105 z-50' : 'hover:scale-[1.01] hover:shadow-lg'}
         ${order.priority === 'URGENT' ? 'ring-1 ring-amber-400/50' : ''}
@@ -168,6 +316,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       <AnimatePresence>
         {showStatusAnimation && (
           <motion.div
+            key={`status-animation-${order.id}`}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.2 }}
@@ -190,6 +339,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       <AnimatePresence>
         {statusChanged && (
           <motion.div
+            key={`status-progress-${order.id}`}
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 100, opacity: 0 }}
@@ -201,12 +351,40 @@ export default function OrderCard({ order }: OrderCardProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
       {/* Priority Badge */}
-      <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority || 'LOW')} rounded-full flex items-center justify-center`}>
+      <div className={`absolute -top-2 -right-2 w-8 h-8 ${getPriorityIconColor(order.priority || 'LOW')} rounded-full flex items-center justify-center z-10`}>
         <Zap className="w-4 h-4 text-white" />
       </div>
 
-      <div className="space-y-1.5">
+      {/* Status Update Dropdown */}
+      <div className="absolute top-2 right-2 z-20">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 w-6 p-0 bg-gray-800/80 hover:bg-gray-700/80 text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ChevronDown className="w-3 h-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+            {getAvailableTransitions().map((transition) => (
+              <DropdownMenuItem
+                key={`transition-${order.id}-${transition.status}`}
+                onClick={() => handleStatusUpdate(transition.status)}
+                className="text-white hover:bg-gray-700 cursor-pointer"
+              >
+                {transition.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="space-y-2">
         {/* Header */}
         <div>
           <h4 className="font-medium text-white text-sm flex items-center gap-1">
@@ -214,6 +392,20 @@ export default function OrderCard({ order }: OrderCardProps) {
             <span className="truncate">{order.customer?.name || order.description || 'Mystery Item'}</span>
           </h4>
           <p className="text-xs text-gray-400 font-mono truncate mt-0.5">{order.trackingId}</p>
+        </div>
+
+        {/* Description */}
+        {order.description && (
+          <div className="text-xs text-gray-300 leading-relaxed">
+            <p className="line-clamp-2 break-words">
+              {order.description}
+            </p>
+          </div>
+        )}
+
+        {/* Next Action */}
+        <div className={`text-xs font-medium ${getNextActionColor()}`}>
+          {getNextAction()}
         </div>
 
         {/* Order Type & Time */}
@@ -251,9 +443,23 @@ export default function OrderCard({ order }: OrderCardProps) {
               <span>${order.price}</span>
             </span>
           )}
-          {order.notes && (
-            <MessageSquare className="w-3 h-3 text-gray-500" />
-          )}
+          <div className="flex items-center gap-1">
+            {order.notes && (
+              <MessageSquare className="w-3 h-3 text-gray-500" />
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0 text-gray-500 hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedOrderId(order.id);
+                setUI({ isOrderDetailsOpen: true });
+              }}
+            >
+              <Edit className="w-3 h-3" />
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>
