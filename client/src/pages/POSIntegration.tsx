@@ -21,6 +21,8 @@ interface POSStatus {
   success: boolean;
   connected?: boolean;
   needsApiKey?: boolean;
+  authenticated?: boolean;
+  authError?: boolean;
   orders?: any[];
   error?: string;
 }
@@ -76,14 +78,19 @@ export default function POSIntegration() {
   };
 
   const getStatusColor = () => {
+    if (isLoading) return "bg-gray-500";
     if (!posStatus) return "bg-gray-500";
-    if (posStatus.success && posStatus.connected) return "bg-green-500";
+    if (posStatus.success && posStatus.connected && posStatus.authenticated) return "bg-green-500";
+    if (posStatus.success && posStatus.connected) return "bg-yellow-500";
     if (posStatus.success && posStatus.needsApiKey) return "bg-yellow-500";
     return "bg-red-500";
   };
 
   const getStatusText = () => {
-    if (!posStatus) return "Checking...";
+    if (isLoading) return "Checking...";
+    if (!posStatus) return "Unknown";
+    if (posStatus.success && posStatus.connected && posStatus.authenticated) return "Connected & Syncing";
+    if (posStatus.success && posStatus.connected && posStatus.authError) return "Auth Error";
     if (posStatus.success && posStatus.connected) return "Connected";
     if (posStatus.success && posStatus.needsApiKey) return "API Key Needed";
     return "Disconnected";
@@ -119,7 +126,7 @@ export default function POSIntegration() {
           <CardContent>
             <div className="text-2xl font-bold">{getStatusText()}</div>
             <p className="text-xs text-muted-foreground">
-              {posStatus?.success ? 'System is responsive' : 'Check connection'}
+              {posStatus?.success && posStatus?.connected ? 'Kanban API responsive' : 'Check connection'}
             </p>
           </CardContent>
         </Card>

@@ -210,8 +210,11 @@ export class POSIntegration {
 
         if (ordersResponse.ok) {
           const newOrders = await ordersResponse.json();
-          console.log(`Fetched ${newOrders.length} orders from POS system`);
-          return { success: true, orders: newOrders, connected: true };
+          console.log(`Successfully fetched ${newOrders.length} orders from Kanban API`);
+          return { success: true, orders: newOrders, connected: true, authenticated: true };
+        } else {
+          console.log(`Orders fetch failed: ${ordersResponse.status} - ${ordersResponse.statusText}`);
+          return { success: true, connected: true, needsApiKey: false, authError: true };
         }
       }
 
