@@ -163,11 +163,11 @@ export class POSIntegration {
     }
   }
 
-  // Fetch new orders from POS/Kanban system
+  // Fetch new orders from external POS system
   async fetchNewOrders() {
     if (!this.baseUrl) {
-      console.log('POS integration not configured - missing base URL');
-      return { success: false, error: 'POS URL not configured' };
+      return { success: false, error: 'External POS system not configured', 
+               message: 'This frame shop system is ready to connect to an external POS when configured' };
     }
 
     try {

@@ -102,7 +102,7 @@ export default function POSIntegration() {
         <div>
           <h1 className="text-3xl font-bold">POS Integration</h1>
           <p className="text-muted-foreground">
-            Real-time synchronization with your Kanban API system
+            Connect to external point-of-sale systems for order synchronization
           </p>
         </div>
         <Button
@@ -139,10 +139,10 @@ export default function POSIntegration() {
           </CardHeader>
           <CardContent>
             <div className="text-xs font-mono bg-muted p-2 rounded">
-              https://2ebd6ffd-874c-4bb9-9272-bd3ef5c6dd5f-00-8rjpxe4l5qml.kirk.replit.dev
+              {posStatus?.error?.includes('not configured') ? 'Not configured' : 'External POS system endpoint'}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Kanban API integration endpoint
+              Configure POS_API_URL for external system
             </p>
           </CardContent>
         </Card>
