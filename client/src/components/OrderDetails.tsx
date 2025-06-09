@@ -454,9 +454,6 @@ export default function OrderDetails() {
                   </div>
                 </CardContent>
 
-                </div>
-                </CardContent>
-
                 <Card className="bg-gray-800 border-gray-700 mt-4">
                   <CardHeader>
                     <CardTitle className="text-white text-sm font-medium flex items-center gap-2">
