@@ -91,17 +91,31 @@ export default function AIAssistant() {
   const sendMessage = async () => {
     if (!input.trim() || chatMutation.isPending) return;
 
+    const messageContent = input.trim();
     const userMessage: AIMessage = {
       id: Date.now().toString(),
       type: 'user',
-      content: input,
+      content: messageContent,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
 
-    chatMutation.mutate(input);
+    try {
+      chatMutation.mutate(messageContent);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Add error message to chat
+      const errorMessage: AIMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: 'Sorry, I encountered an error while processing your message. Please try again.',
+        timestamp: new Date(),
+        severity: 'warning'
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
 
   const getRiskLevelColor = (level?: string) => {
@@ -268,15 +282,24 @@ export default function AIAssistant() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
                   placeholder="Ask about orders, materials, or deadlines..."
                   className="flex-1 bg-gray-800 text-white border-gray-700 focus:border-jade-500"
                   disabled={chatMutation.isPending}
                 />
                 <Button
-                  onClick={sendMessage}
-                  disabled={chatMutation.isPending}
-                  className="bg-jade-500 text-white hover:bg-jade-400"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    sendMessage();
+                  }}
+                  disabled={chatMutation.isPending || !input.trim()}
+                  className="bg-jade-500 text-white hover:bg-jade-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />
                 </Button>
