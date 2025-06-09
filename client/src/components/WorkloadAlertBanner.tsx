@@ -233,7 +233,7 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
                     const Icon = rec.icon;
                     return (
                       <motion.div
-                        key={`alert_${rec.id || `${rec.type}_${index}_${Date.now()}`}`}
+                        key={`alert_${rec.id || `${rec.type}_${index}_${Math.random()}`}`}
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}

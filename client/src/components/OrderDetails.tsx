@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle } from 'lucide-react';
+import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle, Clipboard, Edit, CheckCircle, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { apiRequest } from '@/lib/queryClient';
 import { useOrderStore } from '@/store/useOrderStore';
 import ArtworkManager from '@/components/ArtworkManager';
@@ -821,7 +822,7 @@ export default function OrderDetails() {
                           </Select>
                         </div>
                         <div>
-                          <Label className`Name="text-gray-400 text-xs">Cost</Label>
+                          <Label className="text-gray-400 text-xs">Cost</Label>
                           <Input
                             type="number"
                             value={newMaterial.cost}
