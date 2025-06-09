@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { apiRequest } from '@/lib/queryClient';
 import { useOrderStore } from '@/store/useOrderStore';
 import ArtworkManager from '@/components/ArtworkManager';
@@ -469,7 +470,6 @@ export default function OrderDetails() {
                     />
                   </CardContent>
                 </Card>
-              </div>
             </TabsContent>
 
             <TabsContent value="customer" className="pt-4">
