@@ -819,7 +819,6 @@ export default function OrderDetails() {
                               <SelectItem value="pcs">pieces</SelectItem>
                               <SelectItem value="sheets">sheets</SelectItem>
                             </SelectContent>
-                          </```python
                           </Select>
                         </div>
                         <div>
