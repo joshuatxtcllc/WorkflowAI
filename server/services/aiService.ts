@@ -326,18 +326,30 @@ What specific information would you like to know about?`;
   private generateOrderAlerts(activeOrders: any[]): AIMessage[] {
     const alerts: AIMessage[] = [];
     const now = new Date();
-    const timestamp = Date.now();
+    const baseTimestamp = Date.now();
+    let alertCounter = 0;
+
+    // Helper function to generate truly unique IDs
+    const generateUniqueId = (prefix: string, orderId?: string) => {
+      alertCounter++;
+      const uniquePart = Math.random().toString(36).substr(2, 12);
+      return `${prefix}_${orderId || 'system'}_${baseTimestamp}_${alertCounter}_${uniquePart}`;
+    };
+
+    // Track processed orders to avoid duplicates
+    const processedOrders = new Set();
 
     // Check for overdue orders
-    activeOrders.forEach((order, index) => {
-      if (!order.dueDate) return;
+    activeOrders.forEach((order) => {
+      if (!order.dueDate || processedOrders.has(order.id)) return;
+      processedOrders.add(order.id);
 
       const dueDate = new Date(order.dueDate);
       const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
       if (hoursUntilDue < 0) {
         alerts.push({
-          id: `overdue_${order.id}_${timestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+          id: generateUniqueId('overdue', order.id),
           type: 'alert',
           content: `⚠️ OVERDUE: ${order.customer?.name || 'Customer'} order (${order.trackingId}) was due ${Math.abs(Math.round(hoursUntilDue))} hours ago. Current status: ${order.status?.replace('_', ' ')}.`,
           timestamp: now,
@@ -345,7 +357,7 @@ What specific information would you like to know about?`;
         });
       } else if (hoursUntilDue < 24) {
         alerts.push({
-          id: `urgent_${order.id}_${timestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+          id: generateUniqueId('urgent', order.id),
           type: 'alert',
           content: `⚠️ URGENT: ${order.customer?.name || 'Customer'} order (${order.trackingId}) is due in ${Math.round(hoursUntilDue)} hours. Current status: ${order.status?.replace('_', ' ')}.`,
           timestamp: now,
@@ -358,7 +370,7 @@ What specific information would you like to know about?`;
     const materialsOrderedOrders = activeOrders.filter(order => order.status === 'MATERIALS_ORDERED');
     if (materialsOrderedOrders.length > 0) {
       alerts.push({
-        id: `materials_waiting_${timestamp}`,
+        id: generateUniqueId('materials'),
         type: 'alert',
         content: `📦 Materials Update: ${materialsOrderedOrders.length} orders waiting for materials to arrive. Check delivery schedules to update timelines.`,
         timestamp: now,
@@ -372,7 +384,7 @@ What specific information would you like to know about?`;
     );
     if (highPriorityOrders.length > 5) {
       alerts.push({
-        id: `high_priority_alert_${timestamp}`,
+        id: generateUniqueId('priority'),
         type: 'alert',
         content: `🔥 Priority Alert: ${highPriorityOrders.length} high-priority orders require attention. Consider redistributing workload.`,
         timestamp: now,
