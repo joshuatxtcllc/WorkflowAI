@@ -874,75 +874,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           created++;
         }
-```tool_code
 
         }
       }
 
-      // Broadcast update to connected clients
-      broadcast(wss, {
-        type: 'mystery_orders_imported',
-        data: { created, total: mysteryOrders.length }
-      });
-
-      res.json({ 
-        success: true, 
-        message: `Imported ${created} authentic mystery orders from your shop data`,
-        created,
-        total: mysteryOrders.length,
-        found: mysteryOrders.length
-      });
-    } catch (error) {
-      console.error('Error importing mystery orders:', error);
-      res.status(500).json({ error: 'Failed to import mystery orders' });
-    }
-  });
-
-  // Batch update order status
-  app.patch('/api/orders/batch-status', async (req, res) => {
-    try {
-      const { orderIds, status } = req.body;
-
-      if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
-        return res.status(400).json({ error: 'Order IDs array is required' });
-      }
-
-      if (!status) {
-        return res.status(400).json({ error: 'Status is required' });
-      }
-
-      const updates = await Promise.all(
-        orderIds.map(id => 
-          storage.updateOrder(id, { status })
-        )
-      );
-
-      res.json({ 
-        success: true, 
-        updatedCount: updates.length,
-        updates 
-      });
-    } catch (error) {
-      console.error('Batch status update error:', error);
-      res.status(500).json({ error: 'Failed to update order statuses' });
-    }
-  });
-
-  // Batch priority update
-  app.patch('/api/orders/batch-priority', async (req, res) => {
-    try {
-      const { orderIds, priority } = req.body;
-
-      if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
-        return res.status(400).json({ error: 'Order IDs array is required' });
-      }
-
-      if (!priority) {
-        return res.status(400).json({ error: 'Priority is required' });
-      }
-
-      const validPriorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
-      if (!validPriorities.includes(priority)) {
+      //      if (!validPriorities.includes(priority)) {
         return res.status(400).json({ error: 'Invalid priority level' });
       }
 
