@@ -1,0 +1,73 @@
+3:00:53 AM [express] GET /api/auth/user 304 in 241ms :: {"id":"ac461820-55f2-46ff-a798-236fdc101806"…
+3:00:53 AM [express] GET /api/test/auth 200 in 1ms :: {"success":true,"message":"Hub connection auth…
+3:00:53 AM [express] GET /api/analytics/workload 304 in 177ms :: {"totalOrders":120,"totalHours":300…
+WebSocket client connected
+getOrders query completed: 69ms
+3:00:53 AM [express] GET /api/ai/alerts 200 in 130ms :: {"alerts":[{"id":"overdue_1lrw1olv3_4oq7wunz…
+3:00:53 AM [express] GET /api/ai/analysis 304 in 252ms :: {"totalOrders":120,"totalHours":300,"avera…
+getOrders query completed: 126ms
+3:00:53 AM [express] GET /api/orders 304 in 378ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301"…
+WebSocket client connected
+WebSocket client connected
+WebSocket client disconnected
+WebSocket client disconnected
+WebSocket client disconnected
+POS sync check: External POS system not configured
+getOrders query completed: 123ms
+POS sync check: External POS system not configured
+getOrders query completed: 304ms
+Auto-syncing metrics to dashboard...
+POS sync check: External POS system not configured
+getOrders query completed: 312ms
+Dashboard service temporarily unavailable (503), will retry later
+getOrders query completed: 118ms
+POS sync check: External POS system not configured
+getOrders query completed: 348ms
+POS sync check: External POS system not configured
+getOrders query completed: 123ms
+POS sync check: External POS system not configured
+getOrders query completed: 312ms
+POS sync check: External POS system not configured
+getOrders query completed: 126ms
+POS sync check: External POS system not configured
+getOrders query completed: 363ms
+POS sync check: External POS system not configured
+getOrders query completed: 128ms
+POS sync check: External POS system not configured
+getOrders query completed: 344ms
+POS sync check: External POS system not configured
+getOrders query completed: 125ms
+POS sync check: External POS system not configured
+getOrders query completed: 317ms
+POS sync check: External POS system not configured
+getOrders query completed: 124ms
+POS sync check: External POS system not configured
+getOrders query completed: 354ms
+POS sync check: External POS system not configured
+getOrders query completed: 124ms
+POS sync check: External POS system not configured
+getOrders query completed: 315ms
+POS sync check: External POS system not configured
+getOrders query completed: 129ms
+POS sync check: External POS system not configured
+getOrders query completed: 350ms
+POS sync check: External POS system not configured
+getOrders query completed: 126ms
+POS sync check: External POS system not configured
+getOrders query completed: 353ms
+POS sync check: External POS system not configured
+getOrders query completed: 125ms
+POS sync check: External POS system not configured
+getOrders query completed: 311ms
+POS sync check: External POS system not configured
+getOrders query completed: 123ms
+POS sync check: External POS system not configured
+getOrders query completed: 316ms
+POS sync check: External POS system not configured
+getOrders query completed: 236ms
+POS sync check: External POS system not configured
+getOrders query completed: 343ms
+POS sync check: External POS system not configured
+getOrders query completed: 123ms
+POS sync check: External POS system not configured
+getOrders query completed: 352ms
