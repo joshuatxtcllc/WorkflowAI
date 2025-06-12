@@ -191,8 +191,8 @@ export default function Orders() {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="text-lg">#{order.trackingId}</CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <User className="h-4 w-4" />
+                  <div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+                    <User className="h-4 w-4 text-gray-600" />
                     {order.customer?.name || 'Unknown Customer'}
                   </div>
                 </div>
@@ -203,23 +203,23 @@ export default function Orders() {
             </CardHeader>
 
             <CardContent className="space-y-3">
-              <div className="text-sm text-muted-foreground line-clamp-2">
+              <div className="text-sm text-gray-700 line-clamp-2">
                 {order.description || 'No description available'}
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-1 text-gray-800">
+                  <Calendar className="h-4 w-4 text-gray-700" />
                   <span>Due: {format(new Date(order.dueDate), 'MMM d, yyyy')}</span>
                 </div>
-                <div className="flex items-center gap-1 font-semibold">
-                  <DollarSign className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-1 font-semibold text-gray-900">
+                  <DollarSign className="h-4 w-4 text-green-700" />
                   <span>${order.price.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Package className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <Package className="h-4 w-4 text-gray-600" />
                 <span>{order.orderType} • {order.estimatedHours}h estimated</span>
               </div>
 
