@@ -819,6 +819,7 @@ export default function OrderDetails() {
                               <SelectItem value="pcs">pieces</SelectItem>
                               <SelectItem value="sheets">sheets</SelectItem>
                             </SelectContent>
+                          </```python
                           </Select>
                         </div>
                         <div>
@@ -1033,13 +1034,15 @@ export default function OrderDetails() {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="p-6 text-center text-gray-400">
-            Order not found or has been deleted.
+          <div className="text-center py-8 text-gray-400">
+            Order not found
           </div>
         )}
 
-        <DialogFooter className="mt-4">
-          <Button variant="ghost" onClick={handleClose}>Close</Button>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose}>
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
