@@ -114,8 +114,8 @@ PRODUCTION STATUS REPORT:
 - URGENT ORDERS: ${urgentOrders.length} (HIGH PRIORITY)
 - Complex Orders (8+ hours): ${complexOrders.length}
 - On-time Performance: ${analysis.onTimePercentage}%
-- Risk Level: ${analysis.riskLevel.toUpperCase()}
-- Active Bottlenecks: ${analysis.bottlenecks.join(', ')}
+- Risk Level: ${(analysis.riskLevel || 'UNKNOWN').toUpperCase()}
+- Active Bottlenecks: ${(analysis.bottlenecks || []).join(', ')}
 
 WORKLOAD DISTRIBUTION:
 - Materials Ordered: ${analysis.statusCounts?.MATERIALS_ORDERED || 0}
