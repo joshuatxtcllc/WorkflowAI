@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
-  Brain, X, Send, BarChart3, Clock, AlertTriangle, TrendingUp 
+  Brain, X, Send, BarChart3, Clock, AlertTriangle, TrendingUp, Trash2 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,6 +118,10 @@ export default function AIAssistant() {
     }
   };
 
+  const clearConversation = () => {
+    setMessages([]);
+  };
+
   const getRiskLevelColor = (level?: string) => {
     switch (level) {
       case 'critical': return 'text-red-500';
@@ -188,14 +192,27 @@ export default function AIAssistant() {
                     <p className="text-jade-100 text-sm">Your Production Copilot</p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 hover:bg-jade-700 rounded-lg transition-colors text-white"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  {messages.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={clearConversation}
+                      className="p-2 hover:bg-jade-700 rounded-lg transition-colors text-white"
+                      title="Clear conversation"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 hover:bg-jade-700 rounded-lg transition-colors text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
 
               {/* Quick Stats */}
