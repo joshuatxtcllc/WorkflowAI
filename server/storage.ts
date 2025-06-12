@@ -402,7 +402,10 @@ export class DatabaseStorage implements IStorage {
   }): Promise<StatusHistory> {
     const [newHistory] = await db
       .insert(statusHistory)
-      .values(data)
+      .values({
+        id: randomUUID(),
+        ...data
+      })
       .returning();
     return newHistory;
   }
