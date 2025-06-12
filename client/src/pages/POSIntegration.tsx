@@ -105,53 +105,53 @@ export default function POSIntegration() {
 
       <div className="container mx-auto space-y-6">
         <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">POS Integration</h1>
-          <p className="text-muted-foreground">
-            Connect to external point-of-sale systems for order synchronization
-          </p>
+          <div>
+            <h1 className="text-3xl font-bold">POS Integration</h1>
+            <p className="text-muted-foreground">
+              Connect to external point-of-sale systems for order synchronization
+            </p>
+          </div>
+          <Button
+            onClick={handleRefresh}
+            disabled={isSyncing}
+            variant="outline"
+            size="sm"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
-        <Button
-          onClick={handleRefresh}
-          disabled={isSyncing}
-          variant="outline"
-          size="sm"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Connection Status */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Connection Status</CardTitle>
-            <div className={`h-3 w-3 rounded-full ${getStatusColor()}`} />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{getStatusText()}</div>
-            <p className="text-xs text-muted-foreground">
-              {posStatus?.success && posStatus?.connected ? 'Kanban API responsive' : 'Check connection'}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Connection Status */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Connection Status</CardTitle>
+              <div className={`h-3 w-3 rounded-full ${getStatusColor()}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getStatusText()}</div>
+              <p className="text-xs text-muted-foreground">
+                {posStatus?.success && posStatus?.connected ? 'Kanban API responsive' : 'Check connection'}
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* API Endpoint */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">API Endpoint</CardTitle>
-            <ExternalLink className="h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs font-mono bg-muted p-2 rounded">
-              {posStatus?.error?.includes('not configured') ? 'Not configured' : 'External POS system endpoint'}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Configure POS_API_URL for external system
-            </p>
-          </CardContent>
-        </Card>
+          {/* API Endpoint */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">API Endpoint</CardTitle>
+              <ExternalLink className="h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs font-mono bg-muted p-2 rounded">
+                {posStatus?.error?.includes('not configured') ? 'Not configured' : 'External POS system endpoint'}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Configure POS_API_URL for external system
+              </p>
+            </CardContent>
+          </Card>
 
         {/* Sync Status */}
         <Card>
