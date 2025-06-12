@@ -935,7 +935,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
         return res.status(400).json({ error: 'Order IDs array is required' });
-            }
+      }
 
       if (!priority) {
         return res.status(400).json({ error: 'Priority is required' });
@@ -1025,131 +1025,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-    // Test endpoint for hub connection verification
-    app.get('/api/test/auth', (req, res) => {
-      try {
-        const startTime = Date.now();
-        const apiKey = req.headers['x-api-key'];
+  // Test endpoint for hub connection verification
+  app.get('/api/test/auth', (req, res) => {
+    try {
+      const startTime = Date.now();
+      const apiKey = req.headers['x-api-key'];
 
-        if (!apiKey) {
-          return res.status(401).json({ error: 'API key required' });
-        }
-
-        if (apiKey !== 'kanban_admin_key_2025_full_access') {
-          return res.status(403).json({ error: 'Invalid API key' });
-        }
-
-        const responseTime = Date.now() - startTime;
-
-        res.json({ 
-          success: true, 
-          message: 'Hub connection authenticated successfully',
-          timestamp: new Date().toISOString(),
-          server: 'Jay\'s Frames Central Hub',
-          status: 'operational',
-          responseTime
-        });
-      } catch (error) {
-        console.error('Hub auth test error:', error);
-        res.status(500).json({ error: 'Hub authentication test failed' });
+      if (!apiKey) {
+        return res.status(401).json({ error: 'API key required' });
       }
-    });
 
-    // System health check endpoint
-    app.get('/api/system/health', async (req, res) => {
-      try {
-        const startTime = Date.now();
-
-        // Test database connectivity
-        const orders = await storage.getAllOrders();
-        const customers = await storage.getCustomers();
-
-        const dbResponseTime = Date.now() - startTime;
-
-        res.json({
-          status: 'healthy',
-          timestamp: new Date().toISOString(),
-          database: {
-            connected: true,
-            responseTime: dbResponseTime,
-            ordersCount: orders.length,
-            customersCount: customers.length
-          },
-          server: {
-            uptime: process.uptime(),
-            memoryUsage: process.memoryUsage(),
-            nodeVersion: process.version
-          }
-        });
-      } catch (error) {
-        console.error('Health check failed:', error);
-        res.status(500).json({ 
-          status: 'unhealthy',
-          error: (error as Error).message,
-          timestamp: new Date().toISOString()
-        });
+      if (apiKey !== 'kanban_admin_key_2025_full_access') {
+        return res.status(403).json({ error: 'Invalid API key' });
       }
-    });
 
-    // Integration sync status endpoint
-    app.get('/api/integrations/dashboard/status', (req, res) => {
-      try {
-        // Check if sync is working by verifying last sync time
-        const lastSyncTime = new Date(); // You can store this in a variable or database
-        const timeSinceSync = Date.now() - lastSyncTime.getTime();
-        const syncHealthy = timeSinceSync < 900000; // 15 minutes
+      const responseTime = Date.now() - startTime;
 
-        res.json({
-          syncActive: syncHealthy,
-          lastSync: lastSyncTime.toISOString(),
-          timeSinceSync,
-          status: syncHealthy ? 'operational' : 'degraded',
-          dashboardUrl: process.env.DASHBOARD_API_URL || 'Local Hub',
-          timestamp: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error('Sync status check failed:', error);
-        res.status(500).json({ 
-          syncActive: false,
-          error: (error as Error).message,
-          timestamp: new Date().toISOString()
-        });
-      }
-    });
+      res.json({ 
+        success: true, 
+        message: 'Hub connection authenticated successfully',
+        timestamp: new Date().toISOString(),
+        server: 'Jay\'s Frames Central Hub',
+        status: 'operational',
+        responseTime
+      });
+    } catch (error) {
+      console.error('Hub auth test error:', error);
+      res.status(500).json({ error: 'Hub authentication test failed' });
+    }
+  });
 
-    // Dashboard Webhook endpoint
-    app.post('/api/webhooks/dashboard', (req, res) => {
-      try {
-        console.log('Dashboard webhook received:', req.body);
-        // Handle any dashboard events or notifications here
-        res.status(200).json({ received: true, timestamp: new Date().toISOString() });
-      } catch (error) {
-        console.error('Dashboard webhook error:', error);
-        res.status(500).json({ error: 'Webhook processing failed' });
-      }
-    });
+  // System health check endpoint
+  app.get('/api/system/health', async (req, res) => {
+    try {
+      const startTime = Date.now();
 
-    // Configuration endpoint to check integration status
-    app.get('/api/integrations/status', (req, res) => {
-      const status = {
-        sms: {
-          configured: !!(process.env.SMS_API_URL && process.env.SMS_API_KEY),
-          url: process.env.SMS_API_URL ? 'configured' : 'not set'
+      // Test database connectivity
+      const orders = await storage.getAllOrders();
+      const customers = await storage.getCustomers();
+
+      const dbResponseTime = Date.now() - startTime;
+
+      res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        database: {
+          connected: true,
+          responseTime: dbResponseTime,
+          ordersCount: orders.length,
+          customersCount: customers.length
         },
-        pos: {
-          configured: !!(process.env.POS_API_URL && process.env.POS_API_KEY),
-          url: process.env.POS_API_URL ? 'configured' : 'not set'
-        },
-        dashboard: {
-          configured: !!(process.env.DASHBOARD_API_URL && process.env.DASHBOARD_API_KEY),
-          url: process.env.DASHBOARD_API_URL ? 'configured' : 'not set'
+        server: {
+          uptime: process.uptime(),
+          memoryUsage: process.memoryUsage(),
+          nodeVersion: process.version
         }
-      };
-      res.json(status);
-    });
+      });
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(500).json({ 
+        status: 'unhealthy',
+        error: (error as Error).message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
 
-    // Import integrations
-    const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
+  // Integration sync status endpoint
+  app.get('/api/integrations/dashboard/status', (req, res) => {
+    try {
+      // Check if sync is working by verifying last sync time
+      const lastSyncTime = new Date(); // You can store this in a variable or database
+      const timeSinceSync = Date.now() - lastSyncTime.getTime();
+      const syncHealthy = timeSinceSync < 900000; // 15 minutes
+
+      res.json({
+        syncActive: syncHealthy,
+        lastSync: lastSyncTime.toISOString(),
+        timeSinceSync,
+        status: syncHealthy ? 'operational' : 'degraded',
+        dashboardUrl: process.env.DASHBOARD_API_URL || 'Local Hub',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Sync status check failed:', error);
+      res.status(500).json({ 
+        syncActive: false,
+        error: (error as Error).message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Dashboard Webhook endpoint
+  app.post('/api/webhooks/dashboard', (req, res) => {
+    try {
+      console.log('Dashboard webhook received:', req.body);
+      // Handle any dashboard events or notifications here
+      res.status(200).json({ received: true, timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error('Dashboard webhook error:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Configuration endpoint to check integration status
+  app.get('/api/integrations/status', (req, res) => {
+    const status = {
+      sms: {
+        configured: !!(process.env.SMS_API_URL && process.env.SMS_API_KEY),
+        url: process.env.SMS_API_URL ? 'configured' : 'not set'
+      },
+      pos: {
+        configured: !!(process.env.POS_API_URL && process.env.POS_API_KEY),
+        url: process.env.POS_API_URL ? 'configured' : 'not set'
+      },
+      dashboard: {
+        configured: !!(process.env.DASHBOARD_API_URL && process.env.DASHBOARD_API_KEY),
+        url: process.env.DASHBOARD_API_URL ? 'configured' : 'not set'
+      }
+    };
+    res.json(status);
+  });
+
+  // Import integrations
+  const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
 
     // SMS Integration Routes
     app.post('/api/integrations/sms/send', async (req, res) => {
