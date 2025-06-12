@@ -874,17 +874,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           created++;
         }
-
-        }
       }
 
-      //      if (!validPriorities.includes(priority)) {
+      res.json({ 
+        success: true, 
+        message: `Created ${created} mystery orders` 
+      });
+    } catch (error) {
+      console.error('Mystery orders creation error:', error);
+      res.status(500).json({ error: 'Failed to create mystery orders' });
+    }
+  });
+
+  // Batch update order priorities
+  app.patch('/api/orders/batch-priority', async (req, res) => {
+    try {
+      const { orderIds, priority } = req.body;
+      
+      if (!Array.isArray(orderIds) || !priority) {
+        return res.status(400).json({ error: 'Missing orderIds array or priority' });
+      }
+
+      const validPriorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+      if (!validPriorities.includes(priority)) {
         return res.status(400).json({ error: 'Invalid priority level' });
       }
 
       const updates = await Promise.all(
-        orderIds.map(id => 
-          storage.updateOrder(id, { priority })
+        orderIds.map((id: string) => 
+          storage.updateOrder(id, { priority: priority })
         )
       );
 
