@@ -120,6 +120,7 @@ export default function AIAssistant() {
 
   const clearConversation = () => {
     setMessages([]);
+    setUrgentAlerts(0);
   };
 
   const getRiskLevelColor = (level?: string) => {

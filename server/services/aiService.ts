@@ -337,7 +337,7 @@ What specific information would you like to know about?`;
 
       if (hoursUntilDue < 0) {
         alerts.push({
-          id: `overdue_${order.id}_${timestamp}`,
+          id: `overdue_${order.id}_${timestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'alert',
           content: `⚠️ OVERDUE: ${order.customer?.name || 'Customer'} order (${order.trackingId}) was due ${Math.abs(Math.round(hoursUntilDue))} hours ago. Current status: ${order.status?.replace('_', ' ')}.`,
           timestamp: now,
@@ -345,7 +345,7 @@ What specific information would you like to know about?`;
         });
       } else if (hoursUntilDue < 24) {
         alerts.push({
-          id: `urgent_${order.id}_${timestamp}`,
+          id: `urgent_${order.id}_${timestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'alert',
           content: `⚠️ URGENT: ${order.customer?.name || 'Customer'} order (${order.trackingId}) is due in ${Math.round(hoursUntilDue)} hours. Current status: ${order.status?.replace('_', ' ')}.`,
           timestamp: now,
