@@ -9,8 +9,11 @@ import OrderCard from './OrderCard';
 import WorkloadAlertBanner from './WorkloadAlertBanner';
 import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
-import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User } from 'lucide-react';
+import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
 import AIAssistant from './AIAssistant';
 
 const columnIcons = {
@@ -407,6 +410,56 @@ export default function KanbanBoard() {
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
           <WorkloadAlertBanner orders={orders} />
+
+          {/* Search and Filter Bar */}
+          <Card className="mb-4 glass-strong">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex-1 min-w-64">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search by tracking ID, customer, or description..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder-gray-400"
+                    />
+                  </div>
+                </div>
+
+                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                  <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Priorities</SelectItem>
+                    <SelectItem value="HIGH">High Priority</SelectItem>
+                    <SelectItem value="MEDIUM">Medium Priority</SelectItem>
+                    <SelectItem value="LOW">Low Priority</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-48 bg-gray-800/50 border-gray-700 text-white">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="active">Active Orders</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="ready_for_work">Ready for Work</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {(searchTerm || priorityFilter !== 'all' || statusFilter !== 'all') && (
+                  <div className="text-sm text-gray-400">
+                    {filteredOrders.length} of {orders.length} orders
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           <div 
             ref={scrollContainerRef}
