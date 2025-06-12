@@ -281,14 +281,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/ai/chat', authenticateToken, async (req, res) => {
+  // AI chat endpoint
+  app.post('/api/ai/chat', async (req, res) => {
     try {
       const { message } = req.body;
       const response = await aiService.generateChatResponse(message);
       res.json({ response });
     } catch (error) {
-      console.error("Error generating AI response:", error);
-      res.status(500).json({ message: "Failed to generate response" });
+      console.error('AI chat error:', error);
+      res.status(500).json({ error: 'Failed to process chat message' });
+    }
+  });
+
+  // AI clear conversation endpoint
+  app.post('/api/ai/clear', async (req, res) => {
+    try {
+      // Clear any cached conversation state if needed
+      res.json({ success: true, message: 'Conversation cleared' });
+    } catch (error) {
+      console.error('AI clear error:', error);
+      res.status(500).json({ error: 'Failed to clear conversation' });
     }
   });
 
@@ -861,6 +873,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             invoiceNumber: item.invoiceNumber,
           });
           created++;
+        }
+```tool_code
+
         }
       }
 

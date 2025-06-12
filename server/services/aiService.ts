@@ -326,51 +326,68 @@ What specific information would you like to know about?`;
   private generateOrderAlerts(activeOrders: any[]): AIMessage[] {
     const alerts: AIMessage[] = [];
     const now = new Date();
-    const baseTimestamp = Date.now();
-    let alertCounter = 0;
+    const sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    let alertIndex = 0;
 
-    // Helper function to generate truly unique IDs
-    const generateUniqueId = (prefix: string, orderId?: string) => {
-      alertCounter++;
-      const uniquePart = Math.random().toString(36).substr(2, 12);
-      return `${prefix}_${orderId || 'system'}_${baseTimestamp}_${alertCounter}_${uniquePart}`;
+    // Create a map to track alerts by type to prevent duplicates
+    const alertMap = new Map<string, AIMessage>();
+
+    // Helper function to generate completely unique IDs
+    const createAlertId = (type: string, orderId?: string) => {
+      alertIndex++;
+      return `${type}_${orderId || 'system'}_${sessionId}_${alertIndex}`;
     };
 
-    // Track processed orders to avoid duplicates
-    const processedOrders = new Set();
-
-    // Check for overdue orders
-    activeOrders.forEach((order) => {
-      if (!order.dueDate || processedOrders.has(order.id)) return;
-      processedOrders.add(order.id);
-
+    // Process overdue orders - group by severity to avoid duplicates
+    const overdueOrders = activeOrders.filter(order => {
+      if (!order.dueDate) return false;
       const dueDate = new Date(order.dueDate);
       const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-      if (hoursUntilDue < 0) {
-        alerts.push({
-          id: generateUniqueId('overdue', order.id),
-          type: 'alert',
-          content: `⚠️ OVERDUE: ${order.customer?.name || 'Customer'} order (${order.trackingId}) was due ${Math.abs(Math.round(hoursUntilDue))} hours ago. Current status: ${order.status?.replace('_', ' ')}.`,
-          timestamp: now,
-          severity: 'urgent'
-        });
-      } else if (hoursUntilDue < 24) {
-        alerts.push({
-          id: generateUniqueId('urgent', order.id),
-          type: 'alert',
-          content: `⚠️ URGENT: ${order.customer?.name || 'Customer'} order (${order.trackingId}) is due in ${Math.round(hoursUntilDue)} hours. Current status: ${order.status?.replace('_', ' ')}.`,
-          timestamp: now,
-          severity: 'urgent'
-        });
-      }
+      return hoursUntilDue < 0;
     });
+
+    const urgentOrders = activeOrders.filter(order => {
+      if (!order.dueDate) return false;
+      const dueDate = new Date(order.dueDate);
+      const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+      return hoursUntilDue >= 0 && hoursUntilDue < 24;
+    });
+
+    // Add overdue alert (single alert for all overdue orders)
+    if (overdueOrders.length > 0) {
+      const overdueList = overdueOrders.slice(0, 3).map(order => 
+        `${order.customer?.name || 'Customer'} (${order.trackingId})`
+      ).join(', ');
+      
+      alertMap.set('overdue', {
+        id: createAlertId('overdue'),
+        type: 'alert',
+        content: `⚠️ OVERDUE ORDERS: ${overdueOrders.length} orders past due. Priority: ${overdueList}${overdueOrders.length > 3 ? ` and ${overdueOrders.length - 3} more` : ''}`,
+        timestamp: now,
+        severity: 'urgent'
+      });
+    }
+
+    // Add urgent alert (single alert for all urgent orders)
+    if (urgentOrders.length > 0) {
+      const urgentList = urgentOrders.slice(0, 3).map(order => 
+        `${order.customer?.name || 'Customer'} (${order.trackingId})`
+      ).join(', ');
+      
+      alertMap.set('urgent', {
+        id: createAlertId('urgent'),
+        type: 'alert',
+        content: `⚠️ URGENT: ${urgentOrders.length} orders due within 24 hours. Priority: ${urgentList}${urgentOrders.length > 3 ? ` and ${urgentOrders.length - 3} more` : ''}`,
+        timestamp: now,
+        severity: 'urgent'
+      });
+    }
 
     // Check for material delays
     const materialsOrderedOrders = activeOrders.filter(order => order.status === 'MATERIALS_ORDERED');
     if (materialsOrderedOrders.length > 0) {
-      alerts.push({
-        id: generateUniqueId('materials'),
+      alertMap.set('materials', {
+        id: createAlertId('materials'),
         type: 'alert',
         content: `📦 Materials Update: ${materialsOrderedOrders.length} orders waiting for materials to arrive. Check delivery schedules to update timelines.`,
         timestamp: now,
@@ -383,8 +400,8 @@ What specific information would you like to know about?`;
       ['HIGH', 'URGENT'].includes(order.priority || '')
     );
     if (highPriorityOrders.length > 5) {
-      alerts.push({
-        id: generateUniqueId('priority'),
+      alertMap.set('priority', {
+        id: createAlertId('priority'),
         type: 'alert',
         content: `🔥 Priority Alert: ${highPriorityOrders.length} high-priority orders require attention. Consider redistributing workload.`,
         timestamp: now,
@@ -392,7 +409,8 @@ What specific information would you like to know about?`;
       });
     }
 
-    return alerts;
+    // Convert map to array - this ensures no duplicates
+    return Array.from(alertMap.values());
   }
 
   private async generateFallbackAnalysis(): WorkloadAnalysis {
