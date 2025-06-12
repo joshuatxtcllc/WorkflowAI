@@ -14,7 +14,9 @@ import {
   Zap, 
   ExternalLink,
   Monitor,
-  RotateCcw
+  RotateCcw,
+  Package,
+  Settings
 } from "lucide-react";
 
 interface POSStatus {

@@ -11,7 +11,7 @@ import VendorOrders from "@/pages/VendorOrders";
 import Login from "@/pages/Login";
 import CustomerPortal from "@/components/CustomerPortal";
 import HubConnection from "@/pages/HubConnection";
-import POSIntegrationSimple from "@/pages/POSIntegrationSimple";
+import POSIntegration from "@/pages/POSIntegration";
 import Progress from "@/pages/Progress";
 import Orders from "@/pages/Orders";
 import Customers from "@/pages/Customers";
@@ -57,7 +57,7 @@ function Router() {
           <Route path="/reports/weekly" component={Reports} />
           <Route path="/reports/monthly" component={Reports} />
           <Route path="/hub-connection" component={HubConnection} />
-          <Route path="/pos-integration" component={POSIntegrationSimple} />
+          <Route path="/pos-integration" component={POSIntegration} />
           <Route path="/progress" component={Progress} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />

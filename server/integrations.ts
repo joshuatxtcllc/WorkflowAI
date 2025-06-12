@@ -72,16 +72,19 @@ export class POSIntegration {
   private apiKey: string;
 
   constructor() {
-    // Configure for external POS system integration (not self-integration)
+    // Configure for external POS system integration
     this.baseUrl = process.env.POS_API_URL || '';
     this.apiKey = process.env.POS_API_KEY || '';
     
     console.log('POS Integration initialized:');
-    console.log('- Base URL:', this.baseUrl || 'Not configured - this Kanban system IS the POS');
+    console.log('- External POS URL:', this.baseUrl || 'Not configured');
     console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
     
     if (!this.baseUrl) {
-      console.log('- Note: This Kanban app serves as the POS system itself');
+      console.log('- Status: Waiting for external POS system configuration');
+      console.log('- This frame shop system is ready to receive orders from external POS');
+    } else {
+      console.log('- Status: Ready to connect to external POS system');
     }
   }
 
@@ -166,8 +169,14 @@ export class POSIntegration {
   // Fetch new orders from external POS system
   async fetchNewOrders() {
     if (!this.baseUrl) {
-      return { success: false, error: 'External POS system not configured', 
-               message: 'This frame shop system is ready to connect to an external POS when configured' };
+      return { 
+        success: false, 
+        connected: false,
+        needsApiKey: false,
+        authenticated: false,
+        error: 'External POS system not configured', 
+        message: 'Frame shop system ready to receive orders from external POS - configure POS_API_URL to connect'
+      };
     }
 
     try {
