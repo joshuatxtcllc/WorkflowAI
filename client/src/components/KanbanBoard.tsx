@@ -7,6 +7,8 @@ import { apiRequest } from '@/lib/queryClient';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import OrderCard from './OrderCard';
 import WorkloadAlertBanner from './WorkloadAlertBanner';
+import { ConfettiBurst } from './ConfettiBurst';
+import { useConfettiStore } from '@/store/useConfettiStore';
 import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter } from 'lucide-react';
@@ -143,11 +145,12 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 export default function KanbanBoard() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [isChatOpen, setIsChatOpen] = useState(false); // Add state for controlling chat visibility
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Check URL parameters for filters
   useEffect(() => {
@@ -199,16 +202,27 @@ export default function KanbanBoard() {
           'MATERIALS_ARRIVED': 'Materials Arrived',
           'FRAME_CUT': 'Frame Cut',
           'MAT_CUT': 'Mat Cut',
-          'ASSEMBLY_COMPLETE': 'Assembly Complete',
-          'READY_FOR_PICKUP': 'Ready for Pickup',
+          'PREPPED': 'Assembly Complete',
+          'COMPLETED': 'Completed',
           'PICKED_UP': 'Picked Up'
         };
 
-        toast({
-          title: "Order Status Updated! 🎉",
-          description: `${order.customer.name}'s order moved to: ${statusNames[variables.status] || variables.status}`,
-          duration: 3000,
-        });
+        // Trigger confetti for completed orders
+        if (variables.status === 'COMPLETED' || variables.status === 'PICKED_UP') {
+          burst(75, 40); // Trigger confetti from center-right of screen
+          
+          toast({
+            title: "🎉 Order Completed! 🎉",
+            description: `${order.customer.name}'s order is ready! Excellent work!`,
+            duration: 4000,
+          });
+        } else {
+          toast({
+            title: "Order Status Updated!",
+            description: `${order.customer.name}'s order moved to: ${statusNames[variables.status] || variables.status}`,
+            duration: 3000,
+          });
+        }
       }
 
       // Send WebSocket update
@@ -483,6 +497,14 @@ export default function KanbanBoard() {
           </div>
         </div>
       </main>
+
+      {/* Confetti Burst Animation */}
+      <ConfettiBurst
+        trigger={triggerConfetti}
+        originX={originX}
+        originY={originY}
+        onComplete={reset}
+      />
 
       {/* AI Assistant Chat */}
       <AIAssistant 
