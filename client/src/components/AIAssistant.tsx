@@ -39,26 +39,13 @@ export default function AIAssistant() {
     },
     onSuccess: (data) => {
       const aiResponse: AIMessage = {
-        id: `ai_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: Date.now().toString(),
         type: 'assistant',
         content: data.response,
         timestamp: new Date(),
         severity: 'info'
       };
       setMessages(prev => [...prev, aiResponse]);
-    },
-  });
-
-  // Clear conversation mutation
-  const clearMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/ai/clear', {});
-      return response.json();
-    },
-    onSuccess: () => {
-      setMessages([]);
-      setUrgentAlerts(0);
-      queryClient.invalidateQueries({ queryKey: ["/api/ai/alerts"] });
     },
   });
 
@@ -132,7 +119,10 @@ export default function AIAssistant() {
   };
 
   const clearConversation = () => {
-    clearMutation.mutate();
+    setMessages([]);
+    setUrgentAlerts(0);
+    // Force re-fetch of alerts to get fresh data
+    queryClient.invalidateQueries({ queryKey: ["/api/ai/alerts"] });
   };
 
   const getRiskLevelColor = (level?: string) => {
