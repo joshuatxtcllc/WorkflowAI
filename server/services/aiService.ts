@@ -241,7 +241,7 @@ What specific information would you like to know about?`;
     const materialsOrderedOrders = activeOrders.filter(order => order.status === 'MATERIALS_ORDERED');
     if (materialsOrderedOrders.length > 0) {
       alerts.push({
-        id: 'materials_waiting',
+        id: `materials_waiting_${Date.now()}`,
         type: 'alert',
         content: `📦 Materials Update: ${materialsOrderedOrders.length} orders waiting for materials to arrive. Check delivery schedules to update timelines.`,
         timestamp: now,
@@ -357,7 +357,7 @@ What specific information would you like to know about?`;
     const materialsOrderedOrders = activeOrders.filter(order => order.status === 'MATERIALS_ORDERED');
     if (materialsOrderedOrders.length > 0) {
       alerts.push({
-        id: 'materials_waiting',
+        id: `materials_waiting_${Date.now()}`,
         type: 'alert',
         content: `📦 Materials Update: ${materialsOrderedOrders.length} orders waiting for materials to arrive. Check delivery schedules to update timelines.`,
         timestamp: now,
