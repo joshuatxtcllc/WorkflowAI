@@ -292,10 +292,10 @@ export default function QuickWins() {
                         }`}>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2">
-                              <span className="font-medium">{order.trackingId}</span>
-                              <span className="text-muted-foreground truncate">{order.customer.name}</span>
+                              <span className="font-medium text-gray-900">{order.trackingId}</span>
+                              <span className="text-gray-700 truncate">{order.customer.name}</span>
                             </div>
-                            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <div className="flex items-center space-x-2 text-xs text-gray-600">
                               <span>Due: {new Date(order.dueDate).toLocaleDateString()}</span>
                               <span>•</span>
                               <span>{order.estimatedHours}h</span>
@@ -309,7 +309,7 @@ export default function QuickWins() {
                             <Badge variant="outline" className="text-xs">
                               {order.orderType}
                             </Badge>
-                            <span className="text-xs font-medium">${order.price}</span>
+                            <span className="text-xs font-medium text-gray-900">${order.price}</span>
                           </div>
                         </div>
                       );
