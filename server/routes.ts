@@ -82,12 +82,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/customers', authenticateToken, async (req, res) => {
     try {
-      const customerData = insertCustomerSchema.parse(req.body);
-      const customer = await storage.createCustomer(customerData);
+      console.log('Creating customer with data:', req.body);
+      
+      // Validate required fields
+      if (!req.body.name || !req.body.email) {
+        return res.status(400).json({ 
+          message: "Name and email are required" 
+        });
+      }
+
+      const customerData = {
+        id: randomUUID(),
+        name: req.body.name.trim(),
+        email: req.body.email.trim().toLowerCase(),
+        phone: req.body.phone?.trim() || null,
+        address: req.body.address?.trim() || null,
+        preferences: {},
+      };
+
+      // Check if customer with this email already exists
+      const existingCustomer = await storage.getCustomerByEmail(customerData.email);
+      if (existingCustomer) {
+        return res.status(409).json({ 
+          message: "Customer with this email already exists" 
+        });
+      }
+
+      const validatedData = insertCustomerSchema.parse(customerData);
+      const customer = await storage.createCustomer(validatedData);
+      
+      console.log('Customer created successfully:', customer.id);
       res.status(201).json(customer);
     } catch (error) {
       console.error("Error creating customer:", error);
-      res.status(400).json({ message: "Failed to create customer" });
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid customer data", 
+          errors: error.errors 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to create customer",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 

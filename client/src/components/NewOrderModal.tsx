@@ -89,9 +89,18 @@ export default function NewOrderModal() {
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       setFormData(prev => ({ ...prev, customerId: customer.id }));
       setShowNewCustomer(false);
+      setNewCustomer({ name: '', email: '', phone: '', address: '' });
       toast({
         title: 'Customer Created',
         description: 'New customer has been added successfully.',
+      });
+    },
+    onError: (error) => {
+      console.error('Customer creation error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create customer. Please try again.',
+        variant: 'destructive',
       });
     },
   });
@@ -144,16 +153,41 @@ export default function NewOrderModal() {
   const handleCreateCustomer = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newCustomer.name || !newCustomer.email) {
+    if (!newCustomer.name?.trim()) {
       toast({
         title: 'Missing Information',
-        description: 'Please enter customer name and email.',
+        description: 'Please enter customer name.',
         variant: 'destructive',
       });
       return;
     }
 
-    createCustomerMutation.mutate(newCustomer);
+    if (!newCustomer.email?.trim()) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please enter customer email.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newCustomer.email.trim())) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    createCustomerMutation.mutate({
+      name: newCustomer.name.trim(),
+      email: newCustomer.email.trim(),
+      phone: newCustomer.phone?.trim() || null,
+      address: newCustomer.address?.trim() || null,
+    });
   };
 
   return (
