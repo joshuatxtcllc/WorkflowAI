@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -6,11 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useToast } from '@/hooks/use-toast';
+import { queryClient } from '@/lib/queryClient';
+import { cn } from '@/lib/utils';
 import { apiRequest } from '@/lib/queryClient';
 import type { Customer } from '@shared/schema';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 interface NewOrderData {
   customerId: string;
@@ -39,14 +43,14 @@ export default function NewOrderModal() {
     notes: ''
   });
 
+  const [showNewCustomer, setShowNewCustomer] = useState(false);
+  const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
     name: '',
     email: '',
     phone: '',
     address: ''
   });
-
-  const [showNewCustomer, setShowNewCustomer] = useState(false);
 
   const { data: customers = [] } = useQuery<Customer[]>({
     queryKey: ['/api/customers'],
@@ -126,7 +130,7 @@ export default function NewOrderModal() {
       MAT: { hours: 1.5, price: 150 },
       SHADOWBOX: { hours: 4.5, price: 450 }
     };
-    
+
     setFormData(prev => ({
       ...prev,
       orderType,
@@ -137,7 +141,7 @@ export default function NewOrderModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.customerId || !formData.description) {
       toast({
         title: 'Missing Information',
@@ -152,7 +156,7 @@ export default function NewOrderModal() {
 
   const handleCreateCustomer = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newCustomer.name?.trim()) {
       toast({
         title: 'Missing Information',
@@ -199,30 +203,61 @@ export default function NewOrderModal() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Customer Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="customer">Customer</Label>
+          <div>
+            <Label htmlFor="customerId">Customer *</Label>
             <div className="flex gap-2">
-              <Select
-                value={formData.customerId}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, customerId: value }))}
-              >
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Select customer" />
-                </SelectTrigger>
-                <SelectContent>
-                  {customers.map((customer) => (
-                    <SelectItem key={customer.id} value={customer.id}>
-                      {customer.name} ({customer.email})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={customerSearchOpen} onOpenChange={setCustomerSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={customerSearchOpen}
+                    className="flex-1 justify-between"
+                  >
+                    {formData.customerId
+                      ? customers?.find((customer) => customer.id === formData.customerId)?.name
+                      : "Select customer..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search customers..." />
+                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandList>
+                      <CommandGroup>
+                        {customers?.map((customer) => (
+                          <CommandItem
+                            key={customer.id}
+                            value={`${customer.name} ${customer.email}`}
+                            onSelect={() => {
+                              setFormData(prev => ({ ...prev, customerId: customer.id }));
+                              setCustomerSearchOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.customerId === customer.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            <div className="flex flex-col">
+                              <span className="font-medium">{customer.name}</span>
+                              <span className="text-sm text-muted-foreground">{customer.email}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowNewCustomer(!showNewCustomer)}
               >
-                {showNewCustomer ? 'Cancel' : 'New Customer'}
+                <Plus className="h-4 w-4" />
               </Button>
             </div>
           </div>
