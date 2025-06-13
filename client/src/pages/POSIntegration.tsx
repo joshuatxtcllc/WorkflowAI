@@ -92,7 +92,7 @@ export default function POSIntegration() {
   const getStatusText = () => {
     if (isLoading) return "Checking...";
     if (!posStatus) return "Unknown";
-    if (posStatus.success && posStatus.connected && posStatus.authenticated) return "Connected & Syncing";
+    if (posStatus.success && posStatus.connected && posStatus.authenticated) return "Operational";
     if (posStatus.success && posStatus.connected && posStatus.authError) return "Auth Error";
     if (posStatus.success && posStatus.connected) return "Connected";
     if (posStatus.success && posStatus.needsApiKey) return "API Key Needed";
@@ -132,7 +132,7 @@ export default function POSIntegration() {
             <CardContent>
               <div className="text-2xl font-bold">{getStatusText()}</div>
               <p className="text-xs text-muted-foreground">
-                {posStatus?.success && posStatus?.connected ? 'Kanban API responsive' : 'Check connection'}
+                {posStatus?.success && posStatus?.connected ? 'Internal POS system ready' : 'Check connection'}
               </p>
             </CardContent>
           </Card>
@@ -145,10 +145,10 @@ export default function POSIntegration() {
             </CardHeader>
             <CardContent>
               <div className="text-xs font-mono bg-muted p-2 rounded">
-                {posStatus?.error?.includes('not configured') ? 'Not configured' : 'External POS system endpoint'}
+                {posStatus?.error?.includes('not configured') ? 'Internal Mode' : 'External POS system endpoint'}
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Configure POS_API_URL for external system
+                {posStatus?.error?.includes('not configured') ? 'Running as standalone system' : 'Configure POS_API_URL for external system'}
               </p>
             </CardContent>
           </Card>

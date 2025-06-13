@@ -1171,6 +1171,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import integrations
   const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
 
+  // Internal POS order creation endpoint
+  app.post('/api/pos/create-order', authenticateToken, async (req, res) => {
+    try {
+      const { customerName, customerPhone, customerEmail, orderType, description, price, dueDate } = req.body;
+
+      // Create or find customer
+      let customer = await storage.getCustomerByEmail(customerEmail);
+      if (!customer) {
+        customer = await storage.createCustomer({
+          name: customerName,
+          email: customerEmail,
+          phone: customerPhone || null,
+          address: null,
+        });
+      }
+
+      // Create order
+      const order = await storage.createOrder({
+        trackingId: `POS-${Date.now()}`,
+        customerId: customer.id,
+        orderType: orderType || 'FRAME',
+        status: 'ORDER_PROCESSED',
+        dueDate: new Date(dueDate || Date.now() + 7 * 24 * 60 * 60 * 1000),
+        estimatedHours: 3,
+        price: price || 0,
+        description: description || 'POS Order',
+        priority: 'MEDIUM',
+        notes: 'Created via internal POS system'
+      });
+
+      // Create status history
+      await storage.createStatusHistory({
+        orderId: order.id,
+        toStatus: 'ORDER_PROCESSED',
+        changedBy: (req.user as any)?.claims?.sub || 'pos-system',
+        reason: 'POS order created'
+      });
+
+      res.json({ success: true, order });
+    } catch (error) {
+      console.error('POS order creation error:', error);
+      res.status(500).json({ error: 'Failed to create POS order' });
+    }
+  });
+
     // SMS Integration Routes
     app.post('/api/integrations/sms/send', async (req, res) => {
       try {
