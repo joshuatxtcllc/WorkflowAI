@@ -49,9 +49,9 @@ export class SMSIntegration {
   async handleWebhook(req: Request, res: Response) {
     try {
       const { messageId, status, orderId, timestamp } = req.body;
-      
+
       console.log(`SMS webhook received: Order ${orderId}, Status ${status}`);
-      
+
       // Update order with SMS status if needed
       if (orderId) {
         // You can add SMS status tracking to your order schema if needed
@@ -75,14 +75,15 @@ export class POSIntegration {
     // Configure for external POS system integration
     this.baseUrl = process.env.POS_API_URL || '';
     this.apiKey = process.env.POS_API_KEY || '';
-    
+
     console.log('POS Integration initialized:');
-    console.log('- External POS URL:', this.baseUrl || 'Internal system mode');
+    console.log('- External POS URL:', this.baseUrl || 'Not configured');
     console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
-    
+
     if (!this.baseUrl) {
-      console.log('- Status: Running in internal mode - POS integration ready');
-      console.log('- This frame shop system is operating as standalone POS');
+      console.log('- Status: Waiting for external POS system configuration');
+      console.log('- This frame shop system is ready to receive orders from external POS');
+      console.log('- To connect: Set POS_API_URL and POS_API_KEY in Secrets');
     } else {
       console.log('- Status: Ready to connect to external POS system');
     }
@@ -144,13 +145,13 @@ export class POSIntegration {
   async handleWebhook(req: Request, res: Response) {
     try {
       const { orderId, status, paymentStatus, timestamp } = req.body;
-      
+
       console.log(`POS webhook received: Order ${orderId}, Status ${status}`);
-      
+
       // Find order by tracking ID and update
       const orders = await storage.getAllOrders();
       const order = orders.find(o => o.trackingId === orderId);
-      
+
       if (order) {
         // Update payment or status based on POS data
         if (paymentStatus) {
@@ -195,7 +196,7 @@ export class POSIntegration {
         },
         signal: controller.signal
       });
-      
+
       console.log('Health check response:', healthResponse.status, healthResponse.statusText);
 
       clearTimeout(timeoutId);
@@ -214,10 +215,10 @@ export class POSIntegration {
 
         // Try different authentication methods
         let ordersResponse;
-        
+
         // Use Bearer token authentication as specified by the API
         console.log(`Attempting Bearer token authentication with API key: ${this.apiKey.substring(0, 8)}...`);
-        
+
         ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
           method: 'GET',
           headers: {
@@ -238,7 +239,7 @@ export class POSIntegration {
           return { success: true, orders: newOrders, connected: true, authenticated: true };
         } else {
           console.log(`Orders fetch failed: ${ordersResponse.status} - ${ordersResponse.statusText}`);
-          
+
           // Try to get more details about the authentication requirements
           try {
             const responseText = await ordersResponse.text();
@@ -246,7 +247,7 @@ export class POSIntegration {
           } catch (e) {
             console.log('Could not read response body');
           }
-          
+
           return { success: true, connected: true, needsApiKey: false, authError: true, 
                    error: `Authentication failed: ${ordersResponse.status} ${ordersResponse.statusText}` };
         }
@@ -317,7 +318,7 @@ export class POSIntegration {
   // Real-time order synchronization with retry logic
   async startRealTimeSync() {
     console.log('Starting real-time POS synchronization...');
-    
+
     // Check initial connection (non-blocking)
     const connectionTest = await this.fetchNewOrders();
     if (!connectionTest.success) {
@@ -377,7 +378,7 @@ export class DashboardIntegration {
     try {
       const orders = await storage.getAllOrders();
       const customers = await storage.getCustomers();
-      
+
       const metrics = {
         totalOrders: orders.length,
         activeOrders: orders.filter(o => o.status !== 'PICKED_UP').length,
