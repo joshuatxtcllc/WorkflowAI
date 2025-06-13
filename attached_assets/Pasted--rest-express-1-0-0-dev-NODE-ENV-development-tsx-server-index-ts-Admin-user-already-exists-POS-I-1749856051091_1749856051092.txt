@@ -1,0 +1,769 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Admin user already exists
+POS Integration initialized:
+- External POS URL: https://jaysartandframes.com
+- API Key configured: Yes (32 chars)
+- Status: Ready to connect to external POS system
+Starting real-time POS synchronization...
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+POS system operational - undefined
+POS integration initialized with real-time sync
+9:42:08 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+9:42:15 PM [express] GET /api/auth/user 304 in 66ms :: {"id":"ac461820-55f2-46ff-a798-236fdc101806",…
+9:42:15 PM [express] GET /api/test/auth 200 in 3ms :: {"success":true,"message":"Hub connection auth…
+WebSocket client connected
+9:42:16 PM [express] GET /api/analytics/workload 304 in 188ms :: {"totalOrders":105,"totalHours":262…
+getOrders query completed: 133ms
+9:42:16 PM [express] GET /api/orders 304 in 382ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301"…
+getOrders query completed: 142ms
+9:42:16 PM [express] GET /api/ai/alerts 200 in 402ms :: {"alerts":[{"id":"overdue_1lrw1olv3_iu6ewibo…
+9:42:16 PM [express] GET /api/customers 304 in 392ms :: [{"id":"mystery-customer-001","name":"Myster…
+WebSocket client connected
+WebSocket client connected
+9:42:17 PM [express] GET /api/orders 304 in 59ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301",…
+9:42:17 PM [express] GET /api/ai/analysis 200 in 1921ms :: {"totalOrders":105,"totalHours":262.5,"av…
+9:42:18 PM [express] GET /api/ai/analysis 304 in 59ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 400ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+9:42:48 PM [express] GET /api/ai/analysis 304 in 242ms :: {"totalOrders":105,"totalHours":262.5,"ave…
+getOrders query completed: 126ms
+9:42:48 PM [express] GET /api/orders 304 in 372ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301"…
+9:42:48 PM [express] GET /api/ai/analysis 304 in 59ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 127ms
+9:43:38 PM [express] GET /api/ai/analysis 200 in 64ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+9:43:53 PM [express] GET /api/ai/analysis 304 in 236ms :: {"totalOrders":105,"totalHours":262.5,"ave…
+getOrders query completed: 354ms
+9:44:06 PM [express] GET /api/ai/analysis 304 in 60ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+9:44:39 PM [express] GET /api/ai/analysis 200 in 59ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 330ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 129ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 302ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+9:46:39 PM [express] GET /api/ai/analysis 200 in 61ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 309ms
+9:47:06 PM [express] GET /api/ai/analysis 304 in 58ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 124ms
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 299ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 128ms
+Connecting to external Kanban system: https://jaysartandframes.com
+9:49:38 PM [express] GET /api/ai/analysis 200 in 60ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 307ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 131ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 309ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 128ms
+9:51:38 PM [express] GET /api/ai/analysis 200 in 60ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 304ms
+9:52:06 PM [express] GET /api/ai/analysis 304 in 61ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 317ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 123ms
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+9:53:08 PM [express] GET /api/ai/analysis 200 in 59ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 309ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+WebSocket client disconnected
+WebSocket client disconnected
+WebSocket client disconnected
+getOrders query completed: 299ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 127ms
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 135ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Auto-syncing metrics to dashboard...
+getOrders query completed: 311ms
+getOrders query completed: 311ms
+🚨 CRITICAL: Dashboard sync error: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:5682:19)
+    at successSteps (node:internal/deps/undici/undici:5663:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4561:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async consumeBody (node:internal/deps/undici/undici:5672:7)
+    at async DashboardIntegration.syncMetrics (/home/runner/workspace/server/integrations.ts:446:22)
+    at async autoSyncMetrics (/home/runner/workspace/server/integrations.ts:499:18)
+    at async Timeout._onTimeout (/home/runner/workspace/server/routes.ts:1366:26)
+📊 Business metrics sync FAILED at: 2025-06-13T21:57:06.724Z
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 172ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 351ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 127ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 315ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 130ms
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 127ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 122ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 307ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+getOrders query completed: 118ms
+getOrders query completed: 126ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 300ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 123ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 305ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 125ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 312ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 314ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 126ms
+getOrders query completed: 300ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 130ms
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 306ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 120ms
+getOrders query completed: 299ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 315ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+getOrders query completed: 302ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 122ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 320ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 175ms
+getOrders query completed: 313ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 121ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 306ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 328ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 126ms
+getOrders query completed: 356ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 318ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 129ms
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 305ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+getOrders query completed: 330ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+getOrders query completed: 337ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 127ms
+getOrders query completed: 302ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+getOrders query completed: 314ms
+Auto-syncing metrics to dashboard...
+getOrders query completed: 120ms
+🚨 CRITICAL: Dashboard sync error: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:5682:19)
+    at successSteps (node:internal/deps/undici/undici:5663:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4561:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async consumeBody (node:internal/deps/undici/undici:5672:7)
+    at async DashboardIntegration.syncMetrics (/home/runner/workspace/server/integrations.ts:446:22)
+    at async autoSyncMetrics (/home/runner/workspace/server/integrations.ts:499:18)
+    at async Timeout._onTimeout (/home/runner/workspace/server/routes.ts:1366:26)
+📊 Business metrics sync FAILED at: 2025-06-13T22:27:07.345Z
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 298ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 126ms
+getOrders query completed: 306ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 131ms
+getOrders query completed: 311ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+getOrders query completed: 301ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 120ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 307ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 354ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 352ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 122ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 446ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 126ms
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 324ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 304ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 302ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 121ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 338ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 122ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 297ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 307ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 299ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+getOrders query completed: 315ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 129ms
+getOrders query completed: 321ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 304ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 123ms
+getOrders query completed: 301ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 299ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 127ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 301ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 120ms
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 124ms
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 311ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 129ms
+getOrders query completed: 307ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 124ms
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 308ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 126ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 301ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 127ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 311ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 129ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 326ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 315ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 121ms
+getOrders query completed: 306ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 122ms
+getOrders query completed: 310ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 313ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 125ms
+getOrders query completed: 302ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+getOrders query completed: 311ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 124ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 325ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 120ms
+getOrders query completed: 298ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+getOrders query completed: 123ms
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 304ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+getOrders query completed: 127ms
+Successfully fetched undefined orders from Kanban API
+getOrders query completed: 346ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+11:06:33 PM [express] GET /api/ai/analysis 200 in 244ms :: {"totalOrders":105,"totalHours":262.5,"ave…
+getOrders query completed: 121ms
+11:06:33 PM [express] GET /api/ai/alerts 200 in 365ms :: {"alerts":[{"id":"overdue_1lrw1olv3_evd2tfxb…
+getOrders query completed: 117ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+11:06:43 PM [express] GET /api/test/auth 200 in 0ms :: {"success":true,"message":"Hub connection auth…
+11:06:44 PM [express] GET /api/analytics/workload 304 in 177ms :: {"totalOrders":105,"totalHours":262…
+11:06:48 PM [express] GET /api/ai/analysis 200 in 60ms :: {"totalOrders":105,"totalHours":262.5,"aver…
+getOrders query completed: 114ms
+11:06:49 PM [express] GET /api/orders 304 in 175ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301"…
+11:07:04 PM [express] GET /api/ai/analysis 304 in 243ms :: {"totalOrders":105,"totalHours":262.5,"ave…
+getOrders query completed: 123ms
+Connecting to external Kanban system: https://jaysartandframes.com
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+11:07:13 PM [express] GET /api/test/auth 200 in 1ms :: {"success":true,"message":"Hub connection auth…
+11:07:14 PM [express] GET /api/analytics/workload 304 in 176ms :: {"totalOrders":105,"totalHours":262…
+getOrders query completed: 117ms
+11:07:19 PM [express] GET /api/orders 304 in 178ms :: [{"id":"mystery-001","trackingId":"MYSTERY-301"…
+11:07:19 PM [express] GET /api/ai/analysis 304 in 368ms :: {"totalOrders":105,"totalHours":262.5,"ave…
