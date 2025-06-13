@@ -169,67 +169,47 @@ export class POSIntegration {
 
   // Fetch new orders from external POS system
   async fetchNewOrders() {
-    if (!this.baseUrl) {
-      // For internal system, return success status without external connection
-      return { 
-        success: true, 
-        connected: true,
-        needsApiKey: false,
-        authenticated: true,
-        orders: [],
-        error: null,
-        message: 'Internal POS system operational - no external connection needed'
-      };
+    if (!this.baseUrl || !this.apiKey) {
+      console.log('POS system not configured - running in internal mode');
+      return { success: true, message: 'Internal mode - no external POS configured', orders: [] };
     }
 
     try {
-      // Create a controller for timeout handling
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      // Check connection first with health endpoint  
+      console.log(`Connecting to external Kanban system: ${this.baseUrl}`);
+
+      // Test basic connectivity first using the Kanban health endpoint
       const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`, {
         method: 'GET',
+        signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Frame-Shop-Integration/1.0'
-        },
-        signal: controller.signal
+          'User-Agent': 'Jay-Frames-Kanban/1.0',
+          'Accept': 'application/json'
+        }
       });
-
-      console.log('Health check response:', healthResponse.status, healthResponse.statusText);
 
       clearTimeout(timeoutId);
 
-      if (!healthResponse.ok) {
-        if (healthResponse.status === 503) {
-          return { success: false, error: 'POS system temporarily unavailable', retryable: true };
-        }
-        throw new Error(`POS system unreachable: ${healthResponse.status}`);
-      }
+      if (healthResponse.ok) {
+        console.log('Kanban system is reachable');
 
-      // If API key is available, fetch orders
-      if (this.apiKey) {
+        // Now try to fetch orders using the Kanban API endpoint
         const ordersController = new AbortController();
-        const ordersTimeoutId = setTimeout(() => ordersController.abort(), 5000);
+        const ordersTimeoutId = setTimeout(() => ordersController.abort(), 15000);
 
-        // Try different authentication methods
-        let ordersResponse;
-
-        // Use Bearer token authentication as specified by the API
-        console.log(`Attempting Bearer token authentication with API key: ${this.apiKey.substring(0, 8)}...`);
-
-        ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
+        const ordersResponse = await fetch(`${this.baseUrl}/api/kanban/orders`, {
           method: 'GET',
+          signal: ordersController.signal,
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.apiKey}`,
-            'User-Agent': 'Frame-Shop-Integration/1.0'
-          },
-          signal: ordersController.signal
+            'X-API-Key': this.apiKey,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': 'Jay-Frames-Kanban/1.0'
+          }
         });
-
-        console.log(`Authentication result: ${ordersResponse.status} ${ordersResponse.statusText}`);
 
         clearTimeout(ordersTimeoutId);
 
@@ -253,14 +233,14 @@ export class POSIntegration {
         }
       }
 
-      console.log('POS system connected but API key needed for order sync');
+      console.log('Kanban system connected but API key needed for order sync');
       return { success: true, connected: true, needsApiKey: true };
     } catch (error) {
       if ((error as Error).name === 'AbortError') {
-        console.error('POS request timeout');
+        console.error('Kanban request timeout');
         return { success: false, error: 'Request timeout' };
       }
-      console.error('POS fetch error:', error);
+      console.error('Kanban fetch error:', error);
       return { success: false, error: (error as Error).message };
     }
   }
@@ -356,6 +336,47 @@ export class POSIntegration {
     }, 30000);
 
     return true;
+  }
+
+  // Sync specific order status to external Kanban system
+  async syncOrder(orderId: string) {
+    if (!this.baseUrl || !this.apiKey) {
+      return { success: false, error: 'Kanban system not configured' };
+    }
+
+    try {
+      const { storage } = await import('./storage');
+      const order = await storage.getOrder(orderId);
+
+      if (!order) {
+        return { success: false, error: 'Order not found' };
+      }
+
+      const response = await fetch(`${this.baseUrl}/api/kanban/orders/${orderId}/status`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'X-API-Key': this.apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: order.status,
+          updatedAt: new Date().toISOString(),
+          notes: 'Synced from Kanban system'
+        })
+      });
+
+      if (response.ok) {
+        console.log(`Order ${orderId} synced successfully to external Kanban system`);
+        return { success: true, message: 'Order synced to external Kanban' };
+      } else {
+        console.error(`Failed to sync order ${orderId}: ${response.statusText}`);
+        return { success: false, error: `Sync failed: ${response.statusText}` };
+      }
+    } catch (error) {
+      console.error('Order sync error:', error);
+      return { success: false, error: (error as Error).message };
+    }
   }
 }
 

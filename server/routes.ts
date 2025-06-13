@@ -1045,6 +1045,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Kanban API endpoints for external system integration
+  app.get('/api/kanban/status', (req, res) => {
+    try {
+      res.json({ 
+        status: 'operational',
+        message: 'Kanban system is running',
+        timestamp: new Date().toISOString(),
+        server: 'Jay\'s Frames Kanban System'
+      });
+    } catch (error) {
+      console.error('Kanban status check error:', error);
+      res.status(500).json({ error: 'Kanban status check failed' });
+    }
+  });
+
+  app.get('/api/kanban/orders', async (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+
+      if (!apiKey || apiKey !== 'kanban_admin_key_2025_full_access') {
+        return res.status(401).json({ error: 'Invalid API key' });
+      }
+
+      const orders = await storage.getOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error('Kanban orders fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+  });
+
+  app.post('/api/kanban/orders/:orderId/status', async (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+
+      if (!apiKey || apiKey !== 'kanban_admin_key_2025_full_access') {
+        return res.status(401).json({ error: 'Invalid API key' });
+      }
+
+      const { orderId } = req.params;
+      const { status, notes } = req.body;
+
+      const updatedOrder = await storage.updateOrder(orderId, { status });
+      
+      // Create status history entry
+      await storage.createStatusHistory({
+        orderId,
+        toStatus: status,
+        changedBy: 'external-system',
+        reason: notes || 'Updated via Kanban API'
+      });
+
+      res.json({ 
+        success: true, 
+        message: 'Order status updated',
+        order: updatedOrder
+      });
+    } catch (error) {
+      console.error('Kanban order status update error:', error);
+      res.status(500).json({ error: 'Failed to update order status' });
+    }
+  });
+
   // Test endpoint for hub connection verification
   app.get('/api/test/auth', (req, res) => {
     try {
