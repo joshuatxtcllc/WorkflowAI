@@ -9,6 +9,7 @@ import OrderCard from './OrderCard';
 import WorkloadAlertBanner from './WorkloadAlertBanner';
 import { ConfettiBurst } from './ConfettiBurst';
 import { useConfettiStore } from '@/store/useConfettiStore';
+import { useStatsStore } from '@/store/useStatsStore';
 import { KANBAN_COLUMNS } from '@/lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter } from 'lucide-react';
@@ -146,6 +147,7 @@ export default function KanbanBoard() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
+  const { incrementCompletion, getStats } = useStatsStore();
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -209,13 +211,47 @@ export default function KanbanBoard() {
 
         // Trigger confetti for completed orders
         if (variables.status === 'COMPLETED' || variables.status === 'PICKED_UP') {
+          // Track completion stats
+          incrementCompletion();
+          const stats = getStats();
+          
           burst(75, 40); // Trigger confetti from center-right of screen
           
+          // Add a small delay for extra celebratory bursts
+          setTimeout(() => burst(25, 60), 500);
+          setTimeout(() => burst(85, 30), 1000);
+          
+          const completionMessages = [
+            "Outstanding craftsmanship!",
+            "Another masterpiece complete!",
+            "Excellent work team!",
+            "Beautiful frame ready for pickup!",
+            "Quality work delivered!"
+          ];
+          
+          const randomMessage = completionMessages[Math.floor(Math.random() * completionMessages.length)];
+          
+          // Create performance summary
+          const performanceSummary = `${randomMessage} Daily: ${stats.daily} | Total: ${stats.total} | Streak: ${stats.streak} days`;
+          
           toast({
-            title: "🎉 Order Completed! 🎉",
-            description: `${order.customer.name}'s order is ready! Excellent work!`,
-            duration: 4000,
+            title: variables.status === 'PICKED_UP' ? "🎉 Order Picked Up! 🎉" : "🎉 Order Completed! 🎉",
+            description: `${order.customer.name}'s order is ${variables.status === 'PICKED_UP' ? 'picked up' : 'ready'}! ${performanceSummary}`,
+            duration: 5000,
           });
+          
+          // Special celebration for milestones
+          if (stats.daily === 10 || stats.total % 50 === 0 || stats.streak === 7) {
+            setTimeout(() => {
+              toast({
+                title: "🏆 Milestone Achievement! 🏆",
+                description: stats.daily === 10 ? "10 orders completed today!" : 
+                           stats.total % 50 === 0 ? `${stats.total} total completions!` :
+                           "7-day completion streak!",
+                duration: 6000,
+              });
+            }, 1500);
+          }
         } else {
           toast({
             title: "Order Status Updated!",
