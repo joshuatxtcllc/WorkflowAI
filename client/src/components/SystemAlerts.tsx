@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -17,6 +16,10 @@ interface SystemAlert {
 
 export function SystemAlerts() {
   const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+  const [dismissedAlerts, setDismissedAlerts] = useState<string[]>(() => {
+    const stored = localStorage.getItem('dismissedAlerts');
+    return stored ? JSON.parse(stored) : [];
+  });
 
   // Check hub connection status
   const { data: hubStatus, error: hubError } = useQuery({
@@ -116,6 +119,15 @@ export function SystemAlerts() {
     setAlerts(newAlerts);
   }, [hubError, syncError, dbError, hubStatus]);
 
+  const dismissAlert = (alertId: string) => {
+    setDismissedAlerts(prev => {
+      const newDismissed = [...prev, alertId];
+      // Store in localStorage to persist across sessions
+      localStorage.setItem('dismissedAlerts', JSON.stringify(newDismissed));
+      return newDismissed;
+    });
+  };
+
   if (alerts.length === 0) {
     return (
       <div className="mb-2">
@@ -130,47 +142,49 @@ export function SystemAlerts() {
   return (
     <div className="mb-3 space-y-2">
       {alerts.map((alert) => (
-        <Alert 
-          key={alert.id} 
-          variant="destructive" 
-          className={`border-l-4 border-r-0 border-t-0 border-b-0 py-2 px-3 ${
-            alert.type === 'critical' 
-              ? 'border-red-600 bg-red-50 shadow-sm' 
-              : 'border-orange-500 bg-orange-50'
-          }`}
-        >
-          <AlertTriangle className={`h-5 w-5 ${
-            alert.type === 'critical' ? 'text-red-600' : 'text-orange-500'
-          }`} />
-          <AlertTitle className={`text-sm font-semibold ${
-            alert.type === 'critical' ? 'text-red-800' : 'text-orange-800'
-          }`}>
-            🚨 {alert.title}
-          </AlertTitle>
-          <AlertDescription className="space-y-1">
-            <p className={`text-sm ${
-              alert.type === 'critical' ? 'text-red-700' : 'text-orange-700'
+        !dismissedAlerts.includes(alert.id) && (
+          <Alert 
+            key={alert.id} 
+            variant="destructive" 
+            className={`border-l-4 border-r-0 border-t-0 border-b-0 py-2 px-3 ${
+              alert.type === 'critical' 
+                ? 'border-red-600 bg-red-50 shadow-sm' 
+                : 'border-orange-500 bg-orange-50'
+            }`}
+          >
+            <AlertTriangle className={`h-5 w-5 ${
+              alert.type === 'critical' ? 'text-red-600' : 'text-orange-500'
+            }`} />
+            <AlertTitle className={`text-sm font-semibold ${
+              alert.type === 'critical' ? 'text-red-800' : 'text-orange-800'
             }`}>
-              {alert.message}
-            </p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {alert.component}
-                </Badge>
-                <span className="text-xs text-gray-500 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {new Date(alert.timestamp).toLocaleTimeString()}
-                </span>
+              🚨 {alert.title}
+            </AlertTitle>
+            <AlertDescription className="space-y-1">
+              <p className={`text-sm ${
+                alert.type === 'critical' ? 'text-red-700' : 'text-orange-700'
+              }`}>
+                {alert.message}
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {alert.component}
+                  </Badge>
+                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {new Date(alert.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+                {alert.action && (
+                  <span className="text-xs font-medium text-blue-600">
+                    Action: {alert.action}
+                  </span>
+                )}
               </div>
-              {alert.action && (
-                <span className="text-xs font-medium text-blue-600">
-                  Action: {alert.action}
-                </span>
-              )}
-            </div>
-          </AlertDescription>
-        </Alert>
+            </AlertDescription>
+          </Alert>
+        )
       ))}
     </div>
   );

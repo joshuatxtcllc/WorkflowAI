@@ -484,9 +484,13 @@ export class DatabaseStorage implements IStorage {
     statusCounts: Record<string, number>;
   }> {
     try {
-      // Exclude Mystery/Unclaimed orders from active workload metrics
+      // Exclude Mystery/Unclaimed and completed orders from active workload metrics
       const allOrders = await db.select().from(orders);
-      const activeOrders = allOrders.filter(order => order.status !== 'MYSTERY_UNCLAIMED');
+      const activeOrders = allOrders.filter(order => 
+        order.status !== 'MYSTERY_UNCLAIMED' && 
+        order.status !== 'COMPLETED' && 
+        order.status !== 'PICKED_UP'
+      );
       const totalOrders = activeOrders.length;
       const totalHours = activeOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
       const averageComplexity = totalHours / totalOrders || 0;

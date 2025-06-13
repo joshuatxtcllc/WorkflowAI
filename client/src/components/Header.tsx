@@ -3,8 +3,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign, Zap } from "lucide-react";
 import { Link } from "wouter";
+import { useOrderStore } from "@/store/useOrderStore";
 
 export default function Header() {
+  const { toggleNewOrderModal } = useOrderStore();
   const { data: workloadMetrics } = useQuery({
     queryKey: ["/api/analytics/workload"],
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -24,7 +26,10 @@ export default function Header() {
               <h1 className="text-2xl font-bold font-mono tracking-wider text-jade-400">JAY'S FRAMES</h1>
               <p className="text-sm text-gray-400">Smart Production Management</p>
             </div>
-            <Button className="bg-jade-500 hover:bg-jade-400 text-black font-semibold ml-4">
+            <Button 
+              className="bg-jade-500 hover:bg-jade-400 text-black font-semibold ml-4"
+              onClick={toggleNewOrderModal}
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Order
             </Button>

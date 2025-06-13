@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
 import { SystemAlerts } from '@/components/SystemAlerts';
+import NewOrderModal from '@/components/NewOrderModal';
 
 
 // Component to handle scroll detection
@@ -81,6 +82,7 @@ export default function Dashboard() {
             <KanbanBoard />
           </main>
           <AIAssistant />
+          <NewOrderModal />
 
           {ui.isOrderDetailsOpen && (
             <OrderDetails />
