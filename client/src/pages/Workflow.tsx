@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import WorkflowEnhancements from '@/components/WorkflowEnhancements';
 import KanbanBoard from '@/components/KanbanBoard';
+import CompletionStats from '@/components/CompletionStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Zap, Kanban } from 'lucide-react';
+import { Zap, Kanban, Trophy } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 
 export default function Workflow() {
@@ -20,7 +21,7 @@ export default function Workflow() {
       </div>
 
       <Tabs defaultValue="kanban" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="kanban" className="flex items-center gap-2">
             <Kanban className="h-4 w-4" />
             Kanban Board
@@ -28,6 +29,10 @@ export default function Workflow() {
           <TabsTrigger value="workflow" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
             Quick Actions
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="flex items-center gap-2">
+            <Trophy className="h-4 w-4" />
+            Team Stats
           </TabsTrigger>
         </TabsList>
 
@@ -37,6 +42,10 @@ export default function Workflow() {
 
         <TabsContent value="workflow" className="space-y-6">
           <WorkflowEnhancements orders={orders} />
+        </TabsContent>
+
+        <TabsContent value="stats" className="space-y-6">
+          <CompletionStats />
         </TabsContent>
       </Tabs>
     </div>
