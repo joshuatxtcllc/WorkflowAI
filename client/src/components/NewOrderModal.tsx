@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
+import { Check, ChevronsUpDown, Search, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import type { Customer, InsertOrder } from '@shared/schema';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
-import { cn } from '@/lib/utils';
 import { apiRequest } from '@/lib/queryClient';
-import type { Customer } from '@shared/schema';
-import { Check, ChevronsUpDown } from 'lucide-react';
 
 interface NewOrderData {
   customerId: string;
@@ -199,6 +200,9 @@ export default function NewOrderModal() {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Order</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to create a new custom frame order.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
