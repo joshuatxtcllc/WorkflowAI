@@ -86,7 +86,7 @@ export default function NewOrderModal() {
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: typeof newCustomer) => {
       console.log('Sending customer data:', customerData);
-      
+
       const response = await apiRequest('/api/customers', {
         method: 'POST',
         headers: {
@@ -94,7 +94,7 @@ export default function NewOrderModal() {
         },
         body: JSON.stringify(customerData),
       });
-      
+
       console.log('Customer creation response:', response);
       return response;
     },
@@ -111,15 +111,15 @@ export default function NewOrderModal() {
     },
     onError: (error: any) => {
       console.error('Customer creation error:', error);
-      
+
       let errorMessage = 'Failed to create customer. Please try again.';
-      
+
       if (error?.message) {
         errorMessage = error.message;
       } else if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
-      
+
       toast({
         title: 'Error Creating Customer',
         description: errorMessage,
