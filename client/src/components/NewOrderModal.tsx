@@ -85,12 +85,21 @@ export default function NewOrderModal() {
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: typeof newCustomer) => {
-      return apiRequest('/api/customers', {
+      console.log('Sending customer data:', customerData);
+      
+      const response = await apiRequest('/api/customers', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(customerData),
       });
+      
+      console.log('Customer creation response:', response);
+      return response;
     },
     onSuccess: (customer) => {
+      console.log('Customer created successfully:', customer);
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       setFormData(prev => ({ ...prev, customerId: customer.id }));
       setShowNewCustomer(false);
@@ -100,11 +109,20 @@ export default function NewOrderModal() {
         description: 'New customer has been added successfully.',
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Customer creation error:', error);
+      
+      let errorMessage = 'Failed to create customer. Please try again.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
       toast({
-        title: 'Error',
-        description: 'Failed to create customer. Please try again.',
+        title: 'Error Creating Customer',
+        description: errorMessage,
         variant: 'destructive',
       });
     },

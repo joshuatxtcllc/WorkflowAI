@@ -85,9 +85,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Creating customer with data:', req.body);
       
       // Validate required fields
-      if (!req.body.name || !req.body.email) {
+      if (!req.body.name?.trim()) {
         return res.status(400).json({ 
-          message: "Name and email are required" 
+          message: "Customer name is required" 
+        });
+      }
+
+      if (!req.body.email?.trim()) {
+        return res.status(400).json({ 
+          message: "Customer email is required" 
+        });
+      }
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email.trim())) {
+        return res.status(400).json({ 
+          message: "Please enter a valid email address" 
         });
       }
 
@@ -101,11 +115,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Check if customer with this email already exists
-      const existingCustomer = await storage.getCustomerByEmail(customerData.email);
-      if (existingCustomer) {
-        return res.status(409).json({ 
-          message: "Customer with this email already exists" 
-        });
+      try {
+        const existingCustomer = await storage.getCustomerByEmail(customerData.email);
+        if (existingCustomer) {
+          return res.status(409).json({ 
+            message: "A customer with this email already exists" 
+          });
+        }
+      } catch (dbError) {
+        console.log('Database check error (likely no existing customer):', dbError);
       }
 
       const validatedData = insertCustomerSchema.parse(customerData);
@@ -119,12 +137,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
           message: "Invalid customer data", 
-          errors: error.errors 
+          errors: error.errors.map(e => e.message).join(', ')
         });
       }
       
+      // Check for database constraint errors
+      if (error instanceof Error) {
+        if (error.message.includes('unique constraint') || error.message.includes('duplicate key')) {
+          return res.status(409).json({ 
+            message: "A customer with this email already exists" 
+          });
+        }
+      }
+      
       res.status(500).json({ 
-        message: "Failed to create customer",
+        message: "Failed to create customer. Please try again.",
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
