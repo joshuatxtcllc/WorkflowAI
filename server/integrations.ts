@@ -80,10 +80,9 @@ export class POSIntegration {
     console.log('- External POS URL:', this.baseUrl || 'Not configured');
     console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
 
-    if (!this.baseUrl) {
-      console.log('- Status: Waiting for external POS system configuration');
-      console.log('- This frame shop system is ready to receive orders from external POS');
-      console.log('- To connect: Set POS_API_URL and POS_API_KEY in Secrets');
+    if (!this.baseUrl || !this.apiKey) {
+      console.log('- Status: POS integration disabled - missing configuration');
+      console.log('- To enable: Set POS_API_URL and POS_API_KEY in Secrets');
     } else {
       console.log('- Status: Ready to connect to external POS system');
     }
@@ -170,8 +169,7 @@ export class POSIntegration {
   // Fetch new orders from external POS system
   async fetchNewOrders() {
     if (!this.baseUrl || !this.apiKey) {
-      console.log('POS system not configured - running in internal mode');
-      return { success: true, message: 'Internal mode - no external POS configured', orders: [] };
+      return { success: false, error: 'POS credentials not configured', message: 'Set POS_API_URL and POS_API_KEY in Secrets' };
     }
 
     try {
