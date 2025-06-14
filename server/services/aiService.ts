@@ -180,10 +180,18 @@ Provide realistic analysis focusing on:
       // Generate session ID if not provided
       const session = sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      // Check for MCP-enhanced queries first
+      // ALWAYS try MCP enhancement first - this is your competitive advantage
       const mcpResponse = await this.processMCPQuery(userMessage, session);
       if (mcpResponse) {
+        console.log('✅ MCP provided enhanced response');
         return mcpResponse;
+      }
+      
+      // Try MCP workflow optimization for any business query
+      const workflowResponse = await this.tryMCPWorkflowOptimization(userMessage, session);
+      if (workflowResponse) {
+        console.log('✅ MCP workflow optimization activated');
+        return workflowResponse;
       }
       
       // Check for specific action patterns
@@ -193,10 +201,41 @@ Provide realistic analysis focusing on:
         return actionResponse;
       }
 
-      // Auto-detect customer name mentions and search for their orders
+      // Auto-detect customer name mentions and use MCP for enhanced search
       const customerNameMatch = this.extractCustomerNameFromMessage(userMessage);
       if (customerNameMatch) {
         console.log('Auto-detected customer name:', customerNameMatch);
+        
+        // Use MCP for enhanced customer context
+        const mcpCustomerContext = await mcpService.getCustomerContext(session, customerNameMatch);
+        if (mcpCustomerContext) {
+          console.log('✅ MCP enhanced customer search');
+          return `🔍 **Enhanced Customer Intelligence: ${mcpCustomerContext.customer.name}**
+
+📊 **Order Analytics:**
+- Total Orders: ${mcpCustomerContext.metrics.totalOrders}
+- Total Value: $${mcpCustomerContext.metrics.totalValue.toFixed(2)}
+- Average Order: $${mcpCustomerContext.metrics.avgOrderValue.toFixed(2)}
+- Customer Type: ${mcpCustomerContext.metrics.repeatCustomer ? 'Repeat Customer ⭐' : 'New Customer'}
+
+🎯 **Business Intelligence:**
+- Preferred Frame Type: ${mcpCustomerContext.preferences.preferredFrameType || 'Not established'}
+- Budget Category: ${mcpCustomerContext.preferences.budgetRange}
+- Risk Level: ${mcpCustomerContext.riskFactors.riskLevel}
+
+📋 **Recent Orders:**
+${mcpCustomerContext.orderHistory.slice(0, 3).map(order => 
+  `• ${order.trackingId} - ${order.orderType} - ${order.status?.replace('_', ' ')}`
+).join('\n')}
+
+💡 **MCP Recommendations:**
+${mcpCustomerContext.preferences.budgetRange === 'Premium' ? '• Offer premium materials and conservation options' : '• Focus on value and efficiency'}
+${mcpCustomerContext.riskFactors.riskLevel === 'HIGH' ? '• Monitor closely and maintain frequent communication' : '• Standard service protocols appropriate'}
+
+*This enhanced response is powered by your MCP customer intelligence system.*`;
+        }
+        
+        // Fallback to basic search
         const customerSearchResult = await this.findCustomerOrders(`find orders for ${customerNameMatch}`);
         if (customerSearchResult && !customerSearchResult.includes('❌ No customer found')) {
           return customerSearchResult;
@@ -284,6 +323,47 @@ Respond as a knowledgeable frame shop management assistant with access to real c
       }
     }
 
+    return null;
+  }
+
+  private async tryMCPWorkflowOptimization(userMessage: string, sessionId: string): Promise<string | null> {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Automatically enhance any business-related query with MCP intelligence
+    const businessKeywords = ['order', 'customer', 'material', 'workflow', 'capacity', 'behind', 'help', 'status', 'urgent', 'overdue', 'production'];
+    const hasBussinessContext = businessKeywords.some(keyword => lowerMessage.includes(keyword));
+    
+    if (hasBussinessContext) {
+      try {
+        const capacityAnalysis = await mcpService.analyzeShopCapacity(sessionId);
+        const workflowOptimization = await mcpService.optimizeWorkflow(sessionId);
+        
+        return `🎯 **MCP-Enhanced Business Intelligence**
+
+**Current Capacity Status:**
+- Daily Capacity: ${capacityAnalysis.dailyCapacity} orders
+- Current Load: ${capacityAnalysis.currentLoad} hours
+- Completion Forecast: ${Math.ceil(capacityAnalysis.currentLoad / (capacityAnalysis.dailyCapacity * 8))} days
+
+**Smart Recommendations:**
+${workflowOptimization.efficiencyTips.slice(0, 3).map(tip => `• ${tip}`).join('\n')}
+
+**Today's Optimized Queue:**
+${workflowOptimization.todaysQueue.slice(0, 5).map((order, i) => 
+  `${i + 1}. ${order.trackingId} - ${order.customer?.name} (${order.estimatedHours}h)`
+).join('\n')}
+
+**Material Status:**
+${workflowOptimization.materialOrders.slice(0, 3).map(item => `• ${item}`).join('\n')}
+
+Your original query: "${userMessage}"
+*This enhanced response is powered by your MCP business intelligence system.*`;
+      } catch (error) {
+        console.error('MCP workflow optimization failed:', error);
+        return null;
+      }
+    }
+    
     return null;
   }
 
