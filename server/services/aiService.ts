@@ -92,91 +92,89 @@ Provide realistic analysis focusing on:
   }
 
   async generateChatResponse(userMessage: string): Promise<string> {
-    // Check for action commands first
-    const actionResult = await this.processActionCommand(userMessage);
-    if (actionResult) {
-      return actionResult;
-    }
-
-    if (!this.openai) {
-      return this.generateFallbackResponse(userMessage);
-    }
-
     try {
+      // Check for specific action patterns first
+      const actionResponse = await this.processActionCommand(userMessage);
+      if (actionResponse) {
+        return actionResponse;
+      }
+
+      // Auto-detect customer name mentions and search for their orders
+      const customerNameMatch = this.extractCustomerNameFromMessage(userMessage);
+      if (customerNameMatch) {
+        const customerSearchResult = await this.findCustomerOrders(`find orders for ${customerNameMatch}`);
+        if (customerSearchResult && !customerSearchResult.includes('not found')) {
+          return customerSearchResult;
+        }
+      }
+
+      // Get current context
       const orders = await storage.getOrders();
-      const metrics = await storage.getWorkloadMetrics();
-      const analysis = await this.generateWorkloadAnalysis();
+      const customers = await storage.getCustomers();
+      const alerts = await this.generateAlerts();
 
-      // Enhanced workload analysis for aggressive production management
-      const activeOrders = orders.filter(o => !['PICKED_UP', 'CANCELLED'].includes(o.status));
-      const overdueOrders = activeOrders.filter(o => o.dueDate && new Date(o.dueDate) < new Date());
-      const urgentOrders = activeOrders.filter(o => o.priority === 'URGENT');
-      const complexOrders = activeOrders.filter(o => o.estimatedHours > 8);
+      // Create context summary
+      const context = {
+        totalOrders: orders.length,
+        overdueOrders: orders.filter(o => new Date(o.dueDate) < new Date()).length,
+        urgentOrders: orders.filter(o => o.priority === 'URGENT').length,
+        recentAlerts: alerts.slice(0, 3),
+        orderStatuses: orders.reduce((acc, order) => {
+          acc[order.status || 'unknown'] = (acc[order.status || 'unknown'] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
+      };
 
-      const context = `
-PRODUCTION STATUS REPORT:
-- Active Orders: ${analysis.totalOrders} (${activeOrders.length} in production)
-- Total Workload: ${analysis.totalHours}h
-- OVERDUE ORDERS: ${overdueOrders.length} (CRITICAL PRIORITY)
-- URGENT ORDERS: ${urgentOrders.length} (HIGH PRIORITY)
-- Complex Orders (8+ hours): ${complexOrders.length}
-- On-time Performance: ${analysis.onTimePercentage}%
-- Risk Level: ${(analysis.riskLevel || 'UNKNOWN').toUpperCase()}
-- Active Bottlenecks: ${(analysis.bottlenecks || []).join(', ')}
+      const prompt = `You are Jay's Frames AI Assistant. Help with frame shop operations using this context:
 
-WORKLOAD DISTRIBUTION:
-- Materials Ordered: ${analysis.statusCounts?.MATERIALS_ORDERED || 0}
-- Ready for Production: ${(analysis.statusCounts?.MATERIALS_ARRIVED || 0) + (analysis.statusCounts?.FRAME_CUT || 0)}
-- In Progress: ${(analysis.statusCounts?.FRAME_CUT || 0) + (analysis.statusCounts?.MAT_CUT || 0)}
-- Awaiting Pickup: ${analysis.statusCounts?.COMPLETED || 0}
+Current Status:
+- Total Orders: ${context.totalOrders}
+- Overdue Orders: ${context.overdueOrders}
+- Urgent Orders: ${context.urgentOrders}
+- Order Distribution: ${JSON.stringify(context.orderStatuses)}
 
-PRIORITY ORDERS: ${urgentOrders.slice(0, 3).map(o => 
-  `${o.customer.name} (${o.trackingId}) - ${o.orderType} - Due: ${new Date(o.dueDate).toLocaleDateString()}`
-).join(', ')}
-`;
+Recent Alerts: ${context.recentAlerts.map(a => a.message).join(', ')}
+
+User Question: "${userMessage}"
+
+Provide helpful, specific advice for managing the frame shop. Be concise and actionable.`;
 
       const response = await this.openai.chat.completions.create({
         model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are an AI production assistant for Jay's Frames. Your role is to provide realistic guidance and support.
-
-CURRENT PRODUCTION REALITY:
-- WORKFORCE: Currently only Jay working solo
-- DAILY CAPACITY: 8-12 orders maximum per day when framing full-time
-- CURRENT BOTTLENECK: System setup and implementation (not production)
-- STATUS: Shop is preparing to resume full production once system is ready
-
-CORE DIRECTIVES:
-- Provide realistic timelines based on solo capacity (8-12 orders/day max)
-- Prioritize based on due dates and complexity within realistic constraints
-- Focus on system readiness and workflow optimization
-- Support transition from system setup to production mode
-- Acknowledge current limitations while planning for efficiency
-
-COMMUNICATION STYLE:
-- Be supportive and realistic, not demanding
-- Provide actionable next steps within capacity constraints
-- Group orders efficiently for solo work
-- Flag urgent items while maintaining realistic expectations
-- Focus on getting the system production-ready first
-
-Remember: The primary goal right now is completing system setup so full production can begin.`
-          },
-          {
-            role: "user",
-            content: `${context}\n\nProduction Query: ${userMessage}`
-          }
-        ],
-        max_tokens: 600,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 500,
+        temperature: 0.7,
       });
 
-      return response.choices[0].message.content || 'Production analysis unavailable. Review workflow manually and address urgent orders first.';
+      return response.choices[0]?.message?.content || "I'm sorry, I couldn't process that request.";
     } catch (error) {
-      console.error('Error generating AI production response:', error);
-      return this.generateFallbackResponse(userMessage);
+      console.error('AI chat error:', error);
+      return "I'm currently having trouble processing your request. Please try again.";
     }
+  }
+
+  private extractCustomerNameFromMessage(message: string): string | null {
+    // Look for customer names mentioned in various contexts
+    const patterns = [
+      /(?:orders for|check on|find|locate|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+orders?/i,
+      /customer\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /\b([A-Z][a-z]+)\b/g // Last resort - any capitalized word
+    ];
+
+    for (const pattern of patterns) {
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        const name = match[1].trim();
+        // Filter out common words that aren't names
+        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass'];
+        if (!excludeWords.includes(name) && name.length > 2) {
+          return name;
+        }
+      }
+    }
+
+    return null;
   }
 
   private async processActionCommand(userMessage: string): Promise<string | null> {
@@ -243,7 +241,7 @@ Remember: The primary goal right now is completing system setup so full producti
       }
 
       const orders = await storage.getOrdersByCustomer(customer.id);
-      
+
       if (orders.length === 0) {
         return `${customer.name} has no orders in the system.`;
       }
@@ -291,7 +289,7 @@ Remember: The primary goal right now is completing system setup so full producti
       // Create notification
       const { NotificationService } = await import('../notificationService');
       const notificationService = new NotificationService();
-      
+
       await storage.createNotification({
         customerId: customer.id,
         orderId: latestOrder.id,
