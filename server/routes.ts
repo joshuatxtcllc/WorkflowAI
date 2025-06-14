@@ -347,11 +347,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI chat endpoint
+  // AI chat endpoint with MCP support
   app.post('/api/ai/chat', async (req, res) => {
     try {
-      const { message } = req.body;
-      const response = await aiService.generateChatResponse(message);
+      const { message, sessionId } = req.body;
+      const response = await aiService.generateChatResponse(message, sessionId);
       res.json({ response });
     } catch (error) {
       console.error('AI chat error:', error);

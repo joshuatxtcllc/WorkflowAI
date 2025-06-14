@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { storage } from "../storage";
 import { framingKnowledgeService } from "./framingKnowledgeService";
+import { mcpService } from "./mcpService";
 import type { WorkloadAnalysis, AIMessage } from "@shared/schema";
 
 // Add Anthropic support
@@ -172,11 +173,20 @@ Provide realistic analysis focusing on:
     }
   }
 
-  async generateChatResponse(userMessage: string): Promise<string> {
+  async generateChatResponse(userMessage: string, sessionId?: string): Promise<string> {
     try {
       console.log('Processing chat message:', userMessage);
       
-      // Check for specific action patterns first
+      // Generate session ID if not provided
+      const session = sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Check for MCP-enhanced queries first
+      const mcpResponse = await this.processMCPQuery(userMessage, session);
+      if (mcpResponse) {
+        return mcpResponse;
+      }
+      
+      // Check for specific action patterns
       const actionResponse = await this.processActionCommand(userMessage);
       if (actionResponse) {
         console.log('Returning action response');
@@ -272,6 +282,86 @@ Respond as a knowledgeable frame shop management assistant with access to real c
           return name;
         }
       }
+    }
+
+    return null;
+  }
+
+  private async processMCPQuery(userMessage: string, sessionId: string): Promise<string | null> {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Enhanced customer analysis with MCP
+    if (lowerMessage.includes('analyze customer') || lowerMessage.includes('customer analysis')) {
+      const nameMatch = userMessage.match(/(?:analyze customer|customer analysis for)\s+([a-zA-Z\s]+)/i);
+      if (nameMatch) {
+        const customerName = nameMatch[1].trim();
+        const context = await mcpService.getCustomerContext(sessionId, customerName);
+        
+        if (context) {
+          return `🔍 **Deep Customer Analysis: ${context.customer.name}**
+
+📊 **Order History:**
+- Total Orders: ${context.metrics.totalOrders}
+- Total Value: $${context.metrics.totalValue.toFixed(2)}
+- Average Order: $${context.metrics.avgOrderValue.toFixed(2)}
+- Customer Type: ${context.metrics.repeatCustomer ? 'Repeat Customer' : 'New Customer'}
+
+🎯 **Preferences:**
+- Preferred Frame Type: ${context.preferences.preferredFrameType || 'Not established'}
+- Average Complexity: ${context.preferences.averageComplexity.toFixed(1)} hours
+- Budget Category: ${context.preferences.budgetRange}
+
+⚠️ **Risk Assessment:**
+- Risk Level: ${context.riskFactors.riskLevel}
+- On-time Rate: ${((1 - context.riskFactors.overdueRate) * 100).toFixed(1)}%
+- Cancellation Rate: ${(context.riskFactors.cancellationRate * 100).toFixed(1)}%
+
+💡 **Recommendations:**
+${context.preferences.budgetRange === 'Premium' ? '- Offer premium materials and conservation options' : '- Focus on value and efficiency'}
+${context.riskFactors.riskLevel === 'HIGH' ? '- Monitor closely and maintain frequent communication' : '- Standard service protocols appropriate'}`;
+        }
+      }
+    }
+
+    // Shop capacity analysis with MCP
+    if (lowerMessage.includes('shop capacity') || lowerMessage.includes('analyze capacity') || lowerMessage.includes('workflow optimization')) {
+      const analysis = await mcpService.analyzeShopCapacity(sessionId);
+      
+      return `⚙️ **Shop Capacity Analysis**
+
+📈 **Current Status:**
+- Workload: ${analysis.currentLoad} hours
+- Daily Capacity: ${analysis.dailyCapacity} orders
+- Days to Complete: ${Math.ceil(analysis.currentLoad / (analysis.dailyCapacity * 8))} days
+
+🚨 **Bottlenecks Identified:**
+${analysis.bottlenecks.map(b => `- ${b}`).join('\n')}
+
+🎯 **Today's Optimal Queue:**
+${analysis.priorityQueue.slice(0, 8).map((order, i) => 
+  `${i + 1}. ${order.trackingId} - ${order.customer?.name} (${order.estimatedHours}h)`
+).join('\n')}
+
+📦 **Material Readiness:**
+- Ready to Start: ${analysis.materialReadiness.shortages.length === 0 ? 'All materials available' : `${analysis.materialReadiness.shortages.length} orders waiting`}
+${analysis.materialReadiness.shortages.slice(0, 3).map(s => `- ${s}`).join('\n')}
+
+💡 **Recommendations:**
+${analysis.recommendations.slice(0, 3).map(r => `- ${r}`).join('\n')}`;
+    }
+
+    // Enhanced framing consultation with customer context
+    if (lowerMessage.includes('framing advice') || lowerMessage.includes('how to frame') || lowerMessage.includes('framing consultation')) {
+      const customerMatch = userMessage.match(/for ([a-zA-Z\s]+)/i);
+      let customerContext = null;
+      
+      if (customerMatch) {
+        const customerName = customerMatch[1].trim();
+        customerContext = await mcpService.getCustomerContext(sessionId, customerName);
+      }
+      
+      const consultation = await mcpService.getFramingConsultation(sessionId, userMessage, customerContext);
+      return `🔨 **Professional Framing Consultation**\n\n${consultation}`;
     }
 
     return null;
