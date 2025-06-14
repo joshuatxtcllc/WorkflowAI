@@ -3,17 +3,129 @@ import { storage } from "../storage";
 import { framingKnowledgeService } from "./framingKnowledgeService";
 import type { WorkloadAnalysis, AIMessage } from "@shared/schema";
 
+// Add Anthropic support
+interface AnthropicMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export class AIService {
   private openai: OpenAI | null = null;
+  private anthropicApiKey: string | null = null;
+  private perplexityApiKey: string | null = null;
   private analysisCache: { data: WorkloadAnalysis; timestamp: number } | null = null;
   private readonly ANALYSIS_CACHE_TTL = 60000; // 1 minute cache
 
   constructor() {
+    // Initialize AI providers based on available API keys
     if (process.env.OPENAI_API_KEY) {
       this.openai = new OpenAI({ 
         apiKey: process.env.OPENAI_API_KEY 
       });
     }
+
+    this.anthropicApiKey = process.env.ANTHROPIC_API_KEY || null;
+    this.perplexityApiKey = process.env.PERPLEXITY_API_KEY || null;
+
+    console.log('AI Service initialized with providers:', {
+      openai: !!this.openai,
+      anthropic: !!this.anthropicApiKey,
+      perplexity: !!this.perplexityApiKey
+    });
+  }
+
+  private async callAnthropic(messages: AnthropicMessage[], maxTokens: number = 500): Promise<string> {
+    if (!this.anthropicApiKey) {
+      throw new Error('Anthropic API key not available');
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.anthropicApiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-sonnet-20240229',
+        max_tokens: maxTokens,
+        messages: messages
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Anthropic API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.content[0]?.text || 'No response from Claude';
+  }
+
+  private async callPerplexity(prompt: string, maxTokens: number = 500): Promise<string> {
+    if (!this.perplexityApiKey) {
+      throw new Error('Perplexity API key not available');
+    }
+
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.perplexityApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: maxTokens,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Perplexity API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || 'No response from Perplexity';
+  }
+
+  private async getBestAIResponse(prompt: string, maxTokens: number = 500): Promise<string> {
+    // Try providers in order of preference: Claude, Perplexity, OpenAI
+    const errors: string[] = [];
+
+    // Try Claude first (best for complex reasoning)
+    if (this.anthropicApiKey) {
+      try {
+        return await this.callAnthropic([{ role: 'user', content: prompt }], maxTokens);
+      } catch (error) {
+        errors.push(`Claude: ${error.message}`);
+      }
+    }
+
+    // Try Perplexity (great for real-time info and web search)
+    if (this.perplexityApiKey) {
+      try {
+        return await this.callPerplexity(prompt, maxTokens);
+      } catch (error) {
+        errors.push(`Perplexity: ${error.message}`);
+      }
+    }
+
+    // Fallback to OpenAI
+    if (this.openai) {
+      try {
+        const completion = await this.openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: maxTokens,
+          temperature: 0.7,
+        });
+        return completion.choices[0]?.message?.content || 'No response from OpenAI';
+      } catch (error) {
+        errors.push(`OpenAI: ${error.message}`);
+      }
+    }
+
+    throw new Error(`All AI providers failed: ${errors.join(', ')}`);
   }
 
   async generateWorkloadAnalysis() {
@@ -23,10 +135,6 @@ export class AIService {
       // Return cached analysis if still fresh
       if (this.analysisCache && (now - this.analysisCache.timestamp) < this.ANALYSIS_CACHE_TTL) {
         return this.analysisCache.data;
-      }
-
-      if (!this.openai) {
-        return await this.generateFallbackAnalysis();
       }
 
       // Get simplified workload data
@@ -53,14 +161,7 @@ Provide realistic analysis focusing on:
 3. System readiness tasks
 4. Efficient workflow suggestions for single operator`;
 
-      const completion = await this.openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 150,
-        temperature: 0.5,
-      });
-
-      const analysis = completion.choices[0]?.message?.content || 'Analysis unavailable';
+      const analysis = await this.getBestAIResponse(prompt, 150);
 
       // Generate recommendations based on workload
       const recommendations = this.generateRecommendations(workloadMetrics);
@@ -125,83 +226,57 @@ Provide realistic analysis focusing on:
         }, {} as Record<string, number>)
       };
 
-      const prompt = `You are Jay's Frames AI Assistant. Help with frame shop operations using this context:
+      const prompt = `You are Jay's Frames AI Assistant - a professional custom frame shop management system. Help with frame shop operations using this context:
 
-Current Status:
-- Total Orders: ${context.totalOrders}
+**Current Shop Status:**
+- Total Active Orders: ${context.totalOrders}
 - Overdue Orders: ${context.overdueOrders}
-- Urgent Orders: ${context.urgentOrders}
+- Urgent Priority Orders: ${context.urgentOrders}
 - Order Distribution: ${JSON.stringify(context.orderStatuses)}
 
-Recent Alerts: ${context.recentAlerts.map(a => a.message).join(', ')}
+**Recent System Alerts:** ${context.recentAlerts.map(a => a.message).join(', ')}
 
-User Question: "${userMessage}"
+**User Request:** "${userMessage}"
 
-Provide helpful, specific advice for managing the frame shop. Be concise and actionable.`;
+**Instructions:**
+- Provide specific, actionable advice for managing the frame shop
+- Be professional but conversational
+- Focus on practical solutions for a solo operator
+- If asking about framing techniques, provide expert-level advice
+- For business operations, prioritize efficiency and customer satisfaction
+- Keep responses concise but comprehensive
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 500,
-        temperature: 0.7,
-      });
+Respond as a knowledgeable frame shop management assistant.`;
 
-      return response.choices[0]?.message?.content || "I'm sorry, I couldn't process that request.";
+      return await this.getBestAIResponse(prompt, 500);
     } catch (error) {
       console.error('AI chat error:', error);
-      return "I'm currently having trouble processing your request. Please try again.";
+      return "I'm currently having trouble processing your request. The AI service may be temporarily unavailable. Please try again in a moment.";
     }
   }
 
   private extractCustomerNameFromMessage(message: string): string | null {
-    // Enhanced patterns for better name extraction
+    // Look for customer names mentioned in various contexts
     const patterns = [
-      // Direct name mentions
-      /(?:orders? for|check on|find|locate|customer)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /(?:orders for|check on|find|locate|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
       /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+orders?/i,
-      /show\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      // Name variants
-      /smith['']?s?/i, // Matches Smith, Smith's, Smiths
-      // Partial names
-      /\b([A-Z][a-z]{2,})\b/g // Any capitalized word 3+ letters
+      /customer\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /\b([A-Z][a-z]+)\b/g // Last resort - any capitalized word
     ];
 
     for (const pattern of patterns) {
-      const matches = message.match(pattern);
-      if (matches) {
-        // Handle global regex differently
-        if (pattern.global) {
-          const allMatches = [...message.matchAll(pattern)];
-          for (const match of allMatches) {
-            const name = match[1]?.trim();
-            if (name && this.isValidName(name)) {
-              return name;
-            }
-          }
-        } else {
-          const name = matches[1]?.trim();
-          if (name && this.isValidName(name)) {
-            return name;
-          }
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        const name = match[1].trim();
+        // Filter out common words that aren't names
+        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass'];
+        if (!excludeWords.includes(name) && name.length > 2) {
+          return name;
         }
       }
     }
 
-    // Special case for "Smith" variations
-    if (/smith/i.test(message)) {
-      return "Smith";
-    }
-
     return null;
-  }
-
-  private isValidName(name: string): boolean {
-    const excludeWords = [
-      'Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 
-      'Schedule', 'Frame', 'Mat', 'Glass', 'Find', 'Show', 'Check',
-      'The', 'All', 'Any', 'Some', 'This', 'That', 'Which', 'What'
-    ];
-    return !excludeWords.includes(name) && name.length > 2;
   }
 
   private async processActionCommand(userMessage: string): Promise<string | null> {
@@ -250,116 +325,37 @@ Provide helpful, specific advice for managing the frame shop. Be concise and act
 
   private async findCustomerOrders(userMessage: string): Promise<string> {
     try {
-      // Extract customer name with multiple patterns
-      let customerName = '';
-      const patterns = [
-        /(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i,
-        /([a-zA-Z\s]+)\s+orders?/i,
-        /customer\s+([a-zA-Z\s]+)/i
-      ];
-
-      for (const pattern of patterns) {
-        const match = userMessage.match(pattern);
-        if (match && match[1]) {
-          customerName = match[1].trim();
-          break;
-        }
+      // Extract customer name from message
+      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i);
+      if (!nameMatch) {
+        return "Please specify the customer name. Example: 'Find orders for John Smith'";
       }
 
-      // Use extracted name from message parsing if no explicit pattern match
-      if (!customerName) {
-        customerName = this.extractCustomerNameFromMessage(userMessage) || '';
-      }
-
-      if (!customerName) {
-        return "Please specify the customer name. Example: 'Find orders for John Smith' or 'Smith orders'";
-      }
-
+      const customerName = nameMatch[1].trim();
       const customers = await storage.getCustomers();
-      
-      // Enhanced fuzzy search
-      let customer = customers.find(c => 
-        c.name.toLowerCase() === customerName.toLowerCase()
+      const customer = customers.find(c => 
+        c.name.toLowerCase().includes(customerName.toLowerCase()) ||
+        customerName.toLowerCase().includes(c.name.toLowerCase())
       );
 
-      // If no exact match, try partial matching
       if (!customer) {
-        customer = customers.find(c => 
-          c.name.toLowerCase().includes(customerName.toLowerCase()) ||
-          customerName.toLowerCase().includes(c.name.toLowerCase())
-        );
-      }
-
-      // If still no match, try word-by-word matching
-      if (!customer) {
-        const searchWords = customerName.toLowerCase().split(' ');
-        customer = customers.find(c => 
-          searchWords.some(word => c.name.toLowerCase().includes(word))
-        );
-      }
-
-      if (!customer) {
-        // Show available customers for reference
-        const customerList = customers.slice(0, 10).map(c => c.name).join(', ');
-        return `No customer found matching "${customerName}". 
-
-Available customers include: ${customerList}${customers.length > 10 ? '...' : ''}
-
-Try using the exact name or a clearer partial name.`;
+        return `No customer found matching "${customerName}". Please check the spelling or try a partial name.`;
       }
 
       const orders = await storage.getOrdersByCustomer(customer.id);
 
       if (orders.length === 0) {
-        return `✅ Customer found: ${customer.name}
-📧 Contact: ${customer.email || 'No email'}
-📞 Phone: ${customer.phone || 'No phone'}
-
-❌ No orders found for this customer.`;
+        return `${customer.name} has no orders in the system.`;
       }
 
-      // Enhanced order summary with status icons
-      const orderSummary = orders.map(order => {
-        const statusIcon = this.getStatusIcon(order.status || '');
-        const daysUntilDue = Math.ceil((new Date(order.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-        const urgencyLabel = daysUntilDue < 0 ? '🚨 OVERDUE' : 
-                            daysUntilDue <= 2 ? '⚠️ URGENT' : 
-                            daysUntilDue <= 7 ? '📅 This Week' : '📋 Scheduled';
-        
-        return `${statusIcon} ${order.trackingId} - ${order.orderType} - ${order.status?.replace('_', ' ')} 
-   📅 Due: ${new Date(order.dueDate).toLocaleDateString()} (${urgencyLabel})
-   💰 Value: $${order.price || 0}`;
-      }).join('\n\n');
+      const orderSummary = orders.map(order => 
+        `• ${order.trackingId} - ${order.orderType} - ${order.status} - Due: ${new Date(order.dueDate).toLocaleDateString()}`
+      ).join('\n');
 
-      const totalValue = orders.reduce((sum, o) => sum + (o.price || 0), 0);
-      const overdueOrders = orders.filter(o => new Date(o.dueDate) < new Date()).length;
-
-      return `✅ Found ${orders.length} order(s) for ${customer.name}:
-📧 ${customer.email || 'No email'} | 📞 ${customer.phone || 'No phone'}
-
-${orderSummary}
-
-💰 Total value: $${totalValue}
-${overdueOrders > 0 ? `🚨 ${overdueOrders} overdue orders need immediate attention!` : '✅ All orders on schedule'}`;
+      return `Found ${orders.length} order(s) for ${customer.name}:\n\n${orderSummary}\n\nTotal value: $${orders.reduce((sum, o) => sum + (o.price || 0), 0)}`;
     } catch (error) {
       return "Error finding customer orders. Please try again.";
     }
-  }
-
-  private getStatusIcon(status: string): string {
-    const icons = {
-      'ORDER_PROCESSED': '📝',
-      'MATERIALS_ORDERED': '📦',
-      'MATERIALS_ARRIVED': '✅',
-      'FRAME_CUT': '🔧',
-      'MAT_CUT': '✂️',
-      'ASSEMBLED': '🔨',
-      'QUALITY_CHECK': '🔍',
-      'COMPLETED': '✅',
-      'PICKED_UP': '🎉',
-      'DELAYED': '⚠️'
-    };
-    return icons[status] || '📋';
   }
 
   private async sendCustomerUpdate(userMessage: string): Promise<string> {
@@ -529,238 +525,52 @@ ${overdueOrders > 0 ? `🚨 ${overdueOrders} overdue orders need immediate atten
   private generateFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
 
-    // Comprehensive framing knowledge
-    if (lowerMessage.includes('mat') || lowerMessage.includes('matting')) {
-      return `🎨 **Mat/Matting Advice:**
-
-**Mat Selection:**
-- Use acid-free, archival mats for preservation
-- Standard mat width: 2.5-3.5 inches for most artwork
-- Wider mats (4-6 inches) for larger pieces
-- Consider double matting for premium look
-
-**Common Issues:**
-- Mat burn/discoloration: Use lignin-free mats
-- Waviness: Check humidity, use proper backing
-- Color bleeding: Ensure colorfast mats
-
-**Best Practices:**
-- Always use conservation mounting
-- Bevel cuts at 45° for professional look
-- Leave expansion gap for paper artwork`;
+    if (lowerMessage.includes('status') || lowerMessage.includes('update')) {
+      return `I can help you check the current workload status. Please check the dashboard for real-time order information, or I can provide specific details about any order if you provide the tracking ID.`;
     }
 
-    if (lowerMessage.includes('glass') || lowerMessage.includes('glazing')) {
-      return `🔍 **Glass/Glazing Guide:**
+    if (lowerMessage.includes('help') || lowerMessage.includes('behind')) {
+      return `Here are some general recommendations for staying on track:
 
-**Glass Types:**
-- **Regular Glass**: Basic protection, some UV filtering
-- **Non-Glare Glass**: Reduces reflections, slight texture
-- **UV Glass**: 97% UV protection, museum quality
-- **Acrylic/Plexi**: Lightweight, shatter-resistant
+1. Prioritize orders by due date and complexity
+2. Batch similar tasks together for efficiency
+3. Check material availability before starting work
+4. Update order status regularly for accurate tracking
 
-**When to Use What:**
-- Valuable art: UV glass always
-- High-traffic areas: Acrylic for safety
-- Photography: Use UV glass, avoid non-glare
-- Pastels/charcoal: Spacers required, never touching
-
-**Pro Tips:**
-- Clean with appropriate cleaners only
-- Handle with cotton gloves
-- Check for stress marks before installation`;
+Would you like specific information about any particular order or workflow stage?`;
     }
 
-    if (lowerMessage.includes('moulding') || lowerMessage.includes('frame')) {
-      return `🔨 **Moulding/Frame Selection:**
+    if (lowerMessage.includes('material')) {
+      return `For material management:
+- Check the materials tab for each order
+- Mark materials as "ordered" when placed with suppliers
+- Update to "arrived" when materials are received
+- This helps with accurate timeline projections
 
-**Size Guidelines:**
-- Small art (8x10 to 11x14): 3/4" to 1.5" wide moulding
-- Medium (16x20 to 24x30): 1.5" to 2.5" wide
-- Large (30x40+): 2.5" to 4"+ wide for proper proportion
-
-**Style Matching:**
-- Traditional art: Ornate, gold/silver leaf
-- Modern/Contemporary: Clean lines, metal, simple wood
-- Photography: Thin profiles, neutral colors
-- Certificates: Simple, professional styles
-
-**Wood vs. Metal:**
-- Wood: Warmer, traditional, easier to work with
-- Metal: Modern, sleek, very precise corners required`;
+Do you need information about specific materials for an order?`;
     }
 
-    if (lowerMessage.includes('conservation') || lowerMessage.includes('archival')) {
-      return `🏛️ **Conservation Framing Standards:**
-
-**Materials Required:**
-- Acid-free, lignin-free mats and backing
-- UV-filtering glazing (97%+ protection)
-- Conservation mounting techniques only
-- Proper spacers between art and glazing
-
-**Never Use:**
-- Pressure-sensitive tapes
-- Acidic materials
-- Direct contact mounting
-- Non-reversible adhesives
-
-**Best Practices:**
-- Hinge mounting with Japanese tissue
-- Use wheat starch paste or conservation tape
-- Maintain proper humidity (45-55%)
-- Document all materials used`;
-    }
-
-    if (lowerMessage.includes('mounting') || lowerMessage.includes('mount')) {
-      return `📐 **Mounting Techniques:**
-
-**Hinge Mounting** (Preferred):
-- Attach only at top edge
-- Use Japanese tissue and wheat paste
-- Allows natural expansion/contraction
-
-**Window Mounting:**
-- For thick items or 3D objects
-- Cut opening in backing board
-- Support from behind, don't compress
-
-**Float Mounting:**
-- Shows full edges of artwork
-- Use hidden supports
-- Popular for handmade papers
-
-**Never:**
-- Dry mount valuable originals
-- Use spray adhesives on art
-- Mount directly to backing without space`;
-    }
-
-    if (lowerMessage.includes('spacing') || lowerMessage.includes('spacer')) {
-      return `📏 **Spacing & Depth Guidelines:**
-
-**When Spacers are Required:**
-- Pastels, charcoal, or textured media
-- Thick paint applications (impasto)
-- Any 3D elements or mixed media
-- Canvas paintings (prevent texture marking)
-
-**Spacer Types:**
-- Clear acrylic strips: 1/8" to 1/4"
-- Matboard strips: 1/8" standard
-- Built-in rabbet depth for canvas
-
-**Depth Calculations:**
-- Art thickness + 1/8" minimum clearance
-- Consider frame rabbet depth
-- Plan for glass thickness in calculations`;
-    }
-
-    if (lowerMessage.includes('canvas') || lowerMessage.includes('oil') || lowerMessage.includes('acrylic')) {
-      return `🎨 **Canvas & Paint Framing:**
-
-**Oil Paintings:**
-- Must be completely dry (6+ months for thick paint)
-- Use spacers, never touching glass
-- Allow air circulation
-- Consider UV glazing for protection
-
-**Acrylic Paintings:**
-- Dry faster than oils but still need spacers
-- Can be more flexible than oils
-- UV protection recommended
-
-**Canvas Stretching:**
-- Check tension before framing
-- Re-stretch if loose or uneven
-- Use appropriate frame depth for stretcher bars
-
-**Floating vs. Traditional:**
-- Float mounting shows canvas edges
-- Traditional framing covers edges with lip`;
-    }
-
-    if (lowerMessage.includes('trouble') || lowerMessage.includes('problem') || lowerMessage.includes('fix')) {
-      return `🔧 **Common Framing Problems & Solutions:**
-
-**Warped Frames:**
-- Check wood moisture content
-- Use corner braces for reinforcement
-- Sand and re-join if necessary
-
-**Mat Waviness:**
-- Humidity issues - use dehumidifier
-- Poor quality mat board - replace
-- Improper storage - lay flat
-
-**Glass Condensation:**
-- Poor ventilation in frame
-- Add spacers for air circulation
-- Check environmental humidity
-
-**Color Changes:**
-- UV damage - use UV glazing
-- Acid migration - use archival materials
-- Improper lighting - reduce light levels
-
-**Pest Issues:**
-- Silverfish: reduce humidity, use cedar
-- Check backing boards for entry points
-- Use archival, pest-resistant materials`;
-    }
-
-    if (lowerMessage.includes('pricing') || lowerMessage.includes('cost') || lowerMessage.includes('quote')) {
-      return `💰 **Pricing Guidelines:**
-
-**Standard Markup:**
-- Materials: 2.5-3x cost
-- Labor: $45-75 per hour depending on market
-- Rush jobs: 50-100% surcharge
-
-**Time Estimates:**
-- Simple frame job: 1-2 hours
-- Custom matting: 30-45 minutes
-- Conservation work: 2-4 hours
-- Complex projects: 4-8 hours
-
-**Pricing Factors:**
-- Size (larger = more time/materials)
-- Complexity (multiple mats, specialty techniques)
-- Materials (conservation vs. standard)
-- Deadline (rush work costs more)
-
-**Always include:**
-- Material costs
-- Labor time
-- Overhead (shop costs)
-- Profit margin (20-30% minimum)`;
-    }
-
-    return `I'm here to help with your framing shop! I can assist with:
+    return `I'm here to help with your framing shop operations! I can assist with:
 
 **Business Operations:**
-- "Find orders for [Customer Name]" - Show customer orders  
-- "Smith orders" or "orders for Smith" - Quick customer search
-- "Send update to [Customer] about [message]" - Send notifications
+- "Find orders for [Customer Name]" - Show all orders for a customer
+- "Send update to [Customer] about [message]" - Send notification
+- "Create order for [Customer] for [description]" - Add new order
 - "Find order TRK-123" - Get specific order details
 
 **Professional Framing Knowledge:**
-- Mat selection and cutting techniques
-- Glass and glazing options
-- Conservation framing standards
-- Mounting and spacing requirements
-- Canvas and painting care
-- Troubleshooting common problems
-- Pricing and time estimates
+- "How to mount canvas" - Get expert framing techniques
+- "Best practice for conservation framing" - Professional advice
+- "Problem with warped frame" - Troubleshooting help
+- "What material for oil painting" - Material recommendations
 
-**Try asking:**
-- "What mat for watercolor?"
-- "How to frame oil painting?"
-- "Conservation mounting techniques?"
-- "Glass types for photography?"
-- "Problem with warped frame?"
+**Examples:**
+- "Find orders for Sarah Johnson"
+- "How to frame textiles properly"
+- "Problem with bubbling mat"
+- "Best moulding for heavy artwork"
 
-What would you like help with?`;
+What would you like me to help you with?`;
   }
 
   private generateAlerts(activeOrders: any[], urgentOrders: any[]): AIMessage[] {
