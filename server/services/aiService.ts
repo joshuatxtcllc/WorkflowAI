@@ -13,8 +13,7 @@ export class AIService {
   private openai: OpenAI | null = null;
   private anthropicApiKey: string | null = null;
   private perplexityApiKey: string | null = null;
-  private analysisCache: { data: WorkloadAnalysis; timestamp: number } | null = null;
-  private readonly ANALYSIS_CACHE_TTL = 60000; // 1 minute cache
+  // Removed analysis cache to prevent stale responses
 
   constructor() {
     // Initialize AI providers based on available API keys
@@ -130,14 +129,7 @@ export class AIService {
 
   async generateWorkloadAnalysis() {
     try {
-      const now = Date.now();
-
-      // Return cached analysis if still fresh
-      if (this.analysisCache && (now - this.analysisCache.timestamp) < this.ANALYSIS_CACHE_TTL) {
-        return this.analysisCache.data;
-      }
-
-      // Get simplified workload data
+      // Always generate fresh analysis
       const workloadMetrics = await storage.getWorkloadMetrics();
 
       // Safe access to statusCounts with fallbacks
@@ -173,38 +165,30 @@ Provide realistic analysis focusing on:
         timestamp: new Date().toISOString()
       };
 
-      // Update cache
-      this.analysisCache = {
-        data: result,
-        timestamp: now
-      };
-
       return result;
     } catch (error) {
       console.error('Error generating AI analysis:', error);
-
-      // Return cached analysis if available
-      if (this.analysisCache) {
-        return this.analysisCache.data;
-      }
-
       return await this.generateFallbackAnalysis();
     }
   }
 
   async generateChatResponse(userMessage: string): Promise<string> {
     try {
+      console.log('Processing chat message:', userMessage);
+      
       // Check for specific action patterns first
       const actionResponse = await this.processActionCommand(userMessage);
       if (actionResponse) {
+        console.log('Returning action response');
         return actionResponse;
       }
 
       // Auto-detect customer name mentions and search for their orders
       const customerNameMatch = this.extractCustomerNameFromMessage(userMessage);
       if (customerNameMatch) {
+        console.log('Auto-detected customer name:', customerNameMatch);
         const customerSearchResult = await this.findCustomerOrders(`find orders for ${customerNameMatch}`);
-        if (customerSearchResult && !customerSearchResult.includes('not found')) {
+        if (customerSearchResult && !customerSearchResult.includes('❌ No customer found')) {
           return customerSearchResult;
         }
       }
@@ -263,29 +247,28 @@ Respond as a knowledgeable frame shop management assistant with access to real c
       return await this.getBestAIResponse(prompt, 500);
     } catch (error) {
       console.error('AI chat error:', error);
-      return "I'm currently having trouble processing your request. The AI service may be temporarily unavailable. Please try again in a moment.";
+      return await this.generateFallbackResponse(userMessage);
     }
   }
 
   private extractCustomerNameFromMessage(message: string): string | null {
-    // Look for customer names mentioned in various contexts
-    const patterns = [
-      /(?:orders for|check on|find|locate|search for|show me|get|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:orders?|order|customer)/i,
-      /customer\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      /(?:who is|about|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      // Also match lowercase names that people commonly use
-      /(?:orders for|find|locate|search for)\s+([a-z]+(?:\s+[a-z]+)*)/i,
-      /\b([A-Z][a-z]+)\b/g // Last resort - any capitalized word
+    // Simplified and more reliable customer name extraction
+    const lowerMessage = message.toLowerCase();
+    
+    // Primary patterns for explicit customer queries
+    const explicitPatterns = [
+      /(?:find orders for|show orders for|orders for|search for)\s+([a-zA-Z\s]+?)(?:\s|$)/i,
+      /(?:customer|client)\s+([a-zA-Z\s]+?)(?:\s|$)/i,
+      /(?:update|send|notify)\s+([a-zA-Z\s]+?)(?:\s+about|\s+that|$)/i
     ];
 
-    for (const pattern of patterns) {
+    for (const pattern of explicitPatterns) {
       const match = message.match(pattern);
       if (match && match[1]) {
         const name = match[1].trim();
-        // Filter out common words that aren't names
-        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass', 'Update', 'Send', 'Create', 'Find', 'Show', 'Get', 'All', 'Any', 'Some', 'The', 'That', 'This'];
-        if (!excludeWords.includes(name) && name.length > 2) {
+        // Basic validation - must be at least 2 chars and not a common word
+        const excludeWords = ['for', 'the', 'all', 'any', 'orders', 'order', 'about', 'that', 'who', 'what', 'when', 'where', 'how'];
+        if (name.length >= 2 && !excludeWords.includes(name.toLowerCase())) {
           return name;
         }
       }
@@ -340,64 +323,73 @@ Respond as a knowledgeable frame shop management assistant with access to real c
 
   private async findCustomerOrders(userMessage: string): Promise<string> {
     try {
-      // Extract customer name from message using improved patterns
-      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for|search for|check on|locate)\s+([a-zA-Z\s]+)/i);
+      console.log('Finding customer orders for message:', userMessage);
+      
+      // Extract customer name more reliably
+      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for|search for|check on|locate)\s+([a-zA-Z\s]+?)(?:\s+about|\s+for|\s*$)/i);
       if (!nameMatch) {
-        return "Please specify the customer name. Example: 'Find orders for John Smith' or 'Search for Smith'";
+        return "Please specify the customer name. Example: 'Find orders for Smith' or 'Search for John'";
       }
 
       const customerName = nameMatch[1].trim();
-      const customers = await storage.getCustomers();
+      console.log('Extracted customer name:', customerName);
       
-      // Try exact match first
-      let customer = customers.find(c => 
+      const customers = await storage.getCustomers();
+      const realCustomers = customers.filter(c => c.name !== 'Mystery Customer');
+      
+      console.log('Available customers:', realCustomers.map(c => c.name));
+      
+      // Simplified search logic - try exact match first, then partial
+      let customer = realCustomers.find(c => 
         c.name.toLowerCase() === customerName.toLowerCase()
       );
       
-      // If no exact match, try partial matching
       if (!customer) {
-        customer = customers.find(c => 
-          c.name.toLowerCase().includes(customerName.toLowerCase()) ||
-          customerName.toLowerCase().includes(c.name.toLowerCase())
+        customer = realCustomers.find(c => 
+          c.name.toLowerCase().includes(customerName.toLowerCase())
         );
       }
       
-      // If still no match, try fuzzy matching by splitting names
       if (!customer) {
-        const searchWords = customerName.toLowerCase().split(' ');
-        customer = customers.find(c => {
-          const nameWords = c.name.toLowerCase().split(' ');
+        // Last attempt - check if search term appears in any part of customer name
+        customer = realCustomers.find(c => {
+          const customerWords = c.name.toLowerCase().split(' ');
+          const searchWords = customerName.toLowerCase().split(' ');
           return searchWords.some(searchWord => 
-            nameWords.some(nameWord => 
-              nameWord.includes(searchWord) || searchWord.includes(nameWord)
+            customerWords.some(customerWord => 
+              customerWord.startsWith(searchWord) || searchWord.startsWith(customerWord)
             )
           );
         });
       }
 
       if (!customer) {
-        // Show available customers if no match found
-        const availableCustomers = customers
-          .filter(c => c.name !== 'Mystery Customer')
-          .slice(0, 10)
+        const availableCustomers = realCustomers
+          .slice(0, 8)
           .map(c => c.name)
           .join(', ');
-        return `No customer found matching "${customerName}". Available customers include: ${availableCustomers}${customers.length > 10 ? '...' : ''}`;
+        return `❌ No customer found matching "${customerName}".\n\n📋 Available customers: ${availableCustomers}${realCustomers.length > 8 ? '...' : ''}`;
       }
 
+      console.log('Found customer:', customer.name);
       const orders = await storage.getOrdersByCustomer(customer.id);
 
       if (orders.length === 0) {
-        return `${customer.name} has no orders in the system.`;
+        return `✅ Found customer: ${customer.name}\n❌ No orders found for this customer.`;
       }
 
-      const orderSummary = orders.map(order => 
-        `• ${order.trackingId} - ${order.orderType} - ${order.status} - Due: ${new Date(order.dueDate).toLocaleDateString()}`
-      ).join('\n');
+      const orderSummary = orders.map(order => {
+        const status = order.status?.replace('_', ' ') || 'Unknown';
+        const dueDate = new Date(order.dueDate).toLocaleDateString();
+        return `• ${order.trackingId} - ${order.orderType} - ${status} - Due: ${dueDate}`;
+      }).join('\n');
 
-      return `Found ${orders.length} order(s) for ${customer.name}:\n\n${orderSummary}\n\nTotal value: $${orders.reduce((sum, o) => sum + (o.price || 0), 0)}`;
+      const totalValue = orders.reduce((sum, o) => sum + (o.price || 0), 0);
+
+      return `✅ Found ${orders.length} order(s) for **${customer.name}**:\n\n${orderSummary}\n\n💰 Total value: $${totalValue.toFixed(2)}`;
     } catch (error) {
-      return "Error finding customer orders. Please try again.";
+      console.error('Error in findCustomerOrders:', error);
+      return "❌ Error searching for customer orders. Please try again with a different name.";
     }
   }
 
