@@ -154,27 +154,54 @@ Provide helpful, specific advice for managing the frame shop. Be concise and act
   }
 
   private extractCustomerNameFromMessage(message: string): string | null {
-    // Look for customer names mentioned in various contexts
+    // Enhanced patterns for better name extraction
     const patterns = [
-      /(?:orders for|check on|find|locate|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      // Direct name mentions
+      /(?:orders? for|check on|find|locate|customer)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
       /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+orders?/i,
-      /customer\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      /\b([A-Z][a-z]+)\b/g // Last resort - any capitalized word
+      /show\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      // Name variants
+      /smith['']?s?/i, // Matches Smith, Smith's, Smiths
+      // Partial names
+      /\b([A-Z][a-z]{2,})\b/g // Any capitalized word 3+ letters
     ];
 
     for (const pattern of patterns) {
-      const match = message.match(pattern);
-      if (match && match[1]) {
-        const name = match[1].trim();
-        // Filter out common words that aren't names
-        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass'];
-        if (!excludeWords.includes(name) && name.length > 2) {
-          return name;
+      const matches = message.match(pattern);
+      if (matches) {
+        // Handle global regex differently
+        if (pattern.global) {
+          const allMatches = [...message.matchAll(pattern)];
+          for (const match of allMatches) {
+            const name = match[1]?.trim();
+            if (name && this.isValidName(name)) {
+              return name;
+            }
+          }
+        } else {
+          const name = matches[1]?.trim();
+          if (name && this.isValidName(name)) {
+            return name;
+          }
         }
       }
     }
 
+    // Special case for "Smith" variations
+    if (/smith/i.test(message)) {
+      return "Smith";
+    }
+
     return null;
+  }
+
+  private isValidName(name: string): boolean {
+    const excludeWords = [
+      'Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 
+      'Schedule', 'Frame', 'Mat', 'Glass', 'Find', 'Show', 'Check',
+      'The', 'All', 'Any', 'Some', 'This', 'That', 'Which', 'What'
+    ];
+    return !excludeWords.includes(name) && name.length > 2;
   }
 
   private async processActionCommand(userMessage: string): Promise<string | null> {
@@ -223,37 +250,116 @@ Provide helpful, specific advice for managing the frame shop. Be concise and act
 
   private async findCustomerOrders(userMessage: string): Promise<string> {
     try {
-      // Extract customer name from message
-      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i);
-      if (!nameMatch) {
-        return "Please specify the customer name. Example: 'Find orders for John Smith'";
+      // Extract customer name with multiple patterns
+      let customerName = '';
+      const patterns = [
+        /(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i,
+        /([a-zA-Z\s]+)\s+orders?/i,
+        /customer\s+([a-zA-Z\s]+)/i
+      ];
+
+      for (const pattern of patterns) {
+        const match = userMessage.match(pattern);
+        if (match && match[1]) {
+          customerName = match[1].trim();
+          break;
+        }
       }
 
-      const customerName = nameMatch[1].trim();
+      // Use extracted name from message parsing if no explicit pattern match
+      if (!customerName) {
+        customerName = this.extractCustomerNameFromMessage(userMessage) || '';
+      }
+
+      if (!customerName) {
+        return "Please specify the customer name. Example: 'Find orders for John Smith' or 'Smith orders'";
+      }
+
       const customers = await storage.getCustomers();
-      const customer = customers.find(c => 
-        c.name.toLowerCase().includes(customerName.toLowerCase()) ||
-        customerName.toLowerCase().includes(c.name.toLowerCase())
+      
+      // Enhanced fuzzy search
+      let customer = customers.find(c => 
+        c.name.toLowerCase() === customerName.toLowerCase()
       );
 
+      // If no exact match, try partial matching
       if (!customer) {
-        return `No customer found matching "${customerName}". Please check the spelling or try a partial name.`;
+        customer = customers.find(c => 
+          c.name.toLowerCase().includes(customerName.toLowerCase()) ||
+          customerName.toLowerCase().includes(c.name.toLowerCase())
+        );
+      }
+
+      // If still no match, try word-by-word matching
+      if (!customer) {
+        const searchWords = customerName.toLowerCase().split(' ');
+        customer = customers.find(c => 
+          searchWords.some(word => c.name.toLowerCase().includes(word))
+        );
+      }
+
+      if (!customer) {
+        // Show available customers for reference
+        const customerList = customers.slice(0, 10).map(c => c.name).join(', ');
+        return `No customer found matching "${customerName}". 
+
+Available customers include: ${customerList}${customers.length > 10 ? '...' : ''}
+
+Try using the exact name or a clearer partial name.`;
       }
 
       const orders = await storage.getOrdersByCustomer(customer.id);
 
       if (orders.length === 0) {
-        return `${customer.name} has no orders in the system.`;
+        return `✅ Customer found: ${customer.name}
+📧 Contact: ${customer.email || 'No email'}
+📞 Phone: ${customer.phone || 'No phone'}
+
+❌ No orders found for this customer.`;
       }
 
-      const orderSummary = orders.map(order => 
-        `• ${order.trackingId} - ${order.orderType} - ${order.status} - Due: ${new Date(order.dueDate).toLocaleDateString()}`
-      ).join('\n');
+      // Enhanced order summary with status icons
+      const orderSummary = orders.map(order => {
+        const statusIcon = this.getStatusIcon(order.status || '');
+        const daysUntilDue = Math.ceil((new Date(order.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        const urgencyLabel = daysUntilDue < 0 ? '🚨 OVERDUE' : 
+                            daysUntilDue <= 2 ? '⚠️ URGENT' : 
+                            daysUntilDue <= 7 ? '📅 This Week' : '📋 Scheduled';
+        
+        return `${statusIcon} ${order.trackingId} - ${order.orderType} - ${order.status?.replace('_', ' ')} 
+   📅 Due: ${new Date(order.dueDate).toLocaleDateString()} (${urgencyLabel})
+   💰 Value: $${order.price || 0}`;
+      }).join('\n\n');
 
-      return `Found ${orders.length} order(s) for ${customer.name}:\n\n${orderSummary}\n\nTotal value: $${orders.reduce((sum, o) => sum + (o.price || 0), 0)}`;
+      const totalValue = orders.reduce((sum, o) => sum + (o.price || 0), 0);
+      const overdueOrders = orders.filter(o => new Date(o.dueDate) < new Date()).length;
+
+      return `✅ Found ${orders.length} order(s) for ${customer.name}:
+📧 ${customer.email || 'No email'} | 📞 ${customer.phone || 'No phone'}
+
+${orderSummary}
+
+💰 Total value: $${totalValue}
+${overdueOrders > 0 ? `🚨 ${overdueOrders} overdue orders need immediate attention!` : '✅ All orders on schedule'}`;
     } catch (error) {
       return "Error finding customer orders. Please try again.";
     }
+  }
+
+  private getStatusIcon(status: string): string {
+    const icons = {
+      'ORDER_PROCESSED': '📝',
+      'MATERIALS_ORDERED': '📦',
+      'MATERIALS_ARRIVED': '✅',
+      'FRAME_CUT': '🔧',
+      'MAT_CUT': '✂️',
+      'ASSEMBLED': '🔨',
+      'QUALITY_CHECK': '🔍',
+      'COMPLETED': '✅',
+      'PICKED_UP': '🎉',
+      'DELAYED': '⚠️'
+    };
+    return icons[status] || '📋';
   }
 
   private async sendCustomerUpdate(userMessage: string): Promise<string> {
@@ -423,52 +529,238 @@ Provide helpful, specific advice for managing the frame shop. Be concise and act
   private generateFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
 
-    if (lowerMessage.includes('status') || lowerMessage.includes('update')) {
-      return `I can help you check the current workload status. Please check the dashboard for real-time order information, or I can provide specific details about any order if you provide the tracking ID.`;
+    // Comprehensive framing knowledge
+    if (lowerMessage.includes('mat') || lowerMessage.includes('matting')) {
+      return `🎨 **Mat/Matting Advice:**
+
+**Mat Selection:**
+- Use acid-free, archival mats for preservation
+- Standard mat width: 2.5-3.5 inches for most artwork
+- Wider mats (4-6 inches) for larger pieces
+- Consider double matting for premium look
+
+**Common Issues:**
+- Mat burn/discoloration: Use lignin-free mats
+- Waviness: Check humidity, use proper backing
+- Color bleeding: Ensure colorfast mats
+
+**Best Practices:**
+- Always use conservation mounting
+- Bevel cuts at 45° for professional look
+- Leave expansion gap for paper artwork`;
     }
 
-    if (lowerMessage.includes('help') || lowerMessage.includes('behind')) {
-      return `Here are some general recommendations for staying on track:
+    if (lowerMessage.includes('glass') || lowerMessage.includes('glazing')) {
+      return `🔍 **Glass/Glazing Guide:**
 
-1. Prioritize orders by due date and complexity
-2. Batch similar tasks together for efficiency
-3. Check material availability before starting work
-4. Update order status regularly for accurate tracking
+**Glass Types:**
+- **Regular Glass**: Basic protection, some UV filtering
+- **Non-Glare Glass**: Reduces reflections, slight texture
+- **UV Glass**: 97% UV protection, museum quality
+- **Acrylic/Plexi**: Lightweight, shatter-resistant
 
-Would you like specific information about any particular order or workflow stage?`;
+**When to Use What:**
+- Valuable art: UV glass always
+- High-traffic areas: Acrylic for safety
+- Photography: Use UV glass, avoid non-glare
+- Pastels/charcoal: Spacers required, never touching
+
+**Pro Tips:**
+- Clean with appropriate cleaners only
+- Handle with cotton gloves
+- Check for stress marks before installation`;
     }
 
-    if (lowerMessage.includes('material')) {
-      return `For material management:
-- Check the materials tab for each order
-- Mark materials as "ordered" when placed with suppliers
-- Update to "arrived" when materials are received
-- This helps with accurate timeline projections
+    if (lowerMessage.includes('moulding') || lowerMessage.includes('frame')) {
+      return `🔨 **Moulding/Frame Selection:**
 
-Do you need information about specific materials for an order?`;
+**Size Guidelines:**
+- Small art (8x10 to 11x14): 3/4" to 1.5" wide moulding
+- Medium (16x20 to 24x30): 1.5" to 2.5" wide
+- Large (30x40+): 2.5" to 4"+ wide for proper proportion
+
+**Style Matching:**
+- Traditional art: Ornate, gold/silver leaf
+- Modern/Contemporary: Clean lines, metal, simple wood
+- Photography: Thin profiles, neutral colors
+- Certificates: Simple, professional styles
+
+**Wood vs. Metal:**
+- Wood: Warmer, traditional, easier to work with
+- Metal: Modern, sleek, very precise corners required`;
     }
 
-    return `I'm here to help with your framing shop operations! I can assist with:
+    if (lowerMessage.includes('conservation') || lowerMessage.includes('archival')) {
+      return `🏛️ **Conservation Framing Standards:**
+
+**Materials Required:**
+- Acid-free, lignin-free mats and backing
+- UV-filtering glazing (97%+ protection)
+- Conservation mounting techniques only
+- Proper spacers between art and glazing
+
+**Never Use:**
+- Pressure-sensitive tapes
+- Acidic materials
+- Direct contact mounting
+- Non-reversible adhesives
+
+**Best Practices:**
+- Hinge mounting with Japanese tissue
+- Use wheat starch paste or conservation tape
+- Maintain proper humidity (45-55%)
+- Document all materials used`;
+    }
+
+    if (lowerMessage.includes('mounting') || lowerMessage.includes('mount')) {
+      return `📐 **Mounting Techniques:**
+
+**Hinge Mounting** (Preferred):
+- Attach only at top edge
+- Use Japanese tissue and wheat paste
+- Allows natural expansion/contraction
+
+**Window Mounting:**
+- For thick items or 3D objects
+- Cut opening in backing board
+- Support from behind, don't compress
+
+**Float Mounting:**
+- Shows full edges of artwork
+- Use hidden supports
+- Popular for handmade papers
+
+**Never:**
+- Dry mount valuable originals
+- Use spray adhesives on art
+- Mount directly to backing without space`;
+    }
+
+    if (lowerMessage.includes('spacing') || lowerMessage.includes('spacer')) {
+      return `📏 **Spacing & Depth Guidelines:**
+
+**When Spacers are Required:**
+- Pastels, charcoal, or textured media
+- Thick paint applications (impasto)
+- Any 3D elements or mixed media
+- Canvas paintings (prevent texture marking)
+
+**Spacer Types:**
+- Clear acrylic strips: 1/8" to 1/4"
+- Matboard strips: 1/8" standard
+- Built-in rabbet depth for canvas
+
+**Depth Calculations:**
+- Art thickness + 1/8" minimum clearance
+- Consider frame rabbet depth
+- Plan for glass thickness in calculations`;
+    }
+
+    if (lowerMessage.includes('canvas') || lowerMessage.includes('oil') || lowerMessage.includes('acrylic')) {
+      return `🎨 **Canvas & Paint Framing:**
+
+**Oil Paintings:**
+- Must be completely dry (6+ months for thick paint)
+- Use spacers, never touching glass
+- Allow air circulation
+- Consider UV glazing for protection
+
+**Acrylic Paintings:**
+- Dry faster than oils but still need spacers
+- Can be more flexible than oils
+- UV protection recommended
+
+**Canvas Stretching:**
+- Check tension before framing
+- Re-stretch if loose or uneven
+- Use appropriate frame depth for stretcher bars
+
+**Floating vs. Traditional:**
+- Float mounting shows canvas edges
+- Traditional framing covers edges with lip`;
+    }
+
+    if (lowerMessage.includes('trouble') || lowerMessage.includes('problem') || lowerMessage.includes('fix')) {
+      return `🔧 **Common Framing Problems & Solutions:**
+
+**Warped Frames:**
+- Check wood moisture content
+- Use corner braces for reinforcement
+- Sand and re-join if necessary
+
+**Mat Waviness:**
+- Humidity issues - use dehumidifier
+- Poor quality mat board - replace
+- Improper storage - lay flat
+
+**Glass Condensation:**
+- Poor ventilation in frame
+- Add spacers for air circulation
+- Check environmental humidity
+
+**Color Changes:**
+- UV damage - use UV glazing
+- Acid migration - use archival materials
+- Improper lighting - reduce light levels
+
+**Pest Issues:**
+- Silverfish: reduce humidity, use cedar
+- Check backing boards for entry points
+- Use archival, pest-resistant materials`;
+    }
+
+    if (lowerMessage.includes('pricing') || lowerMessage.includes('cost') || lowerMessage.includes('quote')) {
+      return `💰 **Pricing Guidelines:**
+
+**Standard Markup:**
+- Materials: 2.5-3x cost
+- Labor: $45-75 per hour depending on market
+- Rush jobs: 50-100% surcharge
+
+**Time Estimates:**
+- Simple frame job: 1-2 hours
+- Custom matting: 30-45 minutes
+- Conservation work: 2-4 hours
+- Complex projects: 4-8 hours
+
+**Pricing Factors:**
+- Size (larger = more time/materials)
+- Complexity (multiple mats, specialty techniques)
+- Materials (conservation vs. standard)
+- Deadline (rush work costs more)
+
+**Always include:**
+- Material costs
+- Labor time
+- Overhead (shop costs)
+- Profit margin (20-30% minimum)`;
+    }
+
+    return `I'm here to help with your framing shop! I can assist with:
 
 **Business Operations:**
-- "Find orders for [Customer Name]" - Show all orders for a customer
-- "Send update to [Customer] about [message]" - Send notification
-- "Create order for [Customer] for [description]" - Add new order
+- "Find orders for [Customer Name]" - Show customer orders  
+- "Smith orders" or "orders for Smith" - Quick customer search
+- "Send update to [Customer] about [message]" - Send notifications
 - "Find order TRK-123" - Get specific order details
 
 **Professional Framing Knowledge:**
-- "How to mount canvas" - Get expert framing techniques
-- "Best practice for conservation framing" - Professional advice
-- "Problem with warped frame" - Troubleshooting help
-- "What material for oil painting" - Material recommendations
+- Mat selection and cutting techniques
+- Glass and glazing options
+- Conservation framing standards
+- Mounting and spacing requirements
+- Canvas and painting care
+- Troubleshooting common problems
+- Pricing and time estimates
 
-**Examples:**
-- "Find orders for Sarah Johnson"
-- "How to frame textiles properly"
-- "Problem with bubbling mat"
-- "Best moulding for heavy artwork"
+**Try asking:**
+- "What mat for watercolor?"
+- "How to frame oil painting?"
+- "Conservation mounting techniques?"
+- "Glass types for photography?"
+- "Problem with warped frame?"
 
-What would you like me to help you with?`;
+What would you like help with?`;
   }
 
   private generateAlerts(activeOrders: any[], urgentOrders: any[]): AIMessage[] {
