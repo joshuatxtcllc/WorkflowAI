@@ -60,25 +60,48 @@ export default function NewOrderModal() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: NewOrderData) => {
-      return apiRequest('/api/orders', {
+      console.log('Creating order with data:', orderData);
+      
+      const response = await apiRequest('/api/orders', {
         method: 'POST',
-        body: JSON.stringify(orderData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...orderData,
+          dueDate: new Date(orderData.dueDate),
+          trackingId: `TRK-${Date.now()}`, // Generate unique tracking ID
+        }),
       });
+
+      console.log('Order creation response:', response);
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: (order) => {
+      console.log('Order created successfully:', order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/workload'] });
       toast({
         title: 'Order Created',
-        description: 'New order has been created successfully.',
+        description: `New order ${order.trackingId || ''} has been created successfully.`,
       });
       toggleNewOrderModal();
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Order creation error:', error);
+      
+      let errorMessage = 'Failed to create order. Please try again.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
       toast({
-        title: 'Error',
-        description: 'Failed to create order. Please try again.',
+        title: 'Error Creating Order',
+        description: errorMessage,
         variant: 'destructive',
       });
     },
@@ -162,7 +185,9 @@ export default function NewOrderModal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.customerId || !formData.description) {
+    console.log('Form submission attempted with data:', formData);
+
+    if (!formData.customerId || !formData.description.trim()) {
       toast({
         title: 'Missing Information',
         description: 'Please select a customer and enter a description.',
@@ -171,6 +196,27 @@ export default function NewOrderModal() {
       return;
     }
 
+    if (!formData.dueDate) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please select a due date.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate the customer exists
+    const selectedCustomer = customers?.find(c => c.id === formData.customerId);
+    if (!selectedCustomer) {
+      toast({
+        title: 'Invalid Customer',
+        description: 'Please select a valid customer.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    console.log('Validation passed, creating order...');
     createOrderMutation.mutate(formData);
   };
 

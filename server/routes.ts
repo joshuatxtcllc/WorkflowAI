@@ -210,8 +210,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/orders', authenticateToken, async (req, res) => {
     try {
-      const orderData = insertOrderSchema.parse(req.body);
+      console.log('Order creation request received:', req.body);
+      
+      // Generate ID if not provided
+      const orderDataWithId = {
+        id: randomUUID(),
+        ...req.body,
+        trackingId: req.body.trackingId || `TRK-${Date.now()}`,
+      };
+
+      console.log('Processing order data:', orderDataWithId);
+      
+      const orderData = insertOrderSchema.parse(orderDataWithId);
+      console.log('Order data validated:', orderData);
+      
       const order = await storage.createOrder(orderData);
+      console.log('Order created in storage:', order);
 
       // Create status history entry
       await storage.createStatusHistory({
@@ -221,13 +235,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reason: 'Order created'
       });
 
+      // Clear orders cache
+      ordersCache = null;
+      ordersCacheTime = 0;
+
       // Trigger AI analysis
       await aiService.analyzeWorkload();
 
+      console.log('Order creation completed successfully:', order.id);
       res.status(201).json(order);
     } catch (error) {
       console.error("Error creating order:", error);
-      res.status(400).json({ message: "Failed to create order" });
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid order data", 
+          errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to create order", 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
