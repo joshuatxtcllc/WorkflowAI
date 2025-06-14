@@ -91,6 +91,12 @@ Provide realistic analysis focusing on:
   }
 
   async generateChatResponse(userMessage: string): Promise<string> {
+    // Check for action commands first
+    const actionResult = await this.processActionCommand(userMessage);
+    if (actionResult) {
+      return actionResult;
+    }
+
     if (!this.openai) {
       return this.generateFallbackResponse(userMessage);
     }
@@ -172,6 +178,204 @@ Remember: The primary goal right now is completing system setup so full producti
     }
   }
 
+  private async processActionCommand(userMessage: string): Promise<string | null> {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Find customer orders
+    if (lowerMessage.includes('find orders for') || lowerMessage.includes('show orders for')) {
+      return await this.findCustomerOrders(userMessage);
+    }
+
+    // Send customer update
+    if (lowerMessage.includes('send update to') || lowerMessage.includes('notify customer')) {
+      return await this.sendCustomerUpdate(userMessage);
+    }
+
+    // Create order for customer
+    if (lowerMessage.includes('create order for') || lowerMessage.includes('add order for')) {
+      return await this.createOrderForCustomer(userMessage);
+    }
+
+    // Find specific order
+    if (lowerMessage.includes('find order') && (lowerMessage.includes('trk-') || lowerMessage.includes('#'))) {
+      return await this.findSpecificOrder(userMessage);
+    }
+
+    return null;
+  }
+
+  private async findCustomerOrders(userMessage: string): Promise<string> {
+    try {
+      // Extract customer name from message
+      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i);
+      if (!nameMatch) {
+        return "Please specify the customer name. Example: 'Find orders for John Smith'";
+      }
+
+      const customerName = nameMatch[1].trim();
+      const customers = await storage.getCustomers();
+      const customer = customers.find(c => 
+        c.name.toLowerCase().includes(customerName.toLowerCase()) ||
+        customerName.toLowerCase().includes(c.name.toLowerCase())
+      );
+
+      if (!customer) {
+        return `No customer found matching "${customerName}". Please check the spelling or try a partial name.`;
+      }
+
+      const orders = await storage.getOrdersByCustomer(customer.id);
+      
+      if (orders.length === 0) {
+        return `${customer.name} has no orders in the system.`;
+      }
+
+      const orderSummary = orders.map(order => 
+        `• ${order.trackingId} - ${order.orderType} - ${order.status} - Due: ${new Date(order.dueDate).toLocaleDateString()}`
+      ).join('\n');
+
+      return `Found ${orders.length} order(s) for ${customer.name}:\n\n${orderSummary}\n\nTotal value: $${orders.reduce((sum, o) => sum + (o.price || 0), 0)}`;
+    } catch (error) {
+      return "Error finding customer orders. Please try again.";
+    }
+  }
+
+  private async sendCustomerUpdate(userMessage: string): Promise<string> {
+    try {
+      // Extract customer name and message
+      const customerMatch = userMessage.match(/(?:send update to|notify customer)\s+([a-zA-Z\s]+?)(?:\s+(?:about|that|saying)\s+(.+))?$/i);
+      if (!customerMatch) {
+        return "Please specify: 'Send update to [Customer Name] about [message]'";
+      }
+
+      const customerName = customerMatch[1].trim();
+      const updateMessage = customerMatch[2]?.trim() || "General order update";
+
+      const customers = await storage.getCustomers();
+      const customer = customers.find(c => 
+        c.name.toLowerCase().includes(customerName.toLowerCase())
+      );
+
+      if (!customer) {
+        return `Customer "${customerName}" not found. Please check the spelling.`;
+      }
+
+      // Get customer's most recent order
+      const orders = await storage.getOrdersByCustomer(customer.id);
+      if (orders.length === 0) {
+        return `${customer.name} has no orders to send updates about.`;
+      }
+
+      const latestOrder = orders.sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      )[0];
+
+      // Create notification
+      const { NotificationService } = await import('../notificationService');
+      const notificationService = new NotificationService();
+      
+      await storage.createNotification({
+        customerId: customer.id,
+        orderId: latestOrder.id,
+        type: 'STATUS_UPDATE',
+        channel: 'EMAIL',
+        subject: `Order Update - ${latestOrder.trackingId}`,
+        content: `Dear ${customer.name},\n\n${updateMessage}\n\nOrder: ${latestOrder.trackingId}\nStatus: ${latestOrder.status}\n\nBest regards,\nJay's Frames`,
+        metadata: {
+          orderStatus: latestOrder.status,
+          trackingId: latestOrder.trackingId,
+          customMessage: updateMessage
+        }
+      });
+
+      return `✅ Update sent to ${customer.name} about order ${latestOrder.trackingId}.\n\nMessage: "${updateMessage}"\n\nNotification created and queued for delivery.`;
+    } catch (error) {
+      return "Error sending customer update. Please try again.";
+    }
+  }
+
+  private async createOrderForCustomer(userMessage: string): Promise<string> {
+    try {
+      // Extract customer name and order details
+      const orderMatch = userMessage.match(/(?:create order for|add order for)\s+([a-zA-Z\s]+?)(?:\s+for\s+(.+))?$/i);
+      if (!orderMatch) {
+        return "Please specify: 'Create order for [Customer Name] for [description]'";
+      }
+
+      const customerName = orderMatch[1].trim();
+      const orderDescription = orderMatch[2]?.trim() || "Custom frame order";
+
+      const customers = await storage.getCustomers();
+      const customer = customers.find(c => 
+        c.name.toLowerCase().includes(customerName.toLowerCase())
+      );
+
+      if (!customer) {
+        return `Customer "${customerName}" not found. Please check the spelling or create the customer first.`;
+      }
+
+      // Create order with reasonable defaults
+      const orderData = {
+        customerId: customer.id,
+        trackingId: `TRK-${Date.now()}`,
+        orderType: 'FRAME' as const,
+        status: 'ORDER_PROCESSED' as const,
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+        estimatedHours: 3,
+        price: 200,
+        description: orderDescription,
+        priority: 'MEDIUM' as const,
+        notes: 'Created via AI assistant'
+      };
+
+      const order = await storage.createOrder(orderData);
+
+      // Create status history
+      await storage.createStatusHistory({
+        orderId: order.id,
+        toStatus: 'ORDER_PROCESSED',
+        changedBy: 'ai-assistant',
+        reason: 'Order created via chat command'
+      });
+
+      return `✅ Order created successfully!\n\nCustomer: ${customer.name}\nTracking ID: ${order.trackingId}\nDescription: ${orderDescription}\nDue Date: ${new Date(order.dueDate).toLocaleDateString()}\nEstimated Value: $${order.price}\n\nOrder is now in the production queue.`;
+    } catch (error) {
+      return "Error creating order. Please try again or create the order manually.";
+    }
+  }
+
+  private async findSpecificOrder(userMessage: string): Promise<string> {
+    try {
+      // Extract tracking ID
+      const trackingMatch = userMessage.match(/(?:trk-[\w\d-]+|#[\w\d-]+)/i);
+      if (!trackingMatch) {
+        return "Please provide a tracking ID (e.g., TRK-123 or #123)";
+      }
+
+      let trackingId = trackingMatch[0];
+      if (trackingId.startsWith('#')) {
+        trackingId = 'TRK-' + trackingId.substring(1);
+      }
+
+      const orders = await storage.getOrders();
+      const order = orders.find(o => 
+        o.trackingId.toLowerCase() === trackingId.toLowerCase()
+      );
+
+      if (!order) {
+        return `Order ${trackingId} not found. Please check the tracking ID.`;
+      }
+
+      const customer = order.customer;
+      const daysUntilDue = Math.ceil((new Date(order.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      const statusIcon = order.status === 'COMPLETED' ? '✅' : 
+                        order.status === 'DELAYED' ? '⚠️' : '🔄';
+
+      return `${statusIcon} **Order ${order.trackingId}**\n\nCustomer: ${customer.name}\nType: ${order.orderType}\nStatus: ${order.status.replace('_', ' ')}\nDescription: ${order.description}\nDue: ${new Date(order.dueDate).toLocaleDateString()} (${daysUntilDue > 0 ? `${daysUntilDue} days` : 'OVERDUE'})\nValue: $${order.price}\nPriority: ${order.priority}\n\n${order.notes ? `Notes: ${order.notes}` : ''}`;
+    } catch (error) {
+      return "Error finding order. Please try again.";
+    }
+  }
+
   private generateFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
 
@@ -201,12 +405,25 @@ Do you need information about specific materials for an order?`;
     }
 
     return `I'm here to help with your framing shop operations! I can assist with:
+
+**Information & Analysis:**
 - Order status and workload updates
 - Workflow optimization suggestions
 - Material tracking guidance
-- Timeline and deadline management
 
-What specific information would you like to know about?`;
+**Customer Actions:**
+- "Find orders for [Customer Name]" - Show all orders for a customer
+- "Send update to [Customer] about [message]" - Send notification
+- "Create order for [Customer] for [description]" - Add new order
+- "Find order TRK-123" - Get specific order details
+
+**Examples:**
+- "Find orders for Sarah Johnson"
+- "Send update to Mike Davis about frame ready for pickup"
+- "Create order for Lisa Chen for family portrait frame"
+- "Find order TRK-456"
+
+What would you like me to help you with?`;
   }
 
   private generateAlerts(activeOrders: any[], urgentOrders: any[]): AIMessage[] {

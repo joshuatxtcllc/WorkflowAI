@@ -308,7 +308,7 @@ export default function AIAssistant() {
                       sendMessage();
                     }
                   }}
-                  placeholder="Ask about orders, materials, or deadlines..."
+                  placeholder="Try: 'Find orders for John Smith' or 'Send update to customer about order ready'"
                   className="flex-1 bg-gray-800 text-white border-gray-700 focus:border-jade-500"
                   disabled={chatMutation.isPending}
                 />
