@@ -106,7 +106,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const customerData = {
-        id: randomUUID(),
         name: req.body.name.trim(),
         email: req.body.email.trim().toLowerCase(),
         phone: req.body.phone?.trim() || null,
@@ -126,6 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Database check error (likely no existing customer):', dbError);
       }
 
+      // Validate data with schema
       const validatedData = insertCustomerSchema.parse(customerData);
       const customer = await storage.createCustomer(validatedData);
       
@@ -135,24 +135,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error creating customer:", error);
       
       if (error instanceof z.ZodError) {
+        console.log('Zod validation error:', error.errors);
         return res.status(400).json({ 
           message: "Invalid customer data", 
-          errors: error.errors.map(e => e.message).join(', ')
+          errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', '),
+          details: error.errors
         });
       }
       
       // Check for database constraint errors
       if (error instanceof Error) {
+        console.log('Database error:', error.message);
         if (error.message.includes('unique constraint') || error.message.includes('duplicate key')) {
           return res.status(409).json({ 
             message: "A customer with this email already exists" 
           });
         }
+        
+        return res.status(500).json({ 
+          message: "Failed to create customer. Please try again.",
+          error: error.message
+        });
       }
       
       res.status(500).json({ 
         message: "Failed to create customer. Please try again.",
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Unknown error occurred'
       });
     }
   });
