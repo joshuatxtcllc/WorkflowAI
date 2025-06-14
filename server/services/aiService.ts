@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { storage } from "../storage";
+import { framingKnowledgeService } from "./framingKnowledgeService";
 import type { WorkloadAnalysis, AIMessage } from "@shared/schema";
 
 export class AIService {
@@ -201,6 +202,24 @@ Remember: The primary goal right now is completing system setup so full producti
       return await this.findSpecificOrder(userMessage);
     }
 
+    // Framing knowledge queries
+    if (lowerMessage.includes('how to') || lowerMessage.includes('framing technique') || 
+        lowerMessage.includes('framing method') || lowerMessage.includes('best practice')) {
+      return await this.getFramingAdvice(userMessage);
+    }
+
+    // Troubleshooting queries
+    if (lowerMessage.includes('problem with') || lowerMessage.includes('issue with') || 
+        lowerMessage.includes('troubleshoot') || lowerMessage.includes('fix')) {
+      return await this.getFramingTroubleshooting(userMessage);
+    }
+
+    // Material advice queries
+    if (lowerMessage.includes('what material') || lowerMessage.includes('which moulding') || 
+        lowerMessage.includes('recommend') || lowerMessage.includes('best for')) {
+      return await this.getFramingMaterialAdvice(userMessage);
+    }
+
     return null;
   }
 
@@ -376,6 +395,33 @@ Remember: The primary goal right now is completing system setup so full producti
     }
   }
 
+  private async getFramingAdvice(userMessage: string): Promise<string> {
+    try {
+      const advice = await framingKnowledgeService.searchFramingKnowledge(userMessage);
+      return `🔨 **Professional Framing Advice:**\n\n${advice}`;
+    } catch (error) {
+      return "I can help with framing techniques. Try asking about specific methods like 'How to mount canvas' or 'Best practice for conservation framing'.";
+    }
+  }
+
+  private async getFramingTroubleshooting(userMessage: string): Promise<string> {
+    try {
+      const help = await framingKnowledgeService.getTroubleshootingHelp(userMessage);
+      return `🔧 **Framing Troubleshooting:**\n\n${help}`;
+    } catch (error) {
+      return "I can help troubleshoot framing issues. Describe the specific problem you're encountering.";
+    }
+  }
+
+  private async getFramingMaterialAdvice(userMessage: string): Promise<string> {
+    try {
+      const advice = await framingKnowledgeService.getMaterialAdvice(userMessage);
+      return `📋 **Material Recommendation:**\n\n${advice}`;
+    } catch (error) {
+      return "I can help with material selection. Ask about specific materials like moulding, matting, or glazing options.";
+    }
+  }
+
   private generateFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
 
@@ -406,22 +452,23 @@ Do you need information about specific materials for an order?`;
 
     return `I'm here to help with your framing shop operations! I can assist with:
 
-**Information & Analysis:**
-- Order status and workload updates
-- Workflow optimization suggestions
-- Material tracking guidance
-
-**Customer Actions:**
+**Business Operations:**
 - "Find orders for [Customer Name]" - Show all orders for a customer
 - "Send update to [Customer] about [message]" - Send notification
 - "Create order for [Customer] for [description]" - Add new order
 - "Find order TRK-123" - Get specific order details
 
+**Professional Framing Knowledge:**
+- "How to mount canvas" - Get expert framing techniques
+- "Best practice for conservation framing" - Professional advice
+- "Problem with warped frame" - Troubleshooting help
+- "What material for oil painting" - Material recommendations
+
 **Examples:**
 - "Find orders for Sarah Johnson"
-- "Send update to Mike Davis about frame ready for pickup"
-- "Create order for Lisa Chen for family portrait frame"
-- "Find order TRK-456"
+- "How to frame textiles properly"
+- "Problem with bubbling mat"
+- "Best moulding for heavy artwork"
 
 What would you like me to help you with?`;
   }
