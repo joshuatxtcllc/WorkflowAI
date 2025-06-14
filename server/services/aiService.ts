@@ -230,23 +230,35 @@ Provide realistic analysis focusing on:
 
 **Current Shop Status:**
 - Total Active Orders: ${context.totalOrders}
-- Overdue Orders: ${context.overdueOrders}
+- Overdue Orders: ${context.overdueOrders} ${context.overdueOrders > 0 ? '⚠️ NEEDS ATTENTION' : '✅'}
 - Urgent Priority Orders: ${context.urgentOrders}
 - Order Distribution: ${JSON.stringify(context.orderStatuses)}
 
-**Recent System Alerts:** ${context.recentAlerts.map(a => a.message).join(', ')}
+**Recent System Alerts:** ${context.recentAlerts.map(a => a.content || a.message).join(', ')}
+
+**Active Customers:** ${customers.filter(c => c.name !== 'Mystery Customer').slice(0, 8).map(c => c.name).join(', ')}
 
 **User Request:** "${userMessage}"
 
+**Available Actions:**
+- Search for specific customers: "Find orders for [Name]"
+- Send customer updates: "Send update to [Customer] about [message]"
+- Get order details: "Find order TRK-123"
+- Create new orders: "Create order for [Customer] for [description]"
+- Get framing advice: "How to frame [artwork type]" or "Problem with [issue]"
+
 **Instructions:**
+- If the user mentions a customer name, immediately search for their orders
+- For vague requests, suggest specific actions they can take
 - Provide specific, actionable advice for managing the frame shop
 - Be professional but conversational
 - Focus on practical solutions for a solo operator
-- If asking about framing techniques, provide expert-level advice
+- If asking about framing techniques, provide expert-level advice from the knowledge base
 - For business operations, prioritize efficiency and customer satisfaction
+- Always suggest next steps or follow-up actions
 - Keep responses concise but comprehensive
 
-Respond as a knowledgeable frame shop management assistant.`;
+Respond as a knowledgeable frame shop management assistant with access to real customer and order data.`;
 
       return await this.getBestAIResponse(prompt, 500);
     } catch (error) {
@@ -258,9 +270,12 @@ Respond as a knowledgeable frame shop management assistant.`;
   private extractCustomerNameFromMessage(message: string): string | null {
     // Look for customer names mentioned in various contexts
     const patterns = [
-      /(?:orders for|check on|find|locate|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+orders?/i,
+      /(?:orders for|check on|find|locate|search for|show me|get|smith['']?s?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:orders?|order|customer)/i,
       /customer\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      /(?:who is|about|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+      // Also match lowercase names that people commonly use
+      /(?:orders for|find|locate|search for)\s+([a-z]+(?:\s+[a-z]+)*)/i,
       /\b([A-Z][a-z]+)\b/g // Last resort - any capitalized word
     ];
 
@@ -269,7 +284,7 @@ Respond as a knowledgeable frame shop management assistant.`;
       if (match && match[1]) {
         const name = match[1].trim();
         // Filter out common words that aren't names
-        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass'];
+        const excludeWords = ['Orders', 'Order', 'Customer', 'Status', 'System', 'Production', 'Schedule', 'Frame', 'Mat', 'Glass', 'Update', 'Send', 'Create', 'Find', 'Show', 'Get', 'All', 'Any', 'Some', 'The', 'That', 'This'];
         if (!excludeWords.includes(name) && name.length > 2) {
           return name;
         }
@@ -325,21 +340,49 @@ Respond as a knowledgeable frame shop management assistant.`;
 
   private async findCustomerOrders(userMessage: string): Promise<string> {
     try {
-      // Extract customer name from message
-      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for)\s+([a-zA-Z\s]+)/i);
+      // Extract customer name from message using improved patterns
+      const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for|search for|check on|locate)\s+([a-zA-Z\s]+)/i);
       if (!nameMatch) {
-        return "Please specify the customer name. Example: 'Find orders for John Smith'";
+        return "Please specify the customer name. Example: 'Find orders for John Smith' or 'Search for Smith'";
       }
 
       const customerName = nameMatch[1].trim();
       const customers = await storage.getCustomers();
-      const customer = customers.find(c => 
-        c.name.toLowerCase().includes(customerName.toLowerCase()) ||
-        customerName.toLowerCase().includes(c.name.toLowerCase())
+      
+      // Try exact match first
+      let customer = customers.find(c => 
+        c.name.toLowerCase() === customerName.toLowerCase()
       );
+      
+      // If no exact match, try partial matching
+      if (!customer) {
+        customer = customers.find(c => 
+          c.name.toLowerCase().includes(customerName.toLowerCase()) ||
+          customerName.toLowerCase().includes(c.name.toLowerCase())
+        );
+      }
+      
+      // If still no match, try fuzzy matching by splitting names
+      if (!customer) {
+        const searchWords = customerName.toLowerCase().split(' ');
+        customer = customers.find(c => {
+          const nameWords = c.name.toLowerCase().split(' ');
+          return searchWords.some(searchWord => 
+            nameWords.some(nameWord => 
+              nameWord.includes(searchWord) || searchWord.includes(nameWord)
+            )
+          );
+        });
+      }
 
       if (!customer) {
-        return `No customer found matching "${customerName}". Please check the spelling or try a partial name.`;
+        // Show available customers if no match found
+        const availableCustomers = customers
+          .filter(c => c.name !== 'Mystery Customer')
+          .slice(0, 10)
+          .map(c => c.name)
+          .join(', ');
+        return `No customer found matching "${customerName}". Available customers include: ${availableCustomers}${customers.length > 10 ? '...' : ''}`;
       }
 
       const orders = await storage.getOrdersByCustomer(customer.id);
@@ -522,55 +565,68 @@ Respond as a knowledgeable frame shop management assistant.`;
     }
   }
 
-  private generateFallbackResponse(userMessage: string): string {
+  private async generateFallbackResponse(userMessage: string): Promise<string> {
     const lowerMessage = userMessage.toLowerCase();
 
+    // Get some real data to make responses more helpful
+    const orders = await storage.getOrders();
+    const customers = await storage.getCustomers();
+    const activeCustomers = customers.filter(c => c.name !== 'Mystery Customer').slice(0, 5);
+
     if (lowerMessage.includes('status') || lowerMessage.includes('update')) {
-      return `I can help you check the current workload status. Please check the dashboard for real-time order information, or I can provide specific details about any order if you provide the tracking ID.`;
+      const overdueCount = orders.filter(o => new Date(o.dueDate) < new Date()).length;
+      const urgentCount = orders.filter(o => o.priority === 'URGENT').length;
+      return `**Current Shop Status:**
+- Total Active Orders: ${orders.length}
+- Overdue Orders: ${overdueCount}
+- Urgent Priority: ${urgentCount}
+
+I can help you check specific order details. Try "Find order TRK-123" or "Find orders for [Customer Name]".`;
     }
 
     if (lowerMessage.includes('help') || lowerMessage.includes('behind')) {
-      return `Here are some general recommendations for staying on track:
+      return `**Current Workload Recommendations:**
 
-1. Prioritize orders by due date and complexity
-2. Batch similar tasks together for efficiency
-3. Check material availability before starting work
-4. Update order status regularly for accurate tracking
+1. **Immediate Action:** ${orders.filter(o => new Date(o.dueDate) < new Date()).length} overdue orders need attention
+2. **Material Check:** Review orders in "Materials Ordered" status
+3. **Production Flow:** Focus on completing "In Progress" items first
+4. **Customer Communication:** Update customers on any delays
 
-Would you like specific information about any particular order or workflow stage?`;
+Need help with a specific order or customer?`;
+    }
+
+    if (lowerMessage.includes('customer') || lowerMessage.includes('who')) {
+      return `**Recent Active Customers:**
+${activeCustomers.map(c => `• ${c.name}`).join('\n')}
+
+Try asking: "Find orders for [Customer Name]" or "Send update to [Customer Name] about [message]"`;
     }
 
     if (lowerMessage.includes('material')) {
-      return `For material management:
-- Check the materials tab for each order
-- Mark materials as "ordered" when placed with suppliers
-- Update to "arrived" when materials are received
-- This helps with accurate timeline projections
+      return `**Material Management Tips:**
+- Check "Materials Ordered" status orders for delivery updates
+- Mark materials as "arrived" when received
+- Review material requirements before starting production
 
-Do you need information about specific materials for an order?`;
+Need help with specific materials or techniques? Ask about moulding, matting, or glazing options.`;
     }
 
-    return `I'm here to help with your framing shop operations! I can assist with:
+    return `**Jay's Frames AI Assistant** - I'm here to help! 
 
-**Business Operations:**
-- "Find orders for [Customer Name]" - Show all orders for a customer
-- "Send update to [Customer] about [message]" - Send notification
-- "Create order for [Customer] for [description]" - Add new order
+**Quick Actions:**
+- "Find orders for Smith" - Search customer orders
+- "Send update to [Customer] about delayed materials" - Send notifications  
+- "Create order for [Customer] for canvas print" - Add new orders
 - "Find order TRK-123" - Get specific order details
 
-**Professional Framing Knowledge:**
-- "How to mount canvas" - Get expert framing techniques
-- "Best practice for conservation framing" - Professional advice
-- "Problem with warped frame" - Troubleshooting help
-- "What material for oil painting" - Material recommendations
+**Active Customers:** ${activeCustomers.map(c => c.name).join(', ')}
 
-**Examples:**
-- "Find orders for Sarah Johnson"
-- "How to frame textiles properly"
-- "Problem with bubbling mat"
-- "Best moulding for heavy artwork"
+**Framing Expertise:**
+- "How to frame oil paintings" - Professional techniques
+- "Problem with warped frame" - Troubleshooting
+- "Best glass for photography" - Material advice
 
-What would you like me to help you with?`;
+What can I help you with today?`;
   }
 
   private generateAlerts(activeOrders: any[], urgentOrders: any[]): AIMessage[] {
