@@ -112,8 +112,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: randomUUID(),
         name: req.body.name.trim(),
         email: req.body.email.trim().toLowerCase(),
-        phone: req.body.phone?.trim() || null,
-        address: req.body.address?.trim() || null,
+        phone: req.body.phone?.trim() && req.body.phone.trim() !== '' ? req.body.phone.trim() : null,
+        address: req.body.address?.trim() && req.body.address.trim() !== '' ? req.body.address.trim() : null,
         preferences: {},
         createdAt: new Date(),
       };

@@ -129,7 +129,10 @@ export default function NewOrderModal() {
     },
     onSuccess: (customer) => {
       console.log('Customer created successfully:', customer);
+      
+      // Force refresh of customers list
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
+      queryClient.refetchQueries({ queryKey: ['/api/customers'] });
       
       // Set the customer ID for the order form
       if (customer?.id) {
@@ -140,7 +143,7 @@ export default function NewOrderModal() {
       setShowNewCustomer(false);
       setNewCustomer({ name: '', email: '', phone: '', address: '' });
       toast({
-        title: 'Customer Created',
+        title: '✅ Customer Created',
         description: `Customer ${customer.name} has been added successfully.`,
       });
     },
@@ -152,6 +155,8 @@ export default function NewOrderModal() {
       // Handle error from apiRequest
       if (error?.message) {
         errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
       }
 
       toast({
