@@ -61,9 +61,8 @@ export default function NewOrderModal() {
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: NewOrderData) => {
       console.log('Creating order with data:', orderData);
-      
-      const response = await apiRequest('/api/orders', {
-        method: 'POST',
+
+      const response = await apiRequest('POST', '/api/orders', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -79,31 +78,31 @@ export default function NewOrderModal() {
     },
     onSuccess: (order) => {
       console.log('Order created successfully:', order);
-      
+
       // Force refresh of orders immediately
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/workload'] });
       queryClient.refetchQueries({ queryKey: ['/api/orders'] });
-      
+
       toast({
         title: '🎉 Order Created Successfully!',
         description: `Order ${order.trackingId || order.id} has been added to the kanban board.`,
       });
-      
+
       toggleNewOrderModal();
       resetForm();
     },
     onError: (error: any) => {
       console.error('Order creation error:', error);
-      
+
       let errorMessage = 'Failed to create order. Please try again.';
-      
+
       if (error?.message) {
         errorMessage = error.message;
       } else if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
-      
+
       toast({
         title: 'Error Creating Order',
         description: errorMessage,
@@ -116,38 +115,32 @@ export default function NewOrderModal() {
     mutationFn: async (customerData: typeof newCustomer) => {
       console.log('Sending customer data:', customerData);
 
-      const response = await apiRequest('/api/customers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(customerData),
-      });
+      const response = await apiRequest('POST', '/api/customers', customerData);
 
       console.log('Customer creation response:', response);
       return response;
     },
     onSuccess: (response) => {
       console.log('Customer created successfully:', response);
-      
+
       // Extract customer data from response
       const customer = response?.customer || response;
       const customerId = customer?.id || response?.id;
       const customerName = customer?.name || response?.name;
-      
+
       if (!customerId) {
         console.error('No customer ID in response:', response);
         throw new Error('Invalid response: missing customer ID');
       }
-      
+
       // Force refresh of customers list
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       queryClient.refetchQueries({ queryKey: ['/api/customers'] });
-      
+
       // Set the customer ID for the order form
       setFormData(prev => ({ ...prev, customerId: customerId }));
       console.log('Set customer ID:', customerId);
-      
+
       setShowNewCustomer(false);
       setNewCustomer({ name: '', email: '', phone: '', address: '' });
       toast({
@@ -241,7 +234,7 @@ export default function NewOrderModal() {
     // Validate the customer exists
     console.log('Validating customer ID:', formData.customerId);
     console.log('Available customers:', customers?.map(c => ({ id: c.id, name: c.name })));
-    
+
     const selectedCustomer = customers?.find(c => c.id === formData.customerId);
     if (!selectedCustomer) {
       console.log('Customer validation failed - no matching customer found');
@@ -252,7 +245,7 @@ export default function NewOrderModal() {
       });
       return;
     }
-    
+
     console.log('Selected customer validated:', selectedCustomer.name);
 
     // Additional data validation
