@@ -139,3 +139,29 @@ export const authApi = {
     return response.json();
   },
 };
+
+export async function apiRequest(url: string, options: RequestInit = {}) {
+  // Get token from localStorage
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers,
+    },
+  });
+
+  console.log(`API Request: ${options.method || 'GET'} ${url}`);
+
+  if (!response.ok) {
+    console.log(`API Response: ${response.status} ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    console.log('API Request failed:', errorData.message || 'Unknown error', errorData);
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+
+  console.log(`API Response: ${response.status} ${response.statusText}`);
+  return response.json();
+}
