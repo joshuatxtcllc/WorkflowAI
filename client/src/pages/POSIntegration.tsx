@@ -17,6 +17,22 @@ import {
   Monitor,
   RotateCcw,
   Package,
+  Settings
+} from "lucide-react";
+
+interface POSStatus {
+  success: boolean;
+  connected?: boolean;
+  needsApiKey?: boolean;
+  authenticated?: boolean;
+  authError?: boolean;
+  orders?: any[];
+  error?: string;
+}
+
+export default function POSIntegration() {
+  const { toast } = useToast();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const createPOSOrderMutation = useMutation({
     mutationFn: (orderData: any) => 
@@ -48,24 +64,6 @@ import {
       dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
     });
   };
-
-
-  Settings
-} from "lucide-react";
-
-interface POSStatus {
-  success: boolean;
-  connected?: boolean;
-  needsApiKey?: boolean;
-  authenticated?: boolean;
-  authError?: boolean;
-  orders?: any[];
-  error?: string;
-}
-
-export default function POSIntegration() {
-  const { toast } = useToast();
-  const [isSyncing, setIsSyncing] = useState(false);
 
   const { data: posStatus, isLoading, refetch } = useQuery<POSStatus>({
     queryKey: ["/api/pos/status"],
