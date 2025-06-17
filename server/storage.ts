@@ -171,22 +171,40 @@ export class DatabaseStorage implements IStorage {
 
   async createCustomer(customerData: any) {
     try {
+      console.log('Storage createCustomer called with:', customerData);
+      
+      const customerToInsert = {
+        id: customerData.id || randomUUID(),
+        name: customerData.name,
+        email: customerData.email,
+        phone: customerData.phone || null,
+        address: customerData.address || null,
+        preferences: customerData.preferences || {},
+        createdAt: customerData.createdAt || new Date(),
+        updatedAt: new Date(),
+      };
+
+      console.log('Inserting customer with data:', customerToInsert);
+      
       const [customer] = await db
         .insert(customers)
-        .values({
-          id: randomUUID(),
-          name: customerData.name,
-          email: customerData.email,
-          phone: customerData.phone || null,
-          address: customerData.address || null,
-          preferences: customerData.preferences || {},
-          createdAt: new Date(),
-        })
+        .values(customerToInsert)
         .returning();
+      
+      console.log('Customer inserted successfully:', customer);
       return customer;
     } catch (error) {
       console.error('Storage createCustomer error:', error);
-      throw error;
+      
+      // Provide more specific error information
+      if (error instanceof Error) {
+        if (error.message.includes('UNIQUE constraint')) {
+          throw new Error('A customer with this email already exists');
+        }
+        throw new Error(`Database error: ${error.message}`);
+      }
+      
+      throw new Error('Failed to create customer in database');
     }
   }
 

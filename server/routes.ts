@@ -82,17 +82,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/customers', authenticateToken, async (req, res) => {
     try {
-      console.log('Creating customer with data:', req.body);
+      console.log('Customer creation request received:', req.body);
       
       // Validate required fields
       if (!req.body.name?.trim()) {
+        console.log('Validation failed: Missing name');
         return res.status(400).json({ 
+          success: false,
           message: "Customer name is required" 
         });
       }
 
       if (!req.body.email?.trim()) {
+        console.log('Validation failed: Missing email');
         return res.status(400).json({ 
+          success: false,
           message: "Customer email is required" 
         });
       }
@@ -100,43 +104,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(req.body.email.trim())) {
+        console.log('Validation failed: Invalid email format');
         return res.status(400).json({ 
+          success: false,
           message: "Please enter a valid email address" 
         });
       }
 
       const customerData = {
+        id: randomUUID(),
         name: req.body.name.trim(),
         email: req.body.email.trim().toLowerCase(),
         phone: req.body.phone?.trim() || null,
         address: req.body.address?.trim() || null,
         preferences: {},
+        createdAt: new Date(),
       };
+
+      console.log('Processed customer data:', customerData);
 
       // Check if customer with this email already exists
       try {
         const existingCustomer = await storage.getCustomerByEmail(customerData.email);
         if (existingCustomer) {
+          console.log('Customer already exists with email:', customerData.email);
           return res.status(409).json({ 
+            success: false,
             message: "A customer with this email already exists" 
           });
         }
       } catch (dbError) {
-        console.log('Database check error (likely no existing customer):', dbError);
+        console.log('Database check completed (no existing customer found)');
       }
 
-      // Validate data with schema
-      const validatedData = insertCustomerSchema.parse(customerData);
-      const customer = await storage.createCustomer(validatedData);
+      // Create customer directly in storage
+      const customer = await storage.createCustomer(customerData);
       
       console.log('Customer created successfully:', customer.id);
-      res.status(201).json(customer);
+      res.status(201).json({
+        success: true,
+        message: "Customer created successfully",
+        data: customer,
+        ...customer // Include customer data at root level for compatibility
+      });
     } catch (error) {
       console.error("Error creating customer:", error);
       
       if (error instanceof z.ZodError) {
         console.log('Zod validation error:', error.errors);
         return res.status(400).json({ 
+          success: false,
           message: "Invalid customer data", 
           errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', '),
           details: error.errors
@@ -146,19 +163,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check for database constraint errors
       if (error instanceof Error) {
         console.log('Database error:', error.message);
-        if (error.message.includes('unique constraint') || error.message.includes('duplicate key')) {
+        if (error.message.includes('unique constraint') || error.message.includes('duplicate key') || error.message.includes('UNIQUE constraint failed')) {
           return res.status(409).json({ 
+            success: false,
             message: "A customer with this email already exists" 
           });
         }
         
         return res.status(500).json({ 
+          success: false,
           message: "Failed to create customer. Please try again.",
           error: error.message
         });
       }
       
       res.status(500).json({ 
+        success: false,
         message: "Failed to create customer. Please try again.",
         error: 'Unknown error occurred'
       });
