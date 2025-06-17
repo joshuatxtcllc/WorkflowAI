@@ -116,47 +116,32 @@ export default function NewOrderModal() {
     mutationFn: async (customerData: typeof newCustomer) => {
       console.log('Sending customer data:', customerData);
 
-      try {
-        const response = await apiRequest('/api/customers', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(customerData),
-        });
+      const response = await apiRequest('/api/customers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(customerData),
+      });
 
-        console.log('Customer creation response:', response);
-        return response;
-      } catch (error: any) {
-        console.error('API request failed:', error);
-        
-        // Handle different error response formats
-        if (error?.response?.data?.message) {
-          throw new Error(error.response.data.message);
-        } else if (error?.message) {
-          throw new Error(error.message);
-        } else if (typeof error === 'string') {
-          throw new Error(error);
-        } else {
-          throw new Error('Failed to create customer. Please check your connection and try again.');
-        }
-      }
+      console.log('Customer creation response:', response);
+      return response;
     },
     onSuccess: (customer) => {
       console.log('Customer created successfully:', customer);
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       
-      // Handle both response formats
-      const customerId = customer.id || customer.data?.id;
-      if (customerId) {
-        setFormData(prev => ({ ...prev, customerId }));
+      // Set the customer ID for the order form
+      if (customer?.id) {
+        setFormData(prev => ({ ...prev, customerId: customer.id }));
+        console.log('Set customer ID:', customer.id);
       }
       
       setShowNewCustomer(false);
       setNewCustomer({ name: '', email: '', phone: '', address: '' });
       toast({
         title: 'Customer Created',
-        description: customer.message || 'New customer has been added successfully.',
+        description: `Customer ${customer.name} has been added successfully.`,
       });
     },
     onError: (error: any) => {
@@ -164,12 +149,9 @@ export default function NewOrderModal() {
 
       let errorMessage = 'Failed to create customer. Please try again.';
 
+      // Handle error from apiRequest
       if (error?.message) {
         errorMessage = error.message;
-      } else if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
       }
 
       toast({

@@ -88,7 +88,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.body.name?.trim()) {
         console.log('Validation failed: Missing name');
         return res.status(400).json({ 
-          success: false,
           message: "Customer name is required" 
         });
       }
@@ -96,7 +95,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.body.email?.trim()) {
         console.log('Validation failed: Missing email');
         return res.status(400).json({ 
-          success: false,
           message: "Customer email is required" 
         });
       }
@@ -106,7 +104,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!emailRegex.test(req.body.email.trim())) {
         console.log('Validation failed: Invalid email format');
         return res.status(400).json({ 
-          success: false,
           message: "Please enter a valid email address" 
         });
       }
@@ -129,7 +126,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (existingCustomer) {
           console.log('Customer already exists with email:', customerData.email);
           return res.status(409).json({ 
-            success: false,
             message: "A customer with this email already exists" 
           });
         }
@@ -141,46 +137,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const customer = await storage.createCustomer(customerData);
       
       console.log('Customer created successfully:', customer.id);
-      res.status(201).json({
-        success: true,
-        message: "Customer created successfully",
-        data: customer,
-        ...customer // Include customer data at root level for compatibility
-      });
+      
+      // Return customer data directly for compatibility with frontend
+      res.status(201).json(customer);
     } catch (error) {
       console.error("Error creating customer:", error);
       
-      if (error instanceof z.ZodError) {
-        console.log('Zod validation error:', error.errors);
-        return res.status(400).json({ 
-          success: false,
-          message: "Invalid customer data", 
-          errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', '),
-          details: error.errors
-        });
-      }
+      // Provide detailed error information
+      let errorMessage = "Failed to create customer. Please try again.";
       
-      // Check for database constraint errors
       if (error instanceof Error) {
-        console.log('Database error:', error.message);
-        if (error.message.includes('unique constraint') || error.message.includes('duplicate key') || error.message.includes('UNIQUE constraint failed')) {
-          return res.status(409).json({ 
-            success: false,
-            message: "A customer with this email already exists" 
-          });
-        }
+        console.log('Error details:', error.message, error.stack);
         
-        return res.status(500).json({ 
-          success: false,
-          message: "Failed to create customer. Please try again.",
-          error: error.message
-        });
+        if (error.message.includes('unique constraint') || 
+            error.message.includes('duplicate key') || 
+            error.message.includes('UNIQUE constraint failed')) {
+          errorMessage = "A customer with this email already exists";
+        } else {
+          errorMessage = error.message;
+        }
       }
       
       res.status(500).json({ 
-        success: false,
-        message: "Failed to create customer. Please try again.",
-        error: 'Unknown error occurred'
+        message: errorMessage,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
       });
     }
   });
