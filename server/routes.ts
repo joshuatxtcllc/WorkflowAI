@@ -220,6 +220,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Order creation request received:', req.body);
       
+      // Validate required fields
+      if (!req.body.customerId?.trim()) {
+        return res.status(400).json({ 
+          message: "Customer ID is required" 
+        });
+      }
+      
+      if (!req.body.description?.trim()) {
+        return res.status(400).json({ 
+          message: "Order description is required" 
+        });
+      }
+      
+      // Verify customer exists
+      const customer = await storage.getCustomer(req.body.customerId);
+      if (!customer) {
+        return res.status(400).json({ 
+          message: "Invalid customer ID - customer not found" 
+        });
+      }
+      
       // Generate ID if not provided
       const orderDataWithId = {
         id: randomUUID(),
@@ -243,15 +264,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reason: 'Order created'
       });
 
-      // Clear orders cache
+      // Clear orders cache immediately
       ordersCache = null;
       ordersCacheTime = 0;
 
+      // Get the full order with customer details for response
+      const fullOrder = await storage.getOrder(order.id);
+      
       // Trigger AI analysis
       await aiService.analyzeWorkload();
 
       console.log('Order creation completed successfully:', order.id);
-      res.status(201).json(order);
+      console.log('Order saved with tracking ID:', order.trackingId);
+      
+      res.status(201).json(fullOrder || order);
     } catch (error) {
       console.error("Error creating order:", error);
       

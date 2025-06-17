@@ -79,12 +79,17 @@ export default function NewOrderModal() {
     },
     onSuccess: (order) => {
       console.log('Order created successfully:', order);
+      
+      // Force refresh of orders immediately
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/workload'] });
+      queryClient.refetchQueries({ queryKey: ['/api/orders'] });
+      
       toast({
-        title: 'Order Created',
-        description: `New order ${order.trackingId || ''} has been created successfully.`,
+        title: '🎉 Order Created Successfully!',
+        description: `Order ${order.trackingId || order.id} has been added to the kanban board.`,
       });
+      
       toggleNewOrderModal();
       resetForm();
     },
@@ -187,7 +192,7 @@ export default function NewOrderModal() {
 
     console.log('Form submission attempted with data:', formData);
 
-    if (!formData.customerId || !formData.description.trim()) {
+    if (!formData.customerId?.trim() || !formData.description?.trim()) {
       toast({
         title: 'Missing Information',
         description: 'Please select a customer and enter a description.',
@@ -206,15 +211,21 @@ export default function NewOrderModal() {
     }
 
     // Validate the customer exists
+    console.log('Validating customer ID:', formData.customerId);
+    console.log('Available customers:', customers?.map(c => ({ id: c.id, name: c.name })));
+    
     const selectedCustomer = customers?.find(c => c.id === formData.customerId);
     if (!selectedCustomer) {
+      console.log('Customer validation failed - no matching customer found');
       toast({
         title: 'Invalid Customer',
-        description: 'Please select a valid customer.',
+        description: 'Please select a valid customer from the list.',
         variant: 'destructive',
       });
       return;
     }
+    
+    console.log('Selected customer:', selectedCustomer.name);
 
     console.log('Validation passed, creating order...');
     createOrderMutation.mutate(formData);
@@ -300,7 +311,11 @@ export default function NewOrderModal() {
                             key={customer.id}
                             value={`${customer.name} ${customer.email}`}
                             onSelect={() => {
-                              setFormData(prev => ({ ...prev, customerId: customer.id }));
+                              console.log('Selecting customer:', customer.id, customer.name);
+                              setFormData(prev => ({ 
+                                ...prev, 
+                                customerId: customer.id 
+                              }));
                               setCustomerSearchOpen(false);
                             }}
                           >
