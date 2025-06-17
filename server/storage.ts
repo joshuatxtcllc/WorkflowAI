@@ -333,7 +333,10 @@ export class DatabaseStorage implements IStorage {
   async createOrder(order: InsertOrder): Promise<Order> {
     const [newOrder] = await db
       .insert(orders)
-      .values(order)
+      .values({
+        id: randomUUID(),
+        ...order
+      })
       .returning();
     return newOrder;
   }
