@@ -1,0 +1,48 @@
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:466:24)
+7:46:11 PM [express] GET /api/ai/analysis 304 in 1923ms :: {"totalOrders":50,"totalHours":200,"onTim…
+Connecting to external Kanban system:  https://frames-guru-JayFrames.replit.app
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async Timeout._onTimeout (/home/runner/workspace/server/routes.ts:803:24)
+getOrders query completed: 124ms
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:466:24)
+7:46:21 PM [express] GET /api/ai/analysis 304 in 1615ms :: {"totalOrders":50,"totalHours":200,"onTim…
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:466:24)
+7:46:23 PM [express] GET /api/ai/analysis 304 in 1630ms :: {"totalOrders":50,"totalHours":200,"onTim…
+7:46:39 PM [express] GET /api/test/auth 200 in 1ms :: {"success":true,"message":"Hub connection auth…
+7:46:40 PM [express] GET /api/analytics/workload 304 in 233ms :: {"totalOrders":104,"totalHours":260…
+getOrders query completed: 68ms
+7:46:40 PM [express] GET /api/orders 304 in 129ms :: [{"id":"70c085d1-5bef-4b5c-884e-fdabc8191d0e","…
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:466:24)
+7:46:40 PM [express] GET /api/ai/analysis 304 in 1895ms :: {"totalOrders":50,"totalHours":200,"onTim…
+Connecting to external Kanban system:  https://frames-guru-JayFrames.replit.app
+Kanban system is reachable
+Successfully fetched undefined orders from Kanban API
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts:128:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async AIService.generateWorkloadAnalysis (/home/runner/workspace/server/services/aiService.ts:157:24)
+    at async Timeout._onTimeout (/home/runner/workspace/server/routes.ts:803:24)
+getOrders query completed: 116ms
+Error generating AI analysis: Error: All AI providers failed: OpenAI: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at AIService.getBestAIResponse (/home/runner/workspace/server/services/aiService.ts
