@@ -331,12 +331,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
+    // Generate ID if not provided
+    const orderWithId = {
+      ...order,
+      id: order.id || randomUUID()
+    };
+    
     const [newOrder] = await db
       .insert(orders)
-      .values({
-        id: randomUUID(),
-        ...order
-      })
+      .values(orderWithId)
       .returning();
     return newOrder;
   }

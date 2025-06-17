@@ -260,6 +260,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Prepare order data
       const orderDataWithId = {
+        id: randomUUID(), // Explicitly generate ID
         customerId: req.body.customerId.trim(),
         orderType: req.body.orderType || 'FRAME',
         description: req.body.description.trim(),
