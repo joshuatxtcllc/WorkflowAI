@@ -42,7 +42,8 @@ interface KanbanColumnProps {
 function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps) {
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'order',
-    drop: (item: { id: string }) => {
+    drop: (item: { id: string }, monitor) => {
+      if (monitor.didDrop()) return; // Prevent multiple drops
       onDropOrder(item.id, status);
     },
     collect: (monitor) => ({
@@ -188,8 +189,11 @@ export default function KanbanBoard() {
 
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
-      const response = await apiRequest('PATCH', `/api/orders/${orderId}/status`, { status });
-      return response.json();
+      const response = await apiRequest(`/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      return response;
     },
     onSuccess: (updatedOrder, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
@@ -306,7 +310,7 @@ export default function KanbanBoard() {
   }, []);
 
   // Auto-scroll functionality for drag operations
-  const startAutoScroll = useCallback((direction: 'left' | 'right', speed: number = 2) => {
+  const startAutoScroll = useCallback((direction: 'left' | 'right', speed: number = 3) => {
     if (autoScrollIntervalRef.current) {
       clearInterval(autoScrollIntervalRef.current);
     }
@@ -314,20 +318,25 @@ export default function KanbanBoard() {
     autoScrollIntervalRef.current = setInterval(() => {
       if (scrollContainerRef.current) {
         const container = scrollContainerRef.current;
-        const scrollAmount = direction === 'left' ? -speed : speed;
-        const newScrollLeft = container.scrollLeft + scrollAmount;
+        const scrollAmount = direction === 'left' ? -speed * 2 : speed * 2; // Increased speed
+        const newScrollLeft = Math.max(0, Math.min(
+          container.scrollLeft + scrollAmount,
+          container.scrollWidth - container.clientWidth
+        ));
 
-        // Check boundaries
-        if (newScrollLeft >= 0 && newScrollLeft <= container.scrollWidth - container.clientWidth) {
+        if (container.scrollLeft !== newScrollLeft) {
           container.scrollLeft = newScrollLeft;
 
           // Update scroll position for slider
           const maxScroll = container.scrollWidth - container.clientWidth;
           const scrollPercent = maxScroll > 0 ? (newScrollLeft / maxScroll) * 100 : 0;
           setScrollPosition(Math.round(scrollPercent));
+        } else {
+          // Stop scrolling if we've reached the edge
+          stopAutoScroll();
         }
       }
-    }, 16); // ~60fps
+    }, 20); // Slightly slower for smoother scrolling
   }, []);
 
   const stopAutoScroll = useCallback(() => {
@@ -343,17 +352,17 @@ export default function KanbanBoard() {
 
     const container = scrollContainerRef.current;
     const rect = container.getBoundingClientRect();
-    const scrollZone = 100; // Distance from edge to trigger scroll
+    const scrollZone = 150; // Increased distance from edge to trigger scroll
     const mouseX = e.clientX - rect.left;
 
     // Check if mouse is near left or right edge
     if (mouseX < scrollZone && container.scrollLeft > 0) {
       // Near left edge, scroll left
-      const speed = Math.max(2, (scrollZone - mouseX) / 10);
+      const speed = Math.max(3, (scrollZone - mouseX) / 8);
       startAutoScroll('left', speed);
     } else if (mouseX > rect.width - scrollZone && container.scrollLeft < container.scrollWidth - container.clientWidth) {
       // Near right edge, scroll right
-      const speed = Math.max(2, (mouseX - (rect.width - scrollZone)) / 10);
+      const speed = Math.max(3, (mouseX - (rect.width - scrollZone)) / 8);
       startAutoScroll('right', speed);
     } else {
       // Not near edges, stop scrolling
@@ -363,27 +372,43 @@ export default function KanbanBoard() {
 
   // Set up global drag event listeners
   useEffect(() => {
+    let isDragging = false;
+
     const handleDragStart = (e: DragEvent) => {
       // Only handle if it's an order card being dragged
       if (e.target && (e.target as HTMLElement).closest('[data-draggable="order"]')) {
+        isDragging = true;
+        document.addEventListener('dragover', handleMouseMove);
         document.addEventListener('mousemove', handleMouseMove);
       }
     };
 
     const handleDragEnd = (e: DragEvent) => {
+      isDragging = false;
+      document.removeEventListener('dragover', handleMouseMove);
       document.removeEventListener('mousemove', handleMouseMove);
       stopAutoScroll();
+    };
+
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault(); // Allow drop
+      if (isDragging) {
+        handleMouseMove(e as any);
+      }
     };
 
     // Listen for native drag events on the document
     document.addEventListener('dragstart', handleDragStart);
     document.addEventListener('dragend', handleDragEnd);
+    document.addEventListener('dragover', handleDragOver);
     document.addEventListener('drop', handleDragEnd);
 
     return () => {
       document.removeEventListener('dragstart', handleDragStart);
       document.removeEventListener('dragend', handleDragEnd);
+      document.removeEventListener('dragover', handleDragOver);
       document.removeEventListener('drop', handleDragEnd);
+      document.removeEventListener('dragover', handleMouseMove);
       document.removeEventListener('mousemove', handleMouseMove);
       stopAutoScroll();
     };

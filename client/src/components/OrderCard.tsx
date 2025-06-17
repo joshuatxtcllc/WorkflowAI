@@ -1,4 +1,3 @@
-
 import { useDrag } from 'react-dnd';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, DollarSign, MessageSquare, Zap, CheckCircle, ArrowRight, ChevronDown, Edit } from 'lucide-react';
@@ -67,13 +66,24 @@ export default function OrderCard({ order }: OrderCardProps) {
     }
   }, [order.status, previousStatus]);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'order',
-    item: () => ({ id: order.id, status: order.status }),
+    item: { id: order.id },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  });
+    canDrag: () => true,
+    end: (item, monitor) => {
+      setIsDragging(false);
+      setShowStatusAnimation(false);
+      // Force a small delay to ensure drop has completed
+      setTimeout(() => {
+        if (monitor.didDrop()) {
+          setShowStatusAnimation(true);
+        }
+      }, 100);
+    },
+  }));
 
   // Status update mutation
   const updateStatusMutation = useMutation({
@@ -176,7 +186,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
     return materials.map((material, index) => {
       if (!material || typeof material !== 'object') return null;
-      
+
       let color = 'bg-gray-600'; // Not ordered
       let title = `${material.type || 'Material'} - Not ordered`;
 
@@ -201,7 +211,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   // Determine what the order needs next
   const getNextAction = () => {
     const currentStatus = order.status;
-    
+
     switch (currentStatus) {
       case 'ORDER_PROCESSED':
         return 'Needs materials ordered';
@@ -228,7 +238,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const getNextActionColor = () => {
     const currentStatus = order.status;
-    
+
     switch (currentStatus) {
       case 'ORDER_PROCESSED':
       case 'MATERIALS_ORDERED':
@@ -252,7 +262,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   const getAvailableTransitions = () => {
     const currentStatus = order.status;
     const transitions = [];
-    
+
     // Always allow moving to the next status
     const nextStatus = STATUS_PROGRESSION[currentStatus as keyof typeof STATUS_PROGRESSION];
     if (nextStatus) {
@@ -261,7 +271,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         label: STATUS_LABELS[nextStatus as keyof typeof STATUS_LABELS] || nextStatus
       });
     }
-    
+
     // Allow marking as delayed from any status
     if (currentStatus !== 'DELAYED' && currentStatus !== 'PICKED_UP') {
       transitions.push({
@@ -269,7 +279,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         label: 'Mark as Delayed'
       });
     }
-    
+
     // Allow moving back to previous status (except from first status)
     if (currentStatus !== 'ORDER_PROCESSED') {
       const statusOrder = Object.keys(STATUS_PROGRESSION);
@@ -282,7 +292,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         });
       }
     }
-    
+
     return transitions;
   };
 
