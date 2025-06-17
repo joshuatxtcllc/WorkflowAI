@@ -62,7 +62,8 @@ export default function NewOrderModal() {
     mutationFn: async (orderData: NewOrderData) => {
       console.log('Creating order with data:', orderData);
 
-      const response = await apiRequest('POST', '/api/orders', {
+      const response = await apiRequest('/api/orders', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -115,7 +116,10 @@ export default function NewOrderModal() {
     mutationFn: async (customerData: typeof newCustomer) => {
       console.log('Sending customer data:', customerData);
 
-      const response = await apiRequest('POST', '/api/customers', customerData);
+      const response = await apiRequest('/api/customers', {
+        method: 'POST',
+        body: JSON.stringify(customerData),
+      });
 
       console.log('Customer creation response:', response);
       return response;

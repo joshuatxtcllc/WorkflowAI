@@ -1,3 +1,4 @@
+
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
@@ -7,23 +8,20 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
-export async function apiRequest(method: string, url: string, data?: any) {
+export async function apiRequest(url: string, options: RequestInit = {}) {
   const token = localStorage.getItem('authToken');
 
-  console.log(`API Request: ${method} ${url}`);
+  console.log(`API Request: ${options.method || 'GET'} ${url}`);
   console.log('Token available:', !!token);
 
   const config: RequestInit = {
-    method,
+    ...options,
     headers: {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers,
     },
   };
-
-  if (data) {
-    config.body = JSON.stringify(data);
-  }
 
   const response = await fetch(url, config);
 
