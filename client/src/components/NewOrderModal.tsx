@@ -127,24 +127,32 @@ export default function NewOrderModal() {
       console.log('Customer creation response:', response);
       return response;
     },
-    onSuccess: (customer) => {
-      console.log('Customer created successfully:', customer);
+    onSuccess: (response) => {
+      console.log('Customer created successfully:', response);
+      
+      // Extract customer data from response
+      const customer = response?.customer || response;
+      const customerId = customer?.id || response?.id;
+      const customerName = customer?.name || response?.name;
+      
+      if (!customerId) {
+        console.error('No customer ID in response:', response);
+        throw new Error('Invalid response: missing customer ID');
+      }
       
       // Force refresh of customers list
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       queryClient.refetchQueries({ queryKey: ['/api/customers'] });
       
       // Set the customer ID for the order form
-      if (customer?.id) {
-        setFormData(prev => ({ ...prev, customerId: customer.id }));
-        console.log('Set customer ID:', customer.id);
-      }
+      setFormData(prev => ({ ...prev, customerId: customerId }));
+      console.log('Set customer ID:', customerId);
       
       setShowNewCustomer(false);
       setNewCustomer({ name: '', email: '', phone: '', address: '' });
       toast({
         title: '✅ Customer Created',
-        description: `Customer ${customer.name} has been added successfully.`,
+        description: `Customer ${customerName || 'Unknown'} has been added successfully.`,
       });
     },
     onError: (error: any) => {
@@ -202,10 +210,20 @@ export default function NewOrderModal() {
 
     console.log('Form submission attempted with data:', formData);
 
-    if (!formData.customerId?.trim() || !formData.description?.trim()) {
+    // Enhanced validation
+    if (!formData.customerId?.trim()) {
       toast({
-        title: 'Missing Information',
-        description: 'Please select a customer and enter a description.',
+        title: 'Missing Customer',
+        description: 'Please select a customer from the dropdown or create a new one.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!formData.description?.trim()) {
+      toast({
+        title: 'Missing Description',
+        description: 'Please enter a description for the order.',
         variant: 'destructive',
       });
       return;
@@ -213,7 +231,7 @@ export default function NewOrderModal() {
 
     if (!formData.dueDate) {
       toast({
-        title: 'Missing Information',
+        title: 'Missing Due Date',
         description: 'Please select a due date.',
         variant: 'destructive',
       });
@@ -228,16 +246,35 @@ export default function NewOrderModal() {
     if (!selectedCustomer) {
       console.log('Customer validation failed - no matching customer found');
       toast({
-        title: 'Invalid Customer',
-        description: 'Please select a valid customer from the list.',
+        title: 'Invalid Customer Selection',
+        description: 'The selected customer could not be found. Please select a valid customer.',
         variant: 'destructive',
       });
       return;
     }
     
-    console.log('Selected customer:', selectedCustomer.name);
+    console.log('Selected customer validated:', selectedCustomer.name);
 
-    console.log('Validation passed, creating order...');
+    // Additional data validation
+    if (formData.estimatedHours < 0.5) {
+      toast({
+        title: 'Invalid Hours',
+        description: 'Estimated hours must be at least 0.5.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.price < 0) {
+      toast({
+        title: 'Invalid Price',
+        description: 'Price cannot be negative.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    console.log('All validation passed, creating order...');
     createOrderMutation.mutate(formData);
   };
 

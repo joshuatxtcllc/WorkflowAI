@@ -9,6 +9,8 @@ async function throwIfResNotOk(res: Response) {
 
 export async function apiRequest(url: string, options: RequestInit = {}): Promise<any> {
   try {
+    console.log(`API Request: ${options.method || 'GET'} ${url}`);
+    
     const response = await fetch(url, {
       credentials: 'include',
       ...options,
@@ -18,27 +20,41 @@ export async function apiRequest(url: string, options: RequestInit = {}): Promis
       },
     });
 
+    console.log(`API Response: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
       let errorMessage = `HTTP error! status: ${response.status}`;
+      let errorData = null;
 
       // Try to get error details from response
       try {
-        const errorData = await response.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
+        const text = await response.text();
+        if (text) {
+          try {
+            errorData = JSON.parse(text);
+            if (errorData.message) {
+              errorMessage = errorData.message;
+            } else if (errorData.error) {
+              errorMessage = errorData.error;
+            }
+          } catch (parseError) {
+            errorMessage = text || response.statusText || errorMessage;
+          }
         }
       } catch (parseError) {
-        // If we can't parse the error response, use the status text
+        console.warn('Failed to parse error response:', parseError);
         errorMessage = response.statusText || errorMessage;
       }
 
+      console.error('API Request failed:', errorMessage, errorData);
       throw new Error(errorMessage);
     }
 
-    return response.json();
+    const result = await response.json();
+    console.log('API Request successful:', result);
+    return result;
   } catch (error) {
+    console.error('API Request error:', error);
     // Re-throw with proper error message
     if (error instanceof Error) {
       throw error;

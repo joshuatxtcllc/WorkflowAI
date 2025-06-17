@@ -109,13 +109,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const customerData = {
-        id: randomUUID(),
         name: req.body.name.trim(),
         email: req.body.email.trim().toLowerCase(),
         phone: req.body.phone?.trim() && req.body.phone.trim() !== '' ? req.body.phone.trim() : null,
         address: req.body.address?.trim() && req.body.address.trim() !== '' ? req.body.address.trim() : null,
         preferences: {},
-        createdAt: new Date(),
       };
 
       console.log('Processed customer data:', customerData);
@@ -126,20 +124,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (existingCustomer) {
           console.log('Customer already exists with email:', customerData.email);
           return res.status(409).json({ 
-            message: "A customer with this email already exists" 
+            message: "A customer with this email already exists",
+            customer: existingCustomer
           });
         }
       } catch (dbError) {
         console.log('Database check completed (no existing customer found)');
       }
 
-      // Create customer directly in storage
+      // Create customer using storage service
       const customer = await storage.createCustomer(customerData);
       
-      console.log('Customer created successfully:', customer.id);
+      if (!customer || !customer.id) {
+        throw new Error('Customer creation returned invalid result');
+      }
       
-      // Return customer data directly for compatibility with frontend
-      res.status(201).json(customer);
+      console.log('Customer created successfully:', customer.id, customer.name);
+      
+      // Return complete customer data
+      res.status(201).json({
+        success: true,
+        customer: customer,
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address
+      });
     } catch (error) {
       console.error("Error creating customer:", error);
       
@@ -159,6 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(500).json({ 
+        success: false,
         message: errorMessage,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
       });
@@ -222,47 +234,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validate required fields
       if (!req.body.customerId?.trim()) {
+        console.log('Validation failed: Missing customer ID');
         return res.status(400).json({ 
           message: "Customer ID is required" 
         });
       }
       
       if (!req.body.description?.trim()) {
+        console.log('Validation failed: Missing description');
         return res.status(400).json({ 
           message: "Order description is required" 
         });
       }
       
       // Verify customer exists
+      console.log('Verifying customer exists:', req.body.customerId);
       const customer = await storage.getCustomer(req.body.customerId);
       if (!customer) {
+        console.log('Customer not found:', req.body.customerId);
         return res.status(400).json({ 
           message: "Invalid customer ID - customer not found" 
         });
       }
+      console.log('Customer verified:', customer.name);
       
-      // Generate ID if not provided
+      // Prepare order data
       const orderDataWithId = {
-        id: randomUUID(),
-        ...req.body,
+        customerId: req.body.customerId.trim(),
+        orderType: req.body.orderType || 'FRAME',
+        description: req.body.description.trim(),
+        dueDate: new Date(req.body.dueDate),
+        estimatedHours: parseFloat(req.body.estimatedHours) || 3,
+        price: parseFloat(req.body.price) || 0,
+        priority: req.body.priority || 'MEDIUM',
+        notes: req.body.notes?.trim() || '',
         trackingId: req.body.trackingId || `TRK-${Date.now()}`,
+        status: 'ORDER_PROCESSED'
       };
 
       console.log('Processing order data:', orderDataWithId);
       
+      // Validate with schema
       const orderData = insertOrderSchema.parse(orderDataWithId);
-      console.log('Order data validated:', orderData);
+      console.log('Order data validated successfully');
       
+      // Create order
       const order = await storage.createOrder(orderData);
-      console.log('Order created in storage:', order);
+      console.log('Order created in storage:', order.id, order.trackingId);
+
+      if (!order || !order.id) {
+        throw new Error('Order creation failed - no order returned');
+      }
 
       // Create status history entry
-      await storage.createStatusHistory({
-        orderId: order.id,
-        toStatus: order.status || 'ORDER_PROCESSED',
-        changedBy: (req.user as any)?.claims?.sub || 'system',
-        reason: 'Order created'
-      });
+      try {
+        await storage.createStatusHistory({
+          orderId: order.id,
+          toStatus: order.status || 'ORDER_PROCESSED',
+          changedBy: (req.user as any)?.claims?.sub || 'system',
+          reason: 'Order created'
+        });
+        console.log('Status history created');
+      } catch (historyError) {
+        console.warn('Failed to create status history:', historyError);
+        // Don't fail the order creation for this
+      }
 
       // Clear orders cache immediately
       ordersCache = null;
@@ -271,24 +307,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get the full order with customer details for response
       const fullOrder = await storage.getOrder(order.id);
       
-      // Trigger AI analysis
-      await aiService.analyzeWorkload();
+      // Trigger AI analysis (don't await to avoid blocking response)
+      aiService.analyzeWorkload().catch(err => console.warn('AI analysis failed:', err));
 
       console.log('Order creation completed successfully:', order.id);
       console.log('Order saved with tracking ID:', order.trackingId);
       
-      res.status(201).json(fullOrder || order);
+      res.status(201).json({
+        success: true,
+        order: fullOrder || order,
+        id: order.id,
+        trackingId: order.trackingId,
+        message: 'Order created successfully'
+      });
     } catch (error) {
       console.error("Error creating order:", error);
       
       if (error instanceof z.ZodError) {
+        console.log('Schema validation errors:', error.errors);
         return res.status(400).json({ 
           message: "Invalid order data", 
-          errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+          errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', '),
+          details: error.errors
         });
       }
       
       res.status(500).json({ 
+        success: false,
         message: "Failed to create order", 
         error: error instanceof Error ? error.message : 'Unknown error'
       });
