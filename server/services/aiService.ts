@@ -17,21 +17,60 @@ export class AIService {
   // Removed analysis cache to prevent stale responses
 
   constructor() {
+    // Debug: Log all environment variables that start with API
+    console.log('Available API keys in environment:');
+    Object.keys(process.env).forEach(key => {
+      if (key.includes('API_KEY')) {
+        console.log(`- ${key}: ${process.env[key] ? 'Available' : 'Not set'}`);
+      }
+    });
+
     // Initialize AI providers based on available API keys
     if (process.env.OPENAI_API_KEY) {
-      this.openai = new OpenAI({ 
-        apiKey: process.env.OPENAI_API_KEY 
-      });
+      try {
+        this.openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
+        this.providers.openai = true;
+        console.log('✓ OpenAI client initialized');
+      } catch (error) {
+        console.error('✗ OpenAI initialization failed:', error);
+      }
     }
 
-    this.anthropicApiKey = process.env.ANTHROPIC_API_KEY || null;
-    this.perplexityApiKey = process.env.PERPLEXITY_API_KEY || null;
+    if (process.env.ANTHROPIC_API_KEY) {
+      try {
+        this.anthropic = new Anthropic({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        });
+        this.providers.anthropic = true;
+        console.log('✓ Anthropic client initialized');
+      } catch (error) {
+        console.error('✗ Anthropic initialization failed:', error);
+      }
+    }
 
-    console.log('AI Service initialized with providers:', {
-      openai: !!this.openai,
-      anthropic: !!this.anthropicApiKey,
-      perplexity: !!this.perplexityApiKey
-    });
+    if (process.env.PERPLEXITY_API_KEY) {
+      try {
+        this.perplexity = new OpenAI({
+          apiKey: process.env.PERPLEXITY_API_KEY,
+          baseURL: 'https://api.perplexity.ai',
+        });
+        this.providers.perplexity = true;
+        console.log('✓ Perplexity client initialized');
+      } catch (error) {
+        console.error('✗ Perplexity initialization failed:', error);
+      }
+    }
+
+    console.log('AI Service initialized with providers:', this.providers);
+
+    if (!this.providers.openai && !this.providers.anthropic && !this.providers.perplexity) {
+      console.warn('⚠️  No AI providers available! Add API keys to Secrets:');
+      console.warn('   - OPENAI_API_KEY for OpenAI');
+      console.warn('   - ANTHROPIC_API_KEY for Claude');
+      console.warn('   - PERPLEXITY_API_KEY for Perplexity');
+    }
   }
 
   private async callAnthropic(messages: AnthropicMessage[], maxTokens: number = 500): Promise<string> {
@@ -176,24 +215,24 @@ Provide realistic analysis focusing on:
   async generateChatResponse(userMessage: string, sessionId?: string): Promise<string> {
     try {
       console.log('Processing chat message:', userMessage);
-      
+
       // Generate session ID if not provided
       const session = sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // ALWAYS try MCP enhancement first - this is your competitive advantage
       const mcpResponse = await this.processMCPQuery(userMessage, session);
       if (mcpResponse) {
         console.log('✅ MCP provided enhanced response');
         return mcpResponse;
       }
-      
+
       // Try MCP workflow optimization for any business query
       const workflowResponse = await this.tryMCPWorkflowOptimization(userMessage, session);
       if (workflowResponse) {
         console.log('✅ MCP workflow optimization activated');
         return workflowResponse;
       }
-      
+
       // Check for specific action patterns
       const actionResponse = await this.processActionCommand(userMessage);
       if (actionResponse) {
@@ -205,7 +244,7 @@ Provide realistic analysis focusing on:
       const customerNameMatch = this.extractCustomerNameFromMessage(userMessage);
       if (customerNameMatch) {
         console.log('Auto-detected customer name:', customerNameMatch);
-        
+
         // Use MCP for enhanced customer context
         const mcpCustomerContext = await mcpService.getCustomerContext(session, customerNameMatch);
         if (mcpCustomerContext) {
@@ -234,7 +273,7 @@ ${mcpCustomerContext.riskFactors.riskLevel === 'HIGH' ? '• Monitor closely and
 
 *This enhanced response is powered by your MCP customer intelligence system.*`;
         }
-        
+
         // Fallback to basic search
         const customerSearchResult = await this.findCustomerOrders(`find orders for ${customerNameMatch}`);
         if (customerSearchResult && !customerSearchResult.includes('❌ No customer found')) {
@@ -303,7 +342,7 @@ Respond as a knowledgeable frame shop management assistant with access to real c
   private extractCustomerNameFromMessage(message: string): string | null {
     // Simplified and more reliable customer name extraction
     const lowerMessage = message.toLowerCase();
-    
+
     // Primary patterns for explicit customer queries
     const explicitPatterns = [
       /(?:find orders for|show orders for|orders for|search for)\s+([a-zA-Z\s]+?)(?:\s|$)/i,
@@ -328,16 +367,16 @@ Respond as a knowledgeable frame shop management assistant with access to real c
 
   private async tryMCPWorkflowOptimization(userMessage: string, sessionId: string): Promise<string | null> {
     const lowerMessage = userMessage.toLowerCase();
-    
+
     // Automatically enhance any business-related query with MCP intelligence
     const businessKeywords = ['order', 'customer', 'material', 'workflow', 'capacity', 'behind', 'help', 'status', 'urgent', 'overdue', 'production'];
     const hasBussinessContext = businessKeywords.some(keyword => lowerMessage.includes(keyword));
-    
+
     if (hasBussinessContext) {
       try {
         const capacityAnalysis = await mcpService.analyzeShopCapacity(sessionId);
         const workflowOptimization = await mcpService.optimizeWorkflow(sessionId);
-        
+
         return `🎯 **MCP-Enhanced Business Intelligence**
 
 **Current Capacity Status:**
@@ -363,7 +402,7 @@ Your original query: "${userMessage}"
         return null;
       }
     }
-    
+
     return null;
   }
 
@@ -376,7 +415,7 @@ Your original query: "${userMessage}"
       if (nameMatch) {
         const customerName = nameMatch[1].trim();
         const context = await mcpService.getCustomerContext(sessionId, customerName);
-        
+
         if (context) {
           return `🔍 **Deep Customer Analysis: ${context.customer.name}**
 
@@ -406,7 +445,7 @@ ${context.riskFactors.riskLevel === 'HIGH' ? '- Monitor closely and maintain fre
     // Shop capacity analysis with MCP
     if (lowerMessage.includes('shop capacity') || lowerMessage.includes('analyze capacity') || lowerMessage.includes('workflow optimization')) {
       const analysis = await mcpService.analyzeShopCapacity(sessionId);
-      
+
       return `⚙️ **Shop Capacity Analysis**
 
 📈 **Current Status:**
@@ -434,12 +473,12 @@ ${analysis.recommendations.slice(0, 3).map(r => `- ${r}`).join('\n')}`;
     if (lowerMessage.includes('framing advice') || lowerMessage.includes('how to frame') || lowerMessage.includes('framing consultation')) {
       const customerMatch = userMessage.match(/for ([a-zA-Z\s]+)/i);
       let customerContext = null;
-      
+
       if (customerMatch) {
         const customerName = customerMatch[1].trim();
         customerContext = await mcpService.getCustomerContext(sessionId, customerName);
       }
-      
+
       const consultation = await mcpService.getFramingConsultation(sessionId, userMessage, customerContext);
       return `🔨 **Professional Framing Consultation**\n\n${consultation}`;
     }
@@ -494,7 +533,7 @@ ${analysis.recommendations.slice(0, 3).map(r => `- ${r}`).join('\n')}`;
   private async findCustomerOrders(userMessage: string): Promise<string> {
     try {
       console.log('Finding customer orders for message:', userMessage);
-      
+
       // Extract customer name more reliably
       const nameMatch = userMessage.match(/(?:find orders for|show orders for|orders for|search for|check on|locate)\s+([a-zA-Z\s]+?)(?:\s+about|\s+for|\s*$)/i);
       if (!nameMatch) {
@@ -503,23 +542,23 @@ ${analysis.recommendations.slice(0, 3).map(r => `- ${r}`).join('\n')}`;
 
       const customerName = nameMatch[1].trim();
       console.log('Extracted customer name:', customerName);
-      
+
       const customers = await storage.getCustomers();
       const realCustomers = customers.filter(c => c.name !== 'Mystery Customer');
-      
+
       console.log('Available customers:', realCustomers.map(c => c.name));
-      
+
       // Simplified search logic - try exact match first, then partial
       let customer = realCustomers.find(c => 
         c.name.toLowerCase() === customerName.toLowerCase()
       );
-      
+
       if (!customer) {
         customer = realCustomers.find(c => 
           c.name.toLowerCase().includes(customerName.toLowerCase())
         );
       }
-      
+
       if (!customer) {
         // Last attempt - check if search term appears in any part of customer name
         customer = realCustomers.find(c => {

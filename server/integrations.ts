@@ -79,6 +79,14 @@ export class POSIntegration {
     console.log('POS Integration initialized:');
     console.log('- External POS URL:', this.baseUrl || 'Not configured');
     console.log('- API Key configured:', this.apiKey ? `Yes (${this.apiKey.length} chars)` : 'No');
+    
+    // Debug: Check all POS related environment variables
+    console.log('- Available POS environment variables:');
+    Object.keys(process.env).forEach(key => {
+      if (key.includes('POS_')) {
+        console.log(`  ${key}: ${process.env[key] ? 'Set' : 'Not set'}`);
+      }
+    });
 
     if (!this.baseUrl || !this.apiKey) {
       console.log('- Status: POS integration disabled - missing configuration');
