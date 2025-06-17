@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ interface POSStatus {
 export default function POSIntegration() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [testUrl, setTestUrl] = useState("");
+  const [testApiKey, setTestApiKey] = useState("");
 
   const createPOSOrderMutation = useMutation({
     mutationFn: (orderData: any) => 
@@ -53,6 +56,25 @@ export default function POSIntegration() {
     },
   });
 
+  const testConnectionMutation = useMutation({
+    mutationFn: (connectionData: { testUrl: string; testApiKey: string }) => 
+      apiRequest("/api/pos/test-connection", "POST", connectionData),
+    onSuccess: (data) => {
+      toast({
+        title: data.success ? "Connection Successful" : "Connection Failed",
+        description: data.message || data.error,
+        variant: data.success ? "default" : "destructive",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Connection Test Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCreateTestOrder = () => {
     createPOSOrderMutation.mutate({
       customerName: "Test Customer",
@@ -62,6 +84,22 @@ export default function POSIntegration() {
       description: "Test POS Order",
       price: 275,
       dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    });
+  };
+
+  const handleTestConnection = () => {
+    if (!testUrl.trim() || !testApiKey.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both URL and API key",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    testConnectionMutation.mutate({
+      testUrl: testUrl.trim(),
+      testApiKey: testApiKey.trim()
     });
   };
 
@@ -308,6 +346,50 @@ export default function POSIntegration() {
               </p>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* POS API Connection Testing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Test POS API Connection
+          </CardTitle>
+          <CardDescription>
+            Test your POS API credentials before saving them to Secrets
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">POS API URL</label>
+            <Input
+              type="url"
+              placeholder="https://your-pos-system.replit.app"
+              value={testUrl}
+              onChange={(e) => setTestUrl(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">API Key</label>
+            <Input
+              type="password"
+              placeholder="Your POS API key"
+              value={testApiKey}
+              onChange={(e) => setTestApiKey(e.target.value)}
+            />
+          </div>
+          <Button 
+            onClick={handleTestConnection}
+            disabled={testConnectionMutation.isPending}
+            className="w-full"
+            variant="outline"
+          >
+            {testConnectionMutation.isPending ? 'Testing...' : 'Test Connection'}
+          </Button>
+          <div className="text-xs text-muted-foreground">
+            If the test is successful, add POS_API_URL and POS_API_KEY to your Secrets
+          </div>
         </CardContent>
       </Card>
 
