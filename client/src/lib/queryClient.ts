@@ -7,61 +7,35 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
-export async function apiRequest(url: string, options: RequestInit = {}): Promise<any> {
-  try {
-    console.log(`API Request: ${options.method || 'GET'} ${url}`);
-    
-    const response = await fetch(url, {
-      credentials: 'include',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+export async function apiRequest(method: string, url: string, data?: any) {
+  const token = localStorage.getItem('authToken');
 
-    console.log(`API Response: ${response.status} ${response.statusText}`);
+  console.log(`API Request: ${method} ${url}`);
+  console.log('Token available:', !!token);
 
-    if (!response.ok) {
-      let errorMessage = `HTTP error! status: ${response.status}`;
-      let errorData = null;
+  const config: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+    },
+  };
 
-      // Try to get error details from response
-      try {
-        const text = await response.text();
-        if (text) {
-          try {
-            errorData = JSON.parse(text);
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            } else if (errorData.error) {
-              errorMessage = errorData.error;
-            }
-          } catch (parseError) {
-            errorMessage = text || response.statusText || errorMessage;
-          }
-        }
-      } catch (parseError) {
-        console.warn('Failed to parse error response:', parseError);
-        errorMessage = response.statusText || errorMessage;
-      }
-
-      console.error('API Request failed:', errorMessage, errorData);
-      throw new Error(errorMessage);
-    }
-
-    const result = await response.json();
-    console.log('API Request successful:', result);
-    return result;
-  } catch (error) {
-    console.error('API Request error:', error);
-    // Re-throw with proper error message
-    if (error instanceof Error) {
-      throw error;
-    } else {
-      throw new Error('Network request failed');
-    }
+  if (data) {
+    config.body = JSON.stringify(data);
   }
+
+  const response = await fetch(url, config);
+
+  console.log(`API Response: ${response.status} ${response.statusText}`);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.log('API Request failed:', errorData.message || 'Unknown error', errorData);
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
