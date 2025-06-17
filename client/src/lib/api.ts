@@ -142,7 +142,7 @@ export const authApi = {
 
 export async function apiRequest(url: string, options: RequestInit = {}) {
   // Get token from localStorage
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken');
 
   const response = await fetch(url, {
     ...options,

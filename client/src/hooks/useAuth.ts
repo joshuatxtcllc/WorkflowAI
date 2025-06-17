@@ -33,6 +33,33 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated: !!user && !!token,
+    login: async (email: string, password: string) => {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      
+      // Store the JWT token
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      
+      // Store user data
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      return data;
+    },
     logout: () => {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
