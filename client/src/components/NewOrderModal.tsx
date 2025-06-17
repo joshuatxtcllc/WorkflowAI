@@ -65,7 +65,7 @@ export default function NewOrderModal() {
       const response = await apiRequest('/api/orders', {
         method: 'POST',
         body: JSON.stringify({
-          customerId: selectedCustomerId,
+          customerId: orderData.customerId,
           orderType: orderData.orderType,
           description: orderData.description,
           dueDate: orderData.dueDate,
@@ -91,7 +91,7 @@ export default function NewOrderModal() {
       queryClient.refetchQueries({ queryKey: ["/api/orders"] });
 
       // Close modal and reset form
-      setIsOpen(false);
+      toggleNewOrderModal();
       resetForm();
 
       // Show success message
