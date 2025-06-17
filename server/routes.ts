@@ -300,7 +300,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Don't fail the order creation for this
       }
 
-      // Clear orders cache immediately
+      // Clear orders cache immediately and force refresh
       ordersCache = null;
       ordersCacheTime = 0;
 
@@ -312,6 +312,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Order creation completed successfully:', order.id);
       console.log('Order saved with tracking ID:', order.trackingId);
+
+      // Send WebSocket notification to update all connected clients
+      try {
+        // Broadcast to WebSocket clients if available
+        if (httpServer && (httpServer as any).wss) {
+          const wss = (httpServer as any).wss;
+          broadcast(wss, {
+            type: 'order-created',
+            data: fullOrder || order
+          });
+        }
+      } catch (wsError) {
+        console.log('WebSocket broadcast failed:', wsError);
+      }
       
       res.status(201).json({
         success: true,

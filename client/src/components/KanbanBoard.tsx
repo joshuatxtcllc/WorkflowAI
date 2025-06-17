@@ -393,8 +393,9 @@ export default function KanbanBoard() {
 
   // Handle WebSocket messages
   useEffect(() => {
-    if (lastMessage?.type === 'order-updated') {
+    if (lastMessage?.type === 'order-updated' || lastMessage?.type === 'order-created') {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
     }
   }, [lastMessage, queryClient]);
 

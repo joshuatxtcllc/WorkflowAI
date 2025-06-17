@@ -64,34 +64,42 @@ export default function NewOrderModal() {
 
       const response = await apiRequest('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
-          ...orderData,
-          dueDate: new Date(orderData.dueDate),
-          trackingId: `TRK-${Date.now()}`, // Generate unique tracking ID
+          customerId: selectedCustomerId,
+          orderType: orderData.orderType,
+          description: orderData.description,
+          dueDate: orderData.dueDate,
+          estimatedHours: orderData.estimatedHours || 3,
+          price: orderData.price || 0,
+          priority: orderData.priority || 'MEDIUM',
+          notes: orderData.notes || '',
         }),
       });
 
       console.log('Order creation response:', response);
       return response;
     },
-    onSuccess: (order) => {
-      console.log('Order created successfully:', order);
+    onSuccess: (data) => {
+      console.log('Order created successfully:', data);
 
-      // Force refresh of orders immediately
+      // Invalidate orders cache immediately
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/analytics/workload'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+
+      // Force refetch orders
       queryClient.refetchQueries({ queryKey: ['/api/orders'] });
+      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
 
-      toast({
-        title: '🎉 Order Created Successfully!',
-        description: `Order ${order.trackingId || order.id} has been added to the kanban board.`,
-      });
-
-      toggleNewOrderModal();
+      // Close modal and reset form
+      setIsOpen(false);
       resetForm();
+
+      // Show success message
+      toast({
+        title: "Order Created!",
+        description: `Order ${data.trackingId || data.order?.trackingId || data.id} has been created successfully.`,
+        duration: 3000,
+      });
     },
     onError: (error: any) => {
       console.error('Order creation error:', error);
