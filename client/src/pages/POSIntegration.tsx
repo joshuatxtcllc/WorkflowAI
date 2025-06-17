@@ -17,6 +17,39 @@ import {
   Monitor,
   RotateCcw,
   Package,
+
+  const createPOSOrderMutation = useMutation({
+    mutationFn: (orderData: any) => 
+      apiRequest("/api/pos/create-order", "POST", orderData),
+    onSuccess: () => {
+      toast({
+        title: "POS Order Created",
+        description: "Order has been created and will appear in your Kanban board",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Order Creation Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreateTestOrder = () => {
+    createPOSOrderMutation.mutate({
+      customerName: "Test Customer",
+      customerEmail: "test@example.com",
+      customerPhone: "555-0123",
+      orderType: "FRAME",
+      description: "Test POS Order",
+      price: 275,
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    });
+  };
+
+
   Settings
 } from "lucide-react";
 
@@ -277,6 +310,30 @@ export default function POSIntegration() {
               </p>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Internal POS Order Creation */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">Create POS Order</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Create orders directly in your POS system that will immediately appear in the Kanban board.
+            </p>
+            <Button 
+              onClick={handleCreateTestOrder}
+              disabled={createPOSOrderMutation.isPending}
+              className="w-full"
+            >
+              {createPOSOrderMutation.isPending ? 'Creating...' : 'Create Test POS Order'}
+            </Button>
+            <div className="text-xs text-muted-foreground">
+              This will create a test order that appears immediately in your Kanban workflow.
+            </div>
+          </div>
         </CardContent>
       </Card>
       </div>

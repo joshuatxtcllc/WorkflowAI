@@ -1358,45 +1358,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import integrations
   const { smsIntegration, posIntegration, dashboardIntegration, autoSyncMetrics } = await import('./integrations');
 
-  // Internal POS order creation endpoint
+  // Internal POS order creation endpoint that immediately shows in Kanban
   app.post('/api/pos/create-order', authenticateToken, async (req, res) => {
     try {
       const { customerName, customerPhone, customerEmail, orderType, description, price, dueDate } = req.body;
 
+      console.log('Creating internal POS order:', { customerName, customerEmail, description });
+
       // Create or find customer
-      let customer = await storage.getCustomerByEmail(customerEmail);
+      let customer;
+      if (customerEmail) {
+        customer = await storage.getCustomerByEmail(customerEmail);
+      }
+      
       if (!customer) {
         customer = await storage.createCustomer({
-          name: customerName,
-          email: customerEmail,
+          name: customerName || 'POS Customer',
+          email: customerEmail || `pos.customer.${Date.now()}@frames.local`,
           phone: customerPhone || null,
           address: null,
         });
+        console.log('Created new customer for POS order:', customer.id);
       }
 
-      // Create order
+      // Create order with proper tracking ID
       const order = await storage.createOrder({
         trackingId: `POS-${Date.now()}`,
         customerId: customer.id,
         orderType: orderType || 'FRAME',
         status: 'ORDER_PROCESSED',
         dueDate: new Date(dueDate || Date.now() + 7 * 24 * 60 * 60 * 1000),
-        estimatedHours: 3,
-        price: price || 0,
-        description: description || 'POS Order',
+        estimatedHours: orderType === 'SHADOWBOX' ? 4 : orderType === 'MAT' ? 2 : 3,
+        price: parseFloat(price) || 0,
+        description: description || 'New POS Order',
         priority: 'MEDIUM',
         notes: 'Created via internal POS system'
       });
+
+      console.log('POS order created:', order.id, order.trackingId);
 
       // Create status history
       await storage.createStatusHistory({
         orderId: order.id,
         toStatus: 'ORDER_PROCESSED',
         changedBy: (req.user as any)?.claims?.sub || 'pos-system',
-        reason: 'POS order created'
+        reason: 'Internal POS order created'
       });
 
-      res.json({ success: true, order });
+      // Clear orders cache to force refresh
+      ordersCache = null;
+      ordersCacheTime = 0;
+
+      // Get full order details for response
+      const fullOrder = await storage.getOrder(order.id);
+
+      // Send WebSocket notification to update all connected clients immediately
+      try {
+        if (httpServer && (httpServer as any).wss) {
+          const wss = (httpServer as any).wss;
+          broadcast(wss, {
+            type: 'order-created',
+            data: fullOrder || order
+          });
+          console.log('Broadcasted POS order creation to WebSocket clients');
+        }
+      } catch (wsError) {
+        console.log('WebSocket broadcast failed:', wsError);
+      }
+
+      console.log('POS order successfully created and cached cleared');
+      res.json({ 
+        success: true, 
+        order: fullOrder || order,
+        message: 'POS order created and will appear in Kanban immediately'
+      });
     } catch (error) {
       console.error('POS order creation error:', error);
       res.status(500).json({ error: 'Failed to create POS order' });
