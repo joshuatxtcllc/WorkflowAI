@@ -117,7 +117,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Order creation request received:', req.body);
       
-      const validatedData = insertOrderSchema.parse(req.body);
+      // Process the request data before validation
+      const orderData = {
+        ...req.body,
+        trackingId: `TRK-${Date.now()}`, // Generate tracking ID
+        dueDate: new Date(req.body.dueDate) // Convert string to Date
+      };
+      
+      const validatedData = insertOrderSchema.parse(orderData);
       
       // Verify customer exists
       console.log('Verifying customer exists:', validatedData.customerId);
@@ -129,18 +136,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Customer verified:', customer.name);
 
       // Process order data
-      const orderData = {
+      const processedOrderData = {
         ...validatedData,
-        trackingId: `TRK-${Date.now()}`,
-        status: 'ORDER_PROCESSED' as const,
-        dueDate: new Date(validatedData.dueDate)
+        status: 'ORDER_PROCESSED' as const
       };
       
-      console.log('Processing order data:', orderData);
+      console.log('Processing order data:', processedOrderData);
       console.log('Order data validated successfully');
 
       // Create the order
-      const order = await storage.createOrder(orderData);
+      const order = await storage.createOrder(processedOrderData);
       console.log('Order created in storage:', order.id, order.trackingId);
 
       // Create initial status history
