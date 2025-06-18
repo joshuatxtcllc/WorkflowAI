@@ -84,21 +84,25 @@ export async function setupAuth(app: Express) {
   // Login endpoint
   app.post('/api/auth/login', async (req, res) => {
     try {
+      console.log('Login attempt for:', req.body.email);
       const { email, password } = req.body;
 
       if (!email || !password) {
+        console.log('Missing email or password');
         return res.status(400).json({ message: 'Email and password are required' });
       }
 
       // Find user
       const user = await storage.getUserByEmail(email);
       if (!user || !user.password) {
+        console.log('User not found or no password:', email);
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
       // Verify password
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
+        console.log('Invalid password for:', email);
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
@@ -111,6 +115,7 @@ export async function setupAuth(app: Express) {
         lastName: user.lastName,
       };
 
+      console.log('Login successful for:', email);
       res.json({
         success: true,
         user: {

@@ -250,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
-      const workload = await storage.getWorkloadAnalysis();
+      const workload = await storage.getWorkloadMetrics();
       res.json(workload);
     } catch (error) {
       console.error('Error fetching workload analysis:', error);
@@ -261,12 +261,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI-powered routes
   app.get('/api/ai/analysis', isAuthenticated, async (req, res) => {
     try {
-      const orders = await storage.getOrdersWithDetails();
-      const workload = await storage.getWorkloadAnalysis();
+      const orders = await storage.getOrders();
+      const workload = await storage.getWorkloadMetrics();
       
       // Try to get cached analysis first
       const cachedAnalysis = await storage.getLatestAIAnalysis();
-      if (cachedAnalysis && isRecentAnalysis(cachedAnalysis.date)) {
+      if (cachedAnalysis && isRecentAnalysis(cachedAnalysis.createdAt)) {
         return res.json(cachedAnalysis.metrics);
       }
 
@@ -293,8 +293,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/ai/alerts', isAuthenticated, async (req, res) => {
     try {
-      const orders = await storage.getOrdersWithDetails();
-      const workload = await storage.getWorkloadAnalysis();
+      const orders = await storage.getOrders();
+      const workload = await storage.getWorkloadMetrics();
       
       try {
         const alerts = await aiService.generateAlerts(orders, workload);
@@ -581,7 +581,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setInterval(async () => {
     try {
       const orders = await storage.getOrders();
-      const workload = await storage.getWorkloadAnalysis();
+      const workload = await storage.getWorkloadMetrics();
       await aiService.generateWorkloadAnalysis(orders, workload);
     } catch (error) {
       console.error('Error generating AI analysis:', error);

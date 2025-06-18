@@ -24,44 +24,62 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+          credentials: 'include', // Include cookies for session
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Login failed");
-      }
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorMessage = "Login failed";
+          try {
+            const errorJson = JSON.parse(errorText);
+            errorMessage = errorJson.message || errorMessage;
+          } catch {
+            errorMessage = errorText || errorMessage;
+          }
+          throw new Error(errorMessage);
+        }
 
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        return response.json();
-      } else {
-        return { success: true, user: { firstName: "User", lastName: "" } };
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Login request failed:", error);
+        throw error;
       }
     },
     onSuccess: (data) => {
-      // Store user info for session-based auth (no token needed)
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      try {
+        // Store user info for session-based auth
+        if (data?.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        toast({
+          title: "Welcome to Jay's Frames!",
+          description: `Logged in as ${data?.user?.firstName || 'User'} ${data?.user?.lastName || ''}`,
+        });
+
+        // Small delay before redirect to ensure session is established
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 100);
+      } catch (error) {
+        console.error("Login success handler error:", error);
+        // Still redirect even if there's an error with localStorage
+        window.location.href = '/dashboard';
       }
-
-      toast({
-        title: "Welcome to Jay's Frames!",
-        description: `Logged in as ${data.user?.firstName || 'User'} ${data.user?.lastName || ''}`,
-      });
-
-      // Reload the page to trigger auth state change
-      window.location.reload();
     },
     onError: (error: Error) => {
+      console.error("Login error:", error);
       toast({
         title: "Login Failed",
-        description: error.message,
+        description: error.message || "Unable to log in. Please try again.",
         variant: "destructive",
       });
     },
