@@ -22,9 +22,22 @@ import Notifications from "@/pages/Notifications";
 import Reports from "@/pages/Reports";
 import AdminPortal from './pages/AdminPortal';
 import NotFound from "@/pages/not-found";
+import { useEffect } from "react";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, refetch } = useAuth();
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refetch();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [refetch]);
+
 
   return (
     <Switch>

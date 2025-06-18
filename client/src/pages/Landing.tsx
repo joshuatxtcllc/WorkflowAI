@@ -49,12 +49,12 @@ export default function Landing() {
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold"
           >
-            <a href="/api/login">
+            <a href="/login">
               Access Your Dashboard
             </a>
           </Button>
           <p className="text-gray-400 text-sm mt-4">
-            Secure login with Replit authentication
+            Secure login to manage your custom framing business
           </p>
         </div>
 

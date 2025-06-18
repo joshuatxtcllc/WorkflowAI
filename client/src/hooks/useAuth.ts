@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface User {
   id: string;
@@ -9,74 +9,49 @@ interface User {
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      // First check localStorage for user data
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        try {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-        } catch (error) {
-          console.error('Error parsing saved user data:', error);
-          localStorage.removeItem('user');
-        }
-      }
-
-      // Then verify with server (session-based)
+  const { data: user, isLoading, error, refetch } = useQuery<User>({
+    queryKey: ['/api/auth/user'],
+    queryFn: async () => {
       const response = await fetch('/api/auth/user', {
-        credentials: 'include', // Include cookies for session
+        credentials: 'include',
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        // Update localStorage with latest user data
-        localStorage.setItem('user', JSON.stringify(userData));
-      } else {
-        // Clear user data if session is invalid
+      if (!response.ok) {
+        // Clear any stale localStorage data
         localStorage.removeItem('user');
-        setUser(null);
+        throw new Error('Not authenticated');
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      // Keep localStorage user data but mark as potentially stale
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        try {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-        } catch {
-          localStorage.removeItem('user');
-          setUser(null);
-        }
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      const userData = await response.json();
+      // Store user data in localStorage for consistency
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    },
+    retry: false,
+    staleTime: 1 * 60 * 1000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { 
+      await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       localStorage.removeItem('user');
-      setUser(null);
       window.location.href = '/';
     }
   };
 
-  return { user, loading, logout, checkAuth };
+  return {
+    user,
+    isLoading,
+    isAuthenticated: !!user && !error,
+    error,
+    logout,
+    refetch
+  };
 }
