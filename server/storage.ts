@@ -404,8 +404,12 @@ export class DatabaseStorage implements IStorage {
       });
     }
 
-  return ordersWithDetails;
-}
+    return ordersWithDetails;
+  }
+
+  async getOrdersWithDetails(): Promise<OrderWithDetails[]> {
+    return this.getOrders();
+  }
 
   // Material operations
   async getMaterialsByOrder(orderId: string): Promise<Material[]> {
@@ -504,12 +508,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLatestAIAnalysis(): Promise<AIAnalysis | undefined> {
-    const [analysis] = await db
-      .select()
-      .from(aiAnalysis)
-      .orderBy(desc(aiAnalysis.createdAt))
-      .limit(1);
-    return analysis;
+    try {
+      const [analysis] = await db
+        .select()
+        .from(aiAnalysis)
+        .orderBy(desc(aiAnalysis.createdAt))
+        .limit(1);
+      return analysis;
+    } catch (error) {
+      console.error('Error fetching latest AI analysis:', error);
+      return undefined;
+    }
+  }
+
+  // Search operations
+  async searchOrders(query: string): Promise<OrderWithDetails[]> {
+    try {
+      const allOrders = await this.getOrders();
+      const lowerQuery = query.toLowerCase();
+      
+      return allOrders.filter(order => 
+        order.trackingId.toLowerCase().includes(lowerQuery) ||
+        order.customer?.name?.toLowerCase().includes(lowerQuery) ||
+        order.description?.toLowerCase().includes(lowerQuery) ||
+        order.status.toLowerCase().includes(lowerQuery)
+      );
+    } catch (error) {
+      console.error('Error searching orders:', error);
+      return [];
+    }
   }
 
   // Analytics operations

@@ -92,7 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.get('/api/orders', isAuthenticated, async (req, res) => {
     try {
-      const orders = await storage.getOrdersWithDetails();
+      const orders = await storage.getOrders();
       res.json(orders);
     } catch (error) {
       console.error('Error fetching orders:', error);
