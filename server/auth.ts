@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import type { Express, RequestHandler } from 'express';
@@ -113,11 +112,13 @@ export async function setupAuth(app: Express) {
       };
 
       res.json({
+        success: true,
         user: {
           id: user.id,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          role: user.role || 'admin'
         }
       });
     } catch (error) {

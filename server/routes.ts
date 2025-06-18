@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from 'ws';
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { 
   insertOrderSchema, 
   insertCustomerSchema, 
@@ -39,9 +39,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      if (req.session.user) {
+        res.json(req.session.user);
+      } else {
+        res.status(401).json({ message: 'Unauthorized' });
+      }
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -206,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orderId: orderId,
         fromStatus: currentOrder.status,
         toStatus: status,
-        changedBy: req.user?.claims?.sub || 'system'
+        changedBy: req.session?.user?.id || 'system'
       });
 
       // Get the complete updated order
@@ -578,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate periodic AI analysis
   setInterval(async () => {
     try {
-      const orders = await storage.getOrdersWithDetails();
+      const orders = await storage.getOrders();
       const workload = await storage.getWorkloadAnalysis();
       await aiService.generateWorkloadAnalysis(orders, workload);
     } catch (error) {

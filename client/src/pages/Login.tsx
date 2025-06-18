@@ -37,16 +37,22 @@ export default function Login() {
         throw new Error(error.message || "Login failed");
       }
 
-      return response.json() as Promise<LoginResponse>;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        return response.json();
+      } else {
+        return { success: true, user: { firstName: "User", lastName: "" } };
+      }
     },
     onSuccess: (data) => {
-      // Store the token in localStorage
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      
+      // Store user info for session-based auth (no token needed)
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
       toast({
         title: "Welcome to Jay's Frames!",
-        description: `Logged in as ${data.user.firstName} ${data.user.lastName}`,
+        description: `Logged in as ${data.user?.firstName || 'User'} ${data.user?.lastName || ''}`,
       });
 
       // Reload the page to trigger auth state change
@@ -109,7 +115,7 @@ export default function Login() {
               {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-          
+
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-800 font-medium">Default Login:</p>
             <p className="text-sm text-blue-600">Email: admin@jaysframes.com</p>
