@@ -16,6 +16,7 @@ import {
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
 import { AIService } from "./services/aiService";
+import { twilioVoiceService } from "./services/twilioVoiceService";
 import multer from 'multer';
 import { artworkManager } from './artwork-manager';
 
@@ -319,8 +320,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Integration routes
   app.get('/api/integrations/status', isAuthenticated, async (req, res) => {
     try {
+      const twilioStatus = !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
+      
       const status = {
         sms: true, // SMS is always available
+        voice: twilioStatus, // Twilio voice calls
         pos: await posIntegration.checkConnection(),
         dashboard: true // Dashboard integration is internal
       };
@@ -400,6 +404,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error sending SMS:', error);
       res.status(500).json({ message: 'Failed to send SMS' });
+    }
+  });
+
+  // Voice Call Integration routes
+  app.post('/api/voice/order-status', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId, phoneNumber } = req.body;
+      
+      const order = await storage.getOrderWithDetails(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      const callSid = await twilioVoiceService.makeOrderStatusCall(
+        phoneNumber, 
+        order.trackingId, 
+        order.status
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'Voice call initiated', 
+        callSid 
+      });
+    } catch (error) {
+      console.error('Error making voice call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make voice call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.post('/api/voice/order-ready', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      
+      const order = await storage.getOrderWithDetails(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      if (!order.customer.phone) {
+        return res.status(400).json({ message: 'Customer phone number not available' });
+      }
+
+      const callSid = await twilioVoiceService.makeOrderReadyCall(
+        order.customer.phone,
+        order.trackingId,
+        order.customer.name
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'Order ready call initiated', 
+        callSid 
+      });
+    } catch (error) {
+      console.error('Error making order ready call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make order ready call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.post('/api/voice/custom', isAuthenticated, async (req, res) => {
+    try {
+      const { phoneNumber, message } = req.body;
+      
+      if (!phoneNumber || !message) {
+        return res.status(400).json({ message: 'Phone number and message are required' });
+      }
+
+      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message);
+      
+      res.json({ 
+        success: true, 
+        message: 'Custom voice call initiated', 
+        callSid 
+      });
+    } catch (error) {
+      console.error('Error making custom voice call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make custom voice call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
+    try {
+      const { callSid } = req.params;
+      const callStatus = await twilioVoiceService.getCallStatus(callSid);
+      res.json(callStatus);
+    } catch (error) {
+      console.error('Error fetching call status:', error);
+      res.status(500).json({ message: 'Failed to fetch call status' });
     }
   });
 
