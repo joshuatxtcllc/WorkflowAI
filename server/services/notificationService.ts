@@ -1,4 +1,5 @@
 import { storage } from "../storage";
+import { twilioVoiceService } from "./twilioVoiceService";
 import type { OrderWithDetails, InsertNotification } from "@shared/schema";
 
 export class NotificationService {
@@ -39,6 +40,39 @@ export class NotificationService {
         };
 
         await storage.createNotification(smsNotification);
+      }
+
+      // Make voice call for completed orders if phone number is available
+      if (order.status === 'COMPLETED' && customer.phone) {
+        try {
+          const callSid = await twilioVoiceService.makeOrderReadyCall(
+            customer.phone,
+            order.trackingId,
+            customer.name
+          );
+          
+          // Create voice call notification record
+          const voiceNotification: InsertNotification = {
+            customerId: customer.id,
+            orderId: order.id,
+            type: 'READY_FOR_PICKUP',
+            channel: 'VOICE',
+            subject: 'Order Ready - Voice Call',
+            content: `Voice call made to notify customer that order ${order.trackingId} is ready for pickup`,
+            metadata: {
+              orderStatus: order.status,
+              trackingId: order.trackingId,
+              phone: customer.phone,
+              callSid: callSid
+            }
+          };
+
+          await storage.createNotification(voiceNotification);
+          console.log(`Voice call initiated for order ${order.trackingId}: ${callSid}`);
+        } catch (voiceError) {
+          console.error('Failed to make voice call:', voiceError);
+          // Don't fail the entire notification process if voice call fails
+        }
       }
 
       console.log(`Notifications created for order ${order.trackingId}`);
