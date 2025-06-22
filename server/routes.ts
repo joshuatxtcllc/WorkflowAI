@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/customers', isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertCustomerSchema.parse(req.body);
-      
+
       // Check if customer already exists by email
       if (validatedData.email) {
         const existingCustomer = await storage.getCustomerByEmail(validatedData.email);
@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
-      
+
       const customer = await storage.createCustomer(validatedData);
       res.status(201).json(customer);
     } catch (error) {
@@ -117,16 +117,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/orders', isAuthenticated, async (req: any, res) => {
     try {
       console.log('Order creation request received:', req.body);
-      
+
       // Process the request data before validation
       const orderData = {
         ...req.body,
         trackingId: `TRK-${Date.now()}`, // Generate tracking ID
         dueDate: new Date(req.body.dueDate) // Convert string to Date
       };
-      
+
       const validatedData = insertOrderSchema.parse(orderData);
-      
+
       // Verify customer exists
       console.log('Verifying customer exists:', validatedData.customerId);
       const customer = await storage.getCustomer(validatedData.customerId);
@@ -141,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...validatedData,
         status: 'ORDER_PROCESSED' as const
       };
-      
+
       console.log('Processing order data:', processedOrderData);
       console.log('Order data validated successfully');
 
@@ -199,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { status } = req.body;
       const orderId = req.params.id;
-      
+
       // Get current order to track status change
       const currentOrder = await storage.getOrder(orderId);
       if (!currentOrder) {
@@ -208,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update order status
       const updatedOrder = await storage.updateOrder(orderId, { status });
-      
+
       // Create status history entry
       await storage.createStatusHistory({
         orderId: orderId,
@@ -219,7 +219,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get the complete updated order
       const completeOrder = await storage.getOrderWithDetails(orderId);
-      
+
       res.json(completeOrder);
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -244,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         orderId: req.params.orderId
       });
-      
+
       const material = await storage.createMaterial(validatedData);
       res.status(201).json(material);
     } catch (error) {
@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orders = await storage.getOrders();
       const workload = await storage.getWorkloadMetrics();
-      
+
       // Try to get cached analysis first
       const cachedAnalysis = await storage.getLatestAIAnalysis();
       if (cachedAnalysis && isRecentAnalysis(cachedAnalysis.createdAt)) {
@@ -278,13 +278,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         const analysis = await aiService.generateWorkloadAnalysis(orders, workload);
-        
+
         // Cache the analysis
         await storage.saveAIAnalysis({
           metrics: analysis,
           alerts: analysis.alerts || []
         });
-        
+
         res.json(analysis);
       } catch (aiError) {
         console.error('Error generating AI analysis:', aiError);
@@ -301,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orders = await storage.getOrders();
       const workload = await storage.getWorkloadMetrics();
-      
+
       try {
         const alerts = await aiService.generateAlerts(orders, workload);
         res.json({ alerts });
@@ -321,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/integrations/status', isAuthenticated, async (req, res) => {
     try {
       const twilioStatus = !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
-      
+
       const status = {
         sms: true, // SMS is always available
         voice: twilioStatus, // Twilio voice calls
@@ -341,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isConnected = await posIntegration.checkConnection();
       const hasApiKey = !!process.env.POS_API_KEY;
       const hasUrl = !!process.env.POS_API_URL;
-      
+
       res.json({
         success: isConnected,
         connected: isConnected,
@@ -410,208 +410,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Voice Call Integration routes
   app.post('/api/voice/order-status', isAuthenticated, async (req, res) => {
     try {
-      const { orderId, phoneNumber } = req.body;
-      
-      const order = await storage.getOrderWithDetails(orderId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
+      const { orderId, useUrl = false } = req.body;
+      const order = await storage.getOrderById(orderId);
+
+      if (!order.customer?.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
       }
 
       const callSid = await twilioVoiceService.makeOrderStatusCall(
-        phoneNumber, 
-        order.trackingId, 
-        order.status
+        order.customer.phone,
+        order.trackingId,
+        order.status,
+        useUrl
       );
-      
-      res.json({ 
-        success: true, 
-        message: 'Voice call initiated', 
-        callSid 
-      });
+
+      res.json({ success: true, callSid, message: 'Order status call initiated' });
     } catch (error) {
-      console.error('Error making voice call:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Failed to make voice call',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+      console.error('Error initiating order status call:', error);
+      res.status(500).json({ error: 'Failed to initiate call' });
     }
   });
 
   app.post('/api/voice/order-ready', isAuthenticated, async (req, res) => {
     try {
-      const { orderId } = req.body;
-      
-      const order = await storage.getOrderWithDetails(orderId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
+      const { orderId, useUrl = false } = req.body;
+      const order = await storage.getOrderById(orderId);
 
-      if (!order.customer.phone) {
-        return res.status(400).json({ message: 'Customer phone number not available' });
+      if (!order.customer?.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
       }
 
       const callSid = await twilioVoiceService.makeOrderReadyCall(
         order.customer.phone,
         order.trackingId,
-        order.customer.name
+        order.customer.name,
+        useUrl
       );
-      
-      res.json({ 
-        success: true, 
-        message: 'Order ready call initiated', 
-        callSid 
-      });
+
+      res.json({ success: true, callSid, message: 'Order ready call initiated' });
     } catch (error) {
-      console.error('Error making order ready call:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Failed to make order ready call',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+      console.error('Error initiating order ready call:', error);
+      res.status(500).json({ error: 'Failed to initiate call' });
     }
   });
 
-  app.post('/api/voice/custom', isAuthenticated, async (req, res) => {
+  app.post('/api/voice/custom-call', isAuthenticated, async (req, res) => {
     try {
-      const { phoneNumber, message } = req.body;
-      
-      if (!phoneNumber || !message) {
-        return res.status(400).json({ message: 'Phone number and message are required' });
+      const { phoneNumber, message, options = {} } = req.body;
+
+      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message, options);
+
+      res.json({ success: true, callSid, message: 'Custom call initiated' });
+    } catch (error) {
+      console.error('Error initiating custom call:', error);
+      res.status(500).json({ error: 'Failed to initiate call' });
+    }
+  });
+
+  app.post('/api/voice/interactive-call', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      const order = await storage.getOrderById(orderId);
+
+      if (!order.customer?.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
       }
 
-      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message);
-      
-      res.json({ 
-        success: true, 
-        message: 'Custom voice call initiated', 
-        callSid 
-      });
+      const callSid = await twilioVoiceService.makeInteractiveCall(
+        order.customer.phone,
+        order.trackingId
+      );
+
+      res.json({ success: true, callSid, message: 'Interactive call initiated' });
     } catch (error) {
-      console.error('Error making custom voice call:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Failed to make custom voice call',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+      console.error('Error initiating interactive call:', error);
+      res.status(500).json({ error: 'Failed to initiate call' });
     }
   });
 
-  app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
+  app.get('/api/voice/call-status/:callSid', isAuthenticated, async (req, res) => {
     try {
       const { callSid } = req.params;
       const callStatus = await twilioVoiceService.getCallStatus(callSid);
       res.json(callStatus);
     } catch (error) {
       console.error('Error fetching call status:', error);
-      res.status(500).json({ message: 'Failed to fetch call status' });
+      res.status(500).json({ error: 'Failed to fetch call status' });
     }
   });
 
-  // Dashboard Integration routes
-  app.post('/api/integrations/dashboard/sync', isAuthenticated, async (req, res) => {
-    try {
-      await dashboardIntegration.syncMetrics();
-      res.json({ success: true, message: 'Metrics synced to dashboard' });
-    } catch (error) {
-      console.error('Error syncing to dashboard:', error);
-      res.status(500).json({ 
-        success: false,
-        error: error instanceof Error ? error.message : 'Dashboard sync failed'
-      });
-    }
+  // TwiML endpoints for voice calls
+  app.post('/api/twiml/order-status', (req, res) => {
+    const { trackingId, status } = req.query;
+    const twiml = twilioVoiceService.generateTwiML('order-status', { trackingId, status });
+    res.type('text/xml').send(twiml);
   });
 
-  // Artwork management routes
-  app.post('/api/orders/:orderId/artwork', isAuthenticated, upload.single('artwork'), async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const file = req.file;
-      
-      if (!file) {
-        return res.status(400).json({ message: 'No artwork file provided' });
-      }
-
-      const imageUrl = await artworkManager.uploadArtworkImage(orderId, file.buffer, file.originalname);
-      res.json({ success: true, imageUrl });
-    } catch (error) {
-      console.error('Error uploading artwork:', error);
-      res.status(500).json({ message: 'Failed to upload artwork' });
-    }
+  app.post('/api/twiml/order-ready', (req, res) => {
+    const { trackingId, customerName } = req.query;
+    const twiml = twilioVoiceService.generateTwiML('order-ready', { trackingId, customerName });
+    res.type('text/xml').send(twiml);
   });
 
-  app.get('/api/artwork/:filename', async (req, res) => {
-    try {
-      const { filename } = req.params;
-      const imageBuffer = await artworkManager.getArtworkImage(filename);
-      
-      res.set('Content-Type', 'image/jpeg');
-      res.send(imageBuffer);
-    } catch (error) {
-      console.error('Error serving artwork:', error);
-      res.status(404).json({ message: 'Artwork not found' });
-    }
+  app.post('/api/twiml/custom', (req, res) => {
+    const { message, voice, music } = req.query;
+    const twiml = twilioVoiceService.generateTwiML('custom', { message, voice, music });
+    res.type('text/xml').send(twiml);
   });
 
-  // Webhook routes for integrations
-  app.post('/api/webhooks/sms', async (req, res) => {
-    try {
-      await smsIntegration.handleWebhook(req, res);
-    } catch (error) {
-      console.error('Error handling SMS webhook:', error);
-      res.status(500).json({ message: 'Failed to process SMS webhook' });
-    }
+  app.post('/api/twiml/interactive', (req, res) => {
+    const { trackingId } = req.query;
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="alice">Hello! You're calling about order ${trackingId}. Press 1 for order status, 2 to speak with someone, or 3 to repeat this message.</Say>
+    <Gather numDigits="1" action="/api/twiml/handle-input?trackingId=${trackingId}" method="POST">
+        <Say voice="alice">Please make your selection now.</Say>
+    </Gather>
+    <Say voice="alice">I didn't receive a selection. Goodbye!</Say>
+</Response>`;
+    res.type('text/xml').send(twiml);
   });
 
-  app.post('/api/webhooks/pos', async (req, res) => {
-    try {
-      await posIntegration.handleWebhook(req, res);
-    } catch (error) {
-      console.error('Error handling POS webhook:', error);
-      res.status(500).json({ message: 'Failed to process POS webhook' });
-    }
-  });
+  app.post('/api/twiml/handle-input', async (req, res) => {
+    const { trackingId } = req.query;
+    const { Digits } = req.body;
 
-  // Search routes
-  app.get('/api/orders/search', isAuthenticated, async (req, res) => {
-    try {
-      const { q } = req.query;
-      if (!q || typeof q !== 'string') {
-        return res.status(400).json({ message: 'Search query required' });
-      }
-      
-      const orders = await storage.searchOrders(q);
-      res.json(orders);
-    } catch (error) {
-      console.error('Error searching orders:', error);
-      res.status(500).json({ message: 'Failed to search orders' });
-    }
-  });
+    let twiml = '';
 
-  // Tracking route for customers
-  app.get('/api/track/:trackingId', async (req, res) => {
-    try {
-      const { trackingId } = req.params;
-      const order = await storage.getOrderByTrackingId(trackingId);
-      
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Return limited information for customer tracking
-      res.json({
-        trackingId: order.trackingId,
-        status: order.status,
-        dueDate: order.dueDate,
-        description: order.description,
-        customer: {
-          name: order.customer.name
+    switch (Digits) {
+      case '1':
+        try {
+          const order = await storage.getOrderById(trackingId as string);
+          twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="alice">Your order ${trackingId} is currently in ${order.status.replace('_', ' ').toLowerCase()} status. Thank you for calling Jay's Frames!</Say>
+</Response>`;
+        } catch (error) {
+          twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="alice">I couldn't find information for order ${trackingId}. Please contact us directly for assistance.</Say>
+</Response>`;
         }
-      });
-    } catch (error) {
-      console.error('Error tracking order:', error);
-      res.status(500).json({ message: 'Failed to track order' });
+        break;
+      case '2':
+        twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="alice">Please hold while I transfer you to our team.</Say>
+    <Dial>+15551234567</Dial>
+</Response>`;
+        break;
+      case '3':
+        twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Redirect>/api/twiml/interactive?trackingId=${trackingId}</Redirect>
+</Response>`;
+        break;
+      default:
+        twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="alice">Invalid selection. Goodbye!</Say>
+</Response>`;
     }
+
+    res.type('text/xml').send(twiml);
+  });
+
+  // Webhook endpoints for Twilio
+  app.post('/api/webhooks/recording-status', (req, res) => {
+    console.log('Recording status webhook:', req.body);
+    res.sendStatus(200);
   });
 
   // Health check
@@ -619,15 +586,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
-  // Create HTTP server
-  const httpServer = createServer(app);
-
   // WebSocket server setup
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
   wss.on('connection', (ws: WebSocket) => {
     console.log('WebSocket client connected');
-    
+
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
     });
@@ -635,7 +599,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ws.on('message', async (data: Buffer) => {
       try {
         const message: WebSocketMessage = JSON.parse(data.toString());
-        
+
         switch (message.type) {
           case 'order-update':
             // Handle real-time order updates
@@ -644,7 +608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               data: message.data
             });
             break;
-            
+
           case 'status-change':
             // Handle status changes
             broadcast(wss, {
@@ -710,13 +674,13 @@ function isRecentAnalysis(date: Date): boolean {
 function generateBasicAlerts(orders: OrderWithDetails[]) {
   const alerts = [];
   const now = new Date();
-  
+
   // Check for overdue orders
   const overdueOrders = orders.filter(order => 
     new Date(order.dueDate) < now && 
     !['COMPLETED', 'PICKED_UP'].includes(order.status)
   );
-  
+
   if (overdueOrders.length > 0) {
     alerts.push({
       id: `overdue_${randomUUID().replace(/-/g, '_')}`,
@@ -727,6 +691,6 @@ function generateBasicAlerts(orders: OrderWithDetails[]) {
       count: overdueOrders.length
     });
   }
-  
+
   return alerts;
 }
