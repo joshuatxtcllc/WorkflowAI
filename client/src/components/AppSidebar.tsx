@@ -153,6 +153,11 @@ const data = {
       url: "/notifications",
       icon: Bell,
     },
+    {
+      title: "System Diagnostics",
+      url: "/diagnostics",
+      icon: Activity,
+    },
   ],
   settings: [
     {
