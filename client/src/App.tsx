@@ -21,6 +21,7 @@ import TimeTracking from "@/pages/TimeTracking";
 import Notifications from "@/pages/Notifications";
 import Reports from "@/pages/Reports";
 import AdminPortal from './pages/AdminPortal';
+import Diagnostics from './pages/Diagnostics';
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -75,6 +76,7 @@ function Router() {
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route path="/admin-portal" component={AdminPortal} />
+          <Route path="/diagnostics" component={Diagnostics} />
           <Route component={NotFound} />
         </>
       )}

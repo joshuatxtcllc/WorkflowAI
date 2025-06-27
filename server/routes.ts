@@ -845,6 +845,215 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
+  // Diagnostic endpoints for the diagnostic dashboard
+  app.get('/api/diagnostics/system-health', isAuthenticated, async (req, res) => {
+    try {
+      const startTime = Date.now();
+      
+      // Test database health
+      const dbStartTime = Date.now();
+      const orders = await storage.getOrders();
+      const dbResponseTime = Date.now() - dbStartTime;
+      
+      const apiResponseTime = Date.now() - startTime;
+      
+      const activeOrders = orders.filter(order => 
+        !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
+      ).length;
+
+      // Calculate workflow throughput (orders completed in last hour)
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recentCompletions = orders.filter(order => 
+        order.completedAt && new Date(order.completedAt) > oneHourAgo
+      ).length;
+
+      // Identify bottlenecks
+      const statusCounts: Record<string, number> = {};
+      orders.forEach(order => {
+        const status = order.status || 'UNKNOWN';
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      });
+
+      const bottlenecks = [];
+      if (statusCounts['ORDER_PROCESSED'] > 10) {
+        bottlenecks.push('Order Processing - High backlog');
+      }
+      if (statusCounts['MATERIALS_ORDERED'] > 8) {
+        bottlenecks.push('Material Delivery - Waiting for supplies');
+      }
+
+      const systemHealth = {
+        database: {
+          status: dbResponseTime < 100 ? 'healthy' : dbResponseTime < 500 ? 'warning' : 'error',
+          responseTime: dbResponseTime,
+          connections: 5, // Mock value - in production this would come from connection pool
+          uptime: process.uptime().toFixed(0) + 's'
+        },
+        api: {
+          status: apiResponseTime < 200 ? 'healthy' : apiResponseTime < 1000 ? 'warning' : 'error',
+          responseTime: apiResponseTime,
+          requestsPerMinute: 45, // Mock value - in production track actual requests
+          errorRate: 0.5 // Mock value - track actual error rate
+        },
+        workflow: {
+          status: bottlenecks.length === 0 ? 'healthy' : bottlenecks.length < 2 ? 'warning' : 'error',
+          activeOrders,
+          bottlenecks,
+          throughput: recentCompletions
+        },
+        integrations: {
+          pos: {
+            connected: await posIntegration.checkConnection(),
+            lastSync: new Date().toISOString() // Would track actual last sync time
+          },
+          sms: {
+            available: !!process.env.TWILIO_AUTH_TOKEN,
+            credits: 1500 // Mock value - in production check actual Twilio credits
+          },
+          ai: {
+            available: !!process.env.OPENAI_API_KEY,
+            provider: process.env.OPENAI_API_KEY ? 'OpenAI' : 'None'
+          }
+        }
+      };
+
+      res.json(systemHealth);
+    } catch (error) {
+      console.error('Error generating system health:', error);
+      res.status(500).json({ message: 'Failed to generate system health data' });
+    }
+  });
+
+  app.get('/api/diagnostics/workflow-metrics', isAuthenticated, async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      
+      // Calculate stage distribution
+      const stageDistribution: Record<string, number> = {};
+      orders.forEach(order => {
+        const status = order.status || 'UNKNOWN';
+        stageDistribution[status] = (stageDistribution[status] || 0) + 1;
+      });
+
+      // Calculate average stage times (mock data for now - in production track actual times)
+      const averageStageTime = {
+        'ORDER_PROCESSED': 2.5,
+        'MATERIALS_ORDERED': 8.0,
+        'MATERIALS_ARRIVED': 1.0,
+        'FRAME_CUT': 4.5,
+        'MAT_CUT': 2.0,
+        'PREPPED': 3.0,
+        'COMPLETED': 0.5
+      };
+
+      // Identify bottleneck alerts
+      const bottleneckAlerts = [];
+      if (stageDistribution['ORDER_PROCESSED'] > 10) {
+        bottleneckAlerts.push({
+          stage: 'Order Processing',
+          severity: 'high' as const,
+          count: stageDistribution['ORDER_PROCESSED'],
+          message: 'High number of unprocessed orders requiring immediate attention'
+        });
+      }
+      if (stageDistribution['MATERIALS_ORDERED'] > 8) {
+        bottleneckAlerts.push({
+          stage: 'Material Ordering',
+          severity: 'medium' as const,
+          count: stageDistribution['MATERIALS_ORDERED'],
+          message: 'Many orders waiting for material delivery'
+        });
+      }
+      if (stageDistribution['FRAME_CUT'] > 5) {
+        bottleneckAlerts.push({
+          stage: 'Frame Cutting',
+          severity: 'medium' as const,
+          count: stageDistribution['FRAME_CUT'],
+          message: 'Backlog in frame cutting operations'
+        });
+      }
+
+      // Generate hourly throughput trend (mock data - in production track actual)
+      const throughputTrend = [];
+      for (let i = 5; i >= 0; i--) {
+        const hour = new Date(Date.now() - i * 60 * 60 * 1000);
+        throughputTrend.push({
+          hour: hour.getHours() + ':00',
+          completed: Math.floor(Math.random() * 5) + 1,
+          started: Math.floor(Math.random() * 3) + 2
+        });
+      }
+
+      const workflowMetrics = {
+        stageDistribution,
+        averageStageTime,
+        bottleneckAlerts,
+        throughputTrend
+      };
+
+      res.json(workflowMetrics);
+    } catch (error) {
+      console.error('Error generating workflow metrics:', error);
+      res.status(500).json({ message: 'Failed to generate workflow metrics' });
+    }
+  });
+
+  app.get('/api/diagnostics/alerts', isAuthenticated, async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      const alerts = [];
+      const now = new Date();
+
+      // Check for overdue orders
+      const overdueOrders = orders.filter(order => 
+        order.dueDate && new Date(order.dueDate) < now && 
+        !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
+      );
+
+      if (overdueOrders.length > 0) {
+        alerts.push({
+          id: `overdue_${Date.now()}`,
+          type: 'overdue',
+          severity: 'high',
+          title: 'Overdue Orders Detected',
+          content: `${overdueOrders.length} orders are past their due date and need immediate attention`
+        });
+      }
+
+      // Check for system issues
+      const activeOrders = orders.filter(order => 
+        !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
+      );
+      
+      if (activeOrders.length > 50) {
+        alerts.push({
+          id: `capacity_${Date.now()}`,
+          type: 'capacity',
+          severity: 'medium',
+          title: 'High System Load',
+          content: `${activeOrders.length} active orders may be approaching system capacity limits`
+        });
+      }
+
+      // Check for integration issues
+      const posConnected = await posIntegration.checkConnection();
+      if (!posConnected) {
+        alerts.push({
+          id: `pos_${Date.now()}`,
+          type: 'integration',
+          severity: 'medium',
+          title: 'POS Integration Offline',
+          content: 'External POS system connection is not available. New orders may not sync automatically.'
+        });
+      }
+
+      res.json(alerts);
+    } catch (error) {
+      console.error('Error generating diagnostic alerts:', error);
+      res.status(500).json({ message: 'Failed to generate alerts' });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
 

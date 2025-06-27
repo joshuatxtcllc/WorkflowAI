@@ -16,6 +16,7 @@ import {
   Network,
   Trophy,
   Link,
+  Activity,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
