@@ -1,224 +1,193 @@
 
 import twilio from 'twilio';
 
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER || '+15017122661'; // Default from your example
+
+let client: twilio.Twilio | null = null;
+
+// Initialize Twilio client
+if (accountSid && authToken) {
+  client = twilio(accountSid, authToken);
+  console.log('✓ Twilio client initialized');
+} else {
+  console.log('⚠️ Twilio credentials not found in environment variables');
+}
+
+interface CallOptions {
+  to: string;
+  message: string;
+  voice?: string;
+  recordCall?: boolean;
+}
+
+interface CallResult {
+  success: boolean;
+  callSid?: string;
+  error?: string;
+}
+
 export class TwilioVoiceService {
-  private client: twilio.Twilio;
-  private fromNumber: string;
-
-  constructor() {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    this.fromNumber = process.env.TWILIO_PHONE_NUMBER || "+15017122661";
-
-    if (!accountSid || !authToken) {
-      console.warn('Twilio credentials not configured');
-      throw new Error('Twilio credentials missing');
-    }
-
-    this.client = twilio(accountSid, authToken);
-    console.log('Twilio Voice Service initialized');
-  }
-
-  async makeOrderStatusCall(phoneNumber: string, orderTrackingId: string, status: string, useUrl?: boolean): Promise<string> {
-    try {
-      const message = this.generateStatusMessage(orderTrackingId, status);
-      
-      const callParams: any = {
-        from: this.fromNumber,
-        to: phoneNumber
-      };
-
-      if (useUrl) {
-        // Use URL-based TwiML (you'd implement a TwiML endpoint)
-        callParams.url = `${process.env.BASE_URL || 'http://localhost:5000'}/api/twiml/order-status?trackingId=${orderTrackingId}&status=${status}`;
-        callParams.method = 'POST';
-      } else {
-        // Use inline TwiML
-        callParams.twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">${message}</Say>
-    <Pause length="1"/>
-    <Say voice="alice">Thank you for choosing Jay's Frames. Goodbye!</Say>
-</Response>`;
-      }
-
-      const call = await this.client.calls.create(callParams);
-
-      console.log(`Voice call initiated for order ${orderTrackingId}:`, call.sid);
-      return call.sid;
-    } catch (error) {
-      console.error('Error making voice call:', error);
-      throw error;
-    }
-  }
-
-  async makeOrderReadyCall(phoneNumber: string, orderTrackingId: string, customerName: string, useUrl?: boolean): Promise<string> {
-    try {
-      const message = `Hello ${customerName}, this is Jay's Frames. Your custom frame order ${orderTrackingId} is ready for pickup. Please visit us during business hours Monday through Friday 9 AM to 6 PM, or Saturday 10 AM to 4 PM. Thank you for choosing Jay's Frames.`;
-      
-      const callParams: any = {
-        from: this.fromNumber,
-        to: phoneNumber
-      };
-
-      if (useUrl) {
-        callParams.url = `${process.env.BASE_URL || 'http://localhost:5000'}/api/twiml/order-ready?trackingId=${orderTrackingId}&customerName=${encodeURIComponent(customerName)}`;
-        callParams.method = 'POST';
-      } else {
-        callParams.twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">${message}</Say>
-    <Pause length="1"/>
-    <Play>https://demo.twilio.com/docs/classic.mp3</Play>
-    <Say voice="alice">We look forward to seeing you soon!</Say>
-</Response>`;
-      }
-
-      const call = await this.client.calls.create(callParams);
-
-      console.log(`Order ready call initiated for ${customerName}:`, call.sid);
-      return call.sid;
-    } catch (error) {
-      console.error('Error making order ready call:', error);
-      throw error;
-    }
-  }
-
-  async makeCustomCall(phoneNumber: string, message: string, options?: { 
-    voice?: string, 
-    useUrl?: boolean, 
-    includeMusic?: boolean,
-    recordCall?: boolean 
-  }): Promise<string> {
-    try {
-      const voice = options?.voice || 'alice';
-      
-      const callParams: any = {
-        from: this.fromNumber,
-        to: phoneNumber
-      };
-
-      if (options?.recordCall) {
-        callParams.record = true;
-        callParams.recordingStatusCallback = `${process.env.BASE_URL || 'http://localhost:5000'}/api/webhooks/recording-status`;
-      }
-
-      if (options?.useUrl) {
-        callParams.url = `${process.env.BASE_URL || 'http://localhost:5000'}/api/twiml/custom?message=${encodeURIComponent(message)}&voice=${voice}&music=${options?.includeMusic || false}`;
-        callParams.method = 'POST';
-      } else {
-        let twimlContent = `<Say voice="${voice}">${message}</Say>`;
-        
-        if (options?.includeMusic) {
-          twimlContent += `<Pause length="1"/><Play>https://demo.twilio.com/docs/classic.mp3</Play>`;
-        }
-
-        callParams.twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    ${twimlContent}
-</Response>`;
-      }
-
-      const call = await this.client.calls.create(callParams);
-
-      console.log(`Custom voice call initiated:`, call.sid);
-      return call.sid;
-    } catch (error) {
-      console.error('Error making custom voice call:', error);
-      throw error;
-    }
-  }
-
-  async getCallStatus(callSid: string) {
-    try {
-      const call = await this.client.calls(callSid).fetch();
+  /**
+   * Make an outbound call with a custom message
+   */
+  static async makeCall(options: CallOptions): Promise<CallResult> {
+    if (!client) {
       return {
+        success: false,
+        error: 'Twilio client not initialized. Check credentials.'
+      };
+    }
+
+    try {
+      const twimlMessage = this.generateTwiML(options.message, options.voice);
+      
+      const call = await client.calls.create({
+        from: twilioPhoneNumber,
+        to: options.to,
+        twiml: twimlMessage,
+        record: options.recordCall || false,
+        recordingStatusCallback: `${process.env.BASE_URL || 'http://localhost:5000'}/api/webhooks/twilio/recording`,
+        statusCallback: `${process.env.BASE_URL || 'http://localhost:5000'}/api/webhooks/twilio/status`,
+        statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
+      });
+
+      console.log(`📞 Call initiated: ${call.sid} to ${options.to}`);
+      
+      return {
+        success: true,
+        callSid: call.sid
+      };
+    } catch (error: any) {
+      console.error('Twilio call error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to make call'
+      };
+    }
+  }
+
+  /**
+   * Generate TwiML for voice messages
+   */
+  private static generateTwiML(message: string, voice: string = 'Polly.Amy'): string {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say voice="${voice}">${message}</Say>
+    <Pause length="1"/>
+    <Say voice="${voice}">Thank you for choosing Jay's Frames. Have a great day!</Say>
+</Response>`;
+  }
+
+  /**
+   * Call customer about order ready for pickup
+   */
+  static async notifyOrderReady(customerPhone: string, orderTrackingId: string, customerName: string): Promise<CallResult> {
+    const message = `Hello ${customerName}, this is Jay's Frames calling to let you know that your custom frame order ${orderTrackingId} is now ready for pickup. Please call us at your convenience to schedule a pickup time. Thank you!`;
+    
+    return this.makeCall({
+      to: customerPhone,
+      message,
+      recordCall: true
+    });
+  }
+
+  /**
+   * Call customer about overdue pickup
+   */
+  static async notifyOverduePickup(customerPhone: string, orderTrackingId: string, customerName: string, daysPastDue: number): Promise<CallResult> {
+    const message = `Hello ${customerName}, this is Jay's Frames. Your custom frame order ${orderTrackingId} has been ready for pickup for ${daysPastDue} days. Please contact us to arrange pickup at your earliest convenience. Thank you!`;
+    
+    return this.makeCall({
+      to: customerPhone,
+      message,
+      recordCall: true
+    });
+  }
+
+  /**
+   * Call customer about delayed order
+   */
+  static async notifyOrderDelay(customerPhone: string, orderTrackingId: string, customerName: string, newDueDate: string, reason: string): Promise<CallResult> {
+    const message = `Hello ${customerName}, this is Jay's Frames calling about your order ${orderTrackingId}. We need to inform you of a slight delay due to ${reason}. Your new estimated completion date is ${newDueDate}. We apologize for any inconvenience and appreciate your patience.`;
+    
+    return this.makeCall({
+      to: customerPhone,
+      message,
+      recordCall: true
+    });
+  }
+
+  /**
+   * Make a custom call with any message
+   */
+  static async makeCustomCall(customerPhone: string, customMessage: string): Promise<CallResult> {
+    return this.makeCall({
+      to: customerPhone,
+      message: customMessage,
+      recordCall: true
+    });
+  }
+
+  /**
+   * Test the Twilio connection
+   */
+  static async testConnection(): Promise<{ success: boolean; error?: string; accountInfo?: any }> {
+    if (!client) {
+      return {
+        success: false,
+        error: 'Twilio client not initialized. Check credentials.'
+      };
+    }
+
+    try {
+      const account = await client.api.accounts(accountSid).fetch();
+      return {
+        success: true,
+        accountInfo: {
+          friendlyName: account.friendlyName,
+          status: account.status,
+          type: account.type
+        }
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to connect to Twilio'
+      };
+    }
+  }
+
+  /**
+   * Get call logs for a specific time period
+   */
+  static async getCallLogs(startDate?: Date, endDate?: Date) {
+    if (!client) {
+      throw new Error('Twilio client not initialized');
+    }
+
+    try {
+      const calls = await client.calls.list({
+        startTime: startDate,
+        endTime: endDate,
+        limit: 50
+      });
+
+      return calls.map(call => ({
         sid: call.sid,
+        from: call.from,
+        to: call.to,
         status: call.status,
         duration: call.duration,
         startTime: call.startTime,
-        endTime: call.endTime
-      };
-    } catch (error) {
-      console.error('Error fetching call status:', error);
-      throw error;
-    }
-  }
-
-  private generateStatusMessage(orderTrackingId: string, status: string): string {
-    const statusMessages = {
-      'ORDER_PROCESSED': `Your order ${orderTrackingId} has been processed and is now in our production queue.`,
-      'MATERIALS_ORDERED': `We have ordered the materials for your custom frame order ${orderTrackingId}. We will notify you when they arrive.`,
-      'MATERIALS_ARRIVED': `The materials for your order ${orderTrackingId} have arrived and production will begin soon.`,
-      'FRAME_CUT': `Your frame for order ${orderTrackingId} has been cut and is moving to the next stage.`,
-      'MAT_CUT': `The mat for your order ${orderTrackingId} has been cut and your order is progressing well.`,
-      'PREPPED': `Your order ${orderTrackingId} has been prepped and is almost ready for final assembly.`,
-      'COMPLETED': `Great news! Your custom frame order ${orderTrackingId} is ready for pickup at Jay's Frames.`,
-      'DELAYED': `We wanted to let you know that your order ${orderTrackingId} has been delayed. We will update you with a new timeline soon.`
-    };
-
-    return statusMessages[status as keyof typeof statusMessages] || 
-           `Your order ${orderTrackingId} status has been updated to ${status.replace('_', ' ').toLowerCase()}.`;
-  }
-}
-
-// Generate TwiML for different call types
-  generateTwiML(type: 'order-status' | 'order-ready' | 'custom', params: any): string {
-    switch (type) {
-      case 'order-status':
-        const statusMessage = this.generateStatusMessage(params.trackingId, params.status);
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">${statusMessage}</Say>
-    <Pause length="1"/>
-    <Say voice="alice">Thank you for choosing Jay's Frames. Goodbye!</Say>
-</Response>`;
-
-      case 'order-ready':
-        const readyMessage = `Hello ${params.customerName}, this is Jay's Frames. Your custom frame order ${params.trackingId} is ready for pickup. Please visit us during business hours Monday through Friday 9 AM to 6 PM, or Saturday 10 AM to 4 PM. Thank you for choosing Jay's Frames.`;
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">${readyMessage}</Say>
-    <Pause length="1"/>
-    <Play>https://demo.twilio.com/docs/classic.mp3</Play>
-    <Say voice="alice">We look forward to seeing you soon!</Say>
-</Response>`;
-
-      case 'custom':
-        let twimlContent = `<Say voice="${params.voice || 'alice'}">${params.message}</Say>`;
-        if (params.music === 'true') {
-          twimlContent += `<Pause length="1"/><Play>https://demo.twilio.com/docs/classic.mp3</Play>`;
-        }
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    ${twimlContent}
-</Response>`;
-
-      default:
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">Thank you for calling Jay's Frames!</Say>
-</Response>`;
-    }
-  }
-
-  // Make an interactive call with user input
-  async makeInteractiveCall(phoneNumber: string, orderTrackingId: string): Promise<string> {
-    try {
-      const call = await this.client.calls.create({
-        from: this.fromNumber,
-        to: phoneNumber,
-        url: `${process.env.BASE_URL || 'http://localhost:5000'}/api/twiml/interactive?trackingId=${orderTrackingId}`,
-        method: 'POST'
-      });
-
-      console.log(`Interactive call initiated for order ${orderTrackingId}:`, call.sid);
-      return call.sid;
-    } catch (error) {
-      console.error('Error making interactive call:', error);
+        endTime: call.endTime,
+        price: call.price,
+        direction: call.direction
+      }));
+    } catch (error: any) {
+      console.error('Error fetching call logs:', error);
       throw error;
     }
   }
 }
-
-export const twilioVoiceService = new TwilioVoiceService();

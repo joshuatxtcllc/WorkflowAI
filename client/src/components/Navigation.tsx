@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,7 +11,8 @@ import {
   Network, 
   Bell,
   Settings,
-  Zap
+  Zap,
+  Phone // Added Phone icon for Twilio
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -35,6 +35,7 @@ export function Navigation({ className = '' }: NavigationProps) {
     { name: 'Quick Wins', path: '/quick-wins', icon: Zap },
     { name: 'Notifications', path: '/notifications', icon: Bell },
     { name: 'Settings', path: '/settings', icon: Settings },
+    { name: 'Voice Calls', path: '/twilio', icon: Phone } // Added Twilio navigation item
   ];
 
   const isActive = (path: string) => {
@@ -75,7 +76,7 @@ export function Navigation({ className = '' }: NavigationProps) {
               </div>
             </div>
           </div>
-          
+
           <div className="hidden md:block">
             <div className="ml-4 flex items-center space-x-4">
               {navigationItems.slice(6).map((item) => {

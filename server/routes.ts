@@ -16,7 +16,7 @@ import {
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
 import { AIService } from "./services/aiService";
-import { twilioVoiceService } from "./services/twilioVoiceService";
+import { TwilioVoiceService } from './services/twilioVoiceService';
 import multer from 'multer';
 import { artworkManager } from './artwork-manager';
 
@@ -48,6 +48,232 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Twilio Voice API endpoints
+  app.post('/api/twilio/call/order-ready/:orderId', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrder(orderId);
+
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      if (!order.customer.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
+      }
+
+      const result = await TwilioVoiceService.notifyOrderReady(
+        order.customer.phone,
+        order.trackingId,
+        order.customer.name
+      );
+
+      if (result.success) {
+        // Log the call in order history
+        await storage.addOrderStatusHistory(orderId, {
+          fromStatus: order.status,
+          toStatus: order.status,
+          reason: `Voice call made to customer about order ready for pickup (Call SID: ${result.callSid})`,
+          userId: req.session.userId!
+        });
+
+        res.json({ 
+          success: true, 
+          message: 'Call initiated successfully',
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error) {
+      console.error('Error making order ready call:', error);
+      res.status(500).json({ error: 'Failed to make call' });
+    }
+  });
+
+  app.post('/api/twilio/call/overdue/:orderId', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { daysPastDue } = req.body;
+      const order = await storage.getOrder(orderId);
+
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      if (!order.customer.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
+      }
+
+      const result = await TwilioVoiceService.notifyOverduePickup(
+        order.customer.phone,
+        order.trackingId,
+        order.customer.name,
+        daysPastDue || 7
+      );
+
+      if (result.success) {
+        await storage.addOrderStatusHistory(orderId, {
+          fromStatus: order.status,
+          toStatus: order.status,
+          reason: `Overdue pickup reminder call made (Call SID: ${result.callSid})`,
+          userId: req.session.userId!
+        });
+
+        res.json({ 
+          success: true, 
+          message: 'Overdue call initiated successfully',
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error) {
+      console.error('Error making overdue call:', error);
+      res.status(500).json({ error: 'Failed to make call' });
+    }
+  });
+
+  app.post('/api/twilio/call/delay/:orderId', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { newDueDate, reason } = req.body;
+      const order = await storage.getOrder(orderId);
+
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      if (!order.customer.phone) {
+        return res.status(400).json({ error: 'Customer phone number not available' });
+      }
+
+      const result = await TwilioVoiceService.notifyOrderDelay(
+        order.customer.phone,
+        order.trackingId,
+        order.customer.name,
+        newDueDate,
+        reason || 'material availability'
+      );
+
+      if (result.success) {
+        await storage.addOrderStatusHistory(orderId, {
+          fromStatus: order.status,
+          toStatus: order.status,
+          reason: `Delay notification call made: ${reason} (Call SID: ${result.callSid})`,
+          userId: req.session.userId!
+        });
+
+        res.json({ 
+          success: true, 
+          message: 'Delay notification call initiated successfully',
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error) {
+      console.error('Error making delay call:', error);
+      res.status(500).json({ error: 'Failed to make call' });
+    }
+  });
+
+  app.post('/api/twilio/call/custom', isAuthenticated, async (req, res) => {
+    try {
+      const { phone, message } = req.body;
+
+      if (!phone || !message) {
+        return res.status(400).json({ error: 'Phone number and message are required' });
+      }
+
+      const result = await TwilioVoiceService.makeCustomCall(phone, message);
+
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: 'Custom call initiated successfully',
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error) {
+      console.error('Error making custom call:', error);
+      res.status(500).json({ error: 'Failed to make call' });
+    }
+  });
+
+  app.get('/api/twilio/test', isAuthenticated, async (req, res) => {
+    try {
+      const result = await TwilioVoiceService.testConnection();
+      res.json(result);
+    } catch (error) {
+      console.error('Error testing Twilio connection:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to test Twilio connection' 
+      });
+    }
+  });
+
+  app.get('/api/twilio/calls', isAuthenticated, async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
+
+      const calls = await TwilioVoiceService.getCallLogs(start, end);
+      res.json({ success: true, calls });
+    } catch (error) {
+      console.error('Error fetching call logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to fetch call logs' 
+      });
+    }
+  });
+
+  // Twilio webhooks for call status and recordings
+  app.post('/api/webhooks/twilio/status', async (req, res) => {
+    try {
+      const { CallSid, CallStatus, From, To, CallDuration } = req.body;
+      console.log(`📞 Call ${CallSid} status: ${CallStatus} (${From} → ${To})`);
+
+      if (CallDuration) {
+        console.log(`📞 Call duration: ${CallDuration} seconds`);
+      }
+
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('Error processing call status webhook:', error);
+      res.status(500).send('Error');
+    }
+  });
+
+  app.post('/api/webhooks/twilio/recording', async (req, res) => {
+    try {
+      const { RecordingSid, RecordingUrl, CallSid } = req.body;
+      console.log(`🎙️ Recording available for call ${CallSid}: ${RecordingUrl}`);
+
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('Error processing recording webhook:', error);
+      res.status(500).send('Error');
     }
   });
 
@@ -410,181 +636,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Voice Call Integration routes
   app.post('/api/voice/order-status', isAuthenticated, async (req, res) => {
     try {
-      const { orderId, useUrl = false } = req.body;
-      const order = await storage.getOrderById(orderId);
+      const { orderId, phoneNumber } = req.body;
 
-      if (!order.customer?.phone) {
-        return res.status(400).json({ error: 'Customer phone number not available' });
+      const order = await storage.getOrderWithDetails(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
       }
 
       const callSid = await twilioVoiceService.makeOrderStatusCall(
-        order.customer.phone,
-        order.trackingId,
-        order.status,
-        useUrl
+        phoneNumber, 
+        order.trackingId, 
+        order.status
       );
 
-      res.json({ success: true, callSid, message: 'Order status call initiated' });
+      res.json({ 
+        success: true, 
+        message: 'Voice call initiated', 
+        callSid 
+      });
     } catch (error) {
-      console.error('Error initiating order status call:', error);
-      res.status(500).json({ error: 'Failed to initiate call' });
+      console.error('Error making voice call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make voice call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
   app.post('/api/voice/order-ready', isAuthenticated, async (req, res) => {
     try {
-      const { orderId, useUrl = false } = req.body;
-      const order = await storage.getOrderById(orderId);
+      const { orderId } = req.body;
 
-      if (!order.customer?.phone) {
-        return res.status(400).json({ error: 'Customer phone number not available' });
+      const order = await storage.getOrderWithDetails(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      if (!order.customer.phone) {
+        return res.status(400).json({ message: 'Customer phone number not available' });
       }
 
       const callSid = await twilioVoiceService.makeOrderReadyCall(
         order.customer.phone,
         order.trackingId,
-        order.customer.name,
-        useUrl
+        order.customer.name
       );
 
-      res.json({ success: true, callSid, message: 'Order ready call initiated' });
+      res.json({ 
+        success: true, 
+        message: 'Order ready call initiated', 
+        callSid 
+      });
     } catch (error) {
-      console.error('Error initiating order ready call:', error);
-      res.status(500).json({ error: 'Failed to initiate call' });
+      console.error('Error making order ready call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make order ready call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
-  app.post('/api/voice/custom-call', isAuthenticated, async (req, res) => {
+  app.post('/api/voice/custom', isAuthenticated, async (req, res) => {
     try {
-      const { phoneNumber, message, options = {} } = req.body;
+      const { phoneNumber, message } = req.body;
 
-      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message, options);
-
-      res.json({ success: true, callSid, message: 'Custom call initiated' });
-    } catch (error) {
-      console.error('Error initiating custom call:', error);
-      res.status(500).json({ error: 'Failed to initiate call' });
-    }
-  });
-
-  app.post('/api/voice/interactive-call', isAuthenticated, async (req, res) => {
-    try {
-      const { orderId } = req.body;
-      const order = await storage.getOrderById(orderId);
-
-      if (!order.customer?.phone) {
-        return res.status(400).json({ error: 'Customer phone number not available' });
+      if (!phoneNumber || !message) {
+        return res.status(400).json({ message: 'Phone number and message are required' });
       }
 
-      const callSid = await twilioVoiceService.makeInteractiveCall(
-        order.customer.phone,
-        order.trackingId
-      );
+      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message);
 
-      res.json({ success: true, callSid, message: 'Interactive call initiated' });
+      res.json({ 
+        success: true, 
+        message: 'Custom voice call initiated', 
+        callSid 
+      });
     } catch (error) {
-      console.error('Error initiating interactive call:', error);
-      res.status(500).json({ error: 'Failed to initiate call' });
+      console.error('Error making custom voice call:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to make custom voice call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
-  app.get('/api/voice/call-status/:callSid', isAuthenticated, async (req, res) => {
+  app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
     try {
       const { callSid } = req.params;
       const callStatus = await twilioVoiceService.getCallStatus(callSid);
       res.json(callStatus);
     } catch (error) {
       console.error('Error fetching call status:', error);
-      res.status(500).json({ error: 'Failed to fetch call status' });
+      res.status(500).json({ message: 'Failed to fetch call status' });
     }
   });
 
-  // TwiML endpoints for voice calls
-  app.post('/api/twiml/order-status', (req, res) => {
-    const { trackingId, status } = req.query;
-    const twiml = twilioVoiceService.generateTwiML('order-status', { trackingId, status });
-    res.type('text/xml').send(twiml);
+  // Dashboard Integration routes
+  app.post('/api/integrations/dashboard/sync', isAuthenticated, async (req, res) => {
+    try {
+      await dashboardIntegration.syncMetrics();
+      res.json({ success: true, message: 'Metrics synced to dashboard' });
+    } catch (error) {
+      console.error('Error syncing to dashboard:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error instanceof Error ? error.message : 'Dashboard sync failed'
+      });
+    }
   });
 
-  app.post('/api/twiml/order-ready', (req, res) => {
-    const { trackingId, customerName } = req.query;
-    const twiml = twilioVoiceService.generateTwiML('order-ready', { trackingId, customerName });
-    res.type('text/xml').send(twiml);
+  // Artwork management routes
+  app.post('/api/orders/:orderId/artwork', isAuthenticated, upload.single('artwork'), async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ message: 'No artwork file provided' });
+      }
+
+      const imageUrl = await artworkManager.uploadArtworkImage(orderId, file.buffer, file.originalname);
+      res.json({ success: true, imageUrl });
+    } catch (error) {
+      console.error('Error uploading artwork:', error);
+      res.status(500).json({ message: 'Failed to upload artwork' });
+    }
   });
 
-  app.post('/api/twiml/custom', (req, res) => {
-    const { message, voice, music } = req.query;
-    const twiml = twilioVoiceService.generateTwiML('custom', { message, voice, music });
-    res.type('text/xml').send(twiml);
+  app.get('/api/artwork/:filename', async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const imageBuffer = await artworkManager.getArtworkImage(filename);
+
+      res.set('Content-Type', 'image/jpeg');
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error('Error serving artwork:', error);
+      res.status(404).json({ message: 'Artwork not found' });
+    }
   });
 
-  app.post('/api/twiml/interactive', (req, res) => {
-    const { trackingId } = req.query;
-    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">Hello! You're calling about order ${trackingId}. Press 1 for order status, 2 to speak with someone, or 3 to repeat this message.</Say>
-    <Gather numDigits="1" action="/api/twiml/handle-input?trackingId=${trackingId}" method="POST">
-        <Say voice="alice">Please make your selection now.</Say>
-    </Gather>
-    <Say voice="alice">I didn't receive a selection. Goodbye!</Say>
-</Response>`;
-    res.type('text/xml').send(twiml);
+  // Webhook routes for integrations
+  app.post('/api/webhooks/sms', async (req, res) => {
+    try {
+      await smsIntegration.handleWebhook(req, res);
+    } catch (error) {
+      console.error('Error handling SMS webhook:', error);
+      res.status(500).json({ message: 'Failed to process SMS webhook' });
+    }
   });
 
-  app.post('/api/twiml/handle-input', async (req, res) => {
-    const { trackingId } = req.query;
-    const { Digits } = req.body;
+  app.post('/api/webhooks/pos', async (req, res) => {
+    try {
+      await posIntegration.handleWebhook(req, res);
+    } catch (error) {
+      console.error('Error handling POS webhook:', error);
+      res.status(500).json({ message: 'Failed to process POS webhook' });
+    }
+  });
 
-    let twiml = '';
+  // Search routes
+  app.get('/api/orders/search', isAuthenticated, async (req, res) => {
+    try {
+      const { q } = req.query;
+      if (!q || typeof q !== 'string') {
+        return res.status(400).json({ message: 'Search query required' });
+      }
 
-    switch (Digits) {
-      case '1':
-        try {
-          const order = await storage.getOrderById(trackingId as string);
-          twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">Your order ${trackingId} is currently in ${order.status.replace('_', ' ').toLowerCase()} status. Thank you for calling Jay's Frames!</Say>
-</Response>`;
-        } catch (error) {
-          twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">I couldn't find information for order ${trackingId}. Please contact us directly for assistance.</Say>
-</Response>`;
+      const orders = await storage.searchOrders(q);
+      res.json(orders);
+    } catch (error) {
+      console.error('Error searching orders:', error);
+      res.status(500).json({ message: 'Failed to search orders' });
+    }
+  });
+
+  // Tracking route for customers
+  app.get('/api/track/:trackingId', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const order = await storage.getOrderByTrackingId(trackingId);
+
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Return limited information for customer tracking
+      res.json({
+        trackingId: order.trackingId,
+        status: order.status,
+        dueDate: order.dueDate,
+        description: order.description,
+        customer: {
+          name: order.customer.name
         }
-        break;
-      case '2':
-        twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">Please hold while I transfer you to our team.</Say>
-    <Dial>+15551234567</Dial>
-</Response>`;
-        break;
-      case '3':
-        twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Redirect>/api/twiml/interactive?trackingId=${trackingId}</Redirect>
-</Response>`;
-        break;
-      default:
-        twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="alice">Invalid selection. Goodbye!</Say>
-</Response>`;
+      });
+    } catch (error) {
+      console.error('Error tracking order:', error);
+      res.status(500).json({ message: 'Failed to track order' });
     }
-
-    res.type('text/xml').send(twiml);
-  });
-
-  // Webhook endpoints for Twilio
-  app.post('/api/webhooks/recording-status', (req, res) => {
-    console.log('Recording status webhook:', req.body);
-    res.sendStatus(200);
   });
 
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
+
+  // Create HTTP server
+  const httpServer = createServer(app);
 
   // WebSocket server setup
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
