@@ -212,14 +212,34 @@ export function SimpleDiagnosticDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {alerts.map((alert: any, index: number) => (
-                <Alert key={index} className="bg-gray-800 border-gray-700">
-                  <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                  <AlertDescription className="text-gray-200">
-                    {alert.message || 'No details available'}
-                  </AlertDescription>
-                </Alert>
-              ))}
+              {alerts.map((alert: any, index: number) => {
+                const getAlertStyle = (severity: string) => {
+                  switch (severity) {
+                    case 'high': return 'bg-red-900/20 border-red-800';
+                    case 'medium': return 'bg-yellow-900/20 border-yellow-800';
+                    case 'low': return 'bg-blue-900/20 border-blue-800';
+                    default: return 'bg-gray-800 border-gray-700';
+                  }
+                };
+
+                const getAlertIcon = (type: string, severity: string) => {
+                  if (severity === 'high') return <AlertCircle className="h-4 w-4 text-red-400" />;
+                  if (type === 'overdue') return <Clock className="h-4 w-4 text-yellow-400" />;
+                  return <AlertTriangle className="h-4 w-4 text-yellow-400" />;
+                };
+
+                return (
+                  <Alert key={index} className={getAlertStyle(alert.severity)}>
+                    {getAlertIcon(alert.type, alert.severity)}
+                    <AlertDescription className="text-gray-200">
+                      <div className="font-medium text-white mb-1">
+                        {alert.title || alert.type || 'System Alert'}
+                      </div>
+                      {alert.content || alert.message || alert.description || 'No details available'}
+                    </AlertDescription>
+                  </Alert>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
