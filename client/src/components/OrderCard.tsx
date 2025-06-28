@@ -46,6 +46,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   const [statusChanged, setStatusChanged] = useState(false);
   const [previousStatus, setPreviousStatus] = useState(order.status);
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
+  const [isDragActive, setIsDragActive] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -73,8 +74,11 @@ export default function OrderCard({ order }: OrderCardProps) {
       isDragging: monitor.isDragging(),
     }),
     canDrag: () => true,
+    begin: () => {
+      setIsDragActive(true);
+    },
     end: (item, monitor) => {
-      setIsDragging(false);
+      setIsDragActive(false);
       setShowStatusAnimation(false);
       // Force a small delay to ensure drop has completed
       setTimeout(() => {
@@ -83,16 +87,22 @@ export default function OrderCard({ order }: OrderCardProps) {
         }
       }, 100);
     },
-  }));
+  }), [order.id]); // Add dependency to recreate when order changes
 
   // Status update mutation
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const response = await apiRequest('PATCH', `/api/orders/${order.id}/status`, { status: newStatus });
-      return response.json();
+      const response = await apiRequest(`/api/orders/${order.id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+      });
+      return response;
     },
     onSuccess: (updatedOrder) => {
+      // Invalidate and refetch queries to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
+      
       toast({
         title: "Status Updated! 🎉",
         description: `Order moved to: ${STATUS_LABELS[updatedOrder.status as keyof typeof STATUS_LABELS] || updatedOrder.status}`,
@@ -100,6 +110,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       });
     },
     onError: (error) => {
+      console.error('Status update error:', error);
       toast({
         title: "Update Failed",
         description: "Failed to update order status. Please try again.",
@@ -122,10 +133,12 @@ export default function OrderCard({ order }: OrderCardProps) {
   };
 
   const handleDragStart = () => {
+    setIsDragActive(true);
     document.dispatchEvent(new CustomEvent('dragstart'));
   };
 
   const handleDragEnd = () => {
+    setIsDragActive(false);
     document.dispatchEvent(new CustomEvent('dragend'));
   };
 

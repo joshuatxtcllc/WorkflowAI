@@ -180,11 +180,12 @@ export default function KanbanBoard() {
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 30000, // Reduced frequency to 30 seconds
-    staleTime: 10000, // Allow 10 seconds of stale data
-    retry: 2, // Reduced retries to prevent endless loops
+    refetchInterval: 10000, // More frequent updates for better responsiveness
+    staleTime: 5000, // Shorter stale time to ensure fresher data
+    retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
-    refetchOnWindowFocus: false, // Prevent refetch on window focus
+    refetchOnWindowFocus: true, // Re-enable focus refetch for better UX
+    refetchOnReconnect: true, // Refetch when connection is restored
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -196,7 +197,9 @@ export default function KanbanBoard() {
       return response;
     },
     onSuccess: (updatedOrder, variables) => {
+      // Force immediate refetch to ensure UI updates
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
 
       // Find the order and show success notification
