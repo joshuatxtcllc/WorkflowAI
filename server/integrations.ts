@@ -223,8 +223,6 @@ export class POSIntegration {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      console.log(`Connecting to external Kanban system: ${this.baseUrl}`);
-
       // Test basic connectivity first using the Kanban health endpoint
       const healthResponse = await fetch(`${this.baseUrl}/api/kanban/status`, {
         method: 'GET',
@@ -238,7 +236,7 @@ export class POSIntegration {
       clearTimeout(timeoutId);
 
       if (healthResponse.ok) {
-        console.log('Kanban system is reachable');
+        // Only log when there are actual orders to process
 
         // Now try to fetch orders using the Kanban API endpoint
         const ordersController = new AbortController();
@@ -260,8 +258,12 @@ export class POSIntegration {
 
         if (ordersResponse.ok) {
           const newOrders = await ordersResponse.json();
-          console.log(`Successfully fetched ${newOrders.length} orders from Kanban API`);
-          return { success: true, orders: newOrders, connected: true, authenticated: true };
+          // Handle undefined/null response properly
+          const ordersArray = Array.isArray(newOrders) ? newOrders : [];
+          if (ordersArray.length > 0) {
+            console.log(`Successfully fetched ${ordersArray.length} orders from Kanban API`);
+          }
+          return { success: true, orders: ordersArray, connected: true, authenticated: true };
         } else {
           console.log(`Orders fetch failed: ${ordersResponse.status} - ${ordersResponse.statusText}`);
 
@@ -353,7 +355,7 @@ export class POSIntegration {
       console.log('POS system operational -', connectionTest.message);
     }
 
-    // Set up periodic sync with retry logic (every 30 seconds)
+    // Set up periodic sync with retry logic (every 5 minutes)
     setInterval(async () => {
       try {
         const result = await this.fetchNewOrders();
@@ -363,14 +365,8 @@ export class POSIntegration {
           if (importedOrders.length > 0) {
             console.log(`Successfully imported ${importedOrders.length} new orders into Kanban workflow`);
           }
-        } else if (!result.success && (result.error?.includes('503') || result.error?.includes('timeout'))) {
-          // Silent handling of temporary errors
-        } else if (!result.success && !result.retryable) {
-          // Only log if external system is configured
-          if (this.baseUrl) {
-            console.log('POS sync check:', result.error || 'Connection issue');
-          }
-        }
+        } 
+        // Silent operation when no new orders or temporary connectivity issues
       } catch (error) {
         // Only log unexpected errors, not known temporary issues
         const errorMessage = (error as Error).message;
@@ -378,7 +374,7 @@ export class POSIntegration {
           console.error('Real-time sync error:', error);
         }
       }
-    }, 30000);
+    }, 300000); // 5 minutes instead of 30 seconds
 
     return true;
   }
