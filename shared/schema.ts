@@ -258,6 +258,12 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   updatedAt: true,
   completedAt: true,
   pickedUpAt: true,
+}).extend({
+  customerId: z.string().min(1, "Customer is required"),
+  description: z.string().min(1, "Description is required"),
+  estimatedHours: z.number().min(0.5, "Estimated hours must be at least 0.5"),
+  price: z.number().min(0, "Price must be positive"),
+  dueDate: z.date(),
 });
 
 export const insertMaterialSchema = createInsertSchema(materials).omit({

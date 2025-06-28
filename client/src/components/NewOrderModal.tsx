@@ -106,16 +106,31 @@ export default function NewOrderModal() {
 
       let errorMessage = 'Failed to create order. Please try again.';
 
+      // Handle different error formats
       if (error?.message) {
         errorMessage = error.message;
       } else if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      }
+
+      // Specific error handling
+      if (errorMessage.includes('Customer not found')) {
+        errorMessage = 'Please select a valid customer or create a new one.';
+      } else if (errorMessage.includes('Validation error')) {
+        errorMessage = 'Please check all required fields and try again.';
+      } else if (errorMessage.includes('foreign key')) {
+        errorMessage = 'Invalid customer selection. Please refresh and try again.';
       }
 
       toast({
         title: 'Error Creating Order',
         description: errorMessage,
         variant: 'destructive',
+        duration: 5000,
       });
     },
   });
@@ -243,6 +258,20 @@ export default function NewOrderModal() {
       return;
     }
 
+    // Validate due date is not in the past
+    const selectedDate = new Date(formData.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+      toast({
+        title: 'Invalid Due Date',
+        description: 'Due date cannot be in the past.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     // Validate the customer exists
     console.log('Validating customer ID:', formData.customerId);
     console.log('Available customers:', customers?.map(c => ({ id: c.id, name: c.name })));
@@ -252,7 +281,7 @@ export default function NewOrderModal() {
       console.log('Customer validation failed - no matching customer found');
       toast({
         title: 'Invalid Customer Selection',
-        description: 'The selected customer could not be found. Please select a valid customer.',
+        description: 'The selected customer could not be found. Please refresh and try again.',
         variant: 'destructive',
       });
       return;
@@ -261,7 +290,7 @@ export default function NewOrderModal() {
     console.log('Selected customer validated:', selectedCustomer.name);
 
     // Additional data validation
-    if (formData.estimatedHours < 0.5) {
+    if (!formData.estimatedHours || formData.estimatedHours < 0.5) {
       toast({
         title: 'Invalid Hours',
         description: 'Estimated hours must be at least 0.5.',
@@ -270,17 +299,27 @@ export default function NewOrderModal() {
       return;
     }
 
-    if (formData.price < 0) {
+    if (!formData.price || formData.price < 0) {
       toast({
         title: 'Invalid Price',
-        description: 'Price cannot be negative.',
+        description: 'Price must be a positive number.',
         variant: 'destructive',
       });
       return;
     }
 
-    console.log('All validation passed, creating order...');
-    createOrderMutation.mutate(formData);
+    // Ensure numeric values are properly formatted
+    const sanitizedFormData = {
+      ...formData,
+      estimatedHours: Number(formData.estimatedHours),
+      price: Number(formData.price),
+      customerId: formData.customerId.trim(),
+      description: formData.description.trim(),
+      notes: formData.notes?.trim() || ''
+    };
+
+    console.log('All validation passed, creating order with sanitized data:', sanitizedFormData);
+    createOrderMutation.mutate(sanitizedFormData);
   };
 
   const handleCreateCustomer = (e: React.FormEvent) => {

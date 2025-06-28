@@ -344,42 +344,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Order creation request received:', req.body);
 
+      // Validate required fields first
+      if (!req.body.customerId) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Customer ID is required'
+        });
+      }
+
+      if (!req.body.description) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Order description is required'
+        });
+      }
+
+      if (!req.body.dueDate) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Due date is required'
+        });
+      }
+
+      // Verify customer exists before processing
+      console.log('Verifying customer exists:', req.body.customerId);
+      const customer = await storage.getCustomer(req.body.customerId);
+      if (!customer) {
+        console.log('Customer not found:', req.body.customerId);
+        return res.status(400).json({ 
+          success: false,
+          message: 'Customer not found. Please select a valid customer.'
+        });
+      }
+      console.log('Customer verified:', customer.name);
+
       // Process the request data before validation
       const orderData = {
         ...req.body,
         trackingId: `TRK-${Date.now()}`, // Generate tracking ID
-        dueDate: new Date(req.body.dueDate) // Convert string to Date
+        dueDate: new Date(req.body.dueDate), // Convert string to Date
+        estimatedHours: parseFloat(req.body.estimatedHours) || 3,
+        price: parseFloat(req.body.price) || 0,
+        priority: req.body.priority || 'MEDIUM',
+        status: 'ORDER_PROCESSED'
       };
 
+      console.log('Processing order data:', orderData);
+
+      // Validate with schema
       const validatedData = insertOrderSchema.parse(orderData);
-
-      // Verify customer exists
-      console.log('Verifying customer exists:', validatedData.customerId);
-      const customer = await storage.getCustomer(validatedData.customerId);
-      if (!customer) {
-        console.log('Customer not found:', validatedData.customerId);
-        return res.status(400).json({ message: 'Customer not found' });
-      }
-      console.log('Customer verified:', customer.name);
-
-      // Process order data
-      const processedOrderData = {
-        ...validatedData,
-        status: 'ORDER_PROCESSED' as const
-      };
-
-      console.log('Processing order data:', processedOrderData);
       console.log('Order data validated successfully');
 
       // Create the order
-      const order = await storage.createOrder(processedOrderData);
+      const order = await storage.createOrder(validatedData);
       console.log('Order created in storage:', order.id, order.trackingId);
 
       // Create initial status history
       await storage.createStatusHistory({
         orderId: order.id,
         toStatus: 'ORDER_PROCESSED',
-        changedBy: 'system',
+        changedBy: req.session?.userId || 'system',
         reason: 'Order created'
       });
       console.log('Status history created');
@@ -388,7 +412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const completeOrder = await storage.getOrderWithDetails(order.id);
       console.log('Order creation completed successfully:', order.id);
 
-      // Send notifications
+      // Send notifications (non-blocking)
       try {
         await storage.createNotification({
           customerId: validatedData.customerId,
@@ -413,9 +437,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error creating order:', error);
-      res.status(500).json({ 
+      
+      let errorMessage = 'Failed to create order';
+      let statusCode = 500;
+
+      if (error.name === 'ZodError') {
+        errorMessage = `Validation error: ${error.errors.map(e => e.message).join(', ')}`;
+        statusCode = 400;
+      } else if (error.message.includes('foreign key')) {
+        errorMessage = 'Invalid customer selection';
+        statusCode = 400;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      res.status(statusCode).json({ 
         success: false,
-        message: 'Failed to create order',
+        message: errorMessage,
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
