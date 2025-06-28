@@ -4,6 +4,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { importAuthenticOrders } from './import-authentic-orders.js';
 import { storage } from './storage';
+import path from "path";
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -120,11 +121,16 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+    // Catch-all route to serve the React app for unmatched routes
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
+    });
+
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  
+
   server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
       console.error(`Port ${port} is already in use. Trying to kill existing process...`);
