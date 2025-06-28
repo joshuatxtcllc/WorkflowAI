@@ -132,78 +132,78 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
         exit={{ y: -100, opacity: 0 }}
         className={`mb-4 rounded-lg bg-gradient-to-r ${getSeverityColor(severity)} text-white shadow-lg border-l-4 border-white/30`}
       >
-        {/* Main Alert Header */}
-        <div className="p-4">
+        {/* Main Alert Header - Mobile Optimized */}
+        <div className="p-2 md:p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Brain className="w-6 h-6 animate-pulse" />
-              <div>
-                <h3 className="font-semibold text-base flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Brain className="w-4 h-4 md:w-6 md:h-6 animate-pulse" />
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-sm md:text-base flex items-center gap-1 md:gap-2">
                   AI Manager
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs px-1">
                     {severity.toUpperCase()}
                   </Badge>
                 </h3>
-                <p className="text-white/80 text-xs">
+                <p className="text-white/80 text-xs hidden md:block">
                   Real-time analysis & recommendations
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/20 p-1 h-6 w-6"
               >
-                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDismissed(true)}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/20 p-1 h-6 w-6"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3" />
               </Button>
             </div>
           </div>
 
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-1 mt-2">
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold">{workloadMetrics.totalActiveOrders}</div>
-              <div className="text-xs text-white/70">Active</div>
+          {/* Quick Metrics - Mobile First */}
+          <div className="grid grid-cols-6 gap-1 mt-2">
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold">{workloadMetrics.totalActiveOrders}</div>
+              <div className="text-xs text-white/70 leading-tight">Active</div>
             </div>
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
-              <div className="text-xs text-white/70">Late</div>
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold text-red-200">{workloadMetrics.overdueOrders}</div>
+              <div className="text-xs text-white/70 leading-tight">Late</div>
             </div>
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
-              <div className="text-xs text-white/70">Rush</div>
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold text-orange-200">{workloadMetrics.urgentOrders}</div>
+              <div className="text-xs text-white/70 leading-tight">Rush</div>
             </div>
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
-              <div className="text-xs text-white/70">Waiting</div>
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold text-blue-200">{workloadMetrics.materialWaiting}</div>
+              <div className="text-xs text-white/70 leading-tight">Wait</div>
             </div>
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold text-green-200">{workloadMetrics.readyForWork}</div>
-              <div className="text-xs text-white/70">Ready</div>
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold text-green-200">{workloadMetrics.readyForWork}</div>
+              <div className="text-xs text-white/70 leading-tight">Ready</div>
             </div>
-            <div className="bg-white/10 rounded p-1 text-center">
-              <div className="text-sm font-bold text-jade-200">{workloadMetrics.completedToday}</div>
-              <div className="text-xs text-white/70">Done</div>
+            <div className="bg-white/10 rounded px-1 py-0.5 text-center">
+              <div className="text-xs font-bold text-jade-200">{workloadMetrics.completedToday}</div>
+              <div className="text-xs text-white/70 leading-tight">Done</div>
             </div>
           </div>
 
-          {/* Progress Bar */}
+          {/* Progress Bar - Compact */}
           {analysis && (
-            <div className="mt-2">
+            <div className="mt-1.5">
               <div className="flex justify-between text-xs mb-1">
-                <span>On-Time</span>
-                <span>{analysis.onTimePercentage}%</span>
+                <span className="text-xs">On-Time</span>
+                <span className="text-xs font-medium">{analysis.onTimePercentage}%</span>
               </div>
               <Progress 
                 value={analysis.onTimePercentage} 
@@ -222,13 +222,13 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
               exit={{ height: 0, opacity: 0 }}
               className="border-t border-white/20 bg-black/10"
             >
-              <div className="p-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <Lightbulb className="w-4 h-4" />
-                  <h4 className="font-medium text-sm">IMMEDIATE ACTION ITEMS</h4>
+              <div className="p-1.5 md:p-2">
+                <div className="flex items-center gap-1 mb-1.5">
+                  <Lightbulb className="w-3 h-3" />
+                  <h4 className="font-medium text-xs">ACTION ITEMS</h4>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {recommendations.map((rec, index) => {
                     const Icon = rec.icon;
                     return (
@@ -239,16 +239,16 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
                         transition={{ delay: index * 0.1 }}
                       >
                         <Link href={rec.filterUrl || '/orders'}>
-                          <div className="flex items-center gap-2 bg-white/10 rounded p-2 hover:bg-white/20 transition-colors cursor-pointer group">
-                            <Icon className="w-4 h-4 flex-shrink-0" />
+                          <div className="flex items-center gap-2 bg-white/10 rounded p-1.5 hover:bg-white/20 transition-colors cursor-pointer group">
+                            <Icon className="w-3 h-3 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-xs group-hover:text-white/90 truncate">{rec.text}</p>
-                              <p className="text-xs text-white/70 group-hover:text-white/60">
+                              <p className="text-xs text-white/70 group-hover:text-white/60 hidden md:block">
                                 {rec.action}
                               </p>
                             </div>
                             {rec.orderCount && (
-                              <span className="bg-white/20 px-1.5 py-0.5 rounded text-xs font-medium shrink-0">
+                              <span className="bg-white/20 px-1 py-0.5 rounded text-xs font-medium shrink-0">
                                 {rec.orderCount}
                               </span>
                             )}
@@ -259,28 +259,28 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
                   })}
                 </div>
 
-                {/* AI Insights */}
+                {/* AI Insights - Compact for Mobile */}
                 {analysis?.aiInsights && (
-                  <div className="mt-2 bg-white/10 rounded p-2">
+                  <div className="mt-1.5 bg-white/10 rounded p-1.5">
                     <div className="flex items-center gap-1 mb-1">
                       <Brain className="w-3 h-3" />
                       <span className="text-xs font-medium">AI Insights</span>
                     </div>
-                    <p className="text-xs text-white/80 line-clamp-3">
-                      {analysis.aiInsights.slice(0, 150)}...
+                    <p className="text-xs text-white/80 line-clamp-2">
+                      {analysis.aiInsights.slice(0, 100)}...
                     </p>
                   </div>
                 )}
 
-                {/* Bottlenecks */}
+                {/* Bottlenecks - Compact */}
                 {analysis?.bottlenecks && analysis.bottlenecks.length > 0 && (
-                  <div className="mt-2 bg-white/10 rounded p-2">
+                  <div className="mt-1.5 bg-white/10 rounded p-1.5">
                     <div className="flex items-center gap-1 mb-1">
                       <TrendingUp className="w-3 h-3" />
                       <span className="text-xs font-medium">Bottlenecks</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {analysis.bottlenecks.slice(0, 3).map((bottleneck, index) => (
+                      {analysis.bottlenecks.slice(0, 2).map((bottleneck, index) => (
                         <Badge key={index} variant="secondary" className="bg-red-500/20 text-red-200 text-xs px-1 py-0">
                           {bottleneck}
                         </Badge>
