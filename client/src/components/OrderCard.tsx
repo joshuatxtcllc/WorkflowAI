@@ -37,22 +37,24 @@ const STATUS_LABELS = {
 };
 
 export default function OrderCard({ order }: OrderCardProps) {
-  // Add safety check for order data
-  if (!order || !order.id) {
+  // Enhanced safety checks for order data
+  if (!order || !order.id || typeof order.id !== 'string') {
+    console.warn('OrderCard: Invalid order data received', order);
     return null;
   }
 
   const { setUI, setSelectedOrderId } = useOrderStore();
   const [statusChanged, setStatusChanged] = useState(false);
-  const [previousStatus, setPreviousStatus] = useState(order.status);
+  const [previousStatus, setPreviousStatus] = useState(order.status || '');
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Track status changes for animations
+  // Track status changes for animations with better error handling
   useEffect(() => {
-    if (previousStatus !== order.status) {
+    if (order.status && previousStatus && previousStatus !== order.status) {
       setStatusChanged(true);
       setShowStatusAnimation(true);
       setPreviousStatus(order.status);
@@ -67,55 +69,92 @@ export default function OrderCard({ order }: OrderCardProps) {
     }
   }, [order.status, previousStatus]);
 
+  // Stabilize drag configuration with proper dependencies
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'order',
-    item: { id: order.id },
+    item: { id: order.id, status: order.status },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    canDrag: () => true,
+    canDrag: () => !isUpdating && order.id,
     begin: () => {
       setIsDragActive(true);
     },
     end: (item, monitor) => {
       setIsDragActive(false);
-      setShowStatusAnimation(false);
-      // Force a small delay to ensure drop has completed
+      // Small delay to ensure proper state management
       setTimeout(() => {
         if (monitor.didDrop()) {
           setShowStatusAnimation(true);
+          // Force query invalidation after successful drop
+          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
         }
-      }, 100);
+      }, 150);
     },
-  }), [order.id]); // Add dependency to recreate when order changes
+  }), [order.id, order.status, isUpdating])
 
-  // Status update mutation
+  // Status update mutation with improved error handling
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const response = await apiRequest(`/api/orders/${order.id}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: newStatus }),
+      setIsUpdating(true);
+      try {
+        const response = await apiRequest(`/api/orders/${order.id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: newStatus }),
+        });
+        return response;
+      } catch (error) {
+        console.error('Status update API error:', error);
+        throw error;
+      }
+    },
+    onMutate: async (newStatus) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/orders"] });
+      
+      // Snapshot the previous value
+      const previousOrders = queryClient.getQueryData(["/api/orders"]);
+      
+      // Optimistically update the order status
+      queryClient.setQueryData(["/api/orders"], (old: any) => {
+        if (!old) return old;
+        return old.map((o: any) => 
+          o.id === order.id ? { ...o, status: newStatus } : o
+        );
       });
-      return response;
+      
+      return { previousOrders };
     },
     onSuccess: (updatedOrder) => {
-      // Invalidate and refetch queries to ensure fresh data
+      // Force complete refetch to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.refetchQueries({ queryKey: ["/api/orders"] });
       
+      const statusLabel = STATUS_LABELS[updatedOrder.status as keyof typeof STATUS_LABELS] || updatedOrder.status;
       toast({
         title: "Status Updated! 🎉",
-        description: `Order moved to: ${STATUS_LABELS[updatedOrder.status as keyof typeof STATUS_LABELS] || updatedOrder.status}`,
+        description: `Order moved to: ${statusLabel}`,
         duration: 3000,
       });
     },
-    onError: (error) => {
+    onError: (error, newStatus, context) => {
+      // Rollback optimistic update
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["/api/orders"], context.previousOrders);
+      }
+      
       console.error('Status update error:', error);
       toast({
         title: "Update Failed",
         description: "Failed to update order status. Please try again.",
         variant: "destructive",
+        duration: 5000,
       });
+    },
+    onSettled: () => {
+      setIsUpdating(false);
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
     },
   });
 

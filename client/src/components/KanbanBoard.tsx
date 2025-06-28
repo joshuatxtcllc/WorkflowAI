@@ -180,24 +180,49 @@ export default function KanbanBoard() {
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 10000, // More frequent updates for better responsiveness
-    staleTime: 5000, // Shorter stale time to ensure fresher data
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
-    refetchOnWindowFocus: true, // Re-enable focus refetch for better UX
-    refetchOnReconnect: true, // Refetch when connection is restored
+    refetchInterval: 5000, // More frequent updates
+    staleTime: 1000, // Very short stale time for real-time feel
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true, // Always refetch on component mount
+    networkMode: 'always', // Always attempt network requests
   });
 
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
-      const response = await apiRequest(`/api/orders/${orderId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
+      try {
+        const response = await apiRequest(`/api/orders/${orderId}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status }),
+        });
+        return response;
+      } catch (error) {
+        console.error('Drop status update failed:', error);
+        throw error;
+      }
+    },
+    onMutate: async ({ orderId, status }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/orders"] });
+      
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData(["/api/orders"]);
+      
+      // Optimistically update
+      queryClient.setQueryData(["/api/orders"], (old: OrderWithDetails[] | undefined) => {
+        if (!old) return old;
+        return old.map(order => 
+          order.id === orderId ? { ...order, status } : order
+        );
       });
-      return response;
+      
+      return { previousOrders };
     },
     onSuccess: (updatedOrder, variables) => {
-      // Force immediate refetch to ensure UI updates
+      // Force complete data refresh
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.refetchQueries({ queryKey: ["/api/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
@@ -218,13 +243,10 @@ export default function KanbanBoard() {
 
         // Trigger confetti for completed orders
         if (variables.status === 'COMPLETED' || variables.status === 'PICKED_UP') {
-          // Track completion stats
           incrementCompletion();
           const stats = getStats();
           
-          burst(75, 40); // Trigger confetti from center-right of screen
-          
-          // Add a small delay for extra celebratory bursts
+          burst(75, 40);
           setTimeout(() => burst(25, 60), 500);
           setTimeout(() => burst(85, 30), 1000);
           
@@ -237,17 +259,14 @@ export default function KanbanBoard() {
           ];
           
           const randomMessage = completionMessages[Math.floor(Math.random() * completionMessages.length)];
-          
-          // Create performance summary
           const performanceSummary = `${randomMessage} Daily: ${stats.daily} | Total: ${stats.total} | Streak: ${stats.streak} days`;
           
           toast({
             title: variables.status === 'PICKED_UP' ? "🎉 Order Picked Up! 🎉" : "🎉 Order Completed! 🎉",
-            description: `${order.customer.name}'s order is ${variables.status === 'PICKED_UP' ? 'picked up' : 'ready'}! ${performanceSummary}`,
+            description: `${order.customer?.name || 'Customer'}'s order is ${variables.status === 'PICKED_UP' ? 'picked up' : 'ready'}! ${performanceSummary}`,
             duration: 5000,
           });
           
-          // Special celebration for milestones
           if (stats.daily === 10 || stats.total % 50 === 0 || stats.streak === 7) {
             setTimeout(() => {
               toast({
@@ -262,26 +281,67 @@ export default function KanbanBoard() {
         } else {
           toast({
             title: "Order Status Updated!",
-            description: `${order.customer.name}'s order moved to: ${statusNames[variables.status] || variables.status}`,
+            description: `${order.customer?.name || 'Order'} moved to: ${statusNames[variables.status] || variables.status}`,
             duration: 3000,
           });
         }
       }
 
-      // Send WebSocket update
-      sendMessage({
-        type: 'order-status-update',
-        data: updatedOrder
+      // Send WebSocket update with error handling
+      try {
+        sendMessage({
+          type: 'order-status-update',
+          data: updatedOrder
+        });
+      } catch (wsError) {
+        console.warn('WebSocket message failed:', wsError);
+      }
+    },
+    onError: (error, variables, context) => {
+      // Rollback optimistic update
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["/api/orders"], context.previousOrders);
+      }
+      
+      toast({
+        title: "Update Failed",
+        description: "Failed to update order status. Please try again.",
+        variant: "destructive",
+        duration: 5000,
       });
     },
   });
 
-  const handleDropOrder = (orderId: string, newStatus: string) => {
-    const order = orders.find(o => o.id === orderId);
-    if (order && order.status !== newStatus) {
-      updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+  const handleDropOrder = useCallback((orderId: string, newStatus: string) => {
+    if (!orderId || !newStatus) {
+      console.warn('Invalid drop parameters:', { orderId, newStatus });
+      return;
     }
-  };
+
+    const order = orders.find(o => o.id === orderId);
+    if (!order) {
+      console.warn('Order not found for drop:', orderId);
+      toast({
+        title: "Drop Failed",
+        description: "Order not found. Please refresh and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (order.status === newStatus) {
+      console.log('No status change needed:', { current: order.status, new: newStatus });
+      return;
+    }
+
+    // Prevent multiple simultaneous updates for the same order
+    if (updateOrderStatusMutation.isPending) {
+      console.log('Update already in progress, skipping');
+      return;
+    }
+
+    updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+  }, [orders, updateOrderStatusMutation, toast]);
 
   // Only update slider when not dragging
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
