@@ -1025,13 +1025,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
       
-      if (activeOrders.length > 50) {
+      // Capacity warnings with realistic thresholds
+      if (activeOrders.length > 200) {
+        alerts.push({
+          id: `capacity_${Date.now()}`,
+          type: 'capacity',
+          severity: 'high',
+          title: 'High System Load',
+          content: `${activeOrders.length} active orders approaching system capacity. Consider optimization.`
+        });
+      } else if (activeOrders.length > 150) {
         alerts.push({
           id: `capacity_${Date.now()}`,
           type: 'capacity',
           severity: 'medium',
-          title: 'High System Load',
-          content: `${activeOrders.length} active orders may be approaching system capacity limits`
+          title: 'Moderate System Load',
+          content: `${activeOrders.length} active orders. System performing well, monitor for growth.`
         });
       }
 
