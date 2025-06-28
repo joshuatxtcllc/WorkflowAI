@@ -329,7 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/orders/:id', isAuthenticated, async (req, res) => {
     try {
-      const order = await storage.getOrderWithDetails(req.params.id);
+      const order = await storage.getOrder(req.params.id);
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
@@ -408,8 +408,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       console.log('Status history created');
 
-      // Fetch the complete order with details
-      const completeOrder = await storage.getOrderWithDetails(order.id);
+      // Fetch the complete order with details - use getOrder since getOrderWithDetails doesn't exist
+      const completeOrder = await storage.getOrder(order.id);
       console.log('Order creation completed successfully:', order.id);
 
       // Send notifications (non-blocking)
@@ -482,7 +482,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Get the complete updated order
-      const completeOrder = await storage.getOrderWithDetails(orderId);
+      const completeOrder = await storage.getOrder(orderId);
 
       res.json(completeOrder);
     } catch (error) {
@@ -706,7 +706,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.body;
 
-      const order = await storage.getOrderWithDetails(orderId);
+      const order = await storage.getOrder(orderId);
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
