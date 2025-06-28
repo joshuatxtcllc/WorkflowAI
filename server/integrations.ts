@@ -96,6 +96,45 @@ export class POSIntegration {
     }
   }
 
+  async checkConnection() {
+    if (!this.baseUrl || !this.apiKey) {
+      return {
+        connected: false,
+        authenticated: false,
+        error: 'Missing API configuration'
+      };
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+
+      if (response.ok) {
+        return {
+          connected: true,
+          authenticated: true,
+          status: 'healthy'
+        };
+      } else {
+        return {
+          connected: true,
+          authenticated: false,
+          error: `Authentication failed: ${response.status}`
+        };
+      }
+    } catch (error) {
+      return {
+        connected: false,
+        authenticated: false,
+        error: (error as Error).message
+      };
+    }
+  }
+
   async syncOrder(orderId: string) {
     if (!this.baseUrl || !this.apiKey) {
       console.log('POS integration not configured - missing API credentials');

@@ -1,4 +1,4 @@
-import { DiagnosticDashboard } from "@/components/DiagnosticDashboard";
+import { SimpleDiagnosticDashboard } from "@/components/SimpleDiagnosticDashboard";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import Header from "@/components/Header";
@@ -9,9 +9,7 @@ export default function Diagnostics() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-6">
-          <DiagnosticDashboard />
-        </main>
+        <SimpleDiagnosticDashboard />
       </SidebarInset>
     </SidebarProvider>
   );
