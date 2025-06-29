@@ -236,28 +236,30 @@ export default function OrderCard({ order }: OrderCardProps) {
     const materials = order.materials;
     if (!materials || !Array.isArray(materials) || materials.length === 0) return [];
 
-    return materials.map((material, index) => {
-      if (!material || typeof material !== 'object') return null;
+    return materials
+      .map((material, index) => {
+        if (!material || typeof material !== 'object') return null;
 
-      let color = 'bg-gray-600'; // Not ordered
-      let title = `${material.type || 'Material'} - Not ordered`;
+        let color = 'bg-gray-600'; // Not ordered
+        let title = `${material.type || 'Material'} - Not ordered`;
 
-      if (material.arrived) {
-        color = 'bg-green-500';
-        title = `${material.type || 'Material'} - Arrived`;
-      } else if (material.ordered) {
-        color = 'bg-yellow-500';
-        title = `${material.type || 'Material'} - Ordered`;
-      }
+        if (material.arrived) {
+          color = 'bg-green-500';
+          title = `${material.type || 'Material'} - Arrived`;
+        } else if (material.ordered) {
+          color = 'bg-yellow-500';
+          title = `${material.type || 'Material'} - Ordered`;
+        }
 
-      return (
-        <div
-          key={`material-${order.id}-${index}`}
-          className={`w-2 h-2 rounded-full ${color}`}
-          title={title}
-        />
-      );
-    }).filter(Boolean);
+        return (
+          <div
+            key={`material-${order.id}-${index}`}
+            className={`w-2 h-2 rounded-full ${color}`}
+            title={title}
+          />
+        );
+      })
+      .filter((item): item is JSX.Element => item !== null);
   };
 
   // Determine what the order needs next
