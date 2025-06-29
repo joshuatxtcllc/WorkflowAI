@@ -36,14 +36,25 @@ const STATUS_LABELS = {
   'COMPLETED': 'Mark Picked Up'
 };
 
-export default function OrderCard({ order }: OrderCardProps) {
+function OrderCard({ order }: OrderCardProps) {
   // Enhanced safety checks for order data
   if (!order || !order.id || typeof order.id !== 'string') {
     console.warn('OrderCard: Invalid order data received', order);
     return null;
   }
 
-  const { setUI, setSelectedOrderId } = useOrderStore();
+  // Wrap store access in try-catch to handle any store errors
+  let setUI: any, setSelectedOrderId: any;
+  try {
+    const store = useOrderStore();
+    setUI = store.setUI;
+    setSelectedOrderId = store.setSelectedOrderId;
+  } catch (error) {
+    console.error('OrderCard: Error accessing order store', error);
+    return <div className="p-3 rounded-lg border border-red-500 bg-red-500/10 text-red-400 text-sm">
+      Error loading order card
+    </div>;
+  }
   const [statusChanged, setStatusChanged] = useState(false);
   const [previousStatus, setPreviousStatus] = useState(order.status || '');
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
@@ -76,7 +87,7 @@ export default function OrderCard({ order }: OrderCardProps) {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    canDrag: () => !isUpdating && order.id,
+    canDrag: !isUpdating && !!order.id,
     begin: () => {
       setIsDragActive(true);
     },
@@ -314,7 +325,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   // Get available status transitions
   const getAvailableTransitions = () => {
-    const currentStatus = order.status;
+    const currentStatus = order.status || 'ORDER_PROCESSED';
     const transitions = [];
 
     // Always allow moving to the next status
@@ -438,7 +449,7 @@ export default function OrderCard({ order }: OrderCardProps) {
             {getAvailableTransitions().map((transition) => (
               <DropdownMenuItem
                 key={`transition-${order.id}-${transition.status}`}
-                onClick={() => handleStatusUpdate(transition.status)}
+                onClick={() => transition.status && handleStatusUpdate(transition.status)}
                 className="text-white hover:bg-gray-700 cursor-pointer"
               >
                 {transition.label}
@@ -529,3 +540,5 @@ export default function OrderCard({ order }: OrderCardProps) {
     </motion.div>
   );
 }
+
+export default OrderCard;
