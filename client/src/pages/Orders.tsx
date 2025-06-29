@@ -227,10 +227,12 @@ export default function Orders() {
                 variant="outline" 
                 size="sm" 
                 className="w-full mt-4"
-                onClick={() => {
-                    setSelectedOrderId(order.id);
-                    setUI({ isOrderDetailsOpen: true });
-                  }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedOrderId(order.id);
+                  setUI({ isOrderDetailsOpen: true });
+                }}
               >
                 View Details
                 <ArrowRight className="h-4 w-4 ml-2" />

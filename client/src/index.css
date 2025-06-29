@@ -351,7 +351,7 @@
   .no-print {
     display: none !important;
   }
-  
+
   body {
     background: white !important;
     color: black !important;
@@ -363,7 +363,7 @@
   .container-main {
     @apply px-4;
   }
-  
+
   .section-padding {
     @apply py-8 px-4;
   }
@@ -376,14 +376,14 @@
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Improve text legibility on mobile */
   body {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     font-size: 16px;
   }
-  
+
   /* Optimize scrolling */
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
@@ -391,42 +391,42 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  
+
   .overflow-x-auto::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* Prevent zoom on input focus */
   input, textarea, select {
     font-size: 16px;
   }
-  
+
   /* Mobile-friendly card spacing */
   .space-y-3 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 0.5rem;
   }
-  
+
   /* Better mobile kanban columns */
   .kanban-column {
     min-width: 280px;
     width: 280px;
   }
-  
+
   /* Improve touch scrolling */
   .kanban-scroll {
     scroll-snap-type: x mandatory;
     padding-bottom: 100px; /* Extra space for mobile navigation */
   }
-  
+
   .kanban-scroll > div {
     scroll-snap-align: start;
   }
-  
+
   /* Prevent overlapping with fixed elements */
   main {
     padding-bottom: 120px !important;
   }
-  
+
   /* Adjust fixed element positioning on mobile */
   .fixed {
     z-index: 999;
@@ -440,7 +440,7 @@
   .animate-pulse-slow {
     animation: none;
   }
-  
+
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
@@ -453,7 +453,7 @@
   .card-dark {
     @apply border-2 border-white;
   }
-  
+
   .btn-jade {
     @apply border-2 border-black;
   }
@@ -503,3 +503,53 @@
   transform: scale(1.1);
   box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
 }
+
+/* Custom scrollbar styles */
+  .kanban-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .kanban-scroll::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 4px;
+  }
+
+  .kanban-scroll::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 4px;
+  }
+
+  .kanban-scroll::-webkit-scrollbar-thumb:hover {
+    background: #059669;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .order-card {
+      min-width: 260px;
+    }
+
+    .kanban-column {
+      min-width: 280px;
+    }
+
+    .glass-card {
+      font-size: 14px;
+    }
+
+    .glass-card .text-xs {
+      font-size: 12px;
+    }
+  }
+
+  /* Touch targets for mobile */
+  @media (pointer: coarse) {
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .order-card {
+      padding: 12px;
+    }
+  }

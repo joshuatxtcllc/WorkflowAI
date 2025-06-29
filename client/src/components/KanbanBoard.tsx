@@ -68,7 +68,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   return (
     <motion.div
       ref={drop}
-      className={`kanban-column flex-shrink-0 w-64 sm:w-72 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
+      className={`kanban-column flex-shrink-0 w-72 sm:w-80 md:w-72 lg:w-80 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
         isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105 shadow-jade-500/20' : 'shadow-glow-hover hover:border-gray-600/50'
       }`}
       animate={{
@@ -180,15 +180,15 @@ export default function KanbanBoard() {
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 5000, // More frequent updates
-    staleTime: 1000, // Very short stale time for real-time feel
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
-    refetchOnWindowFocus: true,
+    refetchInterval: 30000, // Reduced frequency to 30 seconds
+    staleTime: 10000, // 10 seconds stale time
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    refetchOnWindowFocus: false, // Reduce unnecessary refetches
     refetchOnReconnect: true,
-    refetchOnMount: true, // Always refetch on component mount
-    networkMode: 'always', // Always attempt network requests
+    refetchOnMount: false, // Use cached data if available
+    networkMode: 'online', // Only fetch when online
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -222,9 +222,17 @@ export default function KanbanBoard() {
       return { previousOrders };
     },
     onSuccess: (updatedOrder, variables) => {
-      // Force complete data refresh
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
+      // Update the specific order in cache without full refetch
+      queryClient.setQueryData(["/api/orders"], (oldData: OrderWithDetails[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(order => 
+          order.id === variables.orderId 
+            ? { ...order, status: variables.status, updatedAt: new Date().toISOString() }
+            : order
+        );
+      });
+      
+      // Only invalidate analytics, not the main orders query
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
 
       // Find the order and show success notification
@@ -602,7 +610,7 @@ export default function KanbanBoard() {
 
           <div 
             ref={scrollContainerRef}
-            className="kanban-scroll flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth"
+            className="kanban-scroll flex gap-4 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
