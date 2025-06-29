@@ -80,25 +80,21 @@ export default function OrderCard({ order }: OrderCardProps) {
   }, [order.status, previousStatus]);
 
   // Drag and drop setup
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'order',
     item: { id: order.id, status: order.status },
-    collect: (monitor) => ({
+    collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-    begin: () => {
-      setIsDragActive(true);
-    },
-    end: () => {
-      setIsDragActive(false);
-    },
-  });
+  }));
 
   // Quick status update mutation
   const quickUpdateMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const response = await apiRequest('PATCH', `/api/orders/${order.id}/status`, { status: newStatus });
-      return response.json();
+      return apiRequest(`/api/orders/${order.id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus })
+      });
     },
     onMutate: () => {
       setIsUpdating(true);

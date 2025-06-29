@@ -263,7 +263,7 @@ export class POSIntegration {
           if (ordersArray.length > 0) {
             console.log(`Successfully fetched ${ordersArray.length} orders from Kanban API`);
           }
-          return { success: true, orders: ordersArray, connected: true, authenticated: true };
+          return { success: true, orders: ordersArray, connected: true, authenticated: true, message: 'System ready and monitoring for new orders' };
         } else {
           console.log(`Orders fetch failed: ${ordersResponse.status} - ${ordersResponse.statusText}`);
 
@@ -352,7 +352,7 @@ export class POSIntegration {
       console.log('POS connection failed:', connectionTest.error);
       console.log('Will continue attempting to connect during periodic sync...');
     } else {
-      console.log('POS system operational -', connectionTest.message);
+      console.log('POS system operational -', connectionTest.message || 'Connected successfully');
     }
 
     // Set up periodic sync with retry logic (every 5 minutes)
