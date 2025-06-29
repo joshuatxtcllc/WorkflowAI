@@ -37,76 +37,20 @@ const STATUS_LABELS = {
 };
 
 function OrderCard({ order }: OrderCardProps) {
-  // Enhanced safety checks for order data
-  if (!order || !order.id || typeof order.id !== 'string') {
-    console.warn('OrderCard: Invalid order data received', order);
-    return null;
-  }
-
-  // Wrap store access in try-catch to handle any store errors
-  let setUI: any, setSelectedOrderId: any;
-  try {
-    const store = useOrderStore();
-    setUI = store.setUI;
-    setSelectedOrderId = store.setSelectedOrderId;
-  } catch (error) {
-    console.error('OrderCard: Error accessing order store', error);
-    return <div className="p-3 rounded-lg border border-red-500 bg-red-500/10 text-red-400 text-sm">
-      Error loading order card
-    </div>;
-  }
+  // All hooks must be called before any early returns - React Rules of Hooks
+  const { setUI, setSelectedOrderId } = useOrderStore();
   const [statusChanged, setStatusChanged] = useState(false);
-  const [previousStatus, setPreviousStatus] = useState(order.status || '');
+  const [previousStatus, setPreviousStatus] = useState(order?.status || '');
   const [showStatusAnimation, setShowStatusAnimation] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Track status changes for animations with better error handling
-  useEffect(() => {
-    if (order.status && previousStatus && previousStatus !== order.status) {
-      setStatusChanged(true);
-      setShowStatusAnimation(true);
-      setPreviousStatus(order.status);
-
-      // Reset animation after delay
-      const timer = setTimeout(() => {
-        setStatusChanged(false);
-        setShowStatusAnimation(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [order.status, previousStatus]);
-
-  // Stabilize drag configuration with proper dependencies
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'order',
-    item: { id: order.id, status: order.status },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: !isUpdating && !!order.id,
-    begin: () => {
-      setIsDragActive(true);
-    },
-    end: (item, monitor) => {
-      setIsDragActive(false);
-      // Small delay to ensure proper state management
-      setTimeout(() => {
-        if (monitor.didDrop()) {
-          setShowStatusAnimation(true);
-          // Force query invalidation after successful drop
-          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-        }
-      }, 150);
-    },
-  }), [order.id, order.status, isUpdating])
-
   // Status update mutation with improved error handling
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
+      if (!order?.id) return null;
       setIsUpdating(true);
       try {
         const response = await apiRequest(`/api/orders/${order.id}/status`, {
@@ -120,6 +64,7 @@ function OrderCard({ order }: OrderCardProps) {
       }
     },
     onMutate: async (newStatus) => {
+      if (!order?.id) return;
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["/api/orders"] });
       
@@ -137,6 +82,7 @@ function OrderCard({ order }: OrderCardProps) {
       return { previousOrders };
     },
     onSuccess: (updatedOrder) => {
+      if (!updatedOrder) return;
       // Force complete refetch to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.refetchQueries({ queryKey: ["/api/orders"] });
@@ -168,6 +114,55 @@ function OrderCard({ order }: OrderCardProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
     },
   });
+
+  // Track status changes for animations with better error handling
+  useEffect(() => {
+    if (order?.status && previousStatus && previousStatus !== order.status) {
+      setStatusChanged(true);
+      setShowStatusAnimation(true);
+      setPreviousStatus(order.status);
+
+      // Reset animation after delay
+      const timer = setTimeout(() => {
+        setStatusChanged(false);
+        setShowStatusAnimation(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [order?.status, previousStatus]);
+
+  // Stabilize drag configuration with proper dependencies
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'order',
+    item: { id: order?.id || '', status: order?.status || '' },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: !isUpdating && !!order?.id,
+    begin: () => {
+      setIsDragActive(true);
+    },
+    end: (item, monitor) => {
+      setIsDragActive(false);
+      // Small delay to ensure proper state management
+      setTimeout(() => {
+        if (monitor.didDrop()) {
+          setShowStatusAnimation(true);
+          // Force query invalidation after successful drop
+          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+        }
+      }, 150);
+    },
+  }), [order?.id, order?.status, isUpdating]);
+
+  // Enhanced safety checks for order data - after all hooks
+  if (!order || !order.id || typeof order.id !== 'string') {
+    console.warn('OrderCard: Invalid order data received', order);
+    return <div className="p-3 rounded-lg border border-red-500 bg-red-500/10 text-red-400 text-sm">
+      Invalid order data
+    </div>;
+  }
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't open details if clicking on buttons/dropdowns
