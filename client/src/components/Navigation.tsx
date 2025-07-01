@@ -12,7 +12,8 @@ import {
   Bell,
   Settings,
   Zap,
-  Phone // Added Phone icon for Twilio
+  Phone, // Added Phone icon for Twilio
+  Receipt
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -27,6 +28,7 @@ export function Navigation({ className = '' }: NavigationProps) {
     { name: 'Dashboard', path: '/', icon: Home },
     { name: 'Orders', path: '/orders', icon: Package },
     { name: 'Customers', path: '/customers', icon: Users },
+    { name: 'Invoices', path: '/invoices', icon: Receipt },
     { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'Schedule', path: '/schedule', icon: Calendar },
     { name: 'Time Tracking', path: '/time-tracking', icon: Clock },
