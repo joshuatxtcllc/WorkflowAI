@@ -64,8 +64,10 @@ export default function OrderDetails() {
   // Order update mutation
   const updateOrderMutation = useMutation({
     mutationFn: async (updates: Partial<OrderWithDetails>) => {
-      const response = await apiRequest('PATCH', `/api/orders/${selectedOrderId}`, updates);
-      return response.json();
+      return await apiRequest(`/api/orders/${selectedOrderId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updates)
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
@@ -89,8 +91,10 @@ export default function OrderDetails() {
   // Material creation mutation
   const createMaterialMutation = useMutation({
     mutationFn: async (materialData: any) => {
-      const response = await apiRequest('POST', `/api/orders/${selectedOrderId}/materials`, materialData);
-      return response.json();
+      return await apiRequest(`/api/orders/${selectedOrderId}/materials`, {
+        method: 'POST',
+        body: JSON.stringify(materialData)
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
@@ -121,8 +125,9 @@ export default function OrderDetails() {
   // Material deletion mutation
   const deleteMaterialMutation = useMutation({
     mutationFn: async (materialId: string) => {
-      const response = await apiRequest('DELETE', `/api/materials/${materialId}`);
-      return response.json();
+      return await apiRequest(`/api/materials/${materialId}`, {
+        method: 'DELETE'
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/orders/${selectedOrderId}`] });
