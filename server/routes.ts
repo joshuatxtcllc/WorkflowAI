@@ -463,12 +463,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/orders/:id', isAuthenticated, async (req: any, res) => {
     try {
       const orderId = req.params.id;
-      const updates = req.body;
+      const updates = { ...req.body };
 
       // Get current order to check if it exists
       const currentOrder = await storage.getOrder(orderId);
       if (!currentOrder) {
         return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Convert date strings to Date objects if they exist
+      if (updates.dueDate && typeof updates.dueDate === 'string') {
+        updates.dueDate = new Date(updates.dueDate);
+      }
+      if (updates.createdAt && typeof updates.createdAt === 'string') {
+        updates.createdAt = new Date(updates.createdAt);
+      }
+      if (updates.updatedAt && typeof updates.updatedAt === 'string') {
+        updates.updatedAt = new Date(updates.updatedAt);
+      }
+      if (updates.artworkReceivedDate && typeof updates.artworkReceivedDate === 'string') {
+        updates.artworkReceivedDate = new Date(updates.artworkReceivedDate);
       }
 
       // If status is being updated, create status history entry

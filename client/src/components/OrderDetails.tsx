@@ -174,9 +174,7 @@ export default function OrderDetails() {
 
   const handleEditSave = () => {
     const updates = { ...editedOrder };
-    if (updates.dueDate) {
-      updates.dueDate = new Date(updates.dueDate);
-    }
+    // Keep dueDate as string - backend will handle conversion
     updateOrderMutation.mutate(updates);
   };
 
