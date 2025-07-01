@@ -459,6 +459,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // General order update endpoint
+  app.patch('/api/orders/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const orderId = req.params.id;
+      const updates = req.body;
+
+      // Get current order to check if it exists
+      const currentOrder = await storage.getOrder(orderId);
+      if (!currentOrder) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // If status is being updated, create status history entry
+      if (updates.status && updates.status !== currentOrder.status) {
+        await storage.createStatusHistory({
+          orderId: orderId,
+          fromStatus: currentOrder.status,
+          toStatus: updates.status,
+          changedBy: req.session?.user?.id || 'system'
+        });
+      }
+
+      // Update the order with all provided fields
+      const updatedOrder = await storage.updateOrder(orderId, updates);
+
+      // Get the complete updated order
+      const completeOrder = await storage.getOrder(orderId);
+
+      res.json(completeOrder);
+    } catch (error) {
+      console.error('Error updating order:', error);
+      res.status(500).json({ message: 'Failed to update order' });
+    }
+  });
+
   app.patch('/api/orders/:id/status', isAuthenticated, async (req: any, res) => {
     try {
       const { status } = req.body;
