@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle, Clipboard, Edit, CheckCircle, Truck, Receipt } from 'lucide-react';
+import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle, Clipboard, Edit, CheckCircle, Truck, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

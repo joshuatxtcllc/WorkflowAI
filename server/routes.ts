@@ -16,6 +16,7 @@ import {
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
 import { AIService } from "./services/aiService";
+import { NotificationService } from "./services/notificationService";
 import { TwilioVoiceService } from './services/twilioVoiceService';
 import multer from 'multer';
 import { artworkManager } from './artwork-manager';
@@ -530,8 +531,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         changedBy: req.session?.user?.id || 'system'
       });
 
-      // Get the complete updated order
+      // Get the complete updated order for notifications
       const completeOrder = await storage.getOrder(orderId);
+
+      // Initialize notification service
+      const notificationService = new NotificationService();
+
+      // Send status update notifications (async, don't block response)
+      if (completeOrder) {
+        notificationService.sendStatusUpdate(completeOrder).catch(error => {
+          console.error('Failed to send status update notifications:', error);
+        });
+      }
 
       res.json(completeOrder);
     } catch (error) {
