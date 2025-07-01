@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { ImageIcon, Upload, X, MapPin, Package, Calendar } from "lucide-react";
+import { ImageIcon, Upload, X, MapPin, Package, Calendar, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -222,24 +222,38 @@ export default function ArtworkManager({
             Artwork Location
           </Label>
           <div className="space-y-2">
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              onBlur={() => {
-                if (location !== artworkLocation) {
-                  locationMutation.mutate(location);
-                }
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  locationMutation.mutate(location);
-                }
-              }}
-              placeholder="Enter artwork location..."
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-jade-500"
-              disabled={locationMutation.isPending}
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                onBlur={() => {
+                  if (location !== artworkLocation) {
+                    locationMutation.mutate(location);
+                  }
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    locationMutation.mutate(location);
+                  }
+                }}
+                placeholder="Enter artwork location..."
+                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-jade-500"
+                disabled={locationMutation.isPending}
+              />
+              <Button
+                onClick={() => locationMutation.mutate(location)}
+                disabled={locationMutation.isPending || location === artworkLocation}
+                size="sm"
+                className="bg-jade-600 hover:bg-jade-700 text-white"
+              >
+                {locationMutation.isPending ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
             <div className="flex flex-wrap gap-1">
               {[
                 "Front Counter", "Storage Room A", "Storage Room B", 

@@ -787,7 +787,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  app.post('/api/orders/:orderId/artwork', isAuthenticated, upload.single('artwork'), async (req, res) => {
+  app.post('/api/orders/:orderId/artwork/upload', isAuthenticated, upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
       const file = req.file;
@@ -801,6 +801,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error uploading artwork:', error);
       res.status(500).json({ message: 'Failed to upload artwork' });
+    }
+  });
+
+  app.put('/api/orders/:orderId/artwork/location', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { location } = req.body;
+
+      if (!location) {
+        return res.status(400).json({ message: 'Location is required' });
+      }
+
+      await artworkManager.updateArtworkLocation(orderId, location);
+      res.json({ success: true, message: 'Artwork location updated' });
+    } catch (error) {
+      console.error('Error updating artwork location:', error);
+      res.status(500).json({ message: 'Failed to update artwork location' });
+    }
+  });
+
+  app.put('/api/orders/:orderId/artwork/received', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { received } = req.body;
+
+      await artworkManager.markArtworkReceived(orderId, received);
+      res.json({ success: true, message: 'Artwork received status updated' });
+    } catch (error) {
+      console.error('Error updating artwork received status:', error);
+      res.status(500).json({ message: 'Failed to update artwork received status' });
+    }
+  });
+
+  app.delete('/api/orders/:orderId/artwork/:imageUrl', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId, imageUrl } = req.params;
+      const decodedImageUrl = decodeURIComponent(imageUrl);
+
+      await artworkManager.removeArtworkImage(orderId, decodedImageUrl);
+      res.json({ success: true, message: 'Artwork image removed' });
+    } catch (error) {
+      console.error('Error removing artwork image:', error);
+      res.status(500).json({ message: 'Failed to remove artwork image' });
+    }
+  });
+
+  app.get('/api/artwork/locations', isAuthenticated, async (req, res) => {
+    try {
+      const locations = artworkManager.getCommonLocations();
+      res.json(locations);
+    } catch (error) {
+      console.error('Error getting artwork locations:', error);
+      res.status(500).json({ message: 'Failed to get artwork locations' });
     }
   });
 
