@@ -195,6 +195,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 id="invoiceNumber"
                 value={invoiceData.invoiceNumber}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -205,6 +206,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 step="0.1"
                 value={invoiceData.taxRate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -214,6 +216,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 type="date"
                 value={invoiceData.date}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, date: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -223,6 +226,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 type="date"
                 value={invoiceData.dueDate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, dueDate: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
           </div>
@@ -242,6 +246,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, name: e.target.value }
                   }))}
+                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -254,6 +259,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, email: e.target.value }
                   }))}
+                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -265,6 +271,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, phone: e.target.value }
                   }))}
+                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -276,6 +283,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, address: e.target.value }
                   }))}
+                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
             </CardContent>
@@ -300,6 +308,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         value={item.description}
                         onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
                         placeholder="Item description"
+                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                     <div className="col-span-2">
@@ -310,6 +319,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                         min="0"
                         step="1"
+                        className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
                     <div className="col-span-2">
@@ -320,6 +330,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         onChange={(e) => updateLineItem(item.id, 'price', parseFloat(e.target.value) || 0)}
                         min="0"
                         step="0.01"
+                        className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
                     <div className="col-span-2">
@@ -355,6 +366,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
               onChange={(e) => setInvoiceData(prev => ({ ...prev, notes: e.target.value }))}
               placeholder="Additional notes or terms..."
               rows={3}
+              className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
             />
           </div>
 
