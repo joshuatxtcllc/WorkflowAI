@@ -1,4 +1,3 @@
-
 import {
   Calendar,
   Home,
@@ -158,6 +157,11 @@ const data = {
       url: "/diagnostics",
       icon: Activity,
     },
+    {
+      title: "Invoices",
+      url: "/invoices",
+      icon: FileText,
+    },
   ],
   settings: [
     {
@@ -178,7 +182,7 @@ export function AppSidebar() {
 
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
-    
+
     // Handle URL navigation
     if (url && url !== "#") {
       navigate(url);

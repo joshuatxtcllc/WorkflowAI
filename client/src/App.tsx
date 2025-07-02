@@ -15,7 +15,6 @@ import POSIntegration from "@/pages/POSIntegration";
 import Progress from "@/pages/Progress";
 import Orders from "@/pages/Orders";
 import Customers from "@/pages/Customers";
-import Invoices from '@/pages/Invoices';
 import Analytics from "@/pages/Analytics";
 import Schedule from "@/pages/Schedule";
 import TimeTracking from "@/pages/TimeTracking";
@@ -78,7 +77,6 @@ function Router() {
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route path="/admin-portal" component={AdminPortal} />
           <Route path="/diagnostics" component={Diagnostics} />
-          <Route path="/invoices" component={Invoices} />
           <Route component={NotFound} />
         </>
       )}

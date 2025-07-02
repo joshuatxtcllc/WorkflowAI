@@ -11,10 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import OrderDetails from '@/components/OrderDetails';
+import InvoiceModal from '@/components/InvoiceModal';
 import { SystemAlerts } from '@/components/SystemAlerts';
 import { Navigation } from '@/components/Navigation';
 import { useOrderStore } from '@/store/useOrderStore';
-import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
 import { format } from 'date-fns';
@@ -44,8 +45,9 @@ const statusLabels = {
 
 
 export default function Orders() {
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [invoiceOrderId, setInvoiceOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const { setSelectedOrderId, setUI } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
   const [location] = useLocation();
@@ -237,6 +239,15 @@ export default function Orders() {
                 View Details
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
+               <Button
+              onClick={() => setInvoiceOrderId(order.id)}
+              variant="outline"
+              size="sm"
+              className="bg-blue-500 hover:bg-blue-400 text-white"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Invoice
+            </Button>
             </CardContent>
           </Card>
         ))}
@@ -258,6 +269,28 @@ export default function Orders() {
 
       {/* Order Details Modal */}
       <OrderDetails />
+
+      {/* Invoice Modal */}
+      {invoiceOrderId && (() => {
+        const order = orders?.find(o => o.id === invoiceOrderId);
+        return order ? (
+          <InvoiceModal
+            isOpen={!!invoiceOrderId}
+            onClose={() => setInvoiceOrderId(null)}
+            prefilledCustomer={{
+              name: order.customer.name,
+              email: order.customer.email,
+              phone: order.customer.phone || '',
+              address: order.customer.address || ''
+            }}
+            prefilledItems={[{
+              description: order.description,
+              quantity: 1,
+              price: order.price
+            }]}
+          />
+        ) : null;
+      })()}
     </div>
   );
 }

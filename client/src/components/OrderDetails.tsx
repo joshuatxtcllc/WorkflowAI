@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle, Clipboard, Edit, CheckCircle, Truck, Bell } from 'lucide-react';
+import { X, Plus, Edit3, Save, Trash2, Calendar, Clock, DollarSign, User, Package, FileText, Palette, Scissors, Frame, Ruler, AlertCircle, Clipboard, Edit, CheckCircle, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,7 @@ import ArtworkManager from '@/components/ArtworkManager';
 import { useToast } from '@/hooks/use-toast';
 import { PRIORITY_LEVELS } from '@/lib/constants';
 import type { OrderWithDetails, Material } from '@shared/schema';
-import SimpleInvoice from './SimpleInvoice';
+import InvoiceModal from './InvoiceModal';
 
 export default function OrderDetails() {
   const { selectedOrderId, ui, setUI } = useOrderStore();
@@ -44,7 +44,7 @@ export default function OrderDetails() {
     cost: 0,
     notes: ''
   });
-  const [showInvoice, setShowInvoice] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   // Fetch order details
   const { data: order, isLoading } = useQuery<OrderWithDetails>({
@@ -263,15 +263,6 @@ export default function OrderDetails() {
               Order Details
             </DialogTitle>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowInvoice(true)}
-                className="text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
-              >
-                <Receipt className="h-4 w-4 mr-1" />
-                Invoice
-              </Button>
               {!isEditing ? (
                 <Button 
                   variant="outline" 
@@ -823,7 +814,6 @@ export default function OrderDetails() {
                             value={newMaterial.unit}
                             onValueChange={(value) => setNewMaterial({...newMaterial, unit: value})}
                           >
-```text
                             <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
                               <SelectValue />
                             </SelectTrigger>
@@ -1045,6 +1035,14 @@ export default function OrderDetails() {
               >
                 View All Customer Orders
               </Button>
+               <Button
+                  variant="outline"
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="bg-blue-500 hover:bg-blue-400 text-white"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Generate Invoice
+                </Button>
             </TabsContent>
           </Tabs>
         ) : (
@@ -1058,17 +1056,25 @@ export default function OrderDetails() {
             Close
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
 
-    {/* Invoice Modal */}
-    <Dialog open={showInvoice} onOpenChange={setShowInvoice}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border-gray-800">
-        <SimpleInvoice 
-          order={order} 
-          onClose={() => setShowInvoice(false)} 
+      {/* Invoice Modal */}
+      {order && (
+        <InvoiceModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          prefilledCustomer={{
+            name: order.customer.name,
+            email: order.customer.email,
+            phone: order.customer.phone || '',
+            address: order.customer.address || ''
+          }}
+          prefilledItems={[{
+            description: order.description,
+            quantity: 1,
+            price: order.price
+          }]}
         />
-      </DialogContent>
+      )}
     </Dialog>
   );
 }
