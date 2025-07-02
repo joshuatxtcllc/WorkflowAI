@@ -158,57 +158,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
     });
   };
 
-  const handleSave = () => {
-    // Validate required fields
-    if (!invoiceData.customer.name || !invoiceData.customer.email || lineItems.some(item => !item.description)) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in customer name, email, and all item descriptions.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Create invoice data object
-    const invoiceToSave = {
-      id: Date.now().toString(),
-      invoiceNumber: invoiceData.invoiceNumber,
-      customerName: invoiceData.customer.name,
-      customerEmail: invoiceData.customer.email,
-      amount: calculateTotal(),
-      status: 'draft' as const,
-      createdAt: new Date().toISOString(),
-      dueDate: new Date(invoiceData.dueDate).toISOString(),
-      lineItems: lineItems.map(item => ({
-        description: item.description,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.total
-      })),
-      customer: invoiceData.customer,
-      notes: invoiceData.notes,
-      taxRate: invoiceData.taxRate,
-      subtotal: calculateSubtotal(),
-      tax: calculateTax(),
-      total: calculateTotal()
-    };
-
-    // Save to localStorage
-    const existingInvoices = JSON.parse(localStorage.getItem('savedInvoices') || '[]');
-    const updatedInvoices = [...existingInvoices, invoiceToSave];
-    localStorage.setItem('savedInvoices', JSON.stringify(updatedInvoices));
-
-    console.log('Saving invoice:', invoiceToSave);
-
-    toast({
-      title: "Invoice Saved",
-      description: `Invoice ${invoiceData.invoiceNumber} has been saved successfully.`,
-    });
-
-    resetForm();
-    onClose();
-  };
-
   const resetForm = () => {
     setInvoiceData({
       invoiceNumber: `INV-${Date.now().toString().slice(-6)}`,
@@ -246,7 +195,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 id="invoiceNumber"
                 value={invoiceData.invoiceNumber}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
-                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -257,7 +205,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 step="0.1"
                 value={invoiceData.taxRate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
-                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -267,7 +214,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 type="date"
                 value={invoiceData.date}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, date: e.target.value }))}
-                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div>
@@ -277,7 +223,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                 type="date"
                 value={invoiceData.dueDate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, dueDate: e.target.value }))}
-                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
           </div>
@@ -297,7 +242,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, name: e.target.value }
                   }))}
-                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -310,7 +254,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, email: e.target.value }
                   }))}
-                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -322,7 +265,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, phone: e.target.value }
                   }))}
-                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -334,7 +276,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     ...prev, 
                     customer: { ...prev.customer, address: e.target.value }
                   }))}
-                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
             </CardContent>
@@ -359,7 +300,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         value={item.description}
                         onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
                         placeholder="Item description"
-                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                     <div className="col-span-2">
@@ -370,7 +310,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                         min="0"
                         step="1"
-                        className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
                     <div className="col-span-2">
@@ -381,7 +320,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                         onChange={(e) => updateLineItem(item.id, 'price', parseFloat(e.target.value) || 0)}
                         min="0"
                         step="0.01"
-                        className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
                     <div className="col-span-2">
@@ -417,7 +355,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
               onChange={(e) => setInvoiceData(prev => ({ ...prev, notes: e.target.value }))}
               placeholder="Additional notes or terms..."
               rows={3}
-              className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
             />
           </div>
 
@@ -448,22 +385,22 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                   </div>
                 </div>
 
-                <table className="w-full border-collapse border border-gray-400">
+                <table className="w-full border-collapse border border-black">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="border border-gray-400 p-2 text-left text-black">Description</th>
-                      <th className="border border-gray-400 p-2 text-center text-black">Qty</th>
-                      <th className="border border-gray-400 p-2 text-right text-black">Price</th>
-                      <th className="border border-gray-400 p-2 text-right text-black">Total</th>
+                      <th className="border border-black p-2 text-left text-black">Description</th>
+                      <th className="border border-black p-2 text-center text-black">Qty</th>
+                      <th className="border border-black p-2 text-right text-black">Price</th>
+                      <th className="border border-black p-2 text-right text-black">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lineItems.map((item) => (
                       <tr key={item.id}>
-                        <td className="border border-gray-400 p-2 text-black">{item.description}</td>
-                        <td className="border border-gray-400 p-2 text-center text-black">{item.quantity}</td>
-                        <td className="border border-gray-400 p-2 text-right text-black">${item.price.toFixed(2)}</td>
-                        <td className="border border-gray-400 p-2 text-right text-black">${item.total.toFixed(2)}</td>
+                        <td className="border border-black p-2 text-black">{item.description}</td>
+                        <td className="border border-black p-2 text-center text-black">{item.quantity}</td>
+                        <td className="border border-black p-2 text-right text-black">${item.price.toFixed(2)}</td>
+                        <td className="border border-black p-2 text-right text-black">${item.total.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -501,10 +438,6 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
             </Button>
             <Button variant="outline" onClick={onClose}>
               Cancel
-            </Button>
-            <Button onClick={handleSave} className="bg-green-500 hover:bg-green-400 text-white">
-              <FileText className="h-4 w-4 mr-2" />
-              Save Invoice
             </Button>
             <Button onClick={handlePrint} className="bg-jade-500 hover:bg-jade-400 text-black">
               <Printer className="h-4 w-4 mr-2" />
