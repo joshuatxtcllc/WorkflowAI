@@ -376,43 +376,43 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
               <CardTitle>Invoice Preview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div ref={printRef} className="space-y-6 p-6 bg-white">
+              <div ref={printRef} className="space-y-6 p-6 bg-white text-black">
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold">Jay's Frames</h1>
+                  <h1 className="text-2xl font-bold text-black">Jay's Frames</h1>
                   <p className="text-gray-600">Custom Frame Shop</p>
                 </div>
 
                 <div className="flex justify-between">
                   <div>
-                    <h3 className="font-semibold mb-2">Bill To:</h3>
-                    <p className="font-medium">{invoiceData.customer.name}</p>
-                    <p>{invoiceData.customer.email}</p>
-                    {invoiceData.customer.phone && <p>{invoiceData.customer.phone}</p>}
-                    {invoiceData.customer.address && <p>{invoiceData.customer.address}</p>}
+                    <h3 className="font-semibold mb-2 text-black">Bill To:</h3>
+                    <p className="font-medium text-black">{invoiceData.customer.name}</p>
+                    <p className="text-black">{invoiceData.customer.email}</p>
+                    {invoiceData.customer.phone && <p className="text-black">{invoiceData.customer.phone}</p>}
+                    {invoiceData.customer.address && <p className="text-black">{invoiceData.customer.address}</p>}
                   </div>
                   <div className="text-right">
-                    <p><strong>Invoice #:</strong> {invoiceData.invoiceNumber}</p>
-                    <p><strong>Date:</strong> {new Date(invoiceData.date).toLocaleDateString()}</p>
-                    <p><strong>Due Date:</strong> {new Date(invoiceData.dueDate).toLocaleDateString()}</p>
+                    <p className="text-black"><strong>Invoice #:</strong> {invoiceData.invoiceNumber}</p>
+                    <p className="text-black"><strong>Date:</strong> {new Date(invoiceData.date).toLocaleDateString()}</p>
+                    <p className="text-black"><strong>Due Date:</strong> {new Date(invoiceData.dueDate).toLocaleDateString()}</p>
                   </div>
                 </div>
 
-                <table className="w-full border-collapse border">
+                <table className="w-full border-collapse border border-gray-400">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="border p-2 text-left">Description</th>
-                      <th className="border p-2 text-center">Qty</th>
-                      <th className="border p-2 text-right">Price</th>
-                      <th className="border p-2 text-right">Total</th>
+                      <th className="border border-gray-400 p-2 text-left text-black">Description</th>
+                      <th className="border border-gray-400 p-2 text-center text-black">Qty</th>
+                      <th className="border border-gray-400 p-2 text-right text-black">Price</th>
+                      <th className="border border-gray-400 p-2 text-right text-black">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lineItems.map((item) => (
                       <tr key={item.id}>
-                        <td className="border p-2">{item.description}</td>
-                        <td className="border p-2 text-center">{item.quantity}</td>
-                        <td className="border p-2 text-right">${item.price.toFixed(2)}</td>
-                        <td className="border p-2 text-right">${item.total.toFixed(2)}</td>
+                        <td className="border border-gray-400 p-2 text-black">{item.description}</td>
+                        <td className="border border-gray-400 p-2 text-center text-black">{item.quantity}</td>
+                        <td className="border border-gray-400 p-2 text-right text-black">${item.price.toFixed(2)}</td>
+                        <td className="border border-gray-400 p-2 text-right text-black">${item.total.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -420,23 +420,23 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
 
                 <div className="ml-auto w-64">
                   <div className="flex justify-between py-1">
-                    <span>Subtotal:</span>
-                    <span>${calculateSubtotal().toFixed(2)}</span>
+                    <span className="text-black">Subtotal:</span>
+                    <span className="text-black">${calculateSubtotal().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span>Tax ({invoiceData.taxRate}%):</span>
-                    <span>${calculateTax().toFixed(2)}</span>
+                    <span className="text-black">Tax ({invoiceData.taxRate}%):</span>
+                    <span className="text-black">${calculateTax().toFixed(2)}</span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between py-2 font-bold text-lg">
-                    <span>Total:</span>
-                    <span>${calculateTotal().toFixed(2)}</span>
+                    <span className="text-black">Total:</span>
+                    <span className="text-black">${calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
 
                 {invoiceData.notes && (
                   <div>
-                    <h3 className="font-semibold mb-2">Notes:</h3>
+                    <h3 className="font-semibold mb-2 text-black">Notes:</h3>
                     <p className="text-gray-700">{invoiceData.notes}</p>
                   </div>
                 )}
