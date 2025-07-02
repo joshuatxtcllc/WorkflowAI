@@ -171,16 +171,33 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
 
     // Create invoice data object
     const invoiceToSave = {
-      ...invoiceData,
-      lineItems,
+      id: Date.now().toString(),
+      invoiceNumber: invoiceData.invoiceNumber,
+      customerName: invoiceData.customer.name,
+      customerEmail: invoiceData.customer.email,
+      amount: calculateTotal(),
+      status: 'draft' as const,
+      createdAt: new Date().toISOString(),
+      dueDate: new Date(invoiceData.dueDate).toISOString(),
+      lineItems: lineItems.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.total
+      })),
+      customer: invoiceData.customer,
+      notes: invoiceData.notes,
+      taxRate: invoiceData.taxRate,
       subtotal: calculateSubtotal(),
       tax: calculateTax(),
-      total: calculateTotal(),
-      createdAt: new Date().toISOString()
+      total: calculateTotal()
     };
 
-    // For now, we'll just show success message
-    // In a real app, this would save to database
+    // Save to localStorage
+    const existingInvoices = JSON.parse(localStorage.getItem('savedInvoices') || '[]');
+    const updatedInvoices = [...existingInvoices, invoiceToSave];
+    localStorage.setItem('savedInvoices', JSON.stringify(updatedInvoices));
+
     console.log('Saving invoice:', invoiceToSave);
 
     toast({

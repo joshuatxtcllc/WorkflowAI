@@ -33,65 +33,54 @@ export default function Invoices() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
-  // Mock data - in real app this would come from API
-  const mockInvoices: Invoice[] = [
-    {
-      id: '1',
-      invoiceNumber: 'INV-12001',
-      customerName: 'John Smith',
-      customerEmail: 'john@example.com',
-      amount: 250.00,
-      status: 'paid',
-      createdAt: '2025-06-01T10:00:00Z',
-      dueDate: '2025-07-01T10:00:00Z',
-      lineItems: [
-        { description: 'Custom Frame 16x20', quantity: 1, price: 250.00, total: 250.00 }
-      ]
-    },
-    {
-      id: '2',
-      invoiceNumber: 'INV-12002',
-      customerName: 'Sarah Johnson',
-      customerEmail: 'sarah@example.com',
-      amount: 185.50,
-      status: 'sent',
-      createdAt: '2025-06-15T14:30:00Z',
-      dueDate: '2025-07-15T14:30:00Z',
-      lineItems: [
-        { description: 'Photo Matting', quantity: 2, price: 75.00, total: 150.00 },
-        { description: 'Glass Upgrade', quantity: 1, price: 35.50, total: 35.50 }
-      ]
-    },
-    {
-      id: '3',
-      invoiceNumber: 'INV-12003',
-      customerName: 'Mike Wilson',
-      customerEmail: 'mike@example.com',
-      amount: 420.75,
-      status: 'overdue',
-      createdAt: '2025-05-20T09:15:00Z',
-      dueDate: '2025-06-20T09:15:00Z',
-      lineItems: [
-        { description: 'Large Canvas Frame 24x36', quantity: 1, price: 420.75, total: 420.75 }
-      ]
-    },
-    {
-      id: '4',
-      invoiceNumber: 'INV-12004',
-      customerName: 'Emily Davis',
-      customerEmail: 'emily@example.com',
-      amount: 95.00,
-      status: 'draft',
-      createdAt: '2025-07-01T16:45:00Z',
-      dueDate: '2025-08-01T16:45:00Z',
-      lineItems: [
-        { description: 'Document Framing', quantity: 1, price: 95.00, total: 95.00 }
-      ]
-    }
-  ];
+  // Get saved invoices from localStorage and combine with some sample data
+  const getSavedInvoices = (): Invoice[] => {
+    const savedInvoices = JSON.parse(localStorage.getItem('savedInvoices') || '[]');
+    
+    // Sample invoices for demonstration
+    const sampleInvoices: Invoice[] = [
+      {
+        id: 'sample-1',
+        invoiceNumber: 'INV-12001',
+        customerName: 'John Smith',
+        customerEmail: 'john@example.com',
+        amount: 250.00,
+        status: 'paid',
+        createdAt: '2025-06-01T10:00:00Z',
+        dueDate: '2025-07-01T10:00:00Z',
+        lineItems: [
+          { description: 'Custom Frame 16x20', quantity: 1, price: 250.00, total: 250.00 }
+        ]
+      },
+      {
+        id: 'sample-2',
+        invoiceNumber: 'INV-12002',
+        customerName: 'Sarah Johnson',
+        customerEmail: 'sarah@example.com',
+        amount: 185.50,
+        status: 'sent',
+        createdAt: '2025-06-15T14:30:00Z',
+        dueDate: '2025-07-15T14:30:00Z',
+        lineItems: [
+          { description: 'Photo Matting', quantity: 2, price: 75.00, total: 150.00 },
+          { description: 'Glass Upgrade', quantity: 1, price: 35.50, total: 35.50 }
+        ]
+      }
+    ];
+
+    // Combine saved invoices with sample invoices, with saved invoices first
+    return [...savedInvoices, ...sampleInvoices];
+  };
+
+  const [allInvoices, setAllInvoices] = useState<Invoice[]>([]);
+
+  // Load invoices on component mount and when modal closes
+  React.useEffect(() => {
+    setAllInvoices(getSavedInvoices());
+  }, [showInvoiceModal]);
 
   // Filter invoices based on search term and status
-  const filteredInvoices = mockInvoices.filter(invoice => {
+  const filteredInvoices = allInvoices.filter(invoice => {
     const matchesSearch = !searchTerm || 
       invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
