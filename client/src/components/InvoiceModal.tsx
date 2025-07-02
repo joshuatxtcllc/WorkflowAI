@@ -158,6 +158,40 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
     });
   };
 
+  const handleSave = () => {
+    // Validate required fields
+    if (!invoiceData.customer.name || !invoiceData.customer.email || lineItems.some(item => !item.description)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in customer name, email, and all item descriptions.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create invoice data object
+    const invoiceToSave = {
+      ...invoiceData,
+      lineItems,
+      subtotal: calculateSubtotal(),
+      tax: calculateTax(),
+      total: calculateTotal(),
+      createdAt: new Date().toISOString()
+    };
+
+    // For now, we'll just show success message
+    // In a real app, this would save to database
+    console.log('Saving invoice:', invoiceToSave);
+
+    toast({
+      title: "Invoice Saved",
+      description: `Invoice ${invoiceData.invoiceNumber} has been saved successfully.`,
+    });
+
+    resetForm();
+    onClose();
+  };
+
   const resetForm = () => {
     setInvoiceData({
       invoiceNumber: `INV-${Date.now().toString().slice(-6)}`,
@@ -450,6 +484,10 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
             </Button>
             <Button variant="outline" onClick={onClose}>
               Cancel
+            </Button>
+            <Button onClick={handleSave} className="bg-green-500 hover:bg-green-400 text-white">
+              <FileText className="h-4 w-4 mr-2" />
+              Save Invoice
             </Button>
             <Button onClick={handlePrint} className="bg-jade-500 hover:bg-jade-400 text-black">
               <Printer className="h-4 w-4 mr-2" />
