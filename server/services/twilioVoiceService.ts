@@ -191,3 +191,6 @@ export class TwilioVoiceService {
     }
   }
 }
+
+// Export instance for compatibility with existing imports
+export const twilioVoiceService = TwilioVoiceService;

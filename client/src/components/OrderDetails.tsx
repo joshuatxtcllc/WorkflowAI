@@ -1056,6 +1056,7 @@ export default function OrderDetails() {
             Close
           </Button>
         </DialogFooter>
+      </DialogContent>
 
       {/* Invoice Modal */}
       {order && (
