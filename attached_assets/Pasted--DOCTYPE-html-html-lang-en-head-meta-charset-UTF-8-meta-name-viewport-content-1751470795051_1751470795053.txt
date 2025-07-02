@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jay's Frames Strategic Growth Plan - Post-Launch Optimization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2a4b8d 0%, #1e3a6f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .current-status {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            width: 35%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #2a4b8d;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .week-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .week-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .week-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .week-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .week-focus {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .day-container {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .day-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .day-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .day-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2a4b8d;
+        }
+        
+        .day-priority {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .day-priority.urgent { background: #dc3545; }
+        .day-priority.high { background: #fd7e14; }
+        .day-priority.medium { background: #ffc107; color: #212529; }
+        .day-priority.low { background: #28a745; }
+        
+        .task-list {
+            list-style: none;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .task-item:hover {
+            background: #e3f2fd;
+        }
+        
+        .task-checkbox {
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .task-text {
+            flex: 1;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #666;
+        }
+        
+        .task-time {
+            color: #666;
+            font-size: 12px;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        
+        .milestone {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .revenue-tracker {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .revenue-target {
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .notes {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .notes h4 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .seo-focus {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .seo-focus h4 {
+            margin-bottom: 8px;
+        }
+
+        .local-optimization {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .current-assets {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .current-assets h4 {
+            color: #155724;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Jay's Frames Strategic Growth Plan</h1>
+            <p>Optimizing Your Re-Launched 15-Year Business for Maximum ROI</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">35% Complete - Business Successfully Re-Launched!</div>
+        </div>
+
+        <div class="current-status">
+            <h3>🎉 Current Business Status - LAUNCHED & PROFITABLE!</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div>✅ $5,000 in sales completed</div>
+                <div>✅ Full-stack ecosystem deployed</div>
+                <div>✅ Physical signage installed</div>
+                <div>✅ 10,000 Instagram followers ready</div>
+                <div>🔧 Google Maps listing needs optimization</div>
+                <div>🔧 SEO & local rankings need improvement</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showWeek('immediate')">Immediate<br><small>(Next 7 Days)</small></button>
+            <button class="tab" onclick="showWeek('week2-4')">Weeks 2-4<br><small>Local Domination</small></button>
+            <button class="tab" onclick="showWeek('month2')">Month 2<br><small>Scale & Optimize</small></button>
+            <button class="tab" onclick="showWeek('month3')">Month 3<br><small>Market Leadership</small></button>
+        </div>
+        
+        <div class="content">
+            <!-- Immediate Actions (Next 7 Days) -->
+            <div class="week-section active" id="immediate">
+                <div class="week-header">
+                    <div class="week-title">Immediate Actions (Next 7 Days)</div>
+                    <div class="week-focus">Priority: Fix Google Maps & Maximize Current Assets</div>
+                </div>
+                
+                <div class="current-assets">
+                    <h4>🚀 Leveraging Your Current Assets:</h4>
+                    <p>• $5,000 proven sales track record<br>
+                    • 10,000 Instagram followers (ready audience)<br>
+                    • 15-year established business reputation<br>
+                    • Functioning full-stack system<br>
+                    • Physical location with signage</p>
+                </div>
+                
+                <div class="revenue-tracker">
+                    <div class="revenue-target">💰 Week 1 Target: $2,000-$3,000 additional revenue from fixed local presence</div>
+                </div>
+                
+                <div class="day-container">
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Day 1: Google Maps Emergency Fix</div>
+                            <div class="day-priority urgent">URGENT</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Claim/verify Google Business Profile immediately</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Update business name, address, phone (NAP consistency)</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Add business hours, services, and description</span>
+                                <span class="task-time">45 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Upload 10+ high-quality photos of work and location</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Set up Google Posts feature for promotions</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Enable messaging and Q&A features</span>
+                                <span class="task-time">15 min</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Day 2: Directory Cleanup & Citations</div>
+                            <div class="day-priority urgent">URGENT</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Update Yelp business listing with current info</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Fix Facebook Business page information</span>
+                                <span class="task-time">20 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Update Yellow Pages, Better Business Bureau listings</span>
+                                <span class="task-time">45 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Submit to local chamber of commerce directory</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create/update Nextdoor business profile</span>
+                                <span class="task-time">20 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Check and fix Apple Maps listing</span>
+                                <span class="task-time">15 min</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Day 3: Website SEO Emergency Optimization</div>
+                            <div class="day-priority high">HIGH</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Add Google Analytics and Search Console</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Optimize title tags with local keywords</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create location-based landing pages</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Add schema markup for local business</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Submit XML sitemap to search engines</span>
+                                <span class="task-time">15 min</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Optimize page loading speed (images, caching)</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Days 4-5: Instagram Monetization Blitz</div>
+                            <div class="day-priority high">HIGH</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create "We're Back!" announcement campaign</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Post before/after framing showcases daily</span>
+                                <span class="task-time">1 hr/day</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Launch "Follower Exclusive" 20% discount</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create Instagram Stories with location tags</span>
+                                <span class="task-time">30 min/day</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Set up Instagram Shopping for frame samples</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Engage with local hashtags and businesses</span>
+                                <span class="task-time">30 min/day</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Days 6-7: Review Generation Blitz</div>
+                            <div class="day-priority high">HIGH</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Contact recent $5K customers for Google reviews</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create simple review request cards for in-person</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Set up automated review request emails</span>
+                                <span class="task-time">1.5 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Ask family/friends for initial Google reviews</span>
+                                <span class="task-time">1 hr</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Respond to any existing reviews professionally</span>
+                                <span class="task-time">30 min</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="milestone">
+                    🎯 Week 1 Milestone: Google Maps listing live + 5+ reviews + Instagram monetized + SEO foundation set
+                </div>
+                
+                <div class="seo-focus">
+                    <h4>🎯 Priority Keywords to Target:</h4>
+                    <p>• "custom framing [your city]"<br>
+                    • "picture framing near me"<br>
+                    • "art framing [your city]"<br>
+                    • "professional framing service"<br>
+                    • "[your city] frame shop"</p>
+                </div>
+            </div>
+            
+            <!-- Weeks 2-4: Local Domination -->
+            <div class="week-section" id="week2-4">
+                <div class="week-header">
+                    <div class="week-title">Weeks 2-4: Local Market Domination</div>
+                    <div class="week-focus">Focus: Become THE go-to framing business in your area</div>
+                </div>
+                
+                <div class="revenue-tracker">
+                    <div class="revenue-target">💰 Monthly Target: $15,000-$25,000 revenue + 50+ new customers</div>
+                </div>
+                
+                <div class="day-container">
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Week 2: Content Marketing & Local SEO</div>
+                            <div class="day-priority high">HIGH</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create weekly blog posts about framing tips</span>
+                                <span class="task-time">3 hrs/week</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Film "Frame of the Week" video series</span>
+                                <span class="task-time">2 hrs/week</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Partner with 5 local artists for cross-promotion</span>
+                                <span class="task-time">4 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create location-specific service pages</span>
+                                <span class="task-time">6 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Build local backlinks from art/design sites</span>
+                                <span class="task-time">3 hrs</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Week 3: Corporate Outreach & B2B</div>
+                            <div class="day-priority high">HIGH</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create corporate framing packages</span>
+                                <span class="task-time">3 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Visit 20 local businesses with portfolios</span>
+                                <span class="task-time">8 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Target interior designers and architects</span>
+                                <span class="task-time">4 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create LinkedIn business presence</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Develop volume pricing for bulk orders</span>
+                                <span class="task-time">2 hrs</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Week 4: Advanced AI Integration</div>
+                            <div class="day-priority medium">MEDIUM</div>
+                        </div>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Deploy AI chat assistant on website</span>
+                                <span class="task-time">4 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create virtual frame preview tool</span>
+                                <span class="task-time">8 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Implement automated quote generation</span>
+                                <span class="task-time">6 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Set up inventory management automation</span>
+                                <span class="task-time">5 hrs</span>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                                <span class="task-text">Create customer notification system</span>
+                                <span class="task-time">3 hrs</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="milestone">
+                    🎯 Month 1 Milestone: 25+ Google reviews + Top 3 local search ranking + $20K revenue
+                </div>
+                
+                <div class="local-optimization">
+                    <h4>🎯 Local SEO Domination Strategy:</h4>
+                    <p>• Create neighborhood-specific landing pages<br>
+                    • Partner with local influencers and bloggers<br>
+                    • Sponsor local art events and exhibitions<br>
+                    • Build citations in local directories<br>
+                    • Optimize for "near me" searches</p>
+                </div>
+            </div>
+            
+            <!-- Month 2: Scale & Optimize -->
+            <div class="week-section" id="month2">
+                <div class="week-header">
+                    <div class="week-title">Month 2: Scale & Optimize Operations</div>
+                    <div class="week-focus">Focus: Maximize efficiency and expand market reach</div>
+                </div>
+                
+                <div class="revenue-tracker">
+                    <div class="revenue-target">💰 Month 2 Target: $30,000-$45,000 revenue + Regional recognition</div>
+                </div>
+                
+                <div class="day-container">
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-title">Weeks 5-6: Process Optimization</div>
