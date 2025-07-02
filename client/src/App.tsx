@@ -25,6 +25,7 @@ import Diagnostics from './pages/Diagnostics';
 import Invoices from "@/pages/Invoices";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
+import RelaunchPlan from "@/pages/RelaunchPlan"; // Import the new component
 
 function Router() {
   const { isAuthenticated, isLoading, refetch } = useAuth();
@@ -79,6 +80,7 @@ function Router() {
           <Route path="/admin-portal" component={AdminPortal} />
           <Route path="/diagnostics" component={Diagnostics} />
           <Route path="/invoices" component={Invoices} />
+          <Route path="/relaunch-plan" component={RelaunchPlan} /> {/* Add the new route */}
           <Route component={NotFound} />
         </>
       )}
