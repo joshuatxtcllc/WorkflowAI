@@ -22,6 +22,7 @@ import Notifications from "@/pages/Notifications";
 import Reports from "@/pages/Reports";
 import AdminPortal from './pages/AdminPortal';
 import Diagnostics from './pages/Diagnostics';
+import Invoices from "@/pages/Invoices";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -77,6 +78,7 @@ function Router() {
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route path="/admin-portal" component={AdminPortal} />
           <Route path="/diagnostics" component={Diagnostics} />
+          <Route path="/invoices" component={Invoices} />
           <Route component={NotFound} />
         </>
       )}
