@@ -364,70 +364,169 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
               <CardTitle>Invoice Preview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div ref={printRef} className="space-y-6 p-6 bg-white text-black">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold text-black">Jay's Frames</h1>
-                  <p className="text-gray-600">Custom Frame Shop</p>
-                </div>
-
-                <div className="flex justify-between">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-black">Bill To:</h3>
-                    <p className="font-medium text-black">{invoiceData.customer.name}</p>
-                    <p className="text-black">{invoiceData.customer.email}</p>
-                    {invoiceData.customer.phone && <p className="text-black">{invoiceData.customer.phone}</p>}
-                    {invoiceData.customer.address && <p className="text-black">{invoiceData.customer.address}</p>}
+              <div ref={printRef} className="space-y-0 p-8 bg-white text-black min-h-[800px] border shadow-lg">
+                {/* Header Section with Logo and Company Info */}
+                <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-jade-500">
+                  <div className="flex items-center space-x-4">
+                    {/* Company Logo - Using a frame icon as placeholder */}
+                    <div className="w-16 h-16 bg-jade-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8zm2 2v4h4v-4h-4z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold text-gray-900">Jay's Frames</h1>
+                      <p className="text-lg text-jade-600 font-medium">Custom Framing & Art Services</p>
+                      <div className="text-sm text-gray-600 mt-1">
+                        <p>Professional Custom Framing • Art Restoration • Gallery Services</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-black"><strong>Invoice #:</strong> {invoiceData.invoiceNumber}</p>
-                    <p className="text-black"><strong>Date:</strong> {new Date(invoiceData.date).toLocaleDateString()}</p>
-                    <p className="text-black"><strong>Due Date:</strong> {new Date(invoiceData.dueDate).toLocaleDateString()}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">INVOICE</h2>
+                    <div className="bg-jade-50 p-3 rounded-lg border border-jade-200">
+                      <p className="text-jade-800 font-semibold">#{invoiceData.invoiceNumber}</p>
+                    </div>
                   </div>
                 </div>
 
-                <table className="w-full border-collapse border border-black">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-black p-2 text-left text-black">Description</th>
-                      <th className="border border-black p-2 text-center text-black">Qty</th>
-                      <th className="border border-black p-2 text-right text-black">Price</th>
-                      <th className="border border-black p-2 text-right text-black">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lineItems.map((item) => (
-                      <tr key={item.id}>
-                        <td className="border border-black p-2 text-black">{item.description}</td>
-                        <td className="border border-black p-2 text-center text-black">{item.quantity}</td>
-                        <td className="border border-black p-2 text-right text-black">${item.price.toFixed(2)}</td>
-                        <td className="border border-black p-2 text-right text-black">${item.total.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {/* Contact Information Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  {/* Business Info */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-gray-900 mb-3 text-lg border-b border-gray-200 pb-2">From</h3>
+                    <div className="space-y-1 text-gray-700">
+                      <p className="font-semibold">Jay's Frames</p>
+                      <p>Houston, Texas</p>
+                      <p>Phone: (713) 123-4567</p>
+                      <p>Email: info@jaysframes.com</p>
+                      <p>Website: www.jaysframes.com</p>
+                    </div>
+                  </div>
 
-                <div className="ml-auto w-64">
-                  <div className="flex justify-between py-1">
-                    <span className="text-black">Subtotal:</span>
-                    <span className="text-black">${calculateSubtotal().toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-black">Tax ({invoiceData.taxRate}%):</span>
-                    <span className="text-black">${calculateTax().toFixed(2)}</span>
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between py-2 font-bold text-lg">
-                    <span className="text-black">Total:</span>
-                    <span className="text-black">${calculateTotal().toFixed(2)}</span>
+                  {/* Customer Info */}
+                  <div className="bg-jade-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-gray-900 mb-3 text-lg border-b border-jade-200 pb-2">Bill To</h3>
+                    <div className="space-y-1 text-gray-700">
+                      <p className="font-semibold text-gray-900">{invoiceData.customer.name}</p>
+                      {invoiceData.customer.email && <p>{invoiceData.customer.email}</p>}
+                      {invoiceData.customer.phone && <p>{invoiceData.customer.phone}</p>}
+                      {invoiceData.customer.address && <p>{invoiceData.customer.address}</p>}
+                    </div>
                   </div>
                 </div>
 
-                {invoiceData.notes && (
+                {/* Invoice Details Section */}
+                <div className="grid grid-cols-3 gap-4 mb-8 bg-gray-50 p-4 rounded-lg">
                   <div>
-                    <h3 className="font-semibold mb-2 text-black">Notes:</h3>
-                    <p className="text-gray-700">{invoiceData.notes}</p>
+                    <p className="text-sm text-gray-600 font-medium">Invoice Date</p>
+                    <p className="font-semibold text-gray-900">{new Date(invoiceData.date).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Due Date</p>
+                    <p className="font-semibold text-gray-900">{new Date(invoiceData.dueDate).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Terms</p>
+                    <p className="font-semibold text-gray-900">Net 30</p>
+                  </div>
+                </div>
+
+                {/* Line Items Section */}
+                <div className="mb-8">
+                  <h3 className="font-bold text-gray-900 mb-4 text-lg border-b-2 border-jade-500 pb-2">Items & Services</h3>
+                  <div className="overflow-hidden rounded-lg border border-gray-200">
+                    <table className="w-full">
+                      <thead className="bg-jade-500 text-white">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-semibold">Description</th>
+                          <th className="px-4 py-3 text-center font-semibold w-20">Qty</th>
+                          <th className="px-4 py-3 text-right font-semibold w-24">Rate</th>
+                          <th className="px-4 py-3 text-right font-semibold w-24">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        {lineItems.map((item, index) => (
+                          <tr key={item.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                            <td className="px-4 py-3 text-gray-900">{item.description}</td>
+                            <td className="px-4 py-3 text-center text-gray-700">{item.quantity}</td>
+                            <td className="px-4 py-3 text-right text-gray-700">${item.price.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right font-medium text-gray-900">${item.total.toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Totals Section */}
+                <div className="flex justify-end mb-8">
+                  <div className="w-80">
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-gray-700">
+                          <span className="font-medium">Subtotal:</span>
+                          <span>${calculateSubtotal().toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-700">
+                          <span className="font-medium">Tax ({invoiceData.taxRate}%):</span>
+                          <span>${calculateTax().toFixed(2)}</span>
+                        </div>
+                        <div className="border-t border-gray-300 pt-3">
+                          <div className="flex justify-between text-xl font-bold text-gray-900">
+                            <span>Total Amount:</span>
+                            <span className="text-jade-600">${calculateTotal().toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes Section */}
+                {invoiceData.notes && (
+                  <div className="mb-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 className="font-bold text-gray-900 mb-2 text-lg">Notes</h3>
+                    <p className="text-gray-700 leading-relaxed">{invoiceData.notes}</p>
                   </div>
                 )}
+
+                {/* Payment Terms & Footer */}
+                <div className="border-t-2 border-gray-200 pt-6 mt-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Payment Information</h4>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>• Payment is due within 30 days of invoice date</p>
+                        <p>• We accept cash, check, and major credit cards</p>
+                        <p>• Make checks payable to "Jay's Frames"</p>
+                        <p>• Late payments subject to 1.5% monthly service charge</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Terms & Conditions</h4>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>• Items not picked up within 90 days will be considered abandoned</p>
+                        <p>• Please bring this invoice when picking up your order</p>
+                        <p>• All sales are final unless defective</p>
+                        <p>• Custom work is non-refundable</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center mt-6 pt-4 border-t border-gray-200">
+                    <p className="text-jade-600 font-medium">Thank you for choosing Jay's Frames!</p>
+                    <p className="text-sm text-gray-500 mt-1">Professional Custom Framing Services Since 1985</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
