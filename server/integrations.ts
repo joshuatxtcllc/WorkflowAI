@@ -378,6 +378,13 @@ export class POSIntegration {
 
     return true;
   }
+
+  // Sync individual order status to external Kanban system
+  async syncOrderStatus(orderId: string) {
+    if (!this.baseUrl || !this.apiKey) {
+      return { success: false, error: 'POS credentials not configured' };
+    }
+
     try {
       const { storage } = await import('./storage');
       const order = await storage.getOrder(orderId);
