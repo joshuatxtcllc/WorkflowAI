@@ -736,22 +736,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, phoneNumber } = req.body;
 
-      const order = await storage.getOrderWithDetails(orderId);
+      const order = await storage.getOrder(orderId);
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
 
-      const callSid = await twilioVoiceService.makeOrderStatusCall(
+      const result = await TwilioVoiceService.makeOrderStatusCall(
         phoneNumber, 
         order.trackingId, 
         order.status
       );
 
-      res.json({ 
-        success: true, 
-        message: 'Voice call initiated', 
-        callSid 
-      });
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: 'Voice call initiated', 
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false,
+          message: 'Failed to make voice call',
+          error: result.error
+        });
+      }
     } catch (error) {
       console.error('Error making voice call:', error);
       res.status(500).json({ 
@@ -775,17 +783,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Customer phone number not available' });
       }
 
-      const callSid = await twilioVoiceService.makeOrderReadyCall(
+      const result = await TwilioVoiceService.notifyOrderReady(
         order.customer.phone,
         order.trackingId,
         order.customer.name
       );
 
-      res.json({ 
-        success: true, 
-        message: 'Order ready call initiated', 
-        callSid 
-      });
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: 'Order ready call initiated', 
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false,
+          message: 'Failed to make order ready call',
+          error: result.error
+        });
+      }
     } catch (error) {
       console.error('Error making order ready call:', error);
       res.status(500).json({ 
@@ -804,13 +820,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Phone number and message are required' });
       }
 
-      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message);
+      const result = await TwilioVoiceService.makeCustomCall(phoneNumber, message);
 
-      res.json({ 
-        success: true, 
-        message: 'Custom voice call initiated', 
-        callSid 
-      });
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: 'Custom voice call initiated', 
+          callSid: result.callSid 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false,
+          message: 'Failed to make custom voice call',
+          error: result.error
+        });
+      }
     } catch (error) {
       console.error('Error making custom voice call:', error);
       res.status(500).json({ 
@@ -824,7 +848,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
     try {
       const { callSid } = req.params;
-      const callStatus = await twilioVoiceService.getCallStatus(callSid);
+      const callStatus = await TwilioVoiceService.getCallStatus(callSid);
       res.json(callStatus);
     } catch (error) {
       console.error('Error fetching call status:', error);
