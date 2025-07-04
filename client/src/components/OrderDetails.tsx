@@ -532,6 +532,19 @@ export default function OrderDetails() {
                             <span className="text-white font-medium">{order.dimensions.height}"</span>
                           )
                         )}
+                            type="number"
+                            value={editedOrder.dimensions?.height || ''}
+                            onChange={(e) => handleDimensionChange('height', e.target.value)}
+                            className="w-20 h-8 bg-gray-800 border-gray-700 text-white"
+                            min="0"
+                            step="0.25"
+                            placeholder="Height"
+                          />
+                        ) : (
+                          order.dimensions?.height && (
+                            <span className="text-white font-medium">{order.dimensions.height}"</span>
+                          )
+                        )}
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Depth:</span>

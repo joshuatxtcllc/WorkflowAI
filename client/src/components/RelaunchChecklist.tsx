@@ -344,6 +344,10 @@ export default function RelaunchChecklist() {
           </CardContent>
         </Card>
       </div>
+    );
+  };
+}/Card>
+      </div>
 
       {/* Phase Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">

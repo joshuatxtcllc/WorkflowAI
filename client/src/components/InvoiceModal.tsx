@@ -469,6 +469,14 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                     </table>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}div>
 
                 {/* Totals Section */}
                 <div className="flex justify-end mb-8">

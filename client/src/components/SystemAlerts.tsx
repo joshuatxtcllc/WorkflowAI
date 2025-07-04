@@ -1,8 +1,55 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Wifi, Database, Server, ExternalLink, Clock } from 'lucide-react';
+
+interface SystemAlert {
+  id: string;
+  type: string;
+  severity: 'low' | 'medium' | 'high';
+  title: string;
+  content: string;
+}
+
+export function SystemAlerts() {
+  const { data: alerts, isLoading } = useQuery({
+    queryKey: ['diagnostic-alerts'],
+    queryFn: async () => {
+      const response = await fetch('/api/diagnostics/alerts');
+      if (!response.ok) throw new Error('Failed to fetch alerts');
+      return response.json();
+    },
+    refetchInterval: 30000
+  });
+
+  if (isLoading) {
+    return <div className="text-gray-400">Loading alerts...</div>;
+  }
+
+  if (!alerts || alerts.length === 0) {
+    return (
+      <div className="text-center text-gray-400 py-8">
+        <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+        <p>No system alerts</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {alerts.map((alert: SystemAlert) => (
+        <Alert key={alert.id} className="bg-gray-800 border-gray-700">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="text-white">{alert.title}</AlertTitle>
+          <AlertDescription className="text-gray-300">
+            {alert.content}
+          </AlertDescription>
+        </Alert>
+      ))}
+    </div>
+  );
+}
 
 interface SystemAlert {
   id: string;
