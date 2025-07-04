@@ -13,12 +13,12 @@ import {
   Package,
   Zap
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { useOrderStore } from '@/store/useOrderStore';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Card, CardContent } from './ui/card';
+import { useOrderStore } from '../store/useOrderStore';
+import { useToast } from '../hooks/use-toast';
+import { apiRequest } from '../lib/queryClient';
 import type { OrderWithDetails } from '@shared/schema';
 
 interface OrderCardProps {

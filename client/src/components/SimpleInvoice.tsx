@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { Badge } from './ui/badge';
 import { Calendar, MapPin, Phone, Mail, User, Package, DollarSign, FileText, Download, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 import type { OrderWithDetails } from '@shared/schema';

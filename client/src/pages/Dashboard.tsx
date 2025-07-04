@@ -1,22 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import Header from "@/components/Header";
-import KanbanBoard from "@/components/KanbanBoard";
-import OrderDetails from "@/components/OrderDetails";
-import AIAssistant from '@/components/AIAssistant';
-import { SidebarInset } from '@/components/ui/sidebar';
-import { useOrderStore } from '@/store/useOrderStore';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { SidebarProvider, useSidebar } from "../components/ui/sidebar";
+import { AppSidebar } from "../components/AppSidebar";
+import Header from "../components/Header";
+import KanbanBoard from "../components/KanbanBoard";
+import OrderDetails from "../components/OrderDetails";
+import AIAssistant from '../components/AIAssistant';
+import { SidebarInset } from '../components/ui/sidebar';
+import { useOrderStore } from '../store/useOrderStore';
+import { Button } from '../components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
 import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '../hooks/use-toast';
+import { apiRequest } from '../lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
-import { SystemAlerts } from '@/components/SystemAlerts';
-import NewOrderModal from '@/components/NewOrderModal';
+import { SystemAlerts } from '../components/SystemAlerts';
+import NewOrderModal from '../components/NewOrderModal';
 
 
 // Component to handle scroll detection

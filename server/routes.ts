@@ -941,7 +941,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/artwork/:filename', async (req, res){
+  app.get('/api/artwork/:filename', async (req, res) => {
     try {
       const { filename } = req.params;
       const imageBuffer = await artworkManager.getArtworkImage(filename);

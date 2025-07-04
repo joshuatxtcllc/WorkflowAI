@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { Navigation } from '@/components/Navigation';
-import { SystemAlerts } from '@/components/SystemAlerts';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { useToast } from '../hooks/use-toast';
+import { Navigation } from '../components/Navigation';
+import { SystemAlerts } from '../components/SystemAlerts';
 import { CheckCircle, XCircle, Loader2, Send, Activity, Database } from 'lucide-react';
 
 export default function HubConnection() {
