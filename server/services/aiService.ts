@@ -184,15 +184,22 @@ export class AIService {
       });
 
       return response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating chat response:', error);
+
+      // Handle quota exceeded errors specifically
+      if (error.status === 429 || error.message?.includes('quota')) {
+        console.warn(`OpenAI quota exceeded - skipping provider temporarily`);
+        // Could implement rate limiting logic here
+      }
+
       return "I'm having trouble responding right now. Please try again later.";
     }
   }
 
   private identifyBottlenecks(statusCounts: Record<string, number>): string[] {
     const bottlenecks: string[] = [];
-    
+
     if (statusCounts['ORDER_PROCESSED'] > 10) {
       bottlenecks.push('Order Processing - High number of unprocessed orders');
     }
@@ -209,7 +216,7 @@ export class AIService {
   private calculateRiskLevel(overdueCount: number, totalOrders: number): 'low' | 'medium' | 'high' {
     if (totalOrders === 0) return 'low';
     const overduePercentage = (overdueCount / totalOrders) * 100;
-    
+
     if (overduePercentage > 20) return 'high';
     if (overduePercentage > 10) return 'medium';
     return 'low';
@@ -217,7 +224,7 @@ export class AIService {
 
   private generateAIInsights(orders: any[]): string {
     const insights = [];
-    
+
     if (orders.length === 0) {
       return "No active orders in the system.";
     }

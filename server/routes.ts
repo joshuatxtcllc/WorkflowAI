@@ -438,7 +438,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error creating order:', error);
-      
+
       let errorMessage = 'Failed to create order';
       let statusCode = 500;
 
@@ -504,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(completeOrder);
     } catch (error) {
-      console.error('Error updating order:', error);
+      console.error('Failed to update order:', { orderId, error: error.message });
       res.status(500).json({ message: 'Failed to update order' });
     }
   });
@@ -917,7 +917,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/artwork/:filename', async (req, res) => {
+  app.get('/api/artwork/:filename', async (req, res){
     try {
       const { filename } = req.params;
       const imageBuffer = await artworkManager.getArtworkImage(filename);
@@ -1000,14 +1000,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/diagnostics/system-health', isAuthenticated, async (req, res) => {
     try {
       const startTime = Date.now();
-      
+
       // Test database health
       const dbStartTime = Date.now();
       const orders = await storage.getOrders();
       const dbResponseTime = Date.now() - dbStartTime;
-      
+
       const apiResponseTime = Date.now() - startTime;
-      
+
       const activeOrders = orders.filter(order => 
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       ).length;
@@ -1078,7 +1078,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/diagnostics/workflow-metrics', isAuthenticated, async (req, res) => {
     try {
       const orders = await storage.getOrders();
-      
+
       // Calculate stage distribution
       const stageDistribution: Record<string, number> = {};
       orders.forEach(order => {
@@ -1175,7 +1175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const activeOrders = orders.filter(order => 
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
-      
+
       // Capacity warnings with realistic thresholds
       if (activeOrders.length > 200) {
         alerts.push({

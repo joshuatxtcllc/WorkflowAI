@@ -133,11 +133,14 @@ app.use((req, res, next) => {
 
   server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${port} is already in use. Trying to kill existing process...`);
+      console.error(`Port ${port} is already in use. Please stop any existing processes and try again.`);
       process.exit(1);
     } else {
       console.error('Server error:', err);
-      throw err;
+      // Don't throw in production, just log
+      if (process.env.NODE_ENV !== 'production') {
+        throw err;
+      }
     }
   });
 
