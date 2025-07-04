@@ -1,4 +1,7 @@
+` tags. I will focus on maintaining the original structure, indentation, and functionality while incorporating the specified modifications.
 
+```
+<replit_final_file>
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -521,7 +524,7 @@ export default function InvoiceModal({ isOpen, onClose, prefilledCustomer, prefi
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="text-center mt-6 pt-4 border-t border-gray-200">
                     <p className="text-jade-600 font-medium">Thank you for choosing Jay's Frames!</p>
                     <p className="text-sm text-gray-500 mt-1">Professional Custom Framing Services Since 1985</p>

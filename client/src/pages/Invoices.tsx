@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,23 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { FileText, Plus, Search, Eye, Download, Calendar, User, DollarSign } from 'lucide-react';
 import InvoiceModal from '@/components/InvoiceModal';
 import { format } from 'date-fns';
-
-interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  customerName: string;
-  customerEmail: string;
-  amount: number;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
-  createdAt: string;
-  dueDate: string;
-  lineItems: Array<{
-    description: string;
-    quantity: number;
-    price: number;
-    total: number;
-  }>;
-}
+import { Invoice } from '@/types/invoice';
 
 export default function Invoices() {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -36,7 +19,7 @@ export default function Invoices() {
   // Get saved invoices from localStorage and combine with some sample data
   const getSavedInvoices = (): Invoice[] => {
     const savedInvoices = JSON.parse(localStorage.getItem('savedInvoices') || '[]');
-    
+
     // Sample invoices for demonstration
     const sampleInvoices: Invoice[] = [
       {
@@ -75,7 +58,7 @@ export default function Invoices() {
   const [allInvoices, setAllInvoices] = useState<Invoice[]>([]);
 
   // Load invoices on component mount and when modal closes
-  React.useEffect(() => {
+  useEffect(() => {
     setAllInvoices(getSavedInvoices());
   }, [showInvoiceModal]);
 
@@ -85,9 +68,9 @@ export default function Invoices() {
       invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -210,7 +193,7 @@ export default function Invoices() {
                           {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                         </Badge>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
@@ -279,7 +262,7 @@ export default function Invoices() {
                   Close
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
