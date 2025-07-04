@@ -378,13 +378,6 @@ export class POSIntegration {
 
     return true;
   }
-
-  // Sync specific order status to external Kanban system
-  async syncOrder(orderId: string) {
-    if (!this.baseUrl || !this.apiKey) {
-      return { success: false, error: 'Kanban system not configured' };
-    }
-
     try {
       const { storage } = await import('./storage');
       const order = await storage.getOrder(orderId);
