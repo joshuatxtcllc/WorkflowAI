@@ -72,6 +72,12 @@ const statusColors = {
   error: 'text-red-600'
 };
 
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { RefreshCw, Activity, AlertTriangle } from 'lucide-react';
+import { Button } from './ui/button';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+
 const statusBadgeColors = {
   healthy: 'bg-green-100 text-green-800',
   warning: 'bg-yellow-100 text-yellow-800',
