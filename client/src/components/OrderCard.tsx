@@ -84,13 +84,19 @@ export default function OrderCard({ order }: OrderCardProps) {
     type: 'order',
     item: () => {
       console.log('Starting drag for order:', order.id);
+      setIsDragActive(true);
       return { id: order.id };
+    },
+    end: (item, monitor) => {
+      // Reset drag state when drag ends
+      setIsDragActive(false);
+      console.log('Drag ended for order:', order.id);
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
     canDrag: () => {
-      return Boolean(order?.id);
+      return Boolean(order?.id) && !isUpdating;
     },
   });
 

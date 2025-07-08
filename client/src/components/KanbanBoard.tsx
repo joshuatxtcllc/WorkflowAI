@@ -233,7 +233,7 @@ export default function KanbanBoard() {
         );
       });
       
-      return { previousOrders };
+      return { previousOrders, orderId };
     },
     onSuccess: (updatedOrder, variables) => {
       // Update the specific order in cache without full refetch
@@ -335,6 +335,10 @@ export default function KanbanBoard() {
         duration: 5000,
       });
     },
+    onSettled: () => {
+      // Reset mutation state after completion to allow subsequent operations
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    },
   });
 
   const handleDropOrder = useCallback((orderId: string, newStatus: string) => {
@@ -360,14 +364,13 @@ export default function KanbanBoard() {
         return;
       }
 
-      // Prevent multiple simultaneous updates for the same order
-      if (updateOrderStatusMutation.isPending) {
-        console.log('Update already in progress, skipping');
-        return;
-      }
-
       console.log('Attempting to update order status:', { orderId, from: order.status, to: newStatus });
-      updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+      
+      // Use a timeout to ensure the drag operation completes before mutation
+      setTimeout(() => {
+        updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+      }, 50);
+      
     } catch (error) {
       console.error('Error in handleDropOrder:', error);
       toast({
