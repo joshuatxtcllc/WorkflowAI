@@ -22,10 +22,16 @@ import { NotificationService } from "./services/notificationService";
 import { TwilioVoiceService } from './services/twilioVoiceService';
 import multer from 'multer';
 import { artworkManager } from './artwork-manager';
+import Stripe from 'stripe';
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2024-12-18.acacia',
 });
 
 // Initialize AI Service
@@ -907,7 +913,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const invoice = await storage.createInvoice(validatedData);
-      res.status(201).json(invoice);
+
+      // Create Stripe payment link if Stripe is configured
+      let paymentLink = null;
+      if (process.env.STRIPE_SECRET_KEY) {
+        try {
+          const customer = await storage.getCustomer(validatedData.customerId);
+          
+          const paymentLinkData = await stripe.paymentLinks.create({
+            line_items: validatedData.lineItems.map(item => ({
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: item.description,
+                },
+                unit_amount: Math.round(item.price * 100), // Convert to cents
+              },
+              quantity: item.quantity,
+            })),
+            metadata: {
+              invoiceId: invoice.id,
+              invoiceNumber: invoice.invoiceNumber,
+              customerId: validatedData.customerId,
+            },
+            after_completion: {
+              type: 'redirect',
+              redirect: {
+                url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
+              },
+            },
+          });
+
+          paymentLink = paymentLinkData.url;
+
+          // Update invoice with payment link
+          await storage.updateInvoice(invoice.id, { 
+            metadata: { 
+              paymentLink,
+              stripePaymentLinkId: paymentLinkData.id 
+            } 
+          });
+        } catch (stripeError) {
+          console.error('Error creating Stripe payment link:', stripeError);
+          // Don't fail invoice creation if payment link fails
+        }
+      }
+
+      res.status(201).json({ 
+        ...invoice, 
+        paymentLink 
+      });
     } catch (error) {
       console.error('Error creating invoice:', error);
       if (error.name === 'ZodError') {
@@ -990,10 +1045,179 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const invoice = await storage.createInvoice(invoiceData);
-      res.status(201).json(invoice);
+
+      // Create Stripe payment link
+      let paymentLink = null;
+      if (process.env.STRIPE_SECRET_KEY) {
+        try {
+          const paymentLinkData = await stripe.paymentLinks.create({
+            line_items: [{
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: order.description,
+                },
+                unit_amount: Math.round(invoiceData.total * 100), // Convert to cents
+              },
+              quantity: 1,
+            }],
+            metadata: {
+              invoiceId: invoice.id,
+              invoiceNumber: invoice.invoiceNumber,
+              orderId: order.id,
+              customerId: order.customerId,
+            },
+            after_completion: {
+              type: 'redirect',
+              redirect: {
+                url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
+              },
+            },
+          });
+
+          paymentLink = paymentLinkData.url;
+
+          // Update invoice with payment link
+          await storage.updateInvoice(invoice.id, { 
+            metadata: { 
+              paymentLink,
+              stripePaymentLinkId: paymentLinkData.id 
+            } 
+          });
+        } catch (stripeError) {
+          console.error('Error creating Stripe payment link:', stripeError);
+        }
+      }
+
+      res.status(201).json({ 
+        ...invoice, 
+        paymentLink 
+      });
     } catch (error) {
       console.error('Error generating invoice:', error);
       res.status(500).json({ message: 'Failed to generate invoice' });
+    }
+  });
+
+  // Record manual payment
+  app.post('/api/invoices/:id/payment', isAuthenticated, async (req, res) => {
+    try {
+      const { amount, method, transactionId, notes } = req.body;
+      const invoice = await storage.getInvoice(req.params.id);
+      
+      if (!invoice) {
+        return res.status(404).json({ message: 'Invoice not found' });
+      }
+
+      // Update invoice status to paid
+      const updatedInvoice = await storage.updateInvoice(req.params.id, {
+        status: 'paid',
+        paidAt: new Date(),
+        metadata: {
+          ...invoice.metadata,
+          payment: {
+            amount,
+            method,
+            transactionId,
+            notes,
+            recordedAt: new Date(),
+            recordedBy: req.session?.userId
+          }
+        }
+      });
+
+      res.json(updatedInvoice);
+    } catch (error) {
+      console.error('Error recording payment:', error);
+      res.status(500).json({ message: 'Failed to record payment' });
+    }
+  });
+
+  // Create new payment link for existing invoice
+  app.post('/api/invoices/:id/payment-link', isAuthenticated, async (req, res) => {
+    try {
+      const invoice = await storage.getInvoice(req.params.id);
+      if (!invoice) {
+        return res.status(404).json({ message: 'Invoice not found' });
+      }
+
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(400).json({ message: 'Stripe not configured' });
+      }
+
+      const customer = await storage.getCustomer(invoice.customerId);
+      
+      const paymentLinkData = await stripe.paymentLinks.create({
+        line_items: invoice.lineItems.map(item => ({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.description,
+            },
+            unit_amount: Math.round(item.price * 100),
+          },
+          quantity: item.quantity,
+        })),
+        metadata: {
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          customerId: invoice.customerId,
+        },
+        after_completion: {
+          type: 'redirect',
+          redirect: {
+            url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
+          },
+        },
+      });
+
+      // Update invoice with new payment link
+      await storage.updateInvoice(invoice.id, {
+        metadata: {
+          ...invoice.metadata,
+          paymentLink: paymentLinkData.url,
+          stripePaymentLinkId: paymentLinkData.id
+        }
+      });
+
+      res.json({ paymentLink: paymentLinkData.url });
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+      res.status(500).json({ message: 'Failed to create payment link' });
+    }
+  });
+
+  // Stripe webhook handler
+  app.post('/api/webhooks/stripe', async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    
+    try {
+      const event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET || ''
+      );
+
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const invoiceId = session.metadata?.invoiceId;
+        
+        if (invoiceId) {
+          await storage.updateInvoice(invoiceId, {
+            status: 'paid',
+            paidAt: new Date(),
+            metadata: {
+              stripePaymentIntent: session.payment_intent,
+              stripeSessionId: session.id
+            }
+          });
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Stripe webhook error:', error);
+      res.status(400).json({ message: 'Webhook signature verification failed' });
     }
   });
 

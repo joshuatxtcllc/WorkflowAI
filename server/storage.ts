@@ -7,6 +7,7 @@ import {
   timeEntries,
   notifications,
   aiAnalysis,
+  invoices,
   type User,
   type UpsertUser,
   type Customer,
@@ -20,6 +21,8 @@ import {
   type Notification,
   type InsertNotification,
   type AIAnalysis,
+  type Invoice,
+  type InsertInvoice,
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
@@ -84,6 +87,16 @@ export interface IStorage {
   // AI Analysis operations
   saveAIAnalysis(data: { metrics: any; alerts: any }): Promise<AIAnalysis>;
   getLatestAIAnalysis(): Promise<AIAnalysis | undefined>;
+
+  // Invoice operations
+  getInvoices(): Promise<Invoice[]>;
+  getInvoice(id: string): Promise<Invoice | undefined>;
+  getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined>;
+  getInvoicesByCustomer(customerId: string): Promise<Invoice[]>;
+  getInvoicesByOrder(orderId: string): Promise<Invoice[]>;
+  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
+  updateInvoice(id: string, invoice: Partial<Invoice>): Promise<Invoice>;
+  deleteInvoice(id: string): Promise<void>;
 
   // Analytics operations
   getWorkloadMetrics(): Promise<{
@@ -537,6 +550,57 @@ export class DatabaseStorage implements IStorage {
       console.error('Error searching orders:', error);
       return [];
     }
+  }
+
+  // Invoice operations
+  async getInvoices(): Promise<Invoice[]> {
+    return await db.select().from(invoices).orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoice(id: string): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice;
+  }
+
+  async getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.invoiceNumber, invoiceNumber));
+    return invoice;
+  }
+
+  async getInvoicesByCustomer(customerId: string): Promise<Invoice[]> {
+    return await db.select().from(invoices)
+      .where(eq(invoices.customerId, customerId))
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoicesByOrder(orderId: string): Promise<Invoice[]> {
+    return await db.select().from(invoices)
+      .where(eq(invoices.orderId, orderId))
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    const [newInvoice] = await db
+      .insert(invoices)
+      .values({
+        id: randomUUID(),
+        ...invoice
+      })
+      .returning();
+    return newInvoice;
+  }
+
+  async updateInvoice(id: string, invoice: Partial<Invoice>): Promise<Invoice> {
+    const [updatedInvoice] = await db
+      .update(invoices)
+      .set({ ...invoice, updatedAt: new Date() })
+      .where(eq(invoices.id, id))
+      .returning();
+    return updatedInvoice;
+  }
+
+  async deleteInvoice(id: string): Promise<void> {
+    await db.delete(invoices).where(eq(invoices.id, id));
   }
 
   // Analytics operations

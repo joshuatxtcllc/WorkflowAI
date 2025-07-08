@@ -192,6 +192,7 @@ export const invoices = pgTable("invoices", {
   
   dueDate: timestamp("due_date").notNull(),
   notes: text("notes"),
+  metadata: jsonb("metadata"), // Payment links, Stripe data, etc.
   
   lineItems: jsonb("line_items").notNull(), // Array of line items
   

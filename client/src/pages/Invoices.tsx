@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { FileText, Plus, Search, Eye, Download, Calendar, User, DollarSign } from 'lucide-react';
+import { FileText, Plus, Search, Eye, Download, Calendar, User, DollarSign, CreditCard, Link2, Receipt } from 'lucide-react';
 import InvoiceModal from '../components/InvoiceModal';
 import { format } from 'date-fns';
 import { Invoice } from '@/types/invoice';
@@ -105,6 +105,57 @@ export default function Invoices() {
     URL.revokeObjectURL(url);
   };
 
+  const handleCreatePaymentLink = async (invoice: Invoice) => {
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}/payment-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const { paymentLink } = await response.json();
+        window.open(paymentLink, '_blank');
+        setAllInvoices(getSavedInvoices()); // Refresh invoices
+      } else {
+        alert('Failed to create payment link');
+      }
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+      alert('Failed to create payment link');
+    }
+  };
+
+  const handleRecordPayment = async (invoice: Invoice) => {
+    const amount = prompt(`Record payment for ${invoice.invoiceNumber}. Amount ($):`);
+    const method = prompt('Payment method (cash, check, card, etc.):');
+    const transactionId = prompt('Transaction ID (optional):');
+    
+    if (amount && method) {
+      try {
+        const response = await fetch(`/api/invoices/${invoice.id}/payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            method,
+            transactionId,
+            notes: `Manual payment recorded`
+          })
+        });
+        
+        if (response.ok) {
+          setAllInvoices(getSavedInvoices()); // Refresh invoices
+          alert('Payment recorded successfully!');
+        } else {
+          alert('Failed to record payment');
+        }
+      } catch (error) {
+        console.error('Error recording payment:', error);
+        alert('Failed to record payment');
+      }
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -189,6 +240,9 @@ export default function Invoices() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold text-lg">{invoice.invoiceNumber}</h3>
+                        <Badge className={getStatusColor(invoice.status)}>
+                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </Badge>
                         <p className="text-gray-600">Invoice ID: {invoice.id}</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -229,6 +283,28 @@ export default function Invoices() {
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </Button>
+                      {invoice.status !== 'paid' && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCreatePaymentLink(invoice)}
+                            className="bg-blue-50 hover:bg-blue-100"
+                          >
+                            <Link2 className="h-4 w-4 mr-2" />
+                            Payment Link
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRecordPayment(invoice)}
+                            className="bg-green-50 hover:bg-green-100"
+                          >
+                            <Receipt className="h-4 w-4 mr-2" />
+                            Record Payment
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
