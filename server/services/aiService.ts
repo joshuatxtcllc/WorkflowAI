@@ -190,7 +190,10 @@ export class AIService {
       // Handle quota exceeded errors specifically
       if (error.status === 429 || error.message?.includes('quota')) {
         console.warn(`OpenAI quota exceeded - skipping provider temporarily`);
-        // Could implement rate limiting logic here
+        this.providers.openai = false; // Temporarily disable to prevent further errors
+        setTimeout(() => {
+          this.providers.openai = true; // Re-enable after 5 minutes
+        }, 5 * 60 * 1000);
       }
 
       return "I'm having trouble responding right now. Please try again later.";
