@@ -265,6 +265,31 @@
     @apply block text-sm font-medium text-gray-300 mb-2;
   }
 
+  /* Dialog overrides for light backgrounds */
+  [role="dialog"] {
+    color: #0F1419 !important;
+  }
+
+  [role="dialog"] h2,
+  [role="dialog"] h3,
+  [role="dialog"] h4,
+  [role="dialog"] label,
+  [role="dialog"] p,
+  [role="dialog"] span:not(.status-dot) {
+    color: #0F1419 !important;
+  }
+
+  [role="dialog"] input,
+  [role="dialog"] textarea,
+  [role="dialog"] select {
+    color: #0F1419 !important;
+    background-color: #ffffff !important;
+  }
+
+  [role="dialog"] .text-muted-foreground {
+    color: #64748B !important;
+  }
+
   /* Card styles */
   .card-dark {
     @apply bg-gray-900 border-gray-800;
