@@ -29,10 +29,22 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+// Initialize Stripe with better error handling
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET || '';
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET || '';
+
+console.log('Stripe configuration:');
+console.log('- Secret key configured:', stripeSecretKey ? `Yes (${stripeSecretKey.length} chars)` : 'No');
+console.log('- Webhook secret configured:', stripeWebhookSecret ? `Yes (${stripeWebhookSecret.length} chars)` : 'No');
+
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   apiVersion: '2024-12-18.acacia',
-});
+}) : null;
+
+if (!stripe) {
+  console.warn('⚠️  Stripe not initialized - missing STRIPE_SECRET_KEY environment variable');
+  console.log('💡 Add your Stripe secret key to Secrets as STRIPE_SECRET_KEY');
+}
 
 // Initialize AI Service
 const aiService = new AIService();
@@ -916,7 +928,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create Stripe payment link if Stripe is configured
       let paymentLink = null;
-      if (process.env.STRIPE_SECRET_KEY) {
+      if (stripe) {
         try {
           const customer = await storage.getCustomer(validatedData.customerId);
           
@@ -1048,7 +1060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create Stripe payment link
       let paymentLink = null;
-      if (process.env.STRIPE_SECRET_KEY) {
+      if (stripe) {
         try {
           const paymentLinkData = await stripe.paymentLinks.create({
             line_items: [{
@@ -1141,8 +1153,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Invoice not found' });
       }
 
-      if (!process.env.STRIPE_SECRET_KEY) {
-        return res.status(400).json({ message: 'Stripe not configured' });
+      if (!stripe) {
+        return res.status(400).json({ message: 'Stripe not configured - missing secret key' });
       }
 
       const customer = await storage.getCustomer(invoice.customerId);
@@ -1192,10 +1204,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const sig = req.headers['stripe-signature'];
     
     try {
+      if (!stripe) {
+        return res.status(400).json({ message: 'Stripe not configured' });
+      }
+
       const event = stripe.webhooks.constructEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET || ''
+        stripeWebhookSecret
       );
 
       if (event.type === 'checkout.session.completed') {
@@ -1363,6 +1379,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error tracking order:', error);
       res.status(500).json({ message: 'Failed to track order' });
+    }
+  });
+
+  // Stripe connection test
+  app.get('/api/stripe/test', isAuthenticated, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.json({
+          connected: false,
+          error: 'Stripe not initialized - missing STRIPE_SECRET_KEY',
+          envVars: {
+            STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
+            STRIPE_SECRET: !!process.env.STRIPE_SECRET,
+            STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
+            STRIPE_WEBHOOK_ENDPOINT_SECRET: !!process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
+          }
+        });
+      }
+
+      // Test Stripe connection by retrieving account info
+      const account = await stripe.accounts.retrieve();
+      
+      res.json({
+        connected: true,
+        accountId: account.id,
+        businessName: account.business_profile?.name || 'Not set',
+        country: account.country,
+        currency: account.default_currency,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled
+      });
+    } catch (error) {
+      console.error('Stripe test error:', error);
+      res.status(500).json({
+        connected: false,
+        error: error.message,
+        hint: 'Check if your Stripe secret key is valid'
+      });
     }
   });
 
