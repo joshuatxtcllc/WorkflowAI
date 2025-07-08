@@ -80,13 +80,19 @@ export default function OrderCard({ order }: OrderCardProps) {
   }, [order.status, previousStatus]);
 
   // Drag and drop setup
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: { id: order.id, status: order.status },
-    collect: (monitor: any) => ({
+    item: () => {
+      console.log('Starting drag for order:', order.id);
+      return { id: order.id };
+    },
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }));
+    canDrag: () => {
+      return Boolean(order?.id);
+    },
+  });
 
   // Quick status update mutation
   const quickUpdateMutation = useMutation({

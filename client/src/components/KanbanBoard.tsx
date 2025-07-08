@@ -43,8 +43,22 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'order',
     drop: (item: { id: string }, monitor) => {
-      if (monitor.didDrop()) return; // Prevent multiple drops
-      onDropOrder(item.id, status);
+      try {
+        if (monitor.didDrop()) {
+          console.log('Drop already handled by nested target');
+          return;
+        }
+        
+        if (!item?.id) {
+          console.warn('Invalid drop item:', item);
+          return;
+        }
+        
+        console.log('Dropping order:', item.id, 'into column:', status);
+        onDropOrder(item.id, status);
+      } catch (error) {
+        console.error('Error in drop handler:', error);
+      }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -297,12 +311,15 @@ export default function KanbanBoard() {
 
       // Send WebSocket update with error handling
       try {
-        sendMessage({
-          type: 'order-status-update',
-          data: updatedOrder
-        });
+        if (sendMessage) {
+          sendMessage({
+            type: 'order-status-update',
+            data: updatedOrder
+          });
+        }
       } catch (wsError) {
         console.warn('WebSocket message failed:', wsError);
+        // Don't fail the operation if WebSocket fails
       }
     },
     onError: (error, variables, context) => {
@@ -321,34 +338,44 @@ export default function KanbanBoard() {
   });
 
   const handleDropOrder = useCallback((orderId: string, newStatus: string) => {
-    if (!orderId || !newStatus) {
-      console.warn('Invalid drop parameters:', { orderId, newStatus });
-      return;
-    }
+    try {
+      if (!orderId || !newStatus) {
+        console.warn('Invalid drop parameters:', { orderId, newStatus });
+        return;
+      }
 
-    const order = orders.find(o => o.id === orderId);
-    if (!order) {
-      console.warn('Order not found for drop:', orderId);
+      const order = orders.find(o => o.id === orderId);
+      if (!order) {
+        console.warn('Order not found for drop:', orderId);
+        toast({
+          title: "Drop Failed",
+          description: "Order not found. Please refresh and try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (order.status === newStatus) {
+        console.log('No status change needed:', { current: order.status, new: newStatus });
+        return;
+      }
+
+      // Prevent multiple simultaneous updates for the same order
+      if (updateOrderStatusMutation.isPending) {
+        console.log('Update already in progress, skipping');
+        return;
+      }
+
+      console.log('Attempting to update order status:', { orderId, from: order.status, to: newStatus });
+      updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+    } catch (error) {
+      console.error('Error in handleDropOrder:', error);
       toast({
         title: "Drop Failed",
-        description: "Order not found. Please refresh and try again.",
+        description: "An error occurred while updating the order. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-
-    if (order.status === newStatus) {
-      console.log('No status change needed:', { current: order.status, new: newStatus });
-      return;
-    }
-
-    // Prevent multiple simultaneous updates for the same order
-    if (updateOrderStatusMutation.isPending) {
-      console.log('Update already in progress, skipping');
-      return;
-    }
-
-    updateOrderStatusMutation.mutate({ orderId, status: newStatus });
   }, [orders, updateOrderStatusMutation, toast]);
 
   // Only update slider when not dragging
@@ -485,7 +512,7 @@ export default function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
-  const { sendMessage, lastMessage } = useWebSocket();
+  const { sendMessage, lastMessage } = useWebSocket() || { sendMessage: null, lastMessage: null };
 
   // Handle WebSocket messages
   useEffect(() => {
