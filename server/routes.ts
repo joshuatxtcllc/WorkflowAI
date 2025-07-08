@@ -8,10 +8,12 @@ import {
   insertCustomerSchema, 
   insertMaterialSchema,
   insertNotificationSchema,
+  insertInvoiceSchema,
   type Order,
   type Customer,
   type OrderWithDetails,
-  type WorkloadAnalysis 
+  type WorkloadAnalysis,
+  type Invoice 
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
@@ -867,6 +869,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         error: error instanceof Error ? error.message : 'Dashboard sync failed'
       });
+    }
+  });
+
+  // Invoice routes
+  app.get('/api/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const invoices = await storage.getInvoices();
+      res.json(invoices);
+    } catch (error) {
+      console.error('Error fetching invoices:', error);
+      res.status(500).json({ message: 'Failed to fetch invoices' });
+    }
+  });
+
+  app.get('/api/invoices/:id', isAuthenticated, async (req, res) => {
+    try {
+      const invoice = await storage.getInvoice(req.params.id);
+      if (!invoice) {
+        return res.status(404).json({ message: 'Invoice not found' });
+      }
+      res.json(invoice);
+    } catch (error) {
+      console.error('Error fetching invoice:', error);
+      res.status(500).json({ message: 'Failed to fetch invoice' });
+    }
+  });
+
+  app.post('/api/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertInvoiceSchema.parse(req.body);
+      
+      // Check if invoice number already exists
+      const existingInvoice = await storage.getInvoiceByNumber(validatedData.invoiceNumber);
+      if (existingInvoice) {
+        return res.status(409).json({ message: 'Invoice number already exists' });
+      }
+
+      const invoice = await storage.createInvoice(validatedData);
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ 
+          message: 'Validation error', 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: 'Failed to create invoice' });
+    }
+  });
+
+  app.put('/api/invoices/:id', isAuthenticated, async (req, res) => {
+    try {
+      const invoice = await storage.updateInvoice(req.params.id, req.body);
+      res.json(invoice);
+    } catch (error) {
+      console.error('Error updating invoice:', error);
+      res.status(500).json({ message: 'Failed to update invoice' });
+    }
+  });
+
+  app.delete('/api/invoices/:id', isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteInvoice(req.params.id);
+      res.json({ message: 'Invoice deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      res.status(500).json({ message: 'Failed to delete invoice' });
+    }
+  });
+
+  app.get('/api/customers/:customerId/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const invoices = await storage.getInvoicesByCustomer(req.params.customerId);
+      res.json(invoices);
+    } catch (error) {
+      console.error('Error fetching customer invoices:', error);
+      res.status(500).json({ message: 'Failed to fetch customer invoices' });
+    }
+  });
+
+  app.get('/api/orders/:orderId/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const invoices = await storage.getInvoicesByOrder(req.params.orderId);
+      res.json(invoices);
+    } catch (error) {
+      console.error('Error fetching order invoices:', error);
+      res.status(500).json({ message: 'Failed to fetch order invoices' });
+    }
+  });
+
+  app.post('/api/orders/:orderId/generate-invoice', isAuthenticated, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Generate invoice number
+      const invoiceNumber = `INV-${Date.now()}`;
+      
+      // Create invoice from order
+      const invoiceData = {
+        invoiceNumber,
+        customerId: order.customerId,
+        orderId: order.id,
+        subtotal: order.price,
+        taxRate: 0.0825, // 8.25% default tax rate
+        tax: order.price * 0.0825,
+        total: order.price * 1.0825,
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        lineItems: [{
+          description: order.description,
+          quantity: 1,
+          price: order.price,
+          total: order.price
+        }],
+        notes: order.notes || ''
+      };
+
+      const invoice = await storage.createInvoice(invoiceData);
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+      res.status(500).json({ message: 'Failed to generate invoice' });
     }
   });
 

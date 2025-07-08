@@ -172,7 +172,7 @@ export class DatabaseStorage implements IStorage {
   async createCustomer(customerData: any) {
     try {
       console.log('Storage createCustomer called with:', customerData);
-      
+
       const customerToInsert = {
         id: customerData.id || randomUUID(),
         name: customerData.name,
@@ -185,17 +185,17 @@ export class DatabaseStorage implements IStorage {
       };
 
       console.log('Inserting customer with data:', customerToInsert);
-      
+
       const [customer] = await db
         .insert(customers)
         .values(customerToInsert)
         .returning();
-      
+
       console.log('Customer inserted successfully:', customer);
       return customer;
     } catch (error) {
       console.error('Storage createCustomer error:', error);
-      
+
       // Provide more specific error information
       if (error instanceof Error) {
         if (error.message.includes('UNIQUE constraint')) {
@@ -203,7 +203,7 @@ export class DatabaseStorage implements IStorage {
         }
         throw new Error(`Database error: ${error.message}`);
       }
-      
+
       throw new Error('Failed to create customer in database');
     }
   }
@@ -336,7 +336,7 @@ export class DatabaseStorage implements IStorage {
       ...order,
       id: order.id || randomUUID()
     };
-    
+
     const [newOrder] = await db
       .insert(orders)
       .values(orderWithId)
@@ -526,7 +526,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const allOrders = await this.getOrders();
       const lowerQuery = query.toLowerCase();
-      
+
       return allOrders.filter(order => 
         order.trackingId.toLowerCase().includes(lowerQuery) ||
         order.customer?.name?.toLowerCase().includes(lowerQuery) ||

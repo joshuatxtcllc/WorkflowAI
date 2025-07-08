@@ -189,24 +189,17 @@ export default function Invoices() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold text-lg">{invoice.invoiceNumber}</h3>
-                        <Badge className={getStatusColor(invoice.status)}>
-                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                        </Badge>
+                        <p className="text-gray-600">Invoice ID: {invoice.id}</p>
                       </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          <span>{invoice.customerName}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Due: {format(new Date(invoice.dueDate), 'MMM d, yyyy')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4" />
-                          <span className="font-semibold">${invoice.amount.toFixed(2)}</span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium">${invoice.amount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-500">
+                          Due: {format(new Date(invoice.dueDate), 'MMM d, yyyy')}
+                        </span>
                       </div>
 
                       <div className="mt-2">
