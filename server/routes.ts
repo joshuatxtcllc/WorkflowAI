@@ -600,40 +600,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
-      const workload = await storage.getWorkloadMetrics();
-      res.json(workload);
+      const { analyticsEngine } = await import('./analytics-engine');
+      const comprehensiveMetrics = await analyticsEngine.generateComprehensiveMetrics();
+      
+      // Return workload-specific metrics for backward compatibility
+      res.json({
+        totalOrders: comprehensiveMetrics.overview.totalOrders,
+        totalHours: comprehensiveMetrics.production.totalHours,
+        averageComplexity: comprehensiveMetrics.production.averageComplexity,
+        onTimePercentage: comprehensiveMetrics.performance.onTimePercentage,
+        statusCounts: comprehensiveMetrics.workflow.statusCounts,
+        bottlenecks: comprehensiveMetrics.workflow.bottlenecks,
+        alerts: comprehensiveMetrics.alerts
+      });
     } catch (error) {
       console.error('Error fetching workload analysis:', error);
       res.status(500).json({ message: 'Failed to fetch workload analysis' });
     }
   });
 
+  // Comprehensive analytics dashboard endpoint
+  app.get('/api/analytics/comprehensive', isAuthenticated, async (req, res) => {
+    try {
+      const { analyticsEngine } = await import('./analytics-engine');
+      const metrics = await analyticsEngine.generateComprehensiveMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error('Error generating comprehensive analytics:', error);
+      res.status(500).json({ message: 'Failed to generate comprehensive analytics' });
+    }
+  });
+
   // AI-powered routes
   app.get('/api/ai/analysis', isAuthenticated, async (req, res) => {
     try {
-      const orders = await storage.getOrders();
-      const workload = await storage.getWorkloadMetrics();
-
-      // Try to get cached analysis first
+      const { analyticsEngine } = await import('./analytics-engine');
+      const { aiService } = await import('./api-services');
+      
+      // Get comprehensive metrics first
+      const comprehensiveMetrics = await analyticsEngine.generateComprehensiveMetrics();
+      
+      // Try to get cached AI analysis first
       const cachedAnalysis = await storage.getLatestAIAnalysis();
       if (cachedAnalysis && isRecentAnalysis(cachedAnalysis.createdAt)) {
         return res.json(cachedAnalysis.metrics);
       }
 
       try {
-        const analysis = await aiService.generateWorkloadAnalysis(orders, workload);
+        // Use AI service to enhance analytics with insights
+        const orders = await storage.getOrders();
+        const aiEnhancedAnalysis = await aiService.generateWorkloadAnalysis(orders);
 
-        // Cache the analysis
+        // Combine comprehensive metrics with AI insights
+        const combinedAnalysis = {
+          ...comprehensiveMetrics.production,
+          ...comprehensiveMetrics.performance,
+          alerts: comprehensiveMetrics.alerts,
+          aiInsights: aiEnhancedAnalysis.aiInsights || 'Enhanced analytics available',
+          recommendations: aiEnhancedAnalysis.recommendations || [
+            'Review overdue orders for priority handling',
+            'Monitor material supply chain for potential delays',
+            'Consider workload redistribution if bottlenecks persist'
+          ],
+          timestamp: new Date().toISOString()
+        };
+
+        // Cache the enhanced analysis
         await storage.saveAIAnalysis({
-          metrics: analysis,
-          alerts: analysis.alerts || []
+          metrics: combinedAnalysis,
+          alerts: comprehensiveMetrics.alerts || []
         });
 
-        res.json(analysis);
+        res.json(combinedAnalysis);
       } catch (aiError) {
         console.error('Error generating AI analysis:', aiError);
-        // Return basic workload data if AI fails
-        res.json(workload);
+        // Return comprehensive metrics without AI enhancement
+        res.json({
+          ...comprehensiveMetrics.production,
+          ...comprehensiveMetrics.performance,
+          alerts: comprehensiveMetrics.alerts,
+          timestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error('Error in AI analysis route:', error);
