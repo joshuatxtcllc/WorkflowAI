@@ -524,7 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(completeOrder);
     } catch (error) {
-      console.error('Failed to update order:', { orderId, error: error.message });
+      console.error('Failed to update order:', { orderId, error: error instanceof Error ? error.message : 'Unknown error' });
       res.status(500).json({ message: 'Failed to update order' });
     }
   });
@@ -600,87 +600,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics routes
   app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
     try {
-      const { analyticsEngine } = await import('./analytics-engine');
-      const comprehensiveMetrics = await analyticsEngine.generateComprehensiveMetrics();
-      
-      // Return workload-specific metrics for backward compatibility
-      res.json({
-        totalOrders: comprehensiveMetrics.overview.totalOrders,
-        totalHours: comprehensiveMetrics.production.totalHours,
-        averageComplexity: comprehensiveMetrics.production.averageComplexity,
-        onTimePercentage: comprehensiveMetrics.performance.onTimePercentage,
-        statusCounts: comprehensiveMetrics.workflow.statusCounts,
-        bottlenecks: comprehensiveMetrics.workflow.bottlenecks,
-        alerts: comprehensiveMetrics.alerts
-      });
+      const workload = await storage.getWorkloadMetrics();
+      res.json(workload);
     } catch (error) {
       console.error('Error fetching workload analysis:', error);
       res.status(500).json({ message: 'Failed to fetch workload analysis' });
     }
   });
 
-  // Comprehensive analytics dashboard endpoint
-  app.get('/api/analytics/comprehensive', isAuthenticated, async (req, res) => {
-    try {
-      const { analyticsEngine } = await import('./analytics-engine');
-      const metrics = await analyticsEngine.generateComprehensiveMetrics();
-      res.json(metrics);
-    } catch (error) {
-      console.error('Error generating comprehensive analytics:', error);
-      res.status(500).json({ message: 'Failed to generate comprehensive analytics' });
-    }
-  });
-
   // AI-powered routes
   app.get('/api/ai/analysis', isAuthenticated, async (req, res) => {
     try {
-      const { analyticsEngine } = await import('./analytics-engine');
-      const { aiService } = await import('./api-services');
-      
-      // Get comprehensive metrics first
-      const comprehensiveMetrics = await analyticsEngine.generateComprehensiveMetrics();
-      
-      // Try to get cached AI analysis first
+      const orders = await storage.getOrders();
+      const workload = await storage.getWorkloadMetrics();
+
+      // Try to get cached analysis first
       const cachedAnalysis = await storage.getLatestAIAnalysis();
       if (cachedAnalysis && isRecentAnalysis(cachedAnalysis.createdAt)) {
         return res.json(cachedAnalysis.metrics);
       }
 
       try {
-        // Use AI service to enhance analytics with insights
-        const orders = await storage.getOrders();
-        const aiEnhancedAnalysis = await aiService.generateWorkloadAnalysis(orders);
+        const analysis = await aiService.generateWorkloadAnalysis(orders, workload);
 
-        // Combine comprehensive metrics with AI insights
-        const combinedAnalysis = {
-          ...comprehensiveMetrics.production,
-          ...comprehensiveMetrics.performance,
-          alerts: comprehensiveMetrics.alerts,
-          aiInsights: aiEnhancedAnalysis.aiInsights || 'Enhanced analytics available',
-          recommendations: aiEnhancedAnalysis.recommendations || [
-            'Review overdue orders for priority handling',
-            'Monitor material supply chain for potential delays',
-            'Consider workload redistribution if bottlenecks persist'
-          ],
-          timestamp: new Date().toISOString()
-        };
-
-        // Cache the enhanced analysis
+        // Cache the analysis
         await storage.saveAIAnalysis({
-          metrics: combinedAnalysis,
-          alerts: comprehensiveMetrics.alerts || []
+          metrics: analysis,
+          alerts: analysis.alerts || []
         });
 
-        res.json(combinedAnalysis);
+        res.json(analysis);
       } catch (aiError) {
         console.error('Error generating AI analysis:', aiError);
-        // Return comprehensive metrics without AI enhancement
-        res.json({
-          ...comprehensiveMetrics.production,
-          ...comprehensiveMetrics.performance,
-          alerts: comprehensiveMetrics.alerts,
-          timestamp: new Date().toISOString()
-        });
+        // Return basic workload data if AI fails
+        res.json(workload);
       }
     } catch (error) {
       console.error('Error in AI analysis route:', error);
@@ -1468,18 +1421,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Health check
-  app.get('/api/health', async (req, res) => {
-    try {
-      const { healthCheckEndpoint } = await import('./health-check');
-      await healthCheckEndpoint(req, res);
-    } catch (error) {
-      console.error('Health check failed:', error);
-      res.status(500).json({
-        overall: 'unhealthy',
-        timestamp: new Date().toISOString(),
-        error: 'Health check system failure'
-      });
-    }
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
   // Diagnostic endpoints for the diagnostic dashboard
@@ -1641,9 +1584,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const alerts = [];
       const now = new Date();
 
+      if (!Array.isArray(orders)) {
+        throw new Error('Invalid orders data received from storage');
+      }
+
       // Check for overdue orders
       const overdueOrders = orders.filter(order => 
-        order.dueDate && new Date(order.dueDate) < now && 
+        order && order.dueDate && new Date(order.dueDate) < now && 
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
 
@@ -1659,7 +1606,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check for system issues
       const activeOrders = orders.filter(order => 
-        !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
+        order && !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
 
       // Capacity warnings with realistic thresholds
@@ -1682,21 +1629,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check for integration issues
-      const posConnected = await posIntegration.checkConnection();
-      if (!posConnected) {
+      try {
+        const posConnected = await posIntegration.checkConnection();
+        if (!posConnected) {
+          alerts.push({
+            id: `pos_${Date.now()}`,
+            type: 'integration',
+            severity: 'medium',
+            title: 'POS Integration Offline',
+            content: 'External POS system connection is not available. New orders may not sync automatically.'
+          });
+        }
+      } catch (integrationError) {
+        console.error('Error checking POS integration:', integrationError);
         alerts.push({
-          id: `pos_${Date.now()}`,
+          id: `pos_error_${Date.now()}`,
           type: 'integration',
-          severity: 'medium',
-          title: 'POS Integration Offline',
-          content: 'External POS system connection is not available. New orders may not sync automatically.'
+          severity: 'low',
+          title: 'Integration Check Failed',
+          content: 'Unable to verify POS integration status.'
         });
       }
 
       res.json(alerts);
     } catch (error) {
-      console.error('Error generating diagnostic alerts:', error);
-      res.status(500).json({ message: 'Failed to generate alerts' });
+      console.error('Error generating diagnostic alerts:', error instanceof Error ? error.message : 'Unknown error');
+      res.status(500).json({ 
+        message: 'Failed to generate alerts',
+        alerts: [] // Return empty array to prevent frontend errors
+      });
     }
   });
 

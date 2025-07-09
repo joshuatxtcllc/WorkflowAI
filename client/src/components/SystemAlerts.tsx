@@ -8,26 +8,44 @@ interface SystemAlert {
   id: string;
   type: string;
   severity: 'low' | 'medium' | 'high';
-  title: string;
-  content: string;
+  title?: string;
+  content?: string;
+  message?: string; // Alternative field name
 }
 
 export function SystemAlerts() {
-  const { data: alerts, isLoading } = useQuery({
+  const { data: alerts, isLoading, error } = useQuery({
     queryKey: ['diagnostic-alerts'],
     queryFn: async () => {
       const response = await fetch('/api/diagnostics/alerts');
       if (!response.ok) throw new Error('Failed to fetch alerts');
-      return response.json();
+      const data = await response.json();
+      // Handle both direct array and object with alerts property
+      return Array.isArray(data) ? data : (data.alerts || []);
     },
-    refetchInterval: 30000
+    refetchInterval: 30000,
+    retry: 2
   });
 
   if (isLoading) {
     return <div className="text-gray-400">Loading alerts...</div>;
   }
 
-  if (!alerts || alerts.length === 0) {
+  if (error) {
+    return (
+      <div className="bg-gray-800 rounded-lg p-4">
+        <div className="flex items-center space-x-2 text-yellow-400">
+          <Wifi className="h-5 w-5" />
+          <span className="font-medium">Alert System Unavailable</span>
+        </div>
+        <p className="text-gray-400 text-sm mt-1">
+          Unable to load system alerts. Please check your connection.
+        </p>
+      </div>
+    );
+  }
+
+  if (!alerts || !Array.isArray(alerts) || alerts.length === 0) {
     return (
       <div className="bg-gray-800 rounded-lg p-4">
         <div className="flex items-center space-x-2 text-green-400">
@@ -44,11 +62,13 @@ export function SystemAlerts() {
   return (
     <div className="space-y-4">
       {alerts.map((alert: SystemAlert) => (
-        <Alert key={alert.id} className="bg-gray-800 border-gray-700">
+        <Alert key={alert.id || index} className="bg-gray-800 border-gray-700">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle className="text-white">{alert.title}</AlertTitle>
+          <AlertTitle className="text-white">
+            {alert.title || alert.type || 'System Alert'}
+          </AlertTitle>
           <AlertDescription className="text-gray-300">
-            {alert.content}
+            {alert.content || alert.message || 'No details available'}
           </AlertDescription>
         </Alert>
       ))}
