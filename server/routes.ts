@@ -1421,8 +1421,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Health check
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  app.get('/api/health', async (req, res) => {
+    try {
+      const { healthCheckEndpoint } = await import('./health-check');
+      await healthCheckEndpoint(req, res);
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(500).json({
+        overall: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: 'Health check system failure'
+      });
+    }
   });
 
   // Diagnostic endpoints for the diagnostic dashboard
