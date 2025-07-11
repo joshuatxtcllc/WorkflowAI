@@ -27,7 +27,7 @@ import Invoices from "./pages/Invoices";
 import NotFound from "./pages/not-found";
 import { useEffect } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
-import FramersAssistantIntegration from "./pages/FramerAssistantIntegration";
+import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 
 function Router() {
   const { isAuthenticated, isLoading, refetch } = useAuth();
