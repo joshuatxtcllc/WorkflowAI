@@ -111,7 +111,7 @@ function ErrorFallback({error}: {error: Error}) {
         <h1 className="text-2xl font-bold text-red-500 mb-4">🚨 CRITICAL APPLICATION ERROR</h1>
         <p className="text-gray-300 mb-4">Enterprise system failure detected</p>
         <details className="text-left bg-gray-800 p-4 rounded">
-          <summary className="cursor-pointer text-yellow-400">Error Details</summary>
+          <summary className="cursor-pointer text-orange-400">Error Details</summary>
           <pre className="text-red-400 text-sm mt-2">{error.message}</pre>
         </details>
         <button 

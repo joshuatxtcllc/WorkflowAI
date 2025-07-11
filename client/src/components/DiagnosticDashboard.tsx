@@ -68,7 +68,7 @@ interface WorkflowMetrics {
 
 const statusColors = {
   healthy: 'text-green-600',
-  warning: 'text-yellow-600',
+  warning: 'text-orange-600',
   error: 'text-red-600'
 };
 
@@ -80,7 +80,7 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 const statusBadgeColors = {
   healthy: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
+  warning: 'bg-orange-100 text-orange-800',
   error: 'bg-red-100 text-red-800'
 };
 
@@ -148,7 +148,7 @@ export function DiagnosticDashboard() {
       {alerts && alerts.length > 0 && (
         <div className="space-y-2">
           {alerts.map((alert: any, index: number) => (
-            <Alert key={index} className={alert.severity === 'high' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}>
+            <Alert key={index} className={alert.severity === 'high' ? 'border-red-200 bg-red-50' : 'border-orange-200 bg-orange-50'}>
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>{alert.title}</AlertTitle>
               <AlertDescription>{alert.content}</AlertDescription>
@@ -301,7 +301,7 @@ export function DiagnosticDashboard() {
                       <div key={index} className="flex items-start space-x-3 p-3 border rounded-lg">
                         <AlertTriangle className={`h-4 w-4 mt-0.5 ${
                           bottleneck.severity === 'high' ? 'text-red-500' :
-                          bottleneck.severity === 'medium' ? 'text-yellow-500' : 'text-blue-500'
+                          bottleneck.severity === 'medium' ? 'text-orange-500' : 'text-blue-500'
                         }`} />
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
@@ -363,7 +363,7 @@ export function DiagnosticDashboard() {
                       <span className="text-sm">{systemHealth?.database?.responseTime || 0}ms</span>
                       <div className={`w-2 h-2 rounded-full ${
                         (systemHealth?.database?.responseTime || 0) < 100 ? 'bg-green-500' :
-                        (systemHealth?.database?.responseTime || 0) < 500 ? 'bg-yellow-500' : 'bg-red-500'
+                        (systemHealth?.database?.responseTime || 0) < 500 ? 'bg-orange-500' : 'bg-red-500'
                       }`} />
                     </div>
                   </div>
@@ -373,7 +373,7 @@ export function DiagnosticDashboard() {
                       <span className="text-sm">{systemHealth?.api?.responseTime || 0}ms</span>
                       <div className={`w-2 h-2 rounded-full ${
                         (systemHealth?.api?.responseTime || 0) < 200 ? 'bg-green-500' :
-                        (systemHealth?.api?.responseTime || 0) < 1000 ? 'bg-yellow-500' : 'bg-red-500'
+                        (systemHealth?.api?.responseTime || 0) < 1000 ? 'bg-orange-500' : 'bg-red-500'
                       }`} />
                     </div>
                   </div>
@@ -383,7 +383,7 @@ export function DiagnosticDashboard() {
                       <span className="text-sm">{systemHealth?.api?.errorRate || 0}%</span>
                       <div className={`w-2 h-2 rounded-full ${
                         (systemHealth?.api?.errorRate || 0) < 1 ? 'bg-green-500' :
-                        (systemHealth?.api?.errorRate || 0) < 5 ? 'bg-yellow-500' : 'bg-red-500'
+                        (systemHealth?.api?.errorRate || 0) < 5 ? 'bg-orange-500' : 'bg-red-500'
                       }`} />
                     </div>
                   </div>

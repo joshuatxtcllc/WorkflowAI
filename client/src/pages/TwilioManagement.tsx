@@ -82,7 +82,7 @@ export default function TwilioManagement() {
       case 'no-answer':
         return <XCircle className="h-4 w-4 text-red-500" />;
       case 'busy':
-        return <Phone className="h-4 w-4 text-yellow-500" />;
+        return <Phone className="h-4 w-4 text-orange-500" />;
       default:
         return <Clock className="h-4 w-4 text-blue-500" />;
     }

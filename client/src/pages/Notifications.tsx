@@ -114,7 +114,7 @@ export default function Notifications() {
       case 'overdue': return <AlertTriangle className="h-4 w-4 text-red-500" />;
       case 'ready': return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'completed': return <CheckCircle className="h-4 w-4 text-blue-500" />;
-      case 'reminder': return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'reminder': return <Clock className="h-4 w-4 text-orange-500" />;
       default: return <Bell className="h-4 w-4 text-gray-500" />;
     }
   };
@@ -122,7 +122,7 @@ export default function Notifications() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'border-l-red-500';
-      case 'medium': return 'border-l-yellow-500';
+      case 'medium': return 'border-l-orange-500';
       case 'low': return 'border-l-green-500';
       default: return 'border-l-gray-300';
     }
@@ -322,9 +322,9 @@ export default function Notifications() {
         
         <Card>
           <CardContent className="p-6 text-center">
-            <Clock className="h-8 w-8 text-yellow-500 mx-auto mb-3" />
+            <Clock className="h-8 w-8 text-orange-500 mx-auto mb-3" />
             <h3 className="font-semibold mb-2">Due This Week</h3>
-            <p className="text-2xl font-bold text-yellow-600">
+            <p className="text-2xl font-bold text-orange-600">
               {orders.filter(order => {
                 const dueDate = new Date(order.dueDate);
                 const weekFromNow = addDays(new Date(), 7);

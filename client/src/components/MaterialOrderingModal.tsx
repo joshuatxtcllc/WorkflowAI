@@ -62,7 +62,7 @@ export function MaterialOrderingModal({
     switch (level) {
       case 'CRITICAL': return 'bg-red-100 border-red-500 text-red-800';
       case 'HIGH': return 'bg-orange-100 border-orange-500 text-orange-800';
-      case 'MEDIUM': return 'bg-yellow-100 border-yellow-500 text-yellow-800';
+      case 'MEDIUM': return 'bg-orange-100 border-orange-500 text-orange-800';
       default: return 'bg-green-100 border-green-500 text-green-800';
     }
   };

@@ -41,7 +41,7 @@ export default function Schedule() {
     switch (priority) {
       case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
       case 'today': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'urgent': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'urgent': return 'bg-orange-100 text-orange-800 border-orange-200';
       default: return 'bg-green-100 text-green-800 border-green-200';
     }
   };
@@ -110,7 +110,7 @@ export default function Schedule() {
                 <div className="flex items-center gap-2">
                   {priority === 'overdue' && <AlertTriangle className="h-5 w-5 text-red-500" />}
                   {priority === 'today' && <Clock className="h-5 w-5 text-orange-500" />}
-                  {priority === 'urgent' && <Calendar className="h-5 w-5 text-yellow-500" />}
+                  {priority === 'urgent' && <Calendar className="h-5 w-5 text-orange-500" />}
                   {priority === 'normal' && <CheckCircle className="h-5 w-5 text-green-500" />}
                   <div>
                     <div className="text-2xl font-bold">{priorityOrders.length}</div>

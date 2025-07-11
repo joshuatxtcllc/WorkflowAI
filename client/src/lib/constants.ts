@@ -57,7 +57,7 @@ export const KANBAN_COLUMNS = [
     title: 'Mystery/Unclaimed',
     status: 'MYSTERY_UNCLAIMED',
     description: 'Unclaimed items from mystery drawers',
-    color: 'yellow'
+    color: 'purple'
   }
 ] as const;
 
@@ -81,10 +81,10 @@ export const PRIORITY_LEVELS = [
   { 
     value: 'MEDIUM', 
     label: 'Medium', 
-    color: 'yellow',
-    bgColor: 'bg-yellow-500',
-    textColor: 'text-yellow-600',
-    borderColor: 'border-yellow-300',
+    color: 'orange',
+    bgColor: 'bg-orange-500',
+    textColor: 'text-orange-600',
+    borderColor: 'border-orange-300',
     icon: '⚠️',
     urgencyScore: 2
   },

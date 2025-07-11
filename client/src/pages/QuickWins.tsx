@@ -287,7 +287,7 @@ export default function QuickWins() {
                       return (
                         <div key={order.id} className={`flex items-center justify-between p-2 rounded text-sm ${
                           isOverdue ? 'bg-red-100 border border-red-300' : 
-                          daysUntilDue <= 2 ? 'bg-yellow-100 border border-yellow-300' : 
+                          daysUntilDue <= 2 ? 'bg-orange-100 border border-orange-300' : 
                           'bg-muted'
                         }`}>
                           <div className="flex-1 min-w-0">

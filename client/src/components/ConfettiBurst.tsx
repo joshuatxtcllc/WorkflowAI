@@ -122,8 +122,8 @@ export function ConfettiBurst({ trigger, onComplete, originX = 50, originY = 50 
               }}
             >
               <div className="w-2 h-2 relative">
-                <div className="absolute inset-0 bg-yellow-300 transform rotate-45 rounded-sm"></div>
-                <div className="absolute inset-0 bg-yellow-300 transform -rotate-45 rounded-sm"></div>
+                <div className="absolute inset-0 bg-orange-300 transform rotate-45 rounded-sm"></div>
+                <div className="absolute inset-0 bg-orange-300 transform -rotate-45 rounded-sm"></div>
               </div>
             </motion.div>
           ))}

@@ -215,12 +215,12 @@ export const PricingEngineErrorBoundary: React.FC<{ children: ReactNode }> = ({ 
     componentName="Pricing Engine"
     isolate={true}
     fallback={
-      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-        <div className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-200">
+      <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
+        <div className="flex items-center space-x-2 text-orange-800 dark:text-orange-200">
           <AlertTriangle className="h-4 w-4" />
           <span className="font-medium">Pricing temporarily unavailable</span>
         </div>
-        <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+        <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
           Manual pricing may be required for this order.
         </p>
       </div>

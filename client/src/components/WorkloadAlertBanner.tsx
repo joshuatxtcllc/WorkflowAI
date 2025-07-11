@@ -53,7 +53,7 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     switch (severity) {
       case 'critical': return 'from-red-600 to-red-500';
       case 'high': return 'from-orange-600 to-orange-500';
-      case 'medium': return 'from-yellow-600 to-yellow-500';
+      case 'medium': return 'from-orange-600 to-orange-500';
       default: return 'from-jade-600 to-jade-500';
     }
   };

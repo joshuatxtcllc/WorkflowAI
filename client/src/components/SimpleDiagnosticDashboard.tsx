@@ -19,7 +19,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'healthy': return 'bg-green-500';
-      case 'warning': return 'bg-yellow-500';
+      case 'warning': return 'bg-orange-500';
       case 'error': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
@@ -158,7 +158,7 @@ export function SimpleDiagnosticDashboard() {
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader className="pb-2">
             <CardTitle className="text-white flex items-center gap-2">
-              <Wifi className="w-5 h-5 text-yellow-400" />
+              <Wifi className="w-5 h-5 text-orange-400" />
               Integrations
             </CardTitle>
           </CardHeader>
@@ -216,7 +216,7 @@ export function SimpleDiagnosticDashboard() {
                 const getAlertStyle = (severity: string) => {
                   switch (severity) {
                     case 'high': return 'bg-red-900/20 border-red-800';
-                    case 'medium': return 'bg-yellow-900/20 border-yellow-800';
+                    case 'medium': return 'bg-orange-900/20 border-orange-800';
                     case 'low': return 'bg-blue-900/20 border-blue-800';
                     default: return 'bg-gray-800 border-gray-700';
                   }
@@ -224,8 +224,8 @@ export function SimpleDiagnosticDashboard() {
 
                 const getAlertIcon = (type: string, severity: string) => {
                   if (severity === 'high') return <AlertCircle className="h-4 w-4 text-red-400" />;
-                  if (type === 'overdue') return <Clock className="h-4 w-4 text-yellow-400" />;
-                  return <AlertTriangle className="h-4 w-4 text-yellow-400" />;
+                  if (type === 'overdue') return <Clock className="h-4 w-4 text-orange-400" />;
+                  return <AlertTriangle className="h-4 w-4 text-orange-400" />;
                 };
 
                 return (

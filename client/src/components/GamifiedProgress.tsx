@@ -140,7 +140,7 @@ export default function GamifiedProgress() {
         current: quickOrders.length,
         unlocked: quickOrders.length >= 10,
         points: 500,
-        color: 'text-yellow-600 bg-yellow-100'
+        color: 'text-orange-600 bg-orange-100'
       },
       {
         id: 'revenue-crusher',
@@ -214,7 +214,7 @@ export default function GamifiedProgress() {
   const getProgressColor = (percentage: number) => {
     if (percentage >= 100) return 'bg-green-500';
     if (percentage >= 75) return 'bg-blue-500';
-    if (percentage >= 50) return 'bg-yellow-500';
+    if (percentage >= 50) return 'bg-orange-500';
     return 'bg-red-500';
   };
 
@@ -224,7 +224,7 @@ export default function GamifiedProgress() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-yellow-500" />
+            <Star className="h-5 w-5 text-orange-500" />
             Daily Progress Dashboard
           </CardTitle>
         </CardHeader>
@@ -318,7 +318,7 @@ export default function GamifiedProgress() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
+              <Trophy className="h-5 w-5 text-orange-500" />
               Achievement Summary
             </CardTitle>
           </CardHeader>
