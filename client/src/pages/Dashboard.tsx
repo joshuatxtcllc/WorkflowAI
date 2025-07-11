@@ -1,13 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { SidebarProvider, useSidebar } from "../components/ui/sidebar";
-import { AppSidebar } from "../components/AppSidebar";
+import { useSidebar } from "../components/ui/sidebar";
 
 import KanbanBoard from "../components/KanbanBoard";
 import OrderDetails from "../components/OrderDetails";
 import AIAssistant from '../components/AIAssistant';
-import { SidebarInset } from '../components/ui/sidebar';
+
 import { useOrderStore } from '../store/useOrderStore';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -55,39 +54,18 @@ export default function Dashboard() {
   const { ui, setUI } = useOrderStore();
 
   return (
-    <SidebarProvider>
+    <>
       <ScrollHandler />
-      <div className="min-h-screen bg-gray-950 text-white relative dark flex" style={{ backgroundColor: '#0A0A0B' }}>
-        {/* Background Pattern */}
-        <div className="fixed inset-0 opacity-30 pointer-events-none">
-          <div 
-            className="w-full h-full"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
-
-        <AppSidebar />
-
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
-          <main className="flex-1 p-4 space-y-6 overflow-hidden">
-            <SystemAlerts />
-            <KanbanBoard />
-          </main>
-          <AIAssistant />
-          <NewOrderModal />
-
-          {ui.isOrderDetailsOpen && (
-            <OrderDetails />
-          )}
-        </div>
+      <div className="flex flex-1 flex-col gap-4 p-4">
+        <SystemAlerts />
+        <KanbanBoard />
       </div>
-    </SidebarProvider>
+      <AIAssistant />
+      <NewOrderModal />
+
+      {ui.isOrderDetailsOpen && (
+        <OrderDetails />
+      )}
+    </>
   );
 }
