@@ -58,47 +58,47 @@
 
   body {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #0A0A0B !important; /* Force dark background */
-    color: #FFFFFF !important; /* Force solid white text */
+    background-color: #F8FAFC !important; /* Light gray background */
+    color: #1E293B !important; /* Dark blue-gray text */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Force dark mode globally */
+  /* Force light mode globally */
   html, body, #root {
-    background-color: #0A0A0B !important;
-    color: #FFFFFF !important;
+    background-color: #F8FAFC !important;
+    color: #1E293B !important;
   }
 
-  /* Force all text to be white and visible */
+  /* Force all text to be dark and visible */
   * {
-    color: #FFFFFF !important;
+    color: #1E293B !important;
   }
   
-  /* Override any transparent or muted colors */
+  /* Override any muted colors with visible dark text */
   .text-muted-foreground,
   .text-gray-400, .text-gray-500, .text-gray-600,
   .text-slate-400, .text-slate-500, .text-slate-600,
   .text-zinc-400, .text-zinc-500, .text-zinc-600 {
-    color: #FFFFFF !important;
+    color: #64748B !important; /* Medium gray for muted text */
     opacity: 1 !important;
   }
 
   /* Ensure all component text is visible */
   div, span, p, h1, h2, h3, h4, h5, h6, 
   label, button, a, li, td, th {
-    color: #FFFFFF !important;
+    color: #1E293B !important;
     opacity: 1 !important;
   }
 
-  /* Custom scrollbar for webkit browsers */
+  /* Custom scrollbar for webkit browsers - light theme */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background-color: #131316;
+    background-color: #f1f5f9;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -110,10 +110,10 @@
     background-color: #14B8A6;
   }
 
-  /* Dark mode scrollbar for Firefox */
+  /* Light theme scrollbar for Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #00A693 #131316;
+    scrollbar-color: #00A693 #f1f5f9;
   }
 }
 
@@ -275,16 +275,27 @@
     opacity: 1 !important;
   }
 
-  /* Force all text custom properties to white */
-  :root, .dark {
-    --foreground: 255 255 255 !important;
-    --card-foreground: 255 255 255 !important;
-    --popover-foreground: 255 255 255 !important;
-    --primary-foreground: 0 0 0 !important;
-    --secondary-foreground: 255 255 255 !important;
-    --muted-foreground: 255 255 255 !important;
-    --accent-foreground: 255 255 255 !important;
+  /* Light theme custom properties */
+  :root {
+    --background: 248 250 252 !important; /* Light gray */
+    --foreground: 30 41 59 !important; /* Dark blue-gray */
+    --card: 255 255 255 !important; /* White cards */
+    --card-foreground: 30 41 59 !important;
+    --popover: 255 255 255 !important;
+    --popover-foreground: 30 41 59 !important;
+    --primary: 0 166 147 !important; /* Keep jade primary */
+    --primary-foreground: 255 255 255 !important;
+    --secondary: 241 245 249 !important;
+    --secondary-foreground: 30 41 59 !important;
+    --muted: 241 245 249 !important;
+    --muted-foreground: 100 116 139 !important; /* Medium gray */
+    --accent: 241 245 249 !important;
+    --accent-foreground: 30 41 59 !important;
+    --destructive: 239 68 68 !important;
     --destructive-foreground: 255 255 255 !important;
+    --border: 226 232 240 !important;
+    --input: 226 232 240 !important;
+    --ring: 0 166 147 !important;
   }
 
   /* Layout utilities */
@@ -305,9 +316,10 @@
     @apply block text-sm font-medium text-gray-300 mb-2;
   }
 
-  /* Dialog overrides for light backgrounds */
+  /* Light theme component styles */
   [role="dialog"] {
-    color: #000000 !important;
+    background-color: #ffffff !important;
+    color: #1E293B !important;
   }
 
   [role="dialog"] h2,
@@ -316,27 +328,28 @@
   [role="dialog"] label,
   [role="dialog"] p,
   [role="dialog"] span:not(.status-dot) {
-    color: #000000 !important;
+    color: #1E293B !important;
   }
 
   [role="dialog"] input,
   [role="dialog"] textarea,
   [role="dialog"] select {
-    color: #000000 !important;
+    color: #1E293B !important;
     background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
   }
 
   [role="dialog"] .text-muted-foreground {
-    color: #4a5568 !important;
+    color: #64748B !important;
   }
 
-  /* Card styles */
+  /* Light theme card styles */
   .card-dark {
-    @apply bg-gray-900 border-gray-800;
+    @apply bg-white border-gray-200;
   }
 
   .card-darker {
-    @apply bg-gray-900/50 border-gray-800;
+    @apply bg-gray-50 border-gray-200;
   }
 
   /* Backdrop blur utilities */
