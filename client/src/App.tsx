@@ -50,6 +50,7 @@ function Router() {
       ) : !isAuthenticated ? (
         <>
           <Route path="/" component={Login} />
+          <Route path="/login" component={Login} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route component={Login} />
