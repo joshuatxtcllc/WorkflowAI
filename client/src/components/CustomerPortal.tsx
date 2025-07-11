@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useRoute } from 'wouter';
 import { motion } from 'framer-motion';
 import { Search, Package, CheckCircle, Clock, AlertCircle, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
 import type { OrderWithDetails } from '@shared/schema';
 
 const STATUS_STEPS = [

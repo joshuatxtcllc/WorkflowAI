@@ -1,31 +1,32 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { useAuth } from "@/hooks/useAuth";
+import { Toaster } from "./components/ui/toaster";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { useAuth } from "./hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
-import Dashboard from "@/pages/Dashboard";
-import QuickWins from "@/pages/QuickWins";
-import VendorOrders from "@/pages/VendorOrders";
-import Login from "@/pages/Login";
-import CustomerPortal from "@/components/CustomerPortal";
-import HubConnection from "@/pages/HubConnection";
-import POSIntegration from "@/pages/POSIntegration";
-import Progress from "@/pages/Progress";
-import Orders from "@/pages/Orders";
-import Customers from "@/pages/Customers";
-import Analytics from "@/pages/Analytics";
-import Schedule from "@/pages/Schedule";
-import TimeTracking from "@/pages/TimeTracking";
-import Notifications from "@/pages/Notifications";
-import Reports from "@/pages/Reports";
+import Dashboard from "./pages/Dashboard";
+import QuickWins from "./pages/QuickWins";
+import VendorOrders from "./pages/VendorOrders";
+import Login from "./pages/Login";
+import CustomerPortal from "./components/CustomerPortal";
+import HubConnection from "./pages/HubConnection";
+import POSIntegration from "./pages/POSIntegration";
+import Progress from "./pages/Progress";
+import Orders from "./pages/Orders";
+import Customers from "./pages/Customers";
+import Analytics from "./pages/Analytics";
+import ComprehensiveAnalytics from "./pages/ComprehensiveAnalytics";
+import Schedule from "./pages/Schedule";
+import TimeTracking from "./pages/TimeTracking";
+import Notifications from "./pages/Notifications";
+import Reports from "./pages/Reports";
 import AdminPortal from './pages/AdminPortal';
 import Diagnostics from './pages/Diagnostics';
-import Invoices from "@/pages/Invoices";
-import NotFound from "@/pages/not-found";
+import Invoices from "./pages/Invoices";
+import NotFound from "./pages/not-found";
 import { useEffect } from "react";
-import RelaunchPlan from "@/pages/RelaunchPlan"; // Import the new component
+import RelaunchPlan from "./pages/RelaunchPlan";
 
 function Router() {
   const { isAuthenticated, isLoading, refetch } = useAuth();
@@ -49,6 +50,7 @@ function Router() {
       ) : !isAuthenticated ? (
         <>
           <Route path="/" component={Login} />
+          <Route path="/login" component={Login} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />
           <Route component={Login} />
@@ -62,6 +64,7 @@ function Router() {
           <Route path="/customers" component={Customers} />
           <Route path="/customers/new" component={Customers} />
           <Route path="/analytics" component={Analytics} />
+          <Route path="/analytics/comprehensive" component={ComprehensiveAnalytics} />
           <Route path="/analytics/workload" component={Analytics} />
           <Route path="/analytics/performance" component={Analytics} />
           <Route path="/analytics/time-tracking" component={Analytics} />

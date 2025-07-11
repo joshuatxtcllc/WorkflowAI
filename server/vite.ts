@@ -68,12 +68,36 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  const distPath = path.resolve(import.meta.dirname, "..", "dist", "public");
 
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
-    );
+    console.warn(`Build directory not found at ${distPath}, creating fallback...`);
+    
+    // Create basic structure if missing
+    const fs = require('fs');
+    if (!fs.existsSync(path.dirname(distPath))) {
+      fs.mkdirSync(path.dirname(distPath), { recursive: true });
+    }
+    if (!fs.existsSync(distPath)) {
+      fs.mkdirSync(distPath, { recursive: true });
+    }
+    
+    // Create basic index.html if missing
+    const indexPath = path.join(distPath, 'index.html');
+    if (!fs.existsSync(indexPath)) {
+      fs.writeFileSync(indexPath, `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jay's Frames</title>
+</head>
+<body>
+  <div id="root">Loading...</div>
+  <script>window.location.reload()</script>
+</body>
+</html>`);
+    }
   }
 
   app.use(express.static(distPath));

@@ -4,10 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Brain, X, Send, BarChart3, Clock, AlertTriangle, TrendingUp, Trash2 
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useWebSocket } from '@/hooks/useWebSocket';
-import { apiRequest } from '@/lib/queryClient';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { apiRequest } from '../lib/queryClient';
 import type { AIMessage, WorkloadAnalysis } from '@shared/schema';
 
 export default function AIAssistant() {

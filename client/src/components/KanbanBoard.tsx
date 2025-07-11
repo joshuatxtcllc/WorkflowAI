@@ -3,20 +3,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence } from 'framer-motion';
-import { apiRequest } from '@/lib/queryClient';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { apiRequest } from '../lib/queryClient';
+import { useWebSocket } from '../hooks/useWebSocket';
 import OrderCard from './OrderCard';
 import WorkloadAlertBanner from './WorkloadAlertBanner';
 import { ConfettiBurst } from './ConfettiBurst';
-import { useConfettiStore } from '@/store/useConfettiStore';
-import { useStatsStore } from '@/store/useStatsStore';
-import { KANBAN_COLUMNS } from '@/lib/constants';
+import { useConfettiStore } from '../store/useConfettiStore';
+import { useStatsStore } from '../store/useStatsStore';
+import { KANBAN_COLUMNS } from '../lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
 import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '../hooks/use-toast';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Card, CardContent } from './ui/card';
 import AIAssistant from './AIAssistant';
 
 const columnIcons = {
@@ -43,8 +43,22 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'order',
     drop: (item: { id: string }, monitor) => {
-      if (monitor.didDrop()) return; // Prevent multiple drops
-      onDropOrder(item.id, status);
+      try {
+        if (monitor.didDrop()) {
+          console.log('Drop already handled by nested target');
+          return;
+        }
+        
+        if (!item?.id) {
+          console.warn('Invalid drop item:', item);
+          return;
+        }
+        
+        console.log('Dropping order:', item.id, 'into column:', status);
+        onDropOrder(item.id, status);
+      } catch (error) {
+        console.error('Error in drop handler:', error);
+      }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -219,7 +233,7 @@ export default function KanbanBoard() {
         );
       });
       
-      return { previousOrders };
+      return { previousOrders, orderId };
     },
     onSuccess: (updatedOrder, variables) => {
       // Update the specific order in cache without full refetch
@@ -297,12 +311,15 @@ export default function KanbanBoard() {
 
       // Send WebSocket update with error handling
       try {
-        sendMessage({
-          type: 'order-status-update',
-          data: updatedOrder
-        });
+        if (sendMessage) {
+          sendMessage({
+            type: 'order-status-update',
+            data: updatedOrder
+          });
+        }
       } catch (wsError) {
         console.warn('WebSocket message failed:', wsError);
+        // Don't fail the operation if WebSocket fails
       }
     },
     onError: (error, variables, context) => {
@@ -318,37 +335,50 @@ export default function KanbanBoard() {
         duration: 5000,
       });
     },
+    onSettled: () => {
+      // Reset mutation state after completion to allow subsequent operations
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    },
   });
 
   const handleDropOrder = useCallback((orderId: string, newStatus: string) => {
-    if (!orderId || !newStatus) {
-      console.warn('Invalid drop parameters:', { orderId, newStatus });
-      return;
-    }
+    try {
+      if (!orderId || !newStatus) {
+        console.warn('Invalid drop parameters:', { orderId, newStatus });
+        return;
+      }
 
-    const order = orders.find(o => o.id === orderId);
-    if (!order) {
-      console.warn('Order not found for drop:', orderId);
+      const order = orders.find(o => o.id === orderId);
+      if (!order) {
+        console.warn('Order not found for drop:', orderId);
+        toast({
+          title: "Drop Failed",
+          description: "Order not found. Please refresh and try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (order.status === newStatus) {
+        console.log('No status change needed:', { current: order.status, new: newStatus });
+        return;
+      }
+
+      console.log('Attempting to update order status:', { orderId, from: order.status, to: newStatus });
+      
+      // Use a timeout to ensure the drag operation completes before mutation
+      setTimeout(() => {
+        updateOrderStatusMutation.mutate({ orderId, status: newStatus });
+      }, 50);
+      
+    } catch (error) {
+      console.error('Error in handleDropOrder:', error);
       toast({
         title: "Drop Failed",
-        description: "Order not found. Please refresh and try again.",
+        description: "An error occurred while updating the order. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-
-    if (order.status === newStatus) {
-      console.log('No status change needed:', { current: order.status, new: newStatus });
-      return;
-    }
-
-    // Prevent multiple simultaneous updates for the same order
-    if (updateOrderStatusMutation.isPending) {
-      console.log('Update already in progress, skipping');
-      return;
-    }
-
-    updateOrderStatusMutation.mutate({ orderId, status: newStatus });
   }, [orders, updateOrderStatusMutation, toast]);
 
   // Only update slider when not dragging
@@ -485,7 +515,7 @@ export default function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
-  const { sendMessage, lastMessage } = useWebSocket();
+  const { sendMessage, lastMessage } = useWebSocket() || { sendMessage: null, lastMessage: null };
 
   // Handle WebSocket messages
   useEffect(() => {

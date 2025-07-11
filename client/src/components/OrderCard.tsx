@@ -13,12 +13,12 @@ import {
   Package,
   Zap
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { useOrderStore } from '@/store/useOrderStore';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Card, CardContent } from './ui/card';
+import { useOrderStore } from '../store/useOrderStore';
+import { useToast } from '../hooks/use-toast';
+import { apiRequest } from '../lib/queryClient';
 import type { OrderWithDetails } from '@shared/schema';
 
 interface OrderCardProps {
@@ -80,13 +80,25 @@ export default function OrderCard({ order }: OrderCardProps) {
   }, [order.status, previousStatus]);
 
   // Drag and drop setup
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: 'order',
-    item: { id: order.id, status: order.status },
-    collect: (monitor: any) => ({
+    item: () => {
+      console.log('Starting drag for order:', order.id);
+      setIsDragActive(true);
+      return { id: order.id };
+    },
+    end: (item, monitor) => {
+      // Reset drag state when drag ends
+      setIsDragActive(false);
+      console.log('Drag ended for order:', order.id);
+    },
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }));
+    canDrag: () => {
+      return Boolean(order?.id) && !isUpdating;
+    },
+  });
 
   // Quick status update mutation
   const quickUpdateMutation = useMutation({
