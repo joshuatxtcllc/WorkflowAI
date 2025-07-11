@@ -3,6 +3,8 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/AppSidebar";
 import { useAuth } from "./hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
 import Dashboard from "./pages/Dashboard";
@@ -56,36 +58,47 @@ function Router() {
           <Route component={Login} />
         </>
       ) : (
-        <>
-          <Route path="/" component={Dashboard} />
-          <Route path="/quick-wins" component={QuickWins} />
-          <Route path="/vendor-orders" component={VendorOrders} />
-          <Route path="/orders" component={Orders} />
-          <Route path="/customers" component={Customers} />
-          <Route path="/customers/new" component={Customers} />
-          <Route path="/analytics" component={Analytics} />
-          <Route path="/analytics/comprehensive" component={ComprehensiveAnalytics} />
-          <Route path="/analytics/workload" component={Analytics} />
-          <Route path="/analytics/performance" component={Analytics} />
-          <Route path="/analytics/time-tracking" component={Analytics} />
-          <Route path="/schedule" component={Schedule} />
-          <Route path="/time-tracking" component={TimeTracking} />
-          <Route path="/notifications" component={Notifications} />
-          <Route path="/reports" component={Reports} />
-          <Route path="/reports/daily" component={Reports} />
-          <Route path="/reports/weekly" component={Reports} />
-          <Route path="/reports/monthly" component={Reports} />
-          <Route path="/hub-connection" component={HubConnection} />
-          <Route path="/pos-integration" component={POSIntegration} />
-          <Route path="/progress" component={Progress} />
-          <Route path="/track" component={CustomerPortal} />
-          <Route path="/track/:trackingId" component={CustomerPortal} />
-          <Route path="/admin-portal" component={AdminPortal} />
-          <Route path="/diagnostics" component={Diagnostics} />
-          <Route path="/invoices" component={Invoices} />
-          <Route path="/relaunch-plan" component={RelaunchPlan} /> {/* Add the new route */}
-          <Route component={NotFound} />
-        </>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <div className="text-xl font-semibold text-jade-400">JAY'S FRAMES</div>
+            </header>
+            <div className="flex flex-1 flex-col gap-4 p-4">
+              <Switch>
+                <Route path="/" component={Dashboard} />
+                <Route path="/quick-wins" component={QuickWins} />
+                <Route path="/vendor-orders" component={VendorOrders} />
+                <Route path="/orders" component={Orders} />
+                <Route path="/customers" component={Customers} />
+                <Route path="/customers/new" component={Customers} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/analytics/comprehensive" component={ComprehensiveAnalytics} />
+                <Route path="/analytics/workload" component={Analytics} />
+                <Route path="/analytics/performance" component={Analytics} />
+                <Route path="/analytics/time-tracking" component={Analytics} />
+                <Route path="/schedule" component={Schedule} />
+                <Route path="/time-tracking" component={TimeTracking} />
+                <Route path="/notifications" component={Notifications} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/reports/daily" component={Reports} />
+                <Route path="/reports/weekly" component={Reports} />
+                <Route path="/reports/monthly" component={Reports} />
+                <Route path="/hub-connection" component={HubConnection} />
+                <Route path="/pos-integration" component={POSIntegration} />
+                <Route path="/progress" component={Progress} />
+                <Route path="/track" component={CustomerPortal} />
+                <Route path="/track/:trackingId" component={CustomerPortal} />
+                <Route path="/admin-portal" component={AdminPortal} />
+                <Route path="/diagnostics" component={Diagnostics} />
+                <Route path="/invoices" component={Invoices} />
+                <Route path="/relaunch-plan" component={RelaunchPlan} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
       )}
     </Switch>
   );
