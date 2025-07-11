@@ -27,6 +27,7 @@ import Invoices from "./pages/Invoices";
 import NotFound from "./pages/not-found";
 import { useEffect } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
+import FramersAssistantIntegration from "./pages/FramerAssistantIntegration";
 
 function Router() {
   const { isAuthenticated, isLoading, refetch } = useAuth();
@@ -77,6 +78,7 @@ function Router() {
           <Route path="/reports/monthly" component={Reports} />
           <Route path="/hub-connection" component={HubConnection} />
           <Route path="/pos-integration" component={POSIntegration} />
+          <Route path="/framers-assistant" component={FramersAssistantIntegration} />
           <Route path="/progress" component={Progress} />
           <Route path="/track" component={CustomerPortal} />
           <Route path="/track/:trackingId" component={CustomerPortal} />

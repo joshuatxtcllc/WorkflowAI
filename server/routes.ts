@@ -17,6 +17,7 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
+import { framersAssistantIntegration } from "./integrations/framersAssistant";
 import { AIService } from "./services/aiService";
 import { NotificationService } from "./services/notificationService";
 import { TwilioVoiceService } from './services/twilioVoiceService';
@@ -670,12 +671,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sms: true, // SMS is always available
         voice: twilioStatus, // Twilio voice calls
         pos: await posIntegration.checkConnection(),
+        framersAssistant: await framersAssistantIntegration.checkConnection(),
         dashboard: true // Dashboard integration is internal
       };
       res.json(status);
     } catch (error) {
       console.error('Error checking integration status:', error);
       res.status(500).json({ message: 'Failed to check integration status' });
+    }
+  });
+
+  // Framers Assistant Integration routes
+  app.get('/api/framers-assistant/status', isAuthenticated, async (req, res) => {
+    try {
+      const status = await framersAssistantIntegration.checkConnection();
+      res.json(status);
+    } catch (error) {
+      console.error('Error checking Framers Assistant status:', error);
+      res.status(500).json({ 
+        success: false,
+        connected: false,
+        error: 'Failed to check Framers Assistant status'
+      });
+    }
+  });
+
+  app.post('/api/framers-assistant/test-connection', isAuthenticated, async (req, res) => {
+    try {
+      const connection = await framersAssistantIntegration.testConnection();
+      res.json({
+        success: connection.connected && connection.authenticated,
+        ...connection
+      });
+    } catch (error) {
+      console.error('Error testing Framers Assistant connection:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to test connection'
+      });
+    }
+  });
+
+  app.post('/api/framers-assistant/sync-order/:orderId', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const result = await framersAssistantIntegration.syncOrder(orderId);
+      res.json(result);
+    } catch (error) {
+      console.error('Error syncing order to Framers Assistant:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to sync order'
+      });
+    }
+  });
+
+  app.post('/api/framers-assistant/sync-all', isAuthenticated, async (req, res) => {
+    try {
+      const result = await framersAssistantIntegration.syncAllActiveOrders();
+      res.json(result);
+    } catch (error) {
+      console.error('Error syncing all orders to Framers Assistant:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to sync orders'
+      });
     }
   });
 
@@ -1337,6 +1397,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error handling POS webhook:', error);
       res.status(500).json({ message: 'Failed to process POS webhook' });
+    }
+  });
+
+  app.post('/api/webhooks/framers-assistant', async (req, res) => {
+    try {
+      await framersAssistantIntegration.handleWebhook(req, res);
+    } catch (error) {
+      console.error('Error handling Framers Assistant webhook:', error);
+      res.status(500).json({ message: 'Failed to process Framers Assistant webhook' });
     }
   });
 
