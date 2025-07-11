@@ -61,8 +61,8 @@ export function SystemAlerts() {
 
   return (
     <div className="space-y-4">
-      {alerts.map((alert: SystemAlert) => (
-        <Alert key={alert.id || index} className="bg-gray-800 border-gray-700">
+      {alerts.map((alert: SystemAlert, index: number) => (
+        <Alert key={alert.id || `alert-${index}`} className="bg-gray-800 border-gray-700">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle className="text-white">
             {alert.title || alert.type || 'System Alert'}
