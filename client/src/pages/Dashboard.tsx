@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { SidebarProvider, useSidebar } from "../components/ui/sidebar";
 import { AppSidebar } from "../components/AppSidebar";
-import Header from "../components/Header";
+
 import KanbanBoard from "../components/KanbanBoard";
 import OrderDetails from "../components/OrderDetails";
 import AIAssistant from '../components/AIAssistant';
@@ -76,7 +76,6 @@ export default function Dashboard() {
 
         {/* Main content area */}
         <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
-          <Header />
           <main className="flex-1 p-4 space-y-6 overflow-hidden">
             <SystemAlerts />
             <KanbanBoard />
