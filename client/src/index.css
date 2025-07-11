@@ -70,29 +70,53 @@
     color: #FFFFFF !important;
   }
 
-  /* Force solid text colors for all elements */
+  /* Force solid text colors for all elements - AGGRESSIVE OVERRIDE */
   *, *::before, *::after {
-    color: inherit !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
-  /* Override any transparent text */
-  h1, h2, h3, h4, h5, h6, p, span, div, label, a, button {
+  /* Override any transparent text - ALL ELEMENTS */
+  h1, h2, h3, h4, h5, h6, p, span, div, label, a, button, 
+  .text-gray-100, .text-gray-200, .text-gray-300, .text-gray-400, .text-gray-500,
+  .text-white, .text-muted-foreground, .text-foreground {
     color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   /* Specific overrides for components */
-  .card, .card *, .bg-gray-900, .bg-gray-900 * {
+  .card, .card *, .bg-gray-900, .bg-gray-900 *, 
+  .bg-gray-800, .bg-gray-800 *, .glass, .glass * {
     color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   /* Alert banner text */
-  .bg-gradient-to-r, .bg-gradient-to-r * {
+  .bg-gradient-to-r, .bg-gradient-to-r *, 
+  .gradient-bg, .gradient-bg * {
     color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   /* Navigation text */
-  nav, nav *, .sidebar, .sidebar * {
+  nav, nav *, .sidebar, .sidebar *, 
+  [data-sidebar], [data-sidebar] * {
     color: #FFFFFF !important;
+    opacity: 1 !important;
+  }
+
+  /* Force override all Tailwind text colors */
+  [class*="text-"], [class*="text-gray"], [class*="text-slate"] {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+  }
+
+  /* Card content specific */
+  .card-content, .card-content *, 
+  .card-header, .card-header *,
+  .card-title, .card-description {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   /* Custom scrollbar for webkit browsers */
@@ -255,24 +279,40 @@
     @apply animate-spin w-4 h-4 border-2 border-jade-500 border-t-transparent rounded-full;
   }
 
-  /* Typography */
+  /* Typography - FORCE SOLID WHITE */
   .text-heading {
     @apply font-bold;
     color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   .text-subheading {
     @apply font-semibold;
-    color: #F5F5F5 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   .text-body {
-    color: #F0F0F0 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
   }
 
   .text-caption {
     @apply text-sm;
-    color: #E0E0E0 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+  }
+
+  /* Override CSS custom properties */
+  :root, .dark {
+    --foreground: 255 255 255 !important;
+    --card-foreground: 255 255 255 !important;
+    --popover-foreground: 255 255 255 !important;
+    --primary-foreground: 255 255 255 !important;
+    --secondary-foreground: 255 255 255 !important;
+    --muted-foreground: 255 255 255 !important;
+    --accent-foreground: 255 255 255 !important;
+    --destructive-foreground: 255 255 255 !important;
   }
 
   /* Layout utilities */
