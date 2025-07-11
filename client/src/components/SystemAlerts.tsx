@@ -34,7 +34,7 @@ export function SystemAlerts() {
   if (error) {
     return (
       <div className="bg-gray-800 rounded-lg p-4">
-        <div className="flex items-center space-x-2 text-yellow-400">
+        <div className="flex items-center space-x-2 text-orange-400">
           <Wifi className="h-5 w-5" />
           <span className="font-medium">Alert System Unavailable</span>
         </div>

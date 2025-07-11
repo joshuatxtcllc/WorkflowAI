@@ -74,7 +74,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
       case 'COMPLETED': return 'text-green-400';
       case 'DELAYED': return 'text-red-400';
       case 'PICKED_UP': return 'text-blue-400';
-      case 'MYSTERY_UNCLAIMED': return 'text-yellow-400';
+      case 'MYSTERY_UNCLAIMED': return 'text-purple-400';
       default: return 'text-jade-400';
     }
   };

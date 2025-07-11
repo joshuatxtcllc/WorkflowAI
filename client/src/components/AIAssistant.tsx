@@ -129,7 +129,7 @@ export default function AIAssistant() {
     switch (level) {
       case 'critical': return 'text-red-500';
       case 'high': return 'text-orange-500';
-      case 'medium': return 'text-yellow-500';
+      case 'medium': return 'text-orange-500';
       default: return 'text-green-500';
     }
   };
@@ -137,7 +137,7 @@ export default function AIAssistant() {
   const getMessageSeverityClass = (severity?: string) => {
     switch (severity) {
       case 'urgent': return 'border-red-500';
-      case 'warning': return 'border-yellow-500';
+      case 'warning': return 'border-orange-500';
       case 'success': return 'border-green-500';
       default: return 'border-jade-500';
     }
