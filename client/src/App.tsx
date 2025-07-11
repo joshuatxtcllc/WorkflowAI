@@ -130,7 +130,7 @@ function App() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <div className="min-h-screen bg-gray-950 text-white">
+          <div className="min-h-screen bg-slate-50 text-slate-900">
             <Toaster />
             <Router />
           </div>
