@@ -70,46 +70,25 @@
     color: #FFFFFF !important;
   }
 
-  /* Targeted text color fixes */
+  /* Force all text to be white and visible */
+  * {
+    color: #FFFFFF !important;
+  }
+  
+  /* Override any transparent or muted colors */
   .text-muted-foreground,
-  .text-gray-400,
-  .text-gray-500,
-  .text-gray-600,
-  .text-slate-400,
-  .text-slate-500,
-  .text-slate-600 {
-    color: rgb(229, 231, 235) !important; /* gray-200 */
+  .text-gray-400, .text-gray-500, .text-gray-600,
+  .text-slate-400, .text-slate-500, .text-slate-600,
+  .text-zinc-400, .text-zinc-500, .text-zinc-600 {
+    color: #FFFFFF !important;
     opacity: 1 !important;
   }
 
-  /* Card and component text */
-  .card-description,
-  .card-title,
-  .card-header,
-  .card-content {
+  /* Ensure all component text is visible */
+  div, span, p, h1, h2, h3, h4, h5, h6, 
+  label, button, a, li, td, th {
     color: #FFFFFF !important;
-  }
-
-  /* Navigation and sidebar text */
-  [data-sidebar] *,
-  nav *,
-  .sidebar * {
-    color: #FFFFFF !important;
-  }
-
-  /* Button text */
-  button, .btn, [role="button"] {
-    color: inherit !important;
-  }
-
-  /* Ensure headings are visible */
-  h1, h2, h3, h4, h5, h6 {
-    color: #FFFFFF !important;
-  }
-
-  /* Override specific library classes */
-  .lucide {
-    color: inherit !important;
+    opacity: 1 !important;
   }
 
   /* Custom scrollbar for webkit browsers */
@@ -296,16 +275,16 @@
     opacity: 1 !important;
   }
 
-  /* Override CSS custom properties with proper RGB values */
+  /* Force all text custom properties to white */
   :root, .dark {
-    --foreground: 255 255 255;
-    --card-foreground: 255 255 255;
-    --popover-foreground: 255 255 255;
-    --primary-foreground: 0 0 0;
-    --secondary-foreground: 255 255 255;
-    --muted-foreground: 229 231 235;
-    --accent-foreground: 255 255 255;
-    --destructive-foreground: 255 255 255;
+    --foreground: 255 255 255 !important;
+    --card-foreground: 255 255 255 !important;
+    --popover-foreground: 255 255 255 !important;
+    --primary-foreground: 0 0 0 !important;
+    --secondary-foreground: 255 255 255 !important;
+    --muted-foreground: 255 255 255 !important;
+    --accent-foreground: 255 255 255 !important;
+    --destructive-foreground: 255 255 255 !important;
   }
 
   /* Layout utilities */
