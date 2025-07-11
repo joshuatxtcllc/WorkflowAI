@@ -177,31 +177,6 @@ export const notifications = pgTable("notifications", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const invoices = pgTable("invoices", {
-  id: varchar("id").primaryKey().notNull(),
-  invoiceNumber: varchar("invoice_number").unique().notNull(),
-  customerId: varchar("customer_id").notNull(),
-  orderId: varchar("order_id"),
-  
-  status: varchar("status", { enum: ["draft", "sent", "paid", "overdue"] }).default("draft"),
-  
-  subtotal: real("subtotal").notNull(),
-  taxRate: real("tax_rate").default(0),
-  tax: real("tax").default(0),
-  total: real("total").notNull(),
-  
-  dueDate: timestamp("due_date").notNull(),
-  notes: text("notes"),
-  metadata: jsonb("metadata"), // Payment links, Stripe data, etc.
-  
-  lineItems: jsonb("line_items").notNull(), // Array of line items
-  
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  sentAt: timestamp("sent_at"),
-  paidAt: timestamp("paid_at"),
-});
-
 export const aiAnalysis = pgTable("ai_analysis", {
   id: varchar("id").primaryKey().notNull(),
 
@@ -270,17 +245,6 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   }),
 }));
 
-export const invoicesRelations = relations(invoices, ({ one }) => ({
-  customer: one(customers, {
-    fields: [invoices.customerId],
-    references: [customers.id],
-  }),
-  order: one(orders, {
-    fields: [invoices.orderId],
-    references: [orders.id],
-  }),
-}));
-
 // Insert schemas
 export const insertCustomerSchema = createInsertSchema(customers).omit({
   id: true,
@@ -289,6 +253,7 @@ export const insertCustomerSchema = createInsertSchema(customers).omit({
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
   completedAt: true,
@@ -315,25 +280,6 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
   failedAt: true,
 });
 
-export const insertInvoiceSchema = createInsertSchema(invoices).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  sentAt: true,
-  paidAt: true,
-}).extend({
-  invoiceNumber: z.string().min(1, "Invoice number is required"),
-  customerId: z.string().min(1, "Customer is required"),
-  total: z.number().min(0, "Total must be positive"),
-  dueDate: z.date(),
-  lineItems: z.array(z.object({
-    description: z.string(),
-    quantity: z.number(),
-    price: z.number(),
-    total: z.number()
-  }))
-});
-
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -347,8 +293,6 @@ export type StatusHistory = typeof statusHistory.$inferSelect;
 export type TimeEntry = typeof timeEntries.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
-export type Invoice = typeof invoices.$inferSelect;
-export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
 export type AIAnalysis = typeof aiAnalysis.$inferSelect;
 
 // Extended types for API responses

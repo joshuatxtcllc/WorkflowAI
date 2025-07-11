@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import WorkflowEnhancements from '../components/WorkflowEnhancements';
-import KanbanBoard from '../components/KanbanBoard';
-import CompletionStats from '../components/CompletionStats';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import WorkflowEnhancements from '@/components/WorkflowEnhancements';
+import KanbanBoard from '@/components/KanbanBoard';
+import CompletionStats from '@/components/CompletionStats';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Zap, Kanban, Trophy } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 

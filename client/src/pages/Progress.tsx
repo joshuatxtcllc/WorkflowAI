@@ -1,5 +1,5 @@
-import { Navigation } from '../components/Navigation';
-import GamifiedProgress from '../components/GamifiedProgress';
+import { Navigation } from '@/components/Navigation';
+import GamifiedProgress from '@/components/GamifiedProgress';
 
 export default function Progress() {
   return (

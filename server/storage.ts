@@ -7,7 +7,6 @@ import {
   timeEntries,
   notifications,
   aiAnalysis,
-  invoices,
   type User,
   type UpsertUser,
   type Customer,
@@ -21,8 +20,6 @@ import {
   type Notification,
   type InsertNotification,
   type AIAnalysis,
-  type Invoice,
-  type InsertInvoice,
   type OrderWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
@@ -87,16 +84,6 @@ export interface IStorage {
   // AI Analysis operations
   saveAIAnalysis(data: { metrics: any; alerts: any }): Promise<AIAnalysis>;
   getLatestAIAnalysis(): Promise<AIAnalysis | undefined>;
-
-  // Invoice operations
-  getInvoices(): Promise<Invoice[]>;
-  getInvoice(id: string): Promise<Invoice | undefined>;
-  getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined>;
-  getInvoicesByCustomer(customerId: string): Promise<Invoice[]>;
-  getInvoicesByOrder(orderId: string): Promise<Invoice[]>;
-  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
-  updateInvoice(id: string, invoice: Partial<Invoice>): Promise<Invoice>;
-  deleteInvoice(id: string): Promise<void>;
 
   // Analytics operations
   getWorkloadMetrics(): Promise<{
@@ -185,7 +172,7 @@ export class DatabaseStorage implements IStorage {
   async createCustomer(customerData: any) {
     try {
       console.log('Storage createCustomer called with:', customerData);
-
+      
       const customerToInsert = {
         id: customerData.id || randomUUID(),
         name: customerData.name,
@@ -198,17 +185,17 @@ export class DatabaseStorage implements IStorage {
       };
 
       console.log('Inserting customer with data:', customerToInsert);
-
+      
       const [customer] = await db
         .insert(customers)
         .values(customerToInsert)
         .returning();
-
+      
       console.log('Customer inserted successfully:', customer);
       return customer;
     } catch (error) {
       console.error('Storage createCustomer error:', error);
-
+      
       // Provide more specific error information
       if (error instanceof Error) {
         if (error.message.includes('UNIQUE constraint')) {
@@ -216,7 +203,7 @@ export class DatabaseStorage implements IStorage {
         }
         throw new Error(`Database error: ${error.message}`);
       }
-
+      
       throw new Error('Failed to create customer in database');
     }
   }
@@ -349,7 +336,7 @@ export class DatabaseStorage implements IStorage {
       ...order,
       id: order.id || randomUUID()
     };
-
+    
     const [newOrder] = await db
       .insert(orders)
       .values(orderWithId)
@@ -432,10 +419,7 @@ export class DatabaseStorage implements IStorage {
   async createMaterial(material: InsertMaterial): Promise<Material> {
     const [newMaterial] = await db
       .insert(materials)
-      .values({
-        id: randomUUID(),
-        ...material
-      })
+      .values(material)
       .returning();
     return newMaterial;
   }
@@ -479,10 +463,7 @@ export class DatabaseStorage implements IStorage {
   }): Promise<TimeEntry> {
     const [newTimeEntry] = await db
       .insert(timeEntries)
-      .values({
-        id: randomUUID(),
-        ...data
-      })
+      .values(data)
       .returning();
     return newTimeEntry;
   }
@@ -491,10 +472,7 @@ export class DatabaseStorage implements IStorage {
   async createNotification(notification: InsertNotification): Promise<Notification> {
     const [newNotification] = await db
       .insert(notifications)
-      .values({
-        id: randomUUID(),
-        ...notification
-      })
+      .values(notification)
       .returning();
     return newNotification;
   }
@@ -548,68 +526,17 @@ export class DatabaseStorage implements IStorage {
     try {
       const allOrders = await this.getOrders();
       const lowerQuery = query.toLowerCase();
-
+      
       return allOrders.filter(order => 
         order.trackingId.toLowerCase().includes(lowerQuery) ||
         order.customer?.name?.toLowerCase().includes(lowerQuery) ||
         order.description?.toLowerCase().includes(lowerQuery) ||
-        order.status?.toLowerCase().includes(lowerQuery)
+        order.status.toLowerCase().includes(lowerQuery)
       );
     } catch (error) {
       console.error('Error searching orders:', error);
       return [];
     }
-  }
-
-  // Invoice operations
-  async getInvoices(): Promise<Invoice[]> {
-    return await db.select().from(invoices).orderBy(desc(invoices.createdAt));
-  }
-
-  async getInvoice(id: string): Promise<Invoice | undefined> {
-    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
-    return invoice;
-  }
-
-  async getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined> {
-    const [invoice] = await db.select().from(invoices).where(eq(invoices.invoiceNumber, invoiceNumber));
-    return invoice;
-  }
-
-  async getInvoicesByCustomer(customerId: string): Promise<Invoice[]> {
-    return await db.select().from(invoices)
-      .where(eq(invoices.customerId, customerId))
-      .orderBy(desc(invoices.createdAt));
-  }
-
-  async getInvoicesByOrder(orderId: string): Promise<Invoice[]> {
-    return await db.select().from(invoices)
-      .where(eq(invoices.orderId, orderId))
-      .orderBy(desc(invoices.createdAt));
-  }
-
-  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
-    const [newInvoice] = await db
-      .insert(invoices)
-      .values({
-        id: randomUUID(),
-        ...invoice
-      })
-      .returning();
-    return newInvoice;
-  }
-
-  async updateInvoice(id: string, invoice: Partial<Invoice>): Promise<Invoice> {
-    const [updatedInvoice] = await db
-      .update(invoices)
-      .set({ ...invoice, updatedAt: new Date() })
-      .where(eq(invoices.id, id))
-      .returning();
-    return updatedInvoice;
-  }
-
-  async deleteInvoice(id: string): Promise<void> {
-    await db.delete(invoices).where(eq(invoices.id, id));
   }
 
   // Analytics operations
@@ -642,9 +569,7 @@ export class DatabaseStorage implements IStorage {
       // Calculate status counts
       const statusCounts: Record<string, number> = {};
       activeOrders.forEach(order => {
-        if (order.status) {
-          statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
-        }
+        statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
       });
 
       return {

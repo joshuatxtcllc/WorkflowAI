@@ -6,9 +6,9 @@ import {
   AlertTriangle, Clock, TrendingUp, Zap, X, ChevronDown, ChevronUp,
   Target, Users, Timer, BarChart3, Brain, Lightbulb 
 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import type { WorkloadAnalysis, OrderWithDetails } from '@shared/schema';
 
 interface WorkloadAlertBannerProps {
@@ -53,7 +53,7 @@ export default function WorkloadAlertBanner({ orders }: WorkloadAlertBannerProps
     switch (severity) {
       case 'critical': return 'from-red-600 to-red-500';
       case 'high': return 'from-orange-600 to-orange-500';
-      case 'medium': return 'from-orange-600 to-orange-500';
+      case 'medium': return 'from-yellow-600 to-yellow-500';
       default: return 'from-jade-600 to-jade-500';
     }
   };

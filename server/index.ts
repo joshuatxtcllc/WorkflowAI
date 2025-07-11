@@ -121,6 +121,11 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+    // Catch-all route to serve the React app for unmatched routes
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
+    });
+
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
@@ -128,14 +133,11 @@ app.use((req, res, next) => {
 
   server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${port} is already in use. Please stop any existing processes and try again.`);
+      console.error(`Port ${port} is already in use. Trying to kill existing process...`);
       process.exit(1);
     } else {
       console.error('Server error:', err);
-      // Don't throw in production, just log
-      if (process.env.NODE_ENV !== 'production') {
-        throw err;
-      }
+      throw err;
     }
   });
 

@@ -379,10 +379,10 @@ export class POSIntegration {
     return true;
   }
 
-  // Sync individual order status to external Kanban system
-  async syncOrderStatus(orderId: string) {
+  // Sync specific order status to external Kanban system
+  async syncOrder(orderId: string) {
     if (!this.baseUrl || !this.apiKey) {
-      return { success: false, error: 'POS credentials not configured' };
+      return { success: false, error: 'Kanban system not configured' };
     }
 
     try {

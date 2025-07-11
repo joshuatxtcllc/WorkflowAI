@@ -5,7 +5,7 @@ import session from 'express-session';
 import connectPg from 'connect-pg-simple';
 import { storage } from './storage';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-jwt-secret-key-for-development-only-please-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
@@ -17,7 +17,7 @@ export function getSession() {
     tableName: "sessions",
   });
   return session({
-    secret: process.env.SESSION_SECRET || 'fallback-session-secret-for-development-only-please-change-in-production',
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
     store: sessionStore,
     resave: false,
     saveUninitialized: false,

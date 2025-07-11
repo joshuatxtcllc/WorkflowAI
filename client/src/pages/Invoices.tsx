@@ -1,14 +1,31 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Badge } from '../components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { FileText, Plus, Search, Eye, Download, Calendar, User, DollarSign, CreditCard, Link2, Receipt } from 'lucide-react';
-import InvoiceModal from '../components/InvoiceModal';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { FileText, Plus, Search, Eye, Download, Calendar, User, DollarSign } from 'lucide-react';
+import InvoiceModal from '@/components/InvoiceModal';
 import { format } from 'date-fns';
-import { Invoice } from '@/types/invoice';
+
+interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  customerName: string;
+  customerEmail: string;
+  amount: number;
+  status: 'draft' | 'sent' | 'paid' | 'overdue';
+  createdAt: string;
+  dueDate: string;
+  lineItems: Array<{
+    description: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+}
 
 export default function Invoices() {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -19,7 +36,7 @@ export default function Invoices() {
   // Get saved invoices from localStorage and combine with some sample data
   const getSavedInvoices = (): Invoice[] => {
     const savedInvoices = JSON.parse(localStorage.getItem('savedInvoices') || '[]');
-
+    
     // Sample invoices for demonstration
     const sampleInvoices: Invoice[] = [
       {
@@ -58,7 +75,7 @@ export default function Invoices() {
   const [allInvoices, setAllInvoices] = useState<Invoice[]>([]);
 
   // Load invoices on component mount and when modal closes
-  useEffect(() => {
+  React.useEffect(() => {
     setAllInvoices(getSavedInvoices());
   }, [showInvoiceModal]);
 
@@ -68,9 +85,9 @@ export default function Invoices() {
       invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
-
+    
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
-
+    
     return matchesSearch && matchesStatus;
   });
 
@@ -103,57 +120,6 @@ export default function Invoices() {
     link.download = `${invoice.invoiceNumber}.json`;
     link.click();
     URL.revokeObjectURL(url);
-  };
-
-  const handleCreatePaymentLink = async (invoice: Invoice) => {
-    try {
-      const response = await fetch(`/api/invoices/${invoice.id}/payment-link`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (response.ok) {
-        const { paymentLink } = await response.json();
-        window.open(paymentLink, '_blank');
-        setAllInvoices(getSavedInvoices()); // Refresh invoices
-      } else {
-        alert('Failed to create payment link');
-      }
-    } catch (error) {
-      console.error('Error creating payment link:', error);
-      alert('Failed to create payment link');
-    }
-  };
-
-  const handleRecordPayment = async (invoice: Invoice) => {
-    const amount = prompt(`Record payment for ${invoice.invoiceNumber}. Amount ($):`);
-    const method = prompt('Payment method (cash, check, card, etc.):');
-    const transactionId = prompt('Transaction ID (optional):');
-    
-    if (amount && method) {
-      try {
-        const response = await fetch(`/api/invoices/${invoice.id}/payment`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: parseFloat(amount),
-            method,
-            transactionId,
-            notes: `Manual payment recorded`
-          })
-        });
-        
-        if (response.ok) {
-          setAllInvoices(getSavedInvoices()); // Refresh invoices
-          alert('Payment recorded successfully!');
-        } else {
-          alert('Failed to record payment');
-        }
-      } catch (error) {
-        console.error('Error recording payment:', error);
-        alert('Failed to record payment');
-      }
-    }
   };
 
   return (
@@ -243,17 +209,21 @@ export default function Invoices() {
                         <Badge className={getStatusColor(invoice.status)}>
                           {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                         </Badge>
-                        <p className="text-gray-600">Invoice ID: {invoice.id}</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-gray-400" />
-                        <span className="font-medium">${invoice.amount.toFixed(2)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-500">
-                          Due: {format(new Date(invoice.dueDate), 'MMM d, yyyy')}
-                        </span>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          <span>{invoice.customerName}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>Due: {format(new Date(invoice.dueDate), 'MMM d, yyyy')}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4" />
+                          <span className="font-semibold">${invoice.amount.toFixed(2)}</span>
+                        </div>
                       </div>
 
                       <div className="mt-2">
@@ -283,28 +253,6 @@ export default function Invoices() {
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </Button>
-                      {invoice.status !== 'paid' && (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCreatePaymentLink(invoice)}
-                            className="bg-blue-50 hover:bg-blue-100"
-                          >
-                            <Link2 className="h-4 w-4 mr-2" />
-                            Payment Link
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRecordPayment(invoice)}
-                            className="bg-green-50 hover:bg-green-100"
-                          >
-                            <Receipt className="h-4 w-4 mr-2" />
-                            Record Payment
-                          </Button>
-                        </>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -331,7 +279,7 @@ export default function Invoices() {
                   Close
                 </Button>
               </div>
-
+              
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>

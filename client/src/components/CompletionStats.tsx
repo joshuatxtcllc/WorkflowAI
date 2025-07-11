@@ -1,6 +1,6 @@
-import { useStatsStore } from '../store/useStatsStore';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
+import { useStatsStore } from '@/store/useStatsStore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Trophy, Target, Calendar, TrendingUp, Flame, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -104,7 +104,7 @@ export default function CompletionStats() {
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-orange-400" />
+            <Trophy className="h-5 w-5 text-yellow-400" />
             Achievements
           </CardTitle>
         </CardHeader>
@@ -118,7 +118,7 @@ export default function CompletionStats() {
                 key={achievement.id}
                 className={`p-3 rounded-lg border transition-all ${
                   achievement.achieved 
-                    ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500/30' 
+                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30' 
                     : 'bg-gray-700/50 border-gray-600'
                 }`}
                 initial={{ opacity: 0, y: 10 }}
@@ -128,15 +128,15 @@ export default function CompletionStats() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className={`p-2 rounded-full ${
-                      achievement.achieved ? 'bg-orange-500/20' : 'bg-gray-600/20'
+                      achievement.achieved ? 'bg-yellow-500/20' : 'bg-gray-600/20'
                     }`}>
                       <Icon className={`h-4 w-4 ${
-                        achievement.achieved ? 'text-orange-400' : 'text-gray-400'
+                        achievement.achieved ? 'text-yellow-400' : 'text-gray-400'
                       }`} />
                     </div>
                     <div>
                       <h4 className={`font-medium ${
-                        achievement.achieved ? 'text-orange-300' : 'text-white'
+                        achievement.achieved ? 'text-yellow-300' : 'text-white'
                       }`}>
                         {achievement.title}
                       </h4>
@@ -145,7 +145,7 @@ export default function CompletionStats() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {achievement.achieved ? (
-                      <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
+                      <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
                         Unlocked
                       </Badge>
                     ) : (

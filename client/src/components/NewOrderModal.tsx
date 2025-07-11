@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Textarea } from './ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar, CalendarDays, Package, User, Phone, Mail, MapPin, DollarSign, Clock, AlertCircle, X, Plus, Check } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import type { Customer, InsertOrder } from '@shared/schema';
-import { useOrderStore } from '../store/useOrderStore';
-import { useToast } from '../hooks/use-toast';
-import { queryClient } from '../lib/queryClient';
-import { apiRequest } from '../lib/queryClient';
+import { useOrderStore } from '@/store/useOrderStore';
+import { useToast } from '@/hooks/use-toast';
+import { queryClient } from '@/lib/queryClient';
+import { apiRequest } from '@/lib/queryClient';
 
 interface NewOrderData {
   customerId: string;

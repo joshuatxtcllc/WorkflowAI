@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Progress } from '../components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Brain, TrendingUp, Users, Clock, AlertTriangle, Target, BarChart3, Lightbulb } from 'lucide-react';
 
 export default function AnalyticsDashboard() {
@@ -81,7 +81,7 @@ export default function AnalyticsDashboard() {
                     {shopData?.mysteryItems?.total || 0}
                   </p>
                 </div>
-                <AlertTriangle className="w-8 h-8 text-orange-400" />
+                <AlertTriangle className="w-8 h-8 text-amber-400" />
               </div>
             </CardContent>
           </Card>
@@ -174,10 +174,10 @@ export default function AnalyticsDashboard() {
                     
                     {aiData?.bottlenecks && aiData.bottlenecks.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-medium text-orange-400 mb-2">Identified Bottlenecks</h4>
+                        <h4 className="text-sm font-medium text-amber-400 mb-2">Identified Bottlenecks</h4>
                         <div className="space-y-2">
                           {aiData.bottlenecks.map((bottleneck: string, index: number) => (
-                            <Badge key={index} variant="outline" className="border-orange-400 text-orange-400">
+                            <Badge key={index} variant="outline" className="border-amber-400 text-amber-400">
                               {bottleneck}
                             </Badge>
                           ))}
@@ -278,7 +278,7 @@ export default function AnalyticsDashboard() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Urgent Priority</span>
-                      <Badge variant="outline" className="border-orange-400 text-orange-400">
+                      <Badge variant="outline" className="border-amber-400 text-amber-400">
                         {shopData?.urgentAlerts?.urgent || 0}
                       </Badge>
                     </div>
@@ -384,7 +384,7 @@ export default function AnalyticsDashboard() {
           <TabsContent value="mystery" className="space-y-4">
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-orange-400 flex items-center gap-2">
+                <CardTitle className="text-amber-400 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5" />
                   Mystery Items Analysis
                 </CardTitle>
@@ -400,7 +400,7 @@ export default function AnalyticsDashboard() {
                             <p className="text-white font-medium">{item.trackingId}</p>
                             <p className="text-gray-400 text-sm">{item.description}</p>
                           </div>
-                          <Badge variant="outline" className="border-orange-400 text-orange-400">
+                          <Badge variant="outline" className="border-amber-400 text-amber-400">
                             {item.daysInSystem} days
                           </Badge>
                         </div>

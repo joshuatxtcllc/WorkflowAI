@@ -1,13 +1,13 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { Badge } from '../components/ui/badge';
-import { useToast } from '../hooks/use-toast';
-import { Navigation } from '../components/Navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
 import { 
   Phone, 
   PhoneCall, 
@@ -82,7 +82,7 @@ export default function TwilioManagement() {
       case 'no-answer':
         return <XCircle className="h-4 w-4 text-red-500" />;
       case 'busy':
-        return <Phone className="h-4 w-4 text-orange-500" />;
+        return <Phone className="h-4 w-4 text-yellow-500" />;
       default:
         return <Clock className="h-4 w-4 text-blue-500" />;
     }

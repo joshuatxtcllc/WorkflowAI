@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Input } from "../components/ui/input";
-import { Navigation } from "../components/Navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Separator } from "../components/ui/separator";
-import { useToast } from "../hooks/use-toast";
-import { apiRequest, queryClient } from "../lib/queryClient";
+import { Input } from "@/components/ui/input";
+import { Navigation } from "@/components/Navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
   Activity, 
   CheckCircle, 
@@ -153,8 +153,8 @@ export default function POSIntegration() {
     if (isLoading) return "bg-gray-500";
     if (!posStatus) return "bg-gray-500";
     if (posStatus.success && posStatus.connected && posStatus.authenticated) return "bg-green-500";
-    if (posStatus.success && posStatus.connected) return "bg-orange-500";
-    if (posStatus.success && posStatus.needsApiKey) return "bg-orange-500";
+    if (posStatus.success && posStatus.connected) return "bg-yellow-500";
+    if (posStatus.success && posStatus.needsApiKey) return "bg-yellow-500";
     return "bg-red-500";
   };
 
@@ -279,7 +279,7 @@ export default function POSIntegration() {
                 Import new POS orders
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="h-3 w-3 text-orange-500" />
+                <Zap className="h-3 w-3 text-yellow-500" />
                 Add to Kanban workflow
               </div>
               <div className="flex items-center gap-2">
@@ -322,11 +322,11 @@ export default function POSIntegration() {
 
           {/* Connection Help */}
           {posStatus && !posStatus.success && (
-            <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-              <h5 className="text-sm font-medium text-orange-800 dark:text-orange-200">
+            <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <h5 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                 Service Status
               </h5>
-              <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
                 {posStatus.error?.includes('502') || posStatus.error?.includes('503') 
                   ? 'Kanban API service is temporarily unavailable. The system will automatically reconnect when service is restored.'
                   : posStatus.error || 'Unable to connect to POS system. Check your network connection and API credentials.'}

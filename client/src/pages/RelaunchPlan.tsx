@@ -1,5 +1,5 @@
 
-import RelaunchChecklist from '../components/RelaunchChecklist';
+import RelaunchChecklist from '@/components/RelaunchChecklist';
 
 export default function RelaunchPlan() {
   return <RelaunchChecklist />;

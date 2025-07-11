@@ -8,12 +8,10 @@ import {
   insertCustomerSchema, 
   insertMaterialSchema,
   insertNotificationSchema,
-  insertInvoiceSchema,
   type Order,
   type Customer,
   type OrderWithDetails,
-  type WorkloadAnalysis,
-  type Invoice 
+  type WorkloadAnalysis 
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { smsIntegration, posIntegration, dashboardIntegration } from "./integrations";
@@ -22,29 +20,11 @@ import { NotificationService } from "./services/notificationService";
 import { TwilioVoiceService } from './services/twilioVoiceService';
 import multer from 'multer';
 import { artworkManager } from './artwork-manager';
-import Stripe from 'stripe';
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
-
-// Initialize Stripe with better error handling
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET || '';
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET || '';
-
-console.log('Stripe configuration:');
-console.log('- Secret key configured:', stripeSecretKey ? `Yes (${stripeSecretKey.length} chars)` : 'No');
-console.log('- Webhook secret configured:', stripeWebhookSecret ? `Yes (${stripeWebhookSecret.length} chars)` : 'No');
-
-const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
-  apiVersion: '2024-12-18.acacia',
-}) : null;
-
-if (!stripe) {
-  console.warn('⚠️  Stripe not initialized - missing STRIPE_SECRET_KEY environment variable');
-  console.log('💡 Add your Stripe secret key to Secrets as STRIPE_SECRET_KEY');
-}
 
 // Initialize AI Service
 const aiService = new AIService();
@@ -61,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      if (req.session?.user) {
+      if (req.session.user) {
         res.json(req.session.user);
       } else {
         res.status(401).json({ message: 'Unauthorized' });
@@ -458,7 +438,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error creating order:', error);
-
+      
       let errorMessage = 'Failed to create order';
       let statusCode = 500;
 
@@ -524,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(completeOrder);
     } catch (error) {
-      console.error('Failed to update order:', { orderId, error: error instanceof Error ? error.message : 'Unknown error' });
+      console.error('Error updating order:', error);
       res.status(500).json({ message: 'Failed to update order' });
     }
   });
@@ -756,30 +736,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, phoneNumber } = req.body;
 
-      const order = await storage.getOrder(orderId);
+      const order = await storage.getOrderWithDetails(orderId);
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
 
-      const result = await TwilioVoiceService.makeOrderStatusCall(
+      const callSid = await twilioVoiceService.makeOrderStatusCall(
         phoneNumber, 
         order.trackingId, 
         order.status
       );
 
-      if (result.success) {
-        res.json({ 
-          success: true, 
-          message: 'Voice call initiated', 
-          callSid: result.callSid 
-        });
-      } else {
-        res.status(500).json({ 
-          success: false,
-          message: 'Failed to make voice call',
-          error: result.error
-        });
-      }
+      res.json({ 
+        success: true, 
+        message: 'Voice call initiated', 
+        callSid 
+      });
     } catch (error) {
       console.error('Error making voice call:', error);
       res.status(500).json({ 
@@ -803,25 +775,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Customer phone number not available' });
       }
 
-      const result = await TwilioVoiceService.notifyOrderReady(
+      const callSid = await twilioVoiceService.makeOrderReadyCall(
         order.customer.phone,
         order.trackingId,
         order.customer.name
       );
 
-      if (result.success) {
-        res.json({ 
-          success: true, 
-          message: 'Order ready call initiated', 
-          callSid: result.callSid 
-        });
-      } else {
-        res.status(500).json({ 
-          success: false,
-          message: 'Failed to make order ready call',
-          error: result.error
-        });
-      }
+      res.json({ 
+        success: true, 
+        message: 'Order ready call initiated', 
+        callSid 
+      });
     } catch (error) {
       console.error('Error making order ready call:', error);
       res.status(500).json({ 
@@ -840,21 +804,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Phone number and message are required' });
       }
 
-      const result = await TwilioVoiceService.makeCustomCall(phoneNumber, message);
+      const callSid = await twilioVoiceService.makeCustomCall(phoneNumber, message);
 
-      if (result.success) {
-        res.json({ 
-          success: true, 
-          message: 'Custom voice call initiated', 
-          callSid: result.callSid 
-        });
-      } else {
-        res.status(500).json({ 
-          success: false,
-          message: 'Failed to make custom voice call',
-          error: result.error
-        });
-      }
+      res.json({ 
+        success: true, 
+        message: 'Custom voice call initiated', 
+        callSid 
+      });
     } catch (error) {
       console.error('Error making custom voice call:', error);
       res.status(500).json({ 
@@ -868,7 +824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
     try {
       const { callSid } = req.params;
-      const callStatus = await TwilioVoiceService.getCallStatus(callSid);
+      const callStatus = await twilioVoiceService.getCallStatus(callSid);
       res.json(callStatus);
     } catch (error) {
       console.error('Error fetching call status:', error);
@@ -887,353 +843,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         error: error instanceof Error ? error.message : 'Dashboard sync failed'
       });
-    }
-  });
-
-  // Invoice routes
-  app.get('/api/invoices', isAuthenticated, async (req, res) => {
-    try {
-      const invoices = await storage.getInvoices();
-      res.json(invoices);
-    } catch (error) {
-      console.error('Error fetching invoices:', error);
-      res.status(500).json({ message: 'Failed to fetch invoices' });
-    }
-  });
-
-  app.get('/api/invoices/:id', isAuthenticated, async (req, res) => {
-    try {
-      const invoice = await storage.getInvoice(req.params.id);
-      if (!invoice) {
-        return res.status(404).json({ message: 'Invoice not found' });
-      }
-      res.json(invoice);
-    } catch (error) {
-      console.error('Error fetching invoice:', error);
-      res.status(500).json({ message: 'Failed to fetch invoice' });
-    }
-  });
-
-  app.post('/api/invoices', isAuthenticated, async (req, res) => {
-    try {
-      const validatedData = insertInvoiceSchema.parse(req.body);
-      
-      // Check if invoice number already exists
-      const existingInvoice = await storage.getInvoiceByNumber(validatedData.invoiceNumber);
-      if (existingInvoice) {
-        return res.status(409).json({ message: 'Invoice number already exists' });
-      }
-
-      const invoice = await storage.createInvoice(validatedData);
-
-      // Create Stripe payment link if Stripe is configured
-      let paymentLink = null;
-      if (stripe) {
-        try {
-          const customer = await storage.getCustomer(validatedData.customerId);
-          
-          const paymentLinkData = await stripe.paymentLinks.create({
-            line_items: validatedData.lineItems.map(item => ({
-              price_data: {
-                currency: 'usd',
-                product_data: {
-                  name: item.description,
-                },
-                unit_amount: Math.round(item.price * 100), // Convert to cents
-              },
-              quantity: item.quantity,
-            })),
-            metadata: {
-              invoiceId: invoice.id,
-              invoiceNumber: invoice.invoiceNumber,
-              customerId: validatedData.customerId,
-            },
-            after_completion: {
-              type: 'redirect',
-              redirect: {
-                url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
-              },
-            },
-          });
-
-          paymentLink = paymentLinkData.url;
-
-          // Update invoice with payment link
-          await storage.updateInvoice(invoice.id, { 
-            metadata: { 
-              paymentLink,
-              stripePaymentLinkId: paymentLinkData.id 
-            } 
-          });
-        } catch (stripeError) {
-          console.error('Error creating Stripe payment link:', stripeError);
-          // Don't fail invoice creation if payment link fails
-        }
-      }
-
-      res.status(201).json({ 
-        ...invoice, 
-        paymentLink 
-      });
-    } catch (error) {
-      console.error('Error creating invoice:', error);
-      if (error.name === 'ZodError') {
-        return res.status(400).json({ 
-          message: 'Validation error', 
-          errors: error.errors 
-        });
-      }
-      res.status(500).json({ message: 'Failed to create invoice' });
-    }
-  });
-
-  app.put('/api/invoices/:id', isAuthenticated, async (req, res) => {
-    try {
-      const invoice = await storage.updateInvoice(req.params.id, req.body);
-      res.json(invoice);
-    } catch (error) {
-      console.error('Error updating invoice:', error);
-      res.status(500).json({ message: 'Failed to update invoice' });
-    }
-  });
-
-  app.delete('/api/invoices/:id', isAuthenticated, async (req, res) => {
-    try {
-      await storage.deleteInvoice(req.params.id);
-      res.json({ message: 'Invoice deleted successfully' });
-    } catch (error) {
-      console.error('Error deleting invoice:', error);
-      res.status(500).json({ message: 'Failed to delete invoice' });
-    }
-  });
-
-  app.get('/api/customers/:customerId/invoices', isAuthenticated, async (req, res) => {
-    try {
-      const invoices = await storage.getInvoicesByCustomer(req.params.customerId);
-      res.json(invoices);
-    } catch (error) {
-      console.error('Error fetching customer invoices:', error);
-      res.status(500).json({ message: 'Failed to fetch customer invoices' });
-    }
-  });
-
-  app.get('/api/orders/:orderId/invoices', isAuthenticated, async (req, res) => {
-    try {
-      const invoices = await storage.getInvoicesByOrder(req.params.orderId);
-      res.json(invoices);
-    } catch (error) {
-      console.error('Error fetching order invoices:', error);
-      res.status(500).json({ message: 'Failed to fetch order invoices' });
-    }
-  });
-
-  app.post('/api/orders/:orderId/generate-invoice', isAuthenticated, async (req, res) => {
-    try {
-      const order = await storage.getOrder(req.params.orderId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Generate invoice number
-      const invoiceNumber = `INV-${Date.now()}`;
-      
-      // Create invoice from order
-      const invoiceData = {
-        invoiceNumber,
-        customerId: order.customerId,
-        orderId: order.id,
-        subtotal: order.price,
-        taxRate: 0.0825, // 8.25% default tax rate
-        tax: order.price * 0.0825,
-        total: order.price * 1.0825,
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        lineItems: [{
-          description: order.description,
-          quantity: 1,
-          price: order.price,
-          total: order.price
-        }],
-        notes: order.notes || ''
-      };
-
-      const invoice = await storage.createInvoice(invoiceData);
-
-      // Create Stripe payment link
-      let paymentLink = null;
-      if (stripe) {
-        try {
-          const paymentLinkData = await stripe.paymentLinks.create({
-            line_items: [{
-              price_data: {
-                currency: 'usd',
-                product_data: {
-                  name: order.description,
-                },
-                unit_amount: Math.round(invoiceData.total * 100), // Convert to cents
-              },
-              quantity: 1,
-            }],
-            metadata: {
-              invoiceId: invoice.id,
-              invoiceNumber: invoice.invoiceNumber,
-              orderId: order.id,
-              customerId: order.customerId,
-            },
-            after_completion: {
-              type: 'redirect',
-              redirect: {
-                url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
-              },
-            },
-          });
-
-          paymentLink = paymentLinkData.url;
-
-          // Update invoice with payment link
-          await storage.updateInvoice(invoice.id, { 
-            metadata: { 
-              paymentLink,
-              stripePaymentLinkId: paymentLinkData.id 
-            } 
-          });
-        } catch (stripeError) {
-          console.error('Error creating Stripe payment link:', stripeError);
-        }
-      }
-
-      res.status(201).json({ 
-        ...invoice, 
-        paymentLink 
-      });
-    } catch (error) {
-      console.error('Error generating invoice:', error);
-      res.status(500).json({ message: 'Failed to generate invoice' });
-    }
-  });
-
-  // Record manual payment
-  app.post('/api/invoices/:id/payment', isAuthenticated, async (req, res) => {
-    try {
-      const { amount, method, transactionId, notes } = req.body;
-      const invoice = await storage.getInvoice(req.params.id);
-      
-      if (!invoice) {
-        return res.status(404).json({ message: 'Invoice not found' });
-      }
-
-      // Update invoice status to paid
-      const updatedInvoice = await storage.updateInvoice(req.params.id, {
-        status: 'paid',
-        paidAt: new Date(),
-        metadata: {
-          ...invoice.metadata,
-          payment: {
-            amount,
-            method,
-            transactionId,
-            notes,
-            recordedAt: new Date(),
-            recordedBy: req.session?.userId
-          }
-        }
-      });
-
-      res.json(updatedInvoice);
-    } catch (error) {
-      console.error('Error recording payment:', error);
-      res.status(500).json({ message: 'Failed to record payment' });
-    }
-  });
-
-  // Create new payment link for existing invoice
-  app.post('/api/invoices/:id/payment-link', isAuthenticated, async (req, res) => {
-    try {
-      const invoice = await storage.getInvoice(req.params.id);
-      if (!invoice) {
-        return res.status(404).json({ message: 'Invoice not found' });
-      }
-
-      if (!stripe) {
-        return res.status(400).json({ message: 'Stripe not configured - missing secret key' });
-      }
-
-      const customer = await storage.getCustomer(invoice.customerId);
-      
-      const paymentLinkData = await stripe.paymentLinks.create({
-        line_items: invoice.lineItems.map(item => ({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: item.description,
-            },
-            unit_amount: Math.round(item.price * 100),
-          },
-          quantity: item.quantity,
-        })),
-        metadata: {
-          invoiceId: invoice.id,
-          invoiceNumber: invoice.invoiceNumber,
-          customerId: invoice.customerId,
-        },
-        after_completion: {
-          type: 'redirect',
-          redirect: {
-            url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
-          },
-        },
-      });
-
-      // Update invoice with new payment link
-      await storage.updateInvoice(invoice.id, {
-        metadata: {
-          ...invoice.metadata,
-          paymentLink: paymentLinkData.url,
-          stripePaymentLinkId: paymentLinkData.id
-        }
-      });
-
-      res.json({ paymentLink: paymentLinkData.url });
-    } catch (error) {
-      console.error('Error creating payment link:', error);
-      res.status(500).json({ message: 'Failed to create payment link' });
-    }
-  });
-
-  // Stripe webhook handler
-  app.post('/api/webhooks/stripe', async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    
-    try {
-      if (!stripe) {
-        return res.status(400).json({ message: 'Stripe not configured' });
-      }
-
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        stripeWebhookSecret
-      );
-
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        const invoiceId = session.metadata?.invoiceId;
-        
-        if (invoiceId) {
-          await storage.updateInvoice(invoiceId, {
-            status: 'paid',
-            paidAt: new Date(),
-            metadata: {
-              stripePaymentIntent: session.payment_intent,
-              stripeSessionId: session.id
-            }
-          });
-        }
-      }
-
-      res.json({ received: true });
-    } catch (error) {
-      console.error('Stripe webhook error:', error);
-      res.status(400).json({ message: 'Webhook signature verification failed' });
     }
   });
 
@@ -1382,44 +991,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe connection test
-  app.get('/api/stripe/test', isAuthenticated, async (req, res) => {
-    try {
-      if (!stripe) {
-        return res.json({
-          connected: false,
-          error: 'Stripe not initialized - missing STRIPE_SECRET_KEY',
-          envVars: {
-            STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
-            STRIPE_SECRET: !!process.env.STRIPE_SECRET,
-            STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
-            STRIPE_WEBHOOK_ENDPOINT_SECRET: !!process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
-          }
-        });
-      }
-
-      // Test Stripe connection by retrieving account info
-      const account = await stripe.accounts.retrieve();
-      
-      res.json({
-        connected: true,
-        accountId: account.id,
-        businessName: account.business_profile?.name || 'Not set',
-        country: account.country,
-        currency: account.default_currency,
-        chargesEnabled: account.charges_enabled,
-        payoutsEnabled: account.payouts_enabled
-      });
-    } catch (error) {
-      console.error('Stripe test error:', error);
-      res.status(500).json({
-        connected: false,
-        error: error.message,
-        hint: 'Check if your Stripe secret key is valid'
-      });
-    }
-  });
-
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
@@ -1429,14 +1000,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/diagnostics/system-health', isAuthenticated, async (req, res) => {
     try {
       const startTime = Date.now();
-
+      
       // Test database health
       const dbStartTime = Date.now();
       const orders = await storage.getOrders();
       const dbResponseTime = Date.now() - dbStartTime;
-
+      
       const apiResponseTime = Date.now() - startTime;
-
+      
       const activeOrders = orders.filter(order => 
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       ).length;
@@ -1507,7 +1078,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/diagnostics/workflow-metrics', isAuthenticated, async (req, res) => {
     try {
       const orders = await storage.getOrders();
-
+      
       // Calculate stage distribution
       const stageDistribution: Record<string, number> = {};
       orders.forEach(order => {
@@ -1584,13 +1155,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const alerts = [];
       const now = new Date();
 
-      if (!Array.isArray(orders)) {
-        throw new Error('Invalid orders data received from storage');
-      }
-
       // Check for overdue orders
       const overdueOrders = orders.filter(order => 
-        order && order.dueDate && new Date(order.dueDate) < now && 
+        order.dueDate && new Date(order.dueDate) < now && 
         !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
 
@@ -1606,9 +1173,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check for system issues
       const activeOrders = orders.filter(order => 
-        order && !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
+        !['COMPLETED', 'PICKED_UP'].includes(order.status || '')
       );
-
+      
       // Capacity warnings with realistic thresholds
       if (activeOrders.length > 200) {
         alerts.push({
@@ -1629,35 +1196,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check for integration issues
-      try {
-        const posConnected = await posIntegration.checkConnection();
-        if (!posConnected) {
-          alerts.push({
-            id: `pos_${Date.now()}`,
-            type: 'integration',
-            severity: 'medium',
-            title: 'POS Integration Offline',
-            content: 'External POS system connection is not available. New orders may not sync automatically.'
-          });
-        }
-      } catch (integrationError) {
-        console.error('Error checking POS integration:', integrationError);
+      const posConnected = await posIntegration.checkConnection();
+      if (!posConnected) {
         alerts.push({
-          id: `pos_error_${Date.now()}`,
+          id: `pos_${Date.now()}`,
           type: 'integration',
-          severity: 'low',
-          title: 'Integration Check Failed',
-          content: 'Unable to verify POS integration status.'
+          severity: 'medium',
+          title: 'POS Integration Offline',
+          content: 'External POS system connection is not available. New orders may not sync automatically.'
         });
       }
 
       res.json(alerts);
     } catch (error) {
-      console.error('Error generating diagnostic alerts:', error instanceof Error ? error.message : 'Unknown error');
-      res.status(500).json({ 
-        message: 'Failed to generate alerts',
-        alerts: [] // Return empty array to prevent frontend errors
-      });
+      console.error('Error generating diagnostic alerts:', error);
+      res.status(500).json({ message: 'Failed to generate alerts' });
     }
   });
 

@@ -35,13 +35,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "./ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 
 // Menu items data
@@ -191,7 +191,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar variant="sidebar" className="border-r border-slate-200 bg-white">
+    <Sidebar variant="sidebar" className="border-r border-gray-800">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>

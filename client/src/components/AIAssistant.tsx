@@ -4,10 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Brain, X, Send, BarChart3, Clock, AlertTriangle, TrendingUp, Trash2 
 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { apiRequest } from '../lib/queryClient';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { apiRequest } from '@/lib/queryClient';
 import type { AIMessage, WorkloadAnalysis } from '@shared/schema';
 
 export default function AIAssistant() {
@@ -129,7 +129,7 @@ export default function AIAssistant() {
     switch (level) {
       case 'critical': return 'text-red-500';
       case 'high': return 'text-orange-500';
-      case 'medium': return 'text-orange-500';
+      case 'medium': return 'text-yellow-500';
       default: return 'text-green-500';
     }
   };
@@ -137,7 +137,7 @@ export default function AIAssistant() {
   const getMessageSeverityClass = (severity?: string) => {
     switch (severity) {
       case 'urgent': return 'border-red-500';
-      case 'warning': return 'border-orange-500';
+      case 'warning': return 'border-yellow-500';
       case 'success': return 'border-green-500';
       default: return 'border-jade-500';
     }

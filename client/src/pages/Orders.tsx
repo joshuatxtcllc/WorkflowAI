@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { SidebarProvider, SidebarInset } from "../components/ui/sidebar";
-import { AppSidebar } from "../components/AppSidebar";
-
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Separator } from '../components/ui/separator';
-import OrderDetails from '../components/OrderDetails';
-import InvoiceModal from '../components/InvoiceModal';
-import { SystemAlerts } from '../components/SystemAlerts';
-import { Navigation } from '../components/Navigation';
-import { useOrderStore } from '../store/useOrderStore';
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import Header from '@/components/Header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import OrderDetails from '@/components/OrderDetails';
+import InvoiceModal from '@/components/InvoiceModal';
+import { SystemAlerts } from '@/components/SystemAlerts';
+import { Navigation } from '@/components/Navigation';
+import { useOrderStore } from '@/store/useOrderStore';
 import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
@@ -22,7 +22,7 @@ import { format } from 'date-fns';
 
 const statusColors = {
   'ORDER_PROCESSED': 'bg-blue-100 text-blue-800',
-  'MATERIALS_ORDERED': 'bg-orange-100 text-orange-800',
+  'MATERIALS_ORDERED': 'bg-yellow-100 text-yellow-800',
   'MATERIALS_ARRIVED': 'bg-green-100 text-green-800',
   'FRAME_CUT': 'bg-purple-100 text-purple-800',
   'MAT_CUT': 'bg-indigo-100 text-indigo-800',

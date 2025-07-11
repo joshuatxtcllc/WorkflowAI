@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Separator } from "../components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Clock, Package, Download, RefreshCw } from "lucide-react";
-import { useToast } from "../hooks/use-toast";
-import { apiRequest } from "../lib/queryClient";
-import { Navigation } from '../components/Navigation';
-import { SystemAlerts } from '../components/SystemAlerts';
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Navigation } from '@/components/Navigation';
+import { SystemAlerts } from '@/components/SystemAlerts';
 
 interface MaterialItem {
   vendor: string;

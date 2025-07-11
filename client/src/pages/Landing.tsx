@@ -1,4 +1,4 @@
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
 
 export default function Landing() {
   return (
@@ -29,7 +29,7 @@ export default function Landing() {
             </p>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-            <h3 className="text-lg font-semibold text-orange-400 mb-3">Customer Portal</h3>
+            <h3 className="text-lg font-semibold text-amber-400 mb-3">Customer Portal</h3>
             <p className="text-gray-400 text-sm">
               Real-time order tracking for customers with automated status notifications.
             </p>

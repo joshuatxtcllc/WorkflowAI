@@ -1,5 +1,5 @@
 import { storage } from "../storage";
-import { TwilioVoiceService } from "./twilioVoiceService";
+import { twilioVoiceService } from "./twilioVoiceService";
 import type { OrderWithDetails, InsertNotification } from "@shared/schema";
 
 export class NotificationService {
@@ -45,17 +45,11 @@ export class NotificationService {
       // Make voice call for completed orders if phone number is available
       if (order.status === 'COMPLETED' && customer.phone) {
         try {
-          const result = await TwilioVoiceService.notifyOrderReady(
+          const callSid = await twilioVoiceService.makeOrderReadyCall(
             customer.phone,
             order.trackingId,
             customer.name
           );
-          
-          if (!result.success) {
-            throw new Error(result.error || 'Failed to make call');
-          }
-          
-          const callSid = result.callSid;
           
           // Create voice call notification record
           const voiceNotification: InsertNotification = {

@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Navigation } from '../components/Navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Badge } from '../components/ui/badge';
+import { Navigation } from '@/components/Navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { CustomerWithDetails } from '@shared/schema';
 import { Search, Plus, User, Phone, Mail, MapPin, Calendar, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
-import { queryClient } from '../lib/queryClient';
-import { useToast } from '../hooks/use-toast';
+import { queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface CustomerFormData {
   name: string;

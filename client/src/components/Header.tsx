@@ -1,9 +1,9 @@
-import { Button } from "./ui/button";
-import { SidebarTrigger } from "./ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign, Zap } from "lucide-react";
 import { Link } from "wouter";
-import { useOrderStore } from "../store/useOrderStore";
+import { useOrderStore } from "@/store/useOrderStore";
 
 export default function Header() {
   const { toggleNewOrderModal } = useOrderStore();

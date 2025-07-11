@@ -3,33 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --background: 248 250 252; /* #F8FAFC - Clean slate background */
-  --foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --muted: 241 245 249; /* #F1F5F9 - Light slate */
-  --muted-foreground: 100 116 139; /* #64748B - Medium slate */
-  --popover: 255 255 255; /* #FFFFFF - Pure white */
-  --popover-foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --card: 255 255 255; /* #FFFFFF - Pure white cards */
-  --card-foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --border: 226 232 240; /* #E2E8F0 - Light border */
-  --input: 255 255 255; /* #FFFFFF - White inputs */
-  --primary: 0 166 147; /* #00A693 - Jade primary */
-  --primary-foreground: 255 255 255; /* #FFFFFF - White on primary */
-  --secondary: 241 245 249; /* #F1F5F9 - Light slate */
-  --secondary-foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --accent: 241 245 249; /* #F1F5F9 - Light slate */
-  --accent-foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --destructive: 239 68 68; /* #EF4444 - Red */
-  --destructive-foreground: 255 255 255; /* #FFFFFF - White on destructive */
-  --ring: 0 166 147; /* #00A693 - Jade for focus rings */
+  --background: 210 11% 98%; /* #F5F7FA */
+  --foreground: 20 14% 4%; /* #0F1419 */
+  --muted: 207 12% 96%; /* #F1F5F9 */
+  --muted-foreground: 25 5% 45%; /* #64748B */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 20 14% 4%; /* #0F1419 */
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 20 14% 4%; /* #0F1419 */
+  --border: 207 12% 91%; /* #E2E8F0 */
+  --input: 207 12% 91%; /* #E2E8F0 */
+  --primary: 175 84% 32%; /* #00A693 - Jade primary */
+  --primary-foreground: 0 0% 0%; /* #000000 */
+  --secondary: 207 12% 96%; /* #F1F5F9 */
+  --secondary-foreground: 24 10% 10%; /* #1E293B */
+  --accent: 207 12% 96%; /* #F1F5F9 */
+  --accent-foreground: 24 10% 10%; /* #1E293B */
+  --destructive: 0 84% 60%; /* #EF4444 */
+  --destructive-foreground: 60 9% 98%; /* #FEFEFE */
+  --ring: 175 84% 32%; /* #00A693 - Jade for focus rings */
   --radius: 0.5rem;
-  
-  /* Sidebar specific variables */
-  --sidebar: 255 255 255; /* #FFFFFF - Pure white sidebar */
-  --sidebar-foreground: 30 41 59; /* #1E293B - Dark slate text */
-  --sidebar-border: 226 232 240; /* #E2E8F0 - Light border */
-  --sidebar-accent: 241 245 249; /* #F1F5F9 - Light accent */
-  --sidebar-accent-foreground: 30 41 59; /* #1E293B - Dark text on accent */
 }
 
 .dark {
@@ -56,7 +49,7 @@
 
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    @apply border-border;
   }
 
   html {
@@ -64,105 +57,41 @@
   }
 
   body {
+    @apply font-sans antialiased text-foreground dark;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #F8FAFC !important; /* Clean light background */
-    color: #1E293B !important; /* Dark blue-gray text */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: #0A0A0B !important; /* Force dark background */
+    color: #FAFAFA !important; /* Force light text */
   }
 
-  /* Force light mode globally */
+  /* Force dark mode globally */
   html, body, #root {
-    background-color: #F8FAFC !important;
-    color: #1E293B !important;
+    @apply dark;
+    background-color: #0A0A0B !important;
+    color: #FAFAFA !important;
   }
 
-  /* Remove all yellow styling and ensure clean colors */
-  * {
-    color: #1E293B !important;
-  }
-
-  /* Specific background overrides for yellow classes */
-  .bg-yellow-50, .bg-yellow-100, .bg-yellow-200, .bg-yellow-300,
-  .bg-yellow-400, .bg-yellow-500, .bg-yellow-600, .bg-yellow-700,
-  .bg-yellow-800, .bg-yellow-900 {
-    background-color: #FFFFFF !important;
-  }
-
-  /* Ensure cards and UI elements have clean backgrounds */
-  .card, [role="dialog"], .popover-content {
-    background-color: #FFFFFF !important;
-    color: #1E293B !important;
-  }
-
-  /* Fix sidebar background colors */
-  [data-sidebar="sidebar"] {
-    background-color: #FFFFFF !important;
-    color: #1E293B !important;
-  }
-
-  /* Mobile sidebar background */
-  .sheet-content {
-    background-color: #FFFFFF !important;
-    color: #1E293B !important;
-  }
-
-  /* Force all sidebar elements to have clean styling */
-  .sidebar *, [data-sidebar] *, [data-sidebar] {
-    background-color: transparent !important;
-    color: #1E293B !important;
-  }
-
-  /* Override any potential yellow backgrounds in all elements */
-  body, html, #root, main, div, section, article, header, footer,
-  nav, aside, .container, .wrapper, .layout {
-    background-color: inherit !important;
-  }
-
-  /* Force main content background */
-  .main-content, .content, .page-content {
-    background-color: #F8FAFC !important;
-  }
-  
-  /* Override any muted colors with visible dark text */
-  .text-muted-foreground,
-  .text-gray-400, .text-gray-500, .text-gray-600,
-  .text-slate-400, .text-slate-500, .text-slate-600,
-  .text-zinc-400, .text-zinc-500, .text-zinc-600 {
-    color: #64748B !important; /* Medium gray for muted text */
-    opacity: 1 !important;
-  }
-
-  /* Ensure all component text is visible */
-  div, span, p, h1, h2, h3, h4, h5, h6, 
-  label, button, a, li, td, th {
-    color: #1E293B !important;
-    opacity: 1 !important;
-  }
-
-  /* Custom scrollbar for webkit browsers - light theme */
+  /* Custom scrollbar for webkit browsers */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background-color: #f1f5f9;
+    @apply bg-gray-900;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #00A693;
-    border-radius: 0.375rem;
+    @apply bg-jade-500 rounded;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #14B8A6;
+    @apply bg-jade-400;
   }
 
-  /* Light theme scrollbar for Firefox */
+  /* Dark mode scrollbar for Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #00A693 #f1f5f9;
+    scrollbar-color: #00A693 #131316;
   }
 }
 
@@ -262,7 +191,7 @@
   }
 
   .status-medium {
-    @apply bg-orange-500;
+    @apply bg-yellow-500;
   }
 
   .status-low {
@@ -283,7 +212,7 @@
   }
 
   .material-ordered {
-    @apply bg-blue-500;
+    @apply bg-yellow-500;
   }
 
   .material-arrived {
@@ -300,51 +229,21 @@
     @apply animate-spin w-4 h-4 border-2 border-jade-500 border-t-transparent rounded-full;
   }
 
-  /* Typography - FORCE SOLID WHITE */
+  /* Typography */
   .text-heading {
-    @apply font-bold;
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+    @apply font-bold text-white;
   }
 
   .text-subheading {
-    @apply font-semibold;
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+    @apply font-semibold text-gray-300;
   }
 
   .text-body {
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+    @apply text-gray-400;
   }
 
   .text-caption {
-    @apply text-sm;
-    color: #FFFFFF !important;
-    opacity: 1 !important;
-  }
-
-  /* Light theme custom properties */
-  :root {
-    --background: 248 250 252 !important; /* Light gray */
-    --foreground: 30 41 59 !important; /* Dark blue-gray */
-    --card: 255 255 255 !important; /* White cards */
-    --card-foreground: 30 41 59 !important;
-    --popover: 255 255 255 !important;
-    --popover-foreground: 30 41 59 !important;
-    --primary: 0 166 147 !important; /* Keep jade primary */
-    --primary-foreground: 255 255 255 !important;
-    --secondary: 241 245 249 !important;
-    --secondary-foreground: 30 41 59 !important;
-    --muted: 241 245 249 !important;
-    --muted-foreground: 100 116 139 !important; /* Medium gray */
-    --accent: 241 245 249 !important;
-    --accent-foreground: 30 41 59 !important;
-    --destructive: 239 68 68 !important;
-    --destructive-foreground: 255 255 255 !important;
-    --border: 226 232 240 !important;
-    --input: 226 232 240 !important;
-    --ring: 0 166 147 !important;
+    @apply text-sm text-gray-500;
   }
 
   /* Layout utilities */
@@ -365,40 +264,13 @@
     @apply block text-sm font-medium text-gray-300 mb-2;
   }
 
-  /* Light theme component styles */
-  [role="dialog"] {
-    background-color: #ffffff !important;
-    color: #1E293B !important;
-  }
-
-  [role="dialog"] h2,
-  [role="dialog"] h3,
-  [role="dialog"] h4,
-  [role="dialog"] label,
-  [role="dialog"] p,
-  [role="dialog"] span:not(.status-dot) {
-    color: #1E293B !important;
-  }
-
-  [role="dialog"] input,
-  [role="dialog"] textarea,
-  [role="dialog"] select {
-    color: #1E293B !important;
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
-  }
-
-  [role="dialog"] .text-muted-foreground {
-    color: #64748B !important;
-  }
-
-  /* Light theme card styles */
+  /* Card styles */
   .card-dark {
-    @apply bg-white border-gray-200;
+    @apply bg-gray-900 border-gray-800;
   }
 
   .card-darker {
-    @apply bg-gray-50 border-gray-200;
+    @apply bg-gray-900/50 border-gray-800;
   }
 
   /* Backdrop blur utilities */

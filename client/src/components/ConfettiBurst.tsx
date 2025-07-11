@@ -19,16 +19,16 @@ interface ConfettiBurstProps {
 }
 
 const colors = [
+  '#FFD700', // Gold
   '#FF6B6B', // Red
   '#4ECDC4', // Teal
   '#45B7D1', // Blue
   '#96CEB4', // Green
-  '#FF7F50', // Coral (replacing gold)
+  '#FFEAA7', // Yellow
   '#DDA0DD', // Plum
   '#98D8C8', // Mint
-  '#FFA500', // Orange (replacing light yellow)
+  '#F7DC6F', // Light Yellow
   '#BB8FCE', // Light Purple
-  '#00CED1', // Dark Turquoise (replacing yellow)
 ];
 
 export function ConfettiBurst({ trigger, onComplete, originX = 50, originY = 50 }: ConfettiBurstProps) {
@@ -122,8 +122,8 @@ export function ConfettiBurst({ trigger, onComplete, originX = 50, originY = 50 
               }}
             >
               <div className="w-2 h-2 relative">
-                <div className="absolute inset-0 bg-orange-300 transform rotate-45 rounded-sm"></div>
-                <div className="absolute inset-0 bg-orange-300 transform -rotate-45 rounded-sm"></div>
+                <div className="absolute inset-0 bg-yellow-300 transform rotate-45 rounded-sm"></div>
+                <div className="absolute inset-0 bg-yellow-300 transform -rotate-45 rounded-sm"></div>
               </div>
             </motion.div>
           ))}

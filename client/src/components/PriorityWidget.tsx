@@ -1,16 +1,16 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Alert, AlertDescription } from './ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, TrendingUp, Clock } from 'lucide-react';
-import { apiRequest } from '../lib/queryClient';
-import { useToast } from '../hooks/use-toast';
-import { PRIORITY_LEVELS } from '../lib/constants';
-import { getPriorityDistribution, getHighPriorityOrders, sortByPriority } from '../lib/priorityUtils';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { PRIORITY_LEVELS } from '@/lib/constants';
+import { getPriorityDistribution, getHighPriorityOrders, sortByPriority } from '@/lib/priorityUtils';
 import type { OrderWithDetails } from '@shared/schema';
 
 interface PriorityWidgetProps {
