@@ -70,53 +70,46 @@
     color: #FFFFFF !important;
   }
 
-  /* Force solid text colors for all elements - AGGRESSIVE OVERRIDE */
-  *, *::before, *::after {
-    color: #FFFFFF !important;
+  /* Targeted text color fixes */
+  .text-muted-foreground,
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-600,
+  .text-slate-400,
+  .text-slate-500,
+  .text-slate-600 {
+    color: rgb(229, 231, 235) !important; /* gray-200 */
     opacity: 1 !important;
   }
 
-  /* Override any transparent text - ALL ELEMENTS */
-  h1, h2, h3, h4, h5, h6, p, span, div, label, a, button, 
-  .text-gray-100, .text-gray-200, .text-gray-300, .text-gray-400, .text-gray-500,
-  .text-white, .text-muted-foreground, .text-foreground {
+  /* Card and component text */
+  .card-description,
+  .card-title,
+  .card-header,
+  .card-content {
     color: #FFFFFF !important;
-    opacity: 1 !important;
   }
 
-  /* Specific overrides for components */
-  .card, .card *, .bg-gray-900, .bg-gray-900 *, 
-  .bg-gray-800, .bg-gray-800 *, .glass, .glass * {
+  /* Navigation and sidebar text */
+  [data-sidebar] *,
+  nav *,
+  .sidebar * {
     color: #FFFFFF !important;
-    opacity: 1 !important;
   }
 
-  /* Alert banner text */
-  .bg-gradient-to-r, .bg-gradient-to-r *, 
-  .gradient-bg, .gradient-bg * {
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+  /* Button text */
+  button, .btn, [role="button"] {
+    color: inherit !important;
   }
 
-  /* Navigation text */
-  nav, nav *, .sidebar, .sidebar *, 
-  [data-sidebar], [data-sidebar] * {
+  /* Ensure headings are visible */
+  h1, h2, h3, h4, h5, h6 {
     color: #FFFFFF !important;
-    opacity: 1 !important;
   }
 
-  /* Force override all Tailwind text colors */
-  [class*="text-"], [class*="text-gray"], [class*="text-slate"] {
-    color: #FFFFFF !important;
-    opacity: 1 !important;
-  }
-
-  /* Card content specific */
-  .card-content, .card-content *, 
-  .card-header, .card-header *,
-  .card-title, .card-description {
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+  /* Override specific library classes */
+  .lucide {
+    color: inherit !important;
   }
 
   /* Custom scrollbar for webkit browsers */
@@ -303,16 +296,16 @@
     opacity: 1 !important;
   }
 
-  /* Override CSS custom properties */
+  /* Override CSS custom properties with proper RGB values */
   :root, .dark {
-    --foreground: 255 255 255 !important;
-    --card-foreground: 255 255 255 !important;
-    --popover-foreground: 255 255 255 !important;
-    --primary-foreground: 255 255 255 !important;
-    --secondary-foreground: 255 255 255 !important;
-    --muted-foreground: 255 255 255 !important;
-    --accent-foreground: 255 255 255 !important;
-    --destructive-foreground: 255 255 255 !important;
+    --foreground: 255 255 255;
+    --card-foreground: 255 255 255;
+    --popover-foreground: 255 255 255;
+    --primary-foreground: 0 0 0;
+    --secondary-foreground: 255 255 255;
+    --muted-foreground: 229 231 235;
+    --accent-foreground: 255 255 255;
+    --destructive-foreground: 255 255 255;
   }
 
   /* Layout utilities */
