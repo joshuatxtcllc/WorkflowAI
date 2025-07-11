@@ -5,6 +5,7 @@ import { Label } from './ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent } from './ui/card';
+import { Checkbox } from './ui/checkbox';
 import { Plus, Trash2, FileText, Printer } from 'lucide-react';
 
 interface LineItem {
@@ -25,19 +26,42 @@ interface InvoiceModalProps {
     phone: string;
     address: string;
   };
+  prefilledCustomer?: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  };
+  prefilledItems?: {
+    description: string;
+    quantity: number;
+    price: number;
+  }[];
 }
 
-function InvoiceModal({ isOpen, onClose, orderId, customerInfo }: InvoiceModalProps) {
+function InvoiceModal({ isOpen, onClose, orderId, customerInfo, prefilledCustomer, prefilledItems }: InvoiceModalProps) {
+  const customer = prefilledCustomer || customerInfo;
   const [invoiceNumber, setInvoiceNumber] = useState(`INV-${Date.now()}`);
-  const [customerName, setCustomerName] = useState(customerInfo?.name || '');
-  const [customerEmail, setCustomerEmail] = useState(customerInfo?.email || '');
-  const [customerPhone, setCustomerPhone] = useState(customerInfo?.phone || '');
-  const [customerAddress, setCustomerAddress] = useState(customerInfo?.address || '');
+  const [customerName, setCustomerName] = useState(customer?.name || '');
+  const [customerEmail, setCustomerEmail] = useState(customer?.email || '');
+  const [customerPhone, setCustomerPhone] = useState(customer?.phone || '');
+  const [customerAddress, setCustomerAddress] = useState(customer?.address || '');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
-  const [lineItems, setLineItems] = useState<LineItem[]>([
-    { id: '1', description: '', quantity: 1, price: 0, total: 0 }
-  ]);
+  const [lineItems, setLineItems] = useState<LineItem[]>(() => {
+    if (prefilledItems && prefilledItems.length > 0) {
+      return prefilledItems.map((item, index) => ({
+        id: (index + 1).toString(),
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.quantity * item.price
+      }));
+    }
+    return [{ id: '1', description: '', quantity: 1, price: 0, total: 0 }];
+  });
+  const [includeTax, setIncludeTax] = useState(true);
+  const [taxRate, setTaxRate] = useState(0.08); // Default 8% tax rate
 
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +98,7 @@ function InvoiceModal({ isOpen, onClose, orderId, customerInfo }: InvoiceModalPr
   };
 
   const calculateTax = () => {
-    return calculateSubtotal() * 0.08; // 8% tax
+    return includeTax ? calculateSubtotal() * taxRate : 0;
   };
 
   const calculateTotal = () => {
@@ -94,6 +118,8 @@ function InvoiceModal({ isOpen, onClose, orderId, customerInfo }: InvoiceModalPr
     setDueDate('');
     setNotes('');
     setLineItems([{ id: '1', description: '', quantity: 1, price: 0, total: 0 }]);
+    setIncludeTax(true);
+    setTaxRate(0.08);
   };
 
   return (
@@ -224,6 +250,35 @@ function InvoiceModal({ isOpen, onClose, orderId, customerInfo }: InvoiceModalPr
                 ))}
               </div>
 
+              {/* Tax Settings */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="includeTax"
+                      checked={includeTax}
+                      onCheckedChange={(checked) => setIncludeTax(!!checked)}
+                    />
+                    <Label htmlFor="includeTax">Include Tax</Label>
+                  </div>
+                  {includeTax && (
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor="taxRate">Tax Rate (%):</Label>
+                      <Input
+                        id="taxRate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={(taxRate * 100).toFixed(2)}
+                        onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100 || 0)}
+                        className="w-20"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Totals */}
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex justify-end">
@@ -232,10 +287,12 @@ function InvoiceModal({ isOpen, onClose, orderId, customerInfo }: InvoiceModalPr
                       <span>Subtotal:</span>
                       <span>${calculateSubtotal().toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Tax (8%):</span>
-                      <span>${calculateTax().toFixed(2)}</span>
-                    </div>
+                    {includeTax && (
+                      <div className="flex justify-between">
+                        <span>Tax ({(taxRate * 100).toFixed(1)}%):</span>
+                        <span>${calculateTax().toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between font-semibold text-lg border-t pt-2">
                       <span>Total:</span>
                       <span>${calculateTotal().toFixed(2)}</span>
