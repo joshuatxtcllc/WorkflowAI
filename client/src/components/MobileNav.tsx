@@ -14,19 +14,19 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="w-64 bg-gray-900 border-gray-800">
         <div className="flex flex-col space-y-4 mt-8">
-          <Button variant="ghost" className="justify-start">
+          <Button variant="ghost" className="justify-start text-gray-300 hover:text-white hover:bg-gray-700">
             <Home className="mr-2 h-4 w-4" />
             Dashboard
           </Button>
-          <Button variant="ghost" className="justify-start">
+          <Button variant="ghost" className="justify-start text-gray-300 hover:text-white hover:bg-gray-700">
             <BarChart3 className="mr-2 h-4 w-4" />
             Analytics
           </Button>
-          <Button variant="ghost" className="justify-start">
+          <Button variant="ghost" className="justify-start text-gray-300 hover:text-white hover:bg-gray-700">
             <Users className="mr-2 h-4 w-4" />
             Customers
           </Button>
-          <Button variant="ghost" className="justify-start">
+          <Button variant="ghost" className="justify-start text-gray-300 hover:text-white hover:bg-gray-700">
             <Settings className="mr-2 h-4 w-4" />
             Settings
           </Button>
