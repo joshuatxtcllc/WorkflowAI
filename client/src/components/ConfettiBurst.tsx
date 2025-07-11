@@ -19,16 +19,16 @@ interface ConfettiBurstProps {
 }
 
 const colors = [
-  '#FFD700', // Gold
   '#FF6B6B', // Red
   '#4ECDC4', // Teal
   '#45B7D1', // Blue
   '#96CEB4', // Green
-  '#FFEAA7', // Yellow
+  '#FF7F50', // Coral (replacing gold)
   '#DDA0DD', // Plum
   '#98D8C8', // Mint
-  '#F7DC6F', // Light Yellow
+  '#FFA500', // Orange (replacing light yellow)
   '#BB8FCE', // Light Purple
+  '#00CED1', // Dark Turquoise (replacing yellow)
 ];
 
 export function ConfettiBurst({ trigger, onComplete, originX = 50, originY = 50 }: ConfettiBurstProps) {
