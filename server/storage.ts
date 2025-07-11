@@ -432,7 +432,10 @@ export class DatabaseStorage implements IStorage {
   async createMaterial(material: InsertMaterial): Promise<Material> {
     const [newMaterial] = await db
       .insert(materials)
-      .values(material)
+      .values({
+        id: randomUUID(),
+        ...material
+      })
       .returning();
     return newMaterial;
   }
@@ -476,7 +479,10 @@ export class DatabaseStorage implements IStorage {
   }): Promise<TimeEntry> {
     const [newTimeEntry] = await db
       .insert(timeEntries)
-      .values(data)
+      .values({
+        id: randomUUID(),
+        ...data
+      })
       .returning();
     return newTimeEntry;
   }
@@ -485,7 +491,10 @@ export class DatabaseStorage implements IStorage {
   async createNotification(notification: InsertNotification): Promise<Notification> {
     const [newNotification] = await db
       .insert(notifications)
-      .values(notification)
+      .values({
+        id: randomUUID(),
+        ...notification
+      })
       .returning();
     return newNotification;
   }
@@ -544,7 +553,7 @@ export class DatabaseStorage implements IStorage {
         order.trackingId.toLowerCase().includes(lowerQuery) ||
         order.customer?.name?.toLowerCase().includes(lowerQuery) ||
         order.description?.toLowerCase().includes(lowerQuery) ||
-        order.status.toLowerCase().includes(lowerQuery)
+        order.status?.toLowerCase().includes(lowerQuery)
       );
     } catch (error) {
       console.error('Error searching orders:', error);
@@ -633,7 +642,9 @@ export class DatabaseStorage implements IStorage {
       // Calculate status counts
       const statusCounts: Record<string, number> = {};
       activeOrders.forEach(order => {
-        statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+        if (order.status) {
+          statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+        }
       });
 
       return {
