@@ -457,6 +457,106 @@
   .fixed {
     z-index: 999;
   }
+
+  /* Mobile-specific layout improvements */
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+
+  .mobile-margin {
+    margin: 0.5rem !important;
+  }
+
+  /* Better button sizes for mobile */
+  .mobile-button {
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Improved card layouts */
+  .mobile-card {
+    margin-bottom: 1rem !important;
+    border-radius: 0.5rem !important;
+  }
+
+  /* Better modal sizing */
+  .mobile-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 1rem !important;
+  }
+
+  /* Improved form layouts */
+  .mobile-form-field {
+    margin-bottom: 1rem !important;
+  }
+
+  .mobile-form-input {
+    width: 100% !important;
+    padding: 0.75rem !important;
+  }
+
+  /* Enhanced navigation spacing */
+  .mobile-nav-item {
+    padding: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Better table responsiveness */
+  .mobile-table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+  }
+
+  .mobile-table-row {
+    display: flex !important;
+    flex-direction: column !important;
+    border: 1px solid #374151 !important;
+    margin-bottom: 0.5rem !important;
+    padding: 1rem !important;
+    border-radius: 0.5rem !important;
+  }
+
+  .mobile-table-cell {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 0.25rem 0 !important;
+    border-bottom: 1px solid #374151 !important;
+  }
+
+  .mobile-table-cell:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Sticky headers for mobile */
+  .mobile-sticky-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: #0A0A0B !important;
+  }
+
+  /* Improved swipe gestures */
+  .mobile-swipe {
+    touch-action: pan-x !important;
+  }
+
+  /* Better loading states */
+  .mobile-loading {
+    min-height: 50vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
 
 /* Accessibility improvements */

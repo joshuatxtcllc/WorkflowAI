@@ -48,12 +48,12 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
           console.log('Drop already handled by nested target');
           return;
         }
-        
+
         if (!item?.id) {
           console.warn('Invalid drop item:', item);
           return;
         }
-        
+
         console.log('Dropping order:', item.id, 'into column:', status);
         onDropOrder(item.id, status);
       } catch (error) {
@@ -168,6 +168,7 @@ export default function KanbanBoard() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const columns = KANBAN_COLUMNS
 
   // Check URL parameters for filters
   useEffect(() => {
@@ -221,10 +222,10 @@ export default function KanbanBoard() {
     onMutate: async ({ orderId, status }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["/api/orders"] });
-      
+
       // Snapshot previous value
       const previousOrders = queryClient.getQueryData(["/api/orders"]);
-      
+
       // Optimistically update
       queryClient.setQueryData(["/api/orders"], (old: OrderWithDetails[] | undefined) => {
         if (!old) return old;
@@ -232,7 +233,7 @@ export default function KanbanBoard() {
           order.id === orderId ? { ...order, status } : order
         );
       });
-      
+
       return { previousOrders, orderId };
     },
     onSuccess: (updatedOrder, variables) => {
@@ -245,7 +246,7 @@ export default function KanbanBoard() {
             : order
         );
       });
-      
+
       // Only invalidate analytics, not the main orders query
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/workload"] });
 
@@ -267,11 +268,11 @@ export default function KanbanBoard() {
         if (variables.status === 'COMPLETED' || variables.status === 'PICKED_UP') {
           incrementCompletion();
           const stats = getStats();
-          
+
           burst(75, 40);
           setTimeout(() => burst(25, 60), 500);
           setTimeout(() => burst(85, 30), 1000);
-          
+
           const completionMessages = [
             "Outstanding craftsmanship!",
             "Another masterpiece complete!",
@@ -279,16 +280,16 @@ export default function KanbanBoard() {
             "Beautiful frame ready for pickup!",
             "Quality work delivered!"
           ];
-          
+
           const randomMessage = completionMessages[Math.floor(Math.random() * completionMessages.length)];
           const performanceSummary = `${randomMessage} Daily: ${stats.daily} | Total: ${stats.total} | Streak: ${stats.streak} days`;
-          
+
           toast({
             title: variables.status === 'PICKED_UP' ? "🎉 Order Picked Up! 🎉" : "🎉 Order Completed! 🎉",
             description: `${order.customer?.name || 'Customer'}'s order is ${variables.status === 'PICKED_UP' ? 'picked up' : 'ready'}! ${performanceSummary}`,
             duration: 5000,
           });
-          
+
           if (stats.daily === 10 || stats.total % 50 === 0 || stats.streak === 7) {
             setTimeout(() => {
               toast({
@@ -327,7 +328,7 @@ export default function KanbanBoard() {
       if (context?.previousOrders) {
         queryClient.setQueryData(["/api/orders"], context.previousOrders);
       }
-      
+
       toast({
         title: "Update Failed",
         description: "Failed to update order status. Please try again.",
@@ -365,12 +366,12 @@ export default function KanbanBoard() {
       }
 
       console.log('Attempting to update order status:', { orderId, from: order.status, to: newStatus });
-      
+
       // Use a timeout to ensure the drag operation completes before mutation
       setTimeout(() => {
         updateOrderStatusMutation.mutate({ orderId, status: newStatus });
       }, 50);
-      
+
     } catch (error) {
       console.error('Error in handleDropOrder:', error);
       toast({
@@ -640,7 +641,7 @@ export default function KanbanBoard() {
 
           <div 
             ref={scrollContainerRef}
-            className="kanban-scroll flex gap-4 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
+            className="kanban-scroll flex gap-4 md:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',

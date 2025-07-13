@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
 import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 import LoadingScreen from "./components/LoadingScreen";
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 function Router() {
   const { isAuthenticated, isLoading, refetch, error } = useAuth();
@@ -152,6 +153,7 @@ function App() {
           <div className="min-h-screen bg-gray-950 text-white">
             <Toaster />
             <Router />
+            <MobileBottomNav />
           </div>
         </TooltipProvider>
       </QueryClientProvider>

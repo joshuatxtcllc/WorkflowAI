@@ -158,10 +158,11 @@ export default function OrderCard({ order }: OrderCardProps) {
   const nextStatus = STATUS_PROGRESSION[order.status as keyof typeof STATUS_PROGRESSION];
 
   return (
-    <motion.div
-      ref={drag}
-      data-draggable="order"
-      className={`order-card cursor-pointer transition-all duration-200 ${
+    
+      
+        
+        
+        className={`order-card cursor-pointer transition-all duration-200 ${
         isDragging || isDragActive ? 'opacity-50 scale-95 rotate-2' : 'hover:scale-102'
       } ${statusChanged ? 'ring-2 ring-jade-500/50 shadow-jade-500/20' : ''}`}
       animate={{
@@ -172,103 +173,94 @@ export default function OrderCard({ order }: OrderCardProps) {
       whileHover={{ y: -2 }}
       onClick={handleOpenDetails}
     >
-      <Card className="glass-card border-gray-700/50 hover:border-gray-600/50 transition-all duration-200 shadow-lg hover:shadow-xl">
-        <CardContent className="p-3 sm:p-4 space-y-3">
+      
+        
           {/* Header */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <div className="font-mono text-xs sm:text-sm text-jade-400 font-semibold truncate">
+          
+            
+              
                 #{order.trackingId}
-              </div>
-              <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
-                <User className="w-3 h-3 flex-shrink-0" />
-                <span className="truncate">{order.customer?.name || 'Unknown'}</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1 items-end flex-shrink-0">
-              <Badge className={getPriorityColor(order.priority)} size="sm">
+              
+              
+                
+                {order.customer?.name || 'Unknown'}
+              
+            
+            
+              
                 {order.priority}
-              </Badge>
+              
               {isOverdue && (
-                <Badge variant="destructive" size="sm" className="text-xs">
-                  <AlertTriangle className="w-2 h-2 mr-1" />
+                
+                  
                   Overdue
-                </Badge>
+                
               )}
-            </div>
-          </div>
+            
+          
 
           {/* Description */}
           {order.description && (
-            <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 leading-relaxed">
+            
               {order.description}
-            </p>
+            
           )}
 
           {/* Key Details */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex items-center gap-1 text-gray-400">
-              <Calendar className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">
+          
+            
+              
+              
                 {new Date(order.dueDate).toLocaleDateString(undefined, { 
                   month: 'short', 
                   day: 'numeric' 
                 })}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-gray-400">
-              <Clock className="w-3 h-3 flex-shrink-0" />
-              <span>{order.estimatedHours}h</span>
-            </div>
-          </div>
+              
+            
+            
+              
+              
+                {order.estimatedHours}h
+              
+            
+          
 
           {/* Action Bar */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
+          
             {/* Price */}
             {order.price && (
-              <span className="text-jade-400 font-medium flex items-center gap-1 text-xs sm:text-sm">
-                <DollarSign className="w-3 h-3" />
+              
+                
                 <span>${order.price}</span>
-              </span>
+              
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1">
+            
               {/* Notes Indicator */}
               {order.notes && (
-                <MessageSquare className="w-3 h-3 text-gray-500" />
+                
               )}
 
               {/* Quick Action Button */}
               {nextStatus && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 px-2 text-xs text-jade-400 hover:text-jade-300 hover:bg-jade-500/10"
-                  onClick={handleQuickStatusUpdate}
-                  disabled={isUpdating}
-                >
+                
                   {isUpdating ? (
-                    <div className="w-3 h-3 border border-jade-400 border-t-transparent rounded-full animate-spin" />
+                    
                   ) : (
-                    <Zap className="w-3 h-3" />
+                    
                   )}
-                </Button>
+                
               )}
 
               {/* Details Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 text-gray-500 hover:text-white"
-                onClick={handleOpenDetails}
-              >
-                <Edit className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+              
+                
+              
+            
+          
+        
+      
+    
   );
 }
