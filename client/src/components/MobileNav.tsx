@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Badge } from './ui/badge';
@@ -23,8 +23,7 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ unreadNotifications = 0 }: MobileNavProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [location, navigate] = useLocation();
   const [open, setOpen] = React.useState(false);
 
   const navigationItems = [
@@ -45,7 +44,7 @@ export function MobileNav({ unreadNotifications = 0 }: MobileNavProps) {
   };
 
   const isActive = (path: string) => {
-    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+    return location === path || (path !== '/' && location.startsWith(path));
   };
 
   return (

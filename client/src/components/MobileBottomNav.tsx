@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { Badge } from './ui/badge';
 import { 
   Home, 
@@ -16,8 +16,7 @@ interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({ unreadNotifications = 0 }: MobileBottomNavProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [location, navigate] = useLocation();
   const isMobile = useIsMobile();
 
   if (!isMobile) return null;
@@ -31,7 +30,7 @@ export function MobileBottomNav({ unreadNotifications = 0 }: MobileBottomNavProp
   ];
 
   const isActive = (path: string) => {
-    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+    return location === path || (path !== '/' && location.startsWith(path));
   };
 
   return (
