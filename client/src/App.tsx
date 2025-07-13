@@ -25,12 +25,14 @@ import AdminPortal from './pages/AdminPortal';
 import Diagnostics from './pages/Diagnostics';
 import Invoices from "./pages/Invoices";
 import NotFound from "./pages/not-found";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
 import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
+import LoadingScreen from "./components/LoadingScreen";
 
 function Router() {
-  const { isAuthenticated, isLoading, refetch } = useAuth();
+  const { isAuthenticated, isLoading, refetch, error } = useAuth();
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -43,11 +45,39 @@ function Router() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [refetch]);
 
+  // Timeout mechanism to prevent infinite loading
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 10000); // 10 second timeout
+
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [isLoading]);
+
+  // If loading takes too long or there's an error, show login
+  if (loadingTimeout || (error && !isAuthenticated)) {
+    return (
+      <Switch>
+        <Route path="/" component={Login} />
+        <Route path="/login" component={Login} />
+        <Route path="/track" component={CustomerPortal} />
+        <Route path="/track/:trackingId" component={CustomerPortal} />
+        <Route component={Login} />
+      </Switch>
+    );
+  }
 
   return (
     <Switch>
       {isLoading ? (
-        <Route path="*" component={() => <div className="min-h-screen bg-gray-950 flex items-center justify-center"><div className="text-white">Loading...</div></div>} />
+        <Route path="*" component={() => <LoadingScreen onForceRefresh={() => {
+          localStorage.clear();
+          window.location.reload();
+        }} />} />
       ) : !isAuthenticated ? (
         <>
           <Route path="/" component={Login} />
