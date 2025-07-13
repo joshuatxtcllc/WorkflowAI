@@ -54,6 +54,8 @@
 
   html {
     scroll-behavior: smooth;
+    height: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -62,12 +64,19 @@
     color: #FAFAFA !important; /* Force light text */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 
   /* Force dark mode globally */
   html, body, #root {
     background-color: #0A0A0B !important;
     color: #FAFAFA !important;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh; /* Use dynamic viewport height for mobile */
   }
 
   /* Custom scrollbar for webkit browsers */
@@ -397,6 +406,15 @@
 
 /* Mobile-specific optimizations */
 @media (max-width: 768px) {
+  /* Fix viewport for mobile */
+  html, body, #root {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    width: 100vw;
+    position: relative;
+    overflow-x: hidden;
+  }
+
   /* Ensure touch targets are at least 44px */
   button, .cursor-pointer, .cursor-move {
     min-height: 44px;
@@ -408,6 +426,11 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     font-size: 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   /* Optimize scrolling */
@@ -451,11 +474,25 @@
   /* Prevent overlapping with fixed elements */
   main {
     padding-bottom: 120px !important;
+    height: calc(100vh - 120px);
+    height: calc(100dvh - 120px);
+    overflow-y: auto;
   }
 
   /* Adjust fixed element positioning on mobile */
   .fixed {
     z-index: 999;
+  }
+
+  /* Ensure full screen coverage */
+  .mobile-app-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #0A0A0B;
+    z-index: 1;
   }
 
   /* Mobile-specific layout improvements */
