@@ -158,109 +158,108 @@ export default function OrderCard({ order }: OrderCardProps) {
   const nextStatus = STATUS_PROGRESSION[order.status as keyof typeof STATUS_PROGRESSION];
 
   return (
-    
-      
-        
-        
+    <div ref={drag}>
+      <motion.div
         className={`order-card cursor-pointer transition-all duration-200 ${
-        isDragging || isDragActive ? 'opacity-50 scale-95 rotate-2' : 'hover:scale-102'
-      } ${statusChanged ? 'ring-2 ring-jade-500/50 shadow-jade-500/20' : ''}`}
-      animate={{
-        scale: showStatusAnimation ? [1, 1.05, 1] : 1,
-        borderColor: showStatusAnimation ? ['#1f2937', '#10b981', '#1f2937'] : '#1f2937',
-      }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -2 }}
-      onClick={handleOpenDetails}
-    >
-      
-        
-          {/* Header */}
-          
-            
-              
-                #{order.trackingId}
-              
-              
-                
-                {order.customer?.name || 'Unknown'}
-              
-            
-            
-              
-                {order.priority}
-              
-              {isOverdue && (
-                
-                  
-                  Overdue
-                
-              )}
-            
-          
+          isDragging || isDragActive ? 'opacity-50 scale-95 rotate-2' : 'hover:scale-102'
+        } ${statusChanged ? 'ring-2 ring-jade-500/50 shadow-jade-500/20' : ''}`}
+        animate={{
+          scale: showStatusAnimation ? [1, 1.05, 1] : 1,
+          borderColor: showStatusAnimation ? ['#1f2937', '#10b981', '#1f2937'] : '#1f2937',
+        }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ y: -2 }}
+        onClick={handleOpenDetails}
+      >
+        <Card className="h-full bg-gray-800/50 border-gray-700 hover:border-gray-600">
+          <CardContent className="p-4">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <div className="text-sm font-mono text-jade-400 mb-1">
+                  #{order.trackingId}
+                </div>
+                <div className="flex items-center gap-2 text-white">
+                  <User className="h-4 w-4" />
+                  {order.customer?.name || 'Unknown'}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className={getPriorityColor(order.priority)}>
+                  {order.priority}
+                </Badge>
+                {isOverdue && (
+                  <Badge variant="destructive" className="text-xs">
+                    <AlertTriangle className="h-3 w-3 mr-1" />
+                    Overdue
+                  </Badge>
+                )}
+              </div>
+            </div>
 
-          {/* Description */}
-          {order.description && (
-            
-              {order.description}
-            
-          )}
-
-          {/* Key Details */}
-          
-            
-              
-              
-                {new Date(order.dueDate).toLocaleDateString(undefined, { 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              
-            
-            
-              
-              
-                {order.estimatedHours}h
-              
-            
-          
-
-          {/* Action Bar */}
-          
-            {/* Price */}
-            {order.price && (
-              
-                
-                <span>${order.price}</span>
-              
+            {/* Description */}
+            {order.description && (
+              <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                {order.description}
+              </p>
             )}
 
-            {/* Action Buttons */}
-            
-              {/* Notes Indicator */}
-              {order.notes && (
-                
+            {/* Key Details */}
+            <div className="flex justify-between items-center mb-3 text-xs text-gray-400">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  {new Date(order.dueDate).toLocaleDateString(undefined, { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>
+                  {order.estimatedHours}h
+                </span>
+              </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="flex justify-between items-center">
+              {/* Price */}
+              {order.price && (
+                <div className="flex items-center gap-1 text-green-400 text-sm">
+                  <DollarSign className="h-3 w-3" />
+                  <span>${order.price}</span>
+                </div>
               )}
 
-              {/* Quick Action Button */}
-              {nextStatus && (
-                
-                  {isUpdating ? (
-                    
-                  ) : (
-                    
-                  )}
-                
-              )}
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                {/* Notes Indicator */}
+                {order.notes && (
+                  <MessageSquare className="h-4 w-4 text-blue-400" />
+                )}
 
-              {/* Details Button */}
-              
-                
-              
-            
-          
-        
-      
-    
+                {/* Quick Action Button */}
+                {nextStatus && (
+                  <Button size="sm" variant="outline" onClick={handleQuickStatusUpdate} disabled={isUpdating}>
+                    {isUpdating ? (
+                      <div className="animate-spin h-3 w-3 border-2 border-gray-400 border-t-transparent rounded-full" />
+                    ) : (
+                      <Zap className="h-3 w-3" />
+                    )}
+                  </Button>
+                )}
+
+                {/* Details Button */}
+                <Button size="sm" variant="ghost" onClick={handleOpenDetails}>
+                  <Edit className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
   );
 }
