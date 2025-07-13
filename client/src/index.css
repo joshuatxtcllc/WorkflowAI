@@ -299,6 +299,51 @@
     color: #64748B !important;
   }
 
+  /* Sidebar light theme overrides */
+  [data-sidebar="sidebar"] {
+    background-color: #ffffff !important;
+    color: #0F1419 !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
+    color: #0F1419 !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-button"]:hover {
+    background-color: #F1F5F9 !important;
+    color: #0F1419 !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-button"][data-active="true"] {
+    background-color: #00A693 !important;
+    color: #ffffff !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="group-label"] {
+    color: #64748B !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-sub"] {
+    border-left-color: #E2E8F0 !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-sub"] [data-sidebar="menu-button"] {
+    color: #64748B !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="menu-sub"] [data-sidebar="menu-button"]:hover {
+    color: #0F1419 !important;
+    background-color: #F1F5F9 !important;
+  }
+
+  [data-sidebar="sidebar"] [data-sidebar="footer"] {
+    border-top: 1px solid #E2E8F0;
+  }
+
+  [data-sidebar="sidebar"] svg {
+    color: inherit !important;
+  }
+
   /* Card styles */
   .card-dark {
     @apply bg-gray-900 border-gray-800;
