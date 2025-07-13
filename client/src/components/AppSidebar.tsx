@@ -191,7 +191,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar variant="sidebar" className="border-r border-gray-800">
+    <Sidebar variant="sidebar" className="border-r border-gray-200 bg-white">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
