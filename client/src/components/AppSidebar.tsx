@@ -182,7 +182,7 @@ export function AppSidebar() {
 
   const [location, navigate] = useLocation();
   const [activeItem, setActiveItem] = useState("Dashboard");
-  const { setOpen } = useSidebar();
+  const { setOpen, toggleSidebar } = useSidebar();
 
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
@@ -207,7 +207,7 @@ export function AppSidebar() {
           </div>
           <SidebarMenuButton
             size="sm"
-            onClick={() => setOpen(false)}
+            onClick={toggleSidebar}
             className="h-6 w-6 p-0"
           >
             <X className="h-4 w-4" />
