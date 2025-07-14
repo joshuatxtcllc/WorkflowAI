@@ -716,44 +716,73 @@
   box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
 }
 
-/* Custom scrollbar styles for Kanban - FORCE VISIBLE */
+/* FORCE HORIZONTAL SCROLLBAR - AGGRESSIVE APPROACH */
   .kanban-scroll-container {
-    scrollbar-width: auto !important;
+    scrollbar-width: thick !important;
     scrollbar-color: #10b981 #1f2937 !important;
-    overflow-x: scroll !important; /* ALWAYS scroll */
+    overflow-x: scroll !important;
     overflow-y: hidden !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
+    /* Force scrollbar to always show */
+    scrollbar-gutter: stable both-edges !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar {
-    height: 18px !important;
-    background: #1f2937 !important;
+    height: 20px !important;
+    width: 20px !important;
+    background-color: #1f2937 !important;
     display: block !important;
     -webkit-appearance: none !important;
+    /* Force visibility */
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar-track {
-    background: #1f2937 !important;
-    border-radius: 9px !important;
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
+    background-color: #1f2937 !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5) !important;
+    /* Force track to show */
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar-thumb {
-    background: #10b981 !important;
-    border-radius: 9px !important;
-    border: 3px solid #1f2937 !important;
-    min-width: 60px !important;
-    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4) !important;
+    background-color: #10b981 !important;
+    border-radius: 10px !important;
+    border: 2px solid #1f2937 !important;
+    min-width: 80px !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6) !important;
+    /* Force thumb to show */
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: #059669 !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6) !important;
+    background-color: #059669 !important;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.8) !important;
+    transform: scale(1.1) !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar-corner {
-    background: #1f2937 !important;
+    background-color: #1f2937 !important;
+  }
+
+  /* Firefox fallback */
+  @-moz-document url-prefix() {
+    .kanban-scroll-container {
+      scrollbar-width: auto !important;
+      scrollbar-color: #10b981 #1f2937 !important;
+    }
+  }
+
+  /* Force on WebKit browsers */
+  @supports (-webkit-overflow-scrolling: touch) {
+    .kanban-scroll-container::-webkit-scrollbar {
+      -webkit-appearance: scrollbarthumb-horizontal !important;
+      height: 20px !important;
+    }
   }
 
   /* Prevent double-click issues */
