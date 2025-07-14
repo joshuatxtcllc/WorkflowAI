@@ -648,35 +648,30 @@ export default function KanbanBoard() {
 
           <div 
             ref={scrollContainerRef}
-            className="kanban-scroll"
+            className="kanban-scroll-container"
             style={{
-              display: 'flex',
-              flexWrap: 'nowrap',
-              gap: '24px',
+              width: '100%',
+              height: 'calc(100vh - 320px)',
               overflowX: 'auto',
               overflowY: 'hidden',
               paddingBottom: '24px',
-              height: 'calc(100vh - 320px)',
-              minHeight: 'calc(100vh - 320px)',
               scrollBehavior: 'smooth',
               WebkitOverflowScrolling: 'touch',
-              overscrollBehaviorX: 'contain',
-              width: '100%',
-              minWidth: '100%',
-              maxWidth: '100%',
-              scrollbarWidth: 'auto',
-              scrollbarColor: '#10b981 #1f2937',
-              position: 'relative',
+              border: '1px solid transparent', // Force scrollbar visibility
             }}
             onScroll={handleScroll}
           >
-            <div style={{
-              display: 'flex',
-              flexWrap: 'nowrap',
-              gap: '24px',
-              width: 'calc(320px * 10 + 9 * 24px)', // Force content wider than container
-              minWidth: 'calc(320px * 10 + 9 * 24px)',
-            }}>
+            <div 
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                gap: '24px',
+                width: `${KANBAN_COLUMNS.length * 320 + (KANBAN_COLUMNS.length - 1) * 24}px`,
+                minWidth: `${KANBAN_COLUMNS.length * 320 + (KANBAN_COLUMNS.length - 1) * 24}px`,
+                height: '100%',
+                paddingRight: '24px',
+              }}
+            >
               {KANBAN_COLUMNS.map((column) => (
                 <div key={column.status} className="flex-shrink-0" style={{ 
                   width: '320px',

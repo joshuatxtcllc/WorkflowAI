@@ -717,47 +717,50 @@
 }
 
 /* Custom scrollbar styles for Kanban */
-  .kanban-scroll::-webkit-scrollbar {
-    height: 20px !important;
-    width: 20px !important;
+  .kanban-scroll-container::-webkit-scrollbar {
+    height: 16px !important;
     display: block !important;
     -webkit-appearance: none !important;
-  }
-
-  .kanban-scroll::-webkit-scrollbar-track {
     background: #1f2937 !important;
-    border-radius: 10px !important;
-    margin: 0 4px !important;
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
   }
 
-  .kanban-scroll::-webkit-scrollbar-thumb {
+  .kanban-scroll-container::-webkit-scrollbar-track {
+    background: #1f2937 !important;
+    border-radius: 8px !important;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.3) !important;
+  }
+
+  .kanban-scroll-container::-webkit-scrollbar-thumb {
     background: linear-gradient(45deg, #10b981, #059669) !important;
-    border-radius: 10px !important;
-    border: 3px solid #1f2937 !important;
-    min-width: 60px !important;
-    box-shadow: 0 3px 6px rgba(16, 185, 129, 0.4) !important;
+    border-radius: 8px !important;
+    border: 2px solid #1f2937 !important;
+    min-width: 40px !important;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4) !important;
   }
 
-  .kanban-scroll::-webkit-scrollbar-thumb:hover {
+  .kanban-scroll-container::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #059669, #047857) !important;
-    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.6) !important;
-    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.6) !important;
   }
 
-  .kanban-scroll::-webkit-scrollbar-corner {
+  .kanban-scroll-container::-webkit-scrollbar-corner {
     background: #1f2937 !important;
   }
 
   /* Force scrollbar to be visible and functional */
-  .kanban-scroll {
+  .kanban-scroll-container {
     scrollbar-width: auto !important;
     scrollbar-color: #10b981 #1f2937 !important;
-    overflow-x: auto !important;
+    overflow-x: scroll !important; /* Force scroll instead of auto */
     overflow-y: hidden !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
-    position: relative !important;
+  }
+
+  /* Firefox scrollbar styling */
+  .kanban-scroll-container {
+    scrollbar-width: thick !important;
+    scrollbar-color: #10b981 #1f2937 !important;
   }
 
   /* Prevent double-click issues */
