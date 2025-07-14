@@ -584,23 +584,7 @@ export default function KanbanBoard() {
   });
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <style jsx>{`
-        .kanban-scroll::-webkit-scrollbar {
-          height: 12px;
-        }
-        .kanban-scroll::-webkit-scrollbar-track {
-          background: #1f2937;
-          border-radius: 6px;
-        }
-        .kanban-scroll::-webkit-scrollbar-thumb {
-          background: #10b981;
-          border-radius: 6px;
-        }
-        .kanban-scroll::-webkit-scrollbar-thumb:hover {
-          background: #059669;
-        }
-      `}</style>
+    
       <main className="relative z-10 p-3 sm:p-6 h-full">
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
@@ -695,6 +679,6 @@ export default function KanbanBoard() {
         isOpen={isChatOpen} 
         onClose={() => setIsChatOpen(false)}
       />
-    </DndProvider>
+    
   );
 }
