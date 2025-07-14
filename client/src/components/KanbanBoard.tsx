@@ -678,31 +678,32 @@ export default function KanbanBoard() {
           </Card>
 
           <div className="relative">
-            {/* Left scroll arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              className={`absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
-                !canScrollLeft ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
-              }`}
-              onClick={scrollLeft}
-              disabled={!canScrollLeft}
-            >
-              <ChevronLeft className="h-4 w-4 text-white" />
-            </Button>
+            {/* Scroll arrows at bottom center */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                className={`bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
+                  !canScrollLeft ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
+                }`}
+                onClick={scrollLeft}
+                disabled={!canScrollLeft}
+              >
+                <ChevronLeft className="h-4 w-4 text-white" />
+              </Button>
 
-            {/* Right scroll arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
-                !canScrollRight ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
-              }`}
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            >
-              <ChevronRight className="h-4 w-4 text-white" />
-            </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className={`bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
+                  !canScrollRight ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
+                }`}
+                onClick={scrollRight}
+                disabled={!canScrollRight}
+              >
+                <ChevronRight className="h-4 w-4 text-white" />
+              </Button>
+            </div>
 
             <div 
               ref={scrollContainerRef}
