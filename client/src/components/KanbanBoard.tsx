@@ -17,6 +17,7 @@ import { useToast } from '../hooks/use-toast';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent } from './ui/card';
+import { Button } from './ui/button';
 import AIAssistant from './AIAssistant';
 
 const columnIcons = {
