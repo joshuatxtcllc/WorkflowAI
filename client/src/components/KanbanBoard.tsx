@@ -750,7 +750,8 @@ export default function KanbanBoard() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
+    </main>
 
       {/* Confetti Burst Animation */}
       <ConfettiBurst
