@@ -650,16 +650,17 @@ export default function KanbanBoard() {
             ref={scrollContainerRef}
             className="kanban-scroll flex gap-4 md:gap-6 overflow-x-scroll overflow-y-hidden pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
             style={{
-              scrollbarWidth: 'thin',
+              scrollbarWidth: 'auto',
               scrollbarColor: '#10b981 #1f2937',
               minHeight: 'calc(100vh - 320px)',
               WebkitOverflowScrolling: 'touch',
               overscrollBehaviorX: 'contain',
               width: '100%',
-              maxWidth: '100%',
+              maxWidth: 'none',
               display: 'flex',
               flexWrap: 'nowrap',
-              minWidth: 'calc(320px * 10 + 9 * 24px)', // Force container to be wider than viewport
+              minWidth: '4000px', // Force much wider than any viewport
+              overflowX: 'scroll !important' as any,
             }}
             onScroll={handleScroll}
           >
