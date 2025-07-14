@@ -658,12 +658,14 @@ export default function KanbanBoard() {
 
           <div 
             ref={scrollContainerRef}
-            className="kanban-scroll flex gap-4 md:gap-6 overflow-x-auto pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
+            className="kanban-scroll flex gap-4 md:gap-6 overflow-x-auto overflow-y-hidden pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
-              minHeight: 'calc(100vh - 320px)', // Adjusted for banner
-              scrollbarHeight: '12px'
+              minHeight: 'calc(100vh - 320px)',
+              scrollbarHeight: '12px',
+              WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
+              overscrollBehaviorX: 'contain', // Prevent page scroll when at edges
             }}
             onScroll={handleScroll}
           >
