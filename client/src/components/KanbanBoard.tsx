@@ -647,20 +647,23 @@ export default function KanbanBoard() {
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
               minHeight: 'calc(100vh - 320px)',
-              scrollbarHeight: '12px',
-              WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
-              overscrollBehaviorX: 'contain', // Prevent page scroll when at edges
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehaviorX: 'contain',
+              width: '100%',
+              maxWidth: '100%',
+              whiteSpace: 'nowrap'
             }}
             onScroll={handleScroll}
           >
             {KANBAN_COLUMNS.map((column) => (
-              <KanbanColumn
-                key={column.status}
-                title={column.title}
-                status={column.status}
-                orders={filteredOrders.filter(order => order.status === column.status)}
-                onDropOrder={handleDropOrder}
-              />
+              <div key={column.status} className="flex-shrink-0" style={{ width: '320px' }}>
+                <KanbanColumn
+                  title={column.title}
+                  status={column.status}
+                  orders={filteredOrders.filter(order => order.status === column.status)}
+                  onDropOrder={handleDropOrder}
+                />
+              </div>
             ))}
           </div>
         </div>
