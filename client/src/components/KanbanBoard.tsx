@@ -584,7 +584,7 @@ export default function KanbanBoard() {
   });
 
   return (
-    
+    <DndProvider backend={HTML5Backend}>
       <main className="relative z-10 p-3 sm:p-6 h-full">
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
@@ -679,6 +679,6 @@ export default function KanbanBoard() {
         isOpen={isChatOpen} 
         onClose={() => setIsChatOpen(false)}
       />
-    
+    </DndProvider>
   );
 }
