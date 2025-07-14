@@ -718,32 +718,30 @@
 
 /* Custom scrollbar styles for Kanban */
   .kanban-scroll::-webkit-scrollbar {
-    height: 20px !important;
-    width: 20px !important;
+    height: 16px !important;
+    width: 16px !important;
     display: block !important;
     -webkit-appearance: none !important;
-    background: #1f2937 !important;
   }
 
   .kanban-scroll::-webkit-scrollbar-track {
     background: #1f2937 !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     margin: 0 4px !important;
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
-    border: 1px solid #374151 !important;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.2) !important;
   }
 
   .kanban-scroll::-webkit-scrollbar-thumb {
     background: linear-gradient(45deg, #10b981, #059669) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     border: 2px solid #1f2937 !important;
-    min-width: 60px !important;
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4) !important;
+    min-width: 40px !important;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3) !important;
   }
 
   .kanban-scroll::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #059669, #047857) !important;
-    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.6) !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5) !important;
   }
 
   .kanban-scroll::-webkit-scrollbar-corner {
@@ -758,17 +756,6 @@
     overflow-y: hidden !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 4000px !important;
-  }
-
-  /* Force scrollbar visibility on all browsers */
-  .kanban-scroll::-webkit-scrollbar {
-    -webkit-appearance: none !important;
-    display: block !important;
   }
 
   /* Mobile optimizations */
