@@ -650,14 +650,14 @@ export default function KanbanBoard() {
             ref={scrollContainerRef}
             className="kanban-scroll-container"
             style={{
-              width: '100%',
+              width: '100vw',
+              maxWidth: 'calc(100vw - 48px)', // Ensure it's constrained
               height: 'calc(100vh - 320px)',
-              overflowX: 'auto',
+              overflowX: 'scroll', // Force scroll always
               overflowY: 'hidden',
-              paddingBottom: '24px',
+              paddingBottom: '20px',
               scrollBehavior: 'smooth',
               WebkitOverflowScrolling: 'touch',
-              border: '1px solid transparent', // Force scrollbar visibility
             }}
             onScroll={handleScroll}
           >
@@ -666,8 +666,8 @@ export default function KanbanBoard() {
                 display: 'flex',
                 flexWrap: 'nowrap',
                 gap: '24px',
-                width: `${KANBAN_COLUMNS.length * 320 + (KANBAN_COLUMNS.length - 1) * 24}px`,
-                minWidth: `${KANBAN_COLUMNS.length * 320 + (KANBAN_COLUMNS.length - 1) * 24}px`,
+                width: `${KANBAN_COLUMNS.length * 340 + (KANBAN_COLUMNS.length - 1) * 24}px`, // Make wider than viewport
+                minWidth: `${KANBAN_COLUMNS.length * 340 + (KANBAN_COLUMNS.length - 1) * 24}px`,
                 height: '100%',
                 paddingRight: '24px',
               }}
