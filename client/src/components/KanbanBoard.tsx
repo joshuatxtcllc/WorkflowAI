@@ -420,7 +420,7 @@ export default function KanbanBoard() {
     autoScrollIntervalRef.current = setInterval(() => {
       if (scrollContainerRef.current) {
         const container = scrollContainerRef.current;
-        const scrollAmount = direction === 'left' ? -speed * 2 : speed * 2; // Increased speed
+        const scrollAmount = direction === 'left' ? -speed * 4 : speed * 4; // Increased scroll speed
         const newScrollLeft = Math.max(0, Math.min(
           container.scrollLeft + scrollAmount,
           container.scrollWidth - container.clientWidth
@@ -438,7 +438,7 @@ export default function KanbanBoard() {
           stopAutoScroll();
         }
       }
-    }, 20); // Slightly slower for smoother scrolling
+    }, 16); // Smoother 60fps scrolling
   }, []);
 
   const stopAutoScroll = useCallback(() => {
@@ -454,17 +454,20 @@ export default function KanbanBoard() {
 
     const container = scrollContainerRef.current;
     const rect = container.getBoundingClientRect();
-    const scrollZone = 150; // Increased distance from edge to trigger scroll
+    const scrollZone = 100; // Reduced for better trigger area
     const mouseX = e.clientX - rect.left;
 
-    // Check if mouse is near left or right edge
-    if (mouseX < scrollZone && container.scrollLeft > 0) {
+    // Check if mouse is near left or right edge and container can scroll
+    const canScrollLeft = container.scrollLeft > 0;
+    const canScrollRight = container.scrollLeft < container.scrollWidth - container.clientWidth;
+
+    if (mouseX < scrollZone && canScrollLeft) {
       // Near left edge, scroll left
-      const speed = Math.max(3, (scrollZone - mouseX) / 8);
+      const speed = Math.max(2, (scrollZone - mouseX) / 10);
       startAutoScroll('left', speed);
-    } else if (mouseX > rect.width - scrollZone && container.scrollLeft < container.scrollWidth - container.clientWidth) {
+    } else if (mouseX > rect.width - scrollZone && canScrollRight) {
       // Near right edge, scroll right
-      const speed = Math.max(3, (mouseX - (rect.width - scrollZone)) / 8);
+      const speed = Math.max(2, (mouseX - (rect.width - scrollZone)) / 10);
       startAutoScroll('right', speed);
     } else {
       // Not near edges, stop scrolling
@@ -480,16 +483,16 @@ export default function KanbanBoard() {
       // Only handle if it's an order card being dragged
       if (e.target && (e.target as HTMLElement).closest('[data-draggable="order"]')) {
         isDragging = true;
-        document.addEventListener('dragover', handleMouseMove);
-        document.addEventListener('mousemove', handleMouseMove);
+        console.log('Drag started - enabling auto-scroll');
       }
     };
 
     const handleDragEnd = (e: DragEvent) => {
-      isDragging = false;
-      document.removeEventListener('dragover', handleMouseMove);
-      document.removeEventListener('mousemove', handleMouseMove);
-      stopAutoScroll();
+      if (isDragging) {
+        console.log('Drag ended - disabling auto-scroll');
+        isDragging = false;
+        stopAutoScroll();
+      }
     };
 
     const handleDragOver = (e: DragEvent) => {
@@ -510,8 +513,6 @@ export default function KanbanBoard() {
       document.removeEventListener('dragend', handleDragEnd);
       document.removeEventListener('dragover', handleDragOver);
       document.removeEventListener('drop', handleDragEnd);
-      document.removeEventListener('dragover', handleMouseMove);
-      document.removeEventListener('mousemove', handleMouseMove);
       stopAutoScroll();
     };
   }, [handleMouseMove, stopAutoScroll]);
@@ -584,6 +585,22 @@ export default function KanbanBoard() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <style jsx>{`
+        .kanban-scroll::-webkit-scrollbar {
+          height: 12px;
+        }
+        .kanban-scroll::-webkit-scrollbar-track {
+          background: #1f2937;
+          border-radius: 6px;
+        }
+        .kanban-scroll::-webkit-scrollbar-thumb {
+          background: #10b981;
+          border-radius: 6px;
+        }
+        .kanban-scroll::-webkit-scrollbar-thumb:hover {
+          background: #059669;
+        }
+      `}</style>
       <main className="relative z-10 p-3 sm:p-6 h-full">
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
@@ -645,7 +662,8 @@ export default function KanbanBoard() {
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
-              minHeight: 'calc(100vh - 320px)' // Adjusted for banner
+              minHeight: 'calc(100vh - 320px)', // Adjusted for banner
+              scrollbarHeight: '12px'
             }}
             onScroll={handleScroll}
           >
