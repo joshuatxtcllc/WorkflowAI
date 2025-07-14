@@ -269,8 +269,86 @@ export class FramersAssistantIntegration {
     }
   }
 
-  async testConnection() {
-    return await this.checkConnection();
+  async testConnection(testUrl?: string, testApiKey?: string) {
+    // Use provided test credentials or fall back to environment variables
+    const url = testUrl || this.baseUrl;
+    const key = testApiKey || this.apiKey;
+
+    if (!url || !key) {
+      return {
+        success: false,
+        connected: false,
+        authenticated: false,
+        error: 'Missing API configuration - provide URL and API key or set environment variables'
+      };
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      console.log(`Testing connection to Framers Assistant: ${url}`);
+
+      const response = await fetch(`${url}/api/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'Jay-Frames-Kanban/1.0'
+        },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          data = { status: 'healthy', message: 'Connection successful' };
+        }
+
+        console.log('Framers Assistant connection successful:', data);
+        return {
+          success: true,
+          connected: true,
+          authenticated: true,
+          status: 'healthy',
+          appInfo: data,
+          message: 'Successfully connected to Framers Assistant'
+        };
+      } else {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error(`Framers Assistant auth failed: ${response.status} ${response.statusText}`, errorText);
+        
+        return {
+          success: false,
+          connected: true,
+          authenticated: false,
+          error: `Authentication failed: ${response.status} ${response.statusText}`,
+          details: errorText
+        };
+      }
+    } catch (error) {
+      console.error('Framers Assistant connection error:', error);
+      
+      if ((error as Error).name === 'AbortError') {
+        return {
+          success: false,
+          connected: false,
+          authenticated: false,
+          error: 'Connection timeout - check if Framers Assistant is running and accessible'
+        };
+      }
+      
+      return {
+        success: false,
+        connected: false,
+        authenticated: false,
+        error: `Connection failed: ${(error as Error).message}`
+      };
+    }
   }
 }
 

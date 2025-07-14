@@ -698,16 +698,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/framers-assistant/test-connection', isAuthenticated, async (req, res) => {
     try {
-      const connection = await framersAssistantIntegration.testConnection();
-      res.json({
-        success: connection.connected && connection.authenticated,
-        ...connection
-      });
+      const { testUrl, testApiKey } = req.body;
+      const connection = await framersAssistantIntegration.testConnection(testUrl, testApiKey);
+      
+      res.json(connection);
     } catch (error) {
       console.error('Error testing Framers Assistant connection:', error);
       res.status(500).json({ 
         success: false,
-        message: 'Failed to test connection'
+        connected: false,
+        authenticated: false,
+        error: 'Failed to test connection',
+        message: 'Connection test failed due to server error'
       });
     }
   });
