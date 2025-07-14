@@ -17,6 +17,7 @@ import {
   Link,
   Activity,
   Rocket,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -28,6 +29,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -180,6 +182,7 @@ export function AppSidebar() {
 
   const [location, navigate] = useLocation();
   const [activeItem, setActiveItem] = useState("Dashboard");
+  const { setOpen } = useSidebar();
 
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
@@ -192,6 +195,25 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="sidebar" className="border-r border-gray-200 bg-white">
+      <SidebarHeader>
+        <div className="flex items-center justify-between p-2">
+          <div className="flex items-center gap-2">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Package className="size-4" />
+            </div>
+            <div className="text-sidebar-foreground font-semibold">
+              Jay's Frames
+            </div>
+          </div>
+          <SidebarMenuButton
+            size="sm"
+            onClick={() => setOpen(false)}
+            className="h-6 w-6 p-0"
+          >
+            <X className="h-4 w-4" />
+          </SidebarMenuButton>
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
