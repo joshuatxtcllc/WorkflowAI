@@ -50,7 +50,13 @@ export class FramersAssistantIntegration {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          // If response isn't JSON, treat as basic success
+          data = { status: 'healthy' };
+        }
         return {
           connected: true,
           authenticated: true,
