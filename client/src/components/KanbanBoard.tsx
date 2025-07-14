@@ -12,7 +12,7 @@ import { useConfettiStore } from '../store/useConfettiStore';
 import { useStatsStore } from '../store/useStatsStore';
 import { KANBAN_COLUMNS } from '../lib/constants';
 import type { OrderWithDetails } from '@shared/schema';
-import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter } from 'lucide-react';
+import { Package, Truck, CheckCircle, Scissors, Layers, Timer, AlertTriangle, User, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -198,6 +198,8 @@ export default function KanbanBoard() {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
@@ -388,6 +390,21 @@ export default function KanbanBoard() {
     }
   }, [orders, updateOrderStatusMutation, toast]);
 
+  // Scroll navigation functions
+  const scrollLeft = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      container.scrollBy({ left: -400, behavior: 'smooth' });
+    }
+  }, []);
+
+  const scrollRight = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      container.scrollBy({ left: 400, behavior: 'smooth' });
+    }
+  }, []);
+
   // Only update slider when not dragging
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     if (!isDragging) {
@@ -395,6 +412,10 @@ export default function KanbanBoard() {
       const maxScroll = container.scrollWidth - container.clientWidth;
       const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
       setScrollPosition(Math.round(scrollPercent));
+      
+      // Update scroll button states
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(container.scrollLeft < maxScroll);
     }
   }, [isDragging]);
 
@@ -480,6 +501,16 @@ export default function KanbanBoard() {
       stopAutoScroll();
     }
   }, [startAutoScroll, stopAutoScroll]);
+
+  // Initialize scroll button states
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(container.scrollLeft < maxScroll);
+    }
+  }, [orders]);
 
   // Set up global drag event listeners
   useEffect(() => {
@@ -646,23 +677,50 @@ export default function KanbanBoard() {
             </CardContent>
           </Card>
 
-          <div 
-            ref={scrollContainerRef}
-            className="kanban-scroll-container"
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '100vw',
-              height: 'calc(100vh - 320px)',
-              overflowX: 'scroll',
-              overflowY: 'hidden',
-              paddingBottom: '20px',
-              scrollBehavior: 'smooth',
-              WebkitOverflowScrolling: 'touch',
-              border: '1px solid #374151', // Visual boundary to force scrollbar
-            }}
-            onScroll={handleScroll}
-          >
+          <div className="relative">
+            {/* Left scroll arrow */}
+            <Button
+              variant="outline"
+              size="icon"
+              className={`absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
+                !canScrollLeft ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
+              }`}
+              onClick={scrollLeft}
+              disabled={!canScrollLeft}
+            >
+              <ChevronLeft className="h-4 w-4 text-white" />
+            </Button>
+
+            {/* Right scroll arrow */}
+            <Button
+              variant="outline"
+              size="icon"
+              className={`absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800/90 border-gray-600 hover:bg-gray-700 transition-all duration-200 ${
+                !canScrollRight ? 'opacity-50 cursor-not-allowed' : 'opacity-100 hover:scale-110'
+              }`}
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+            >
+              <ChevronRight className="h-4 w-4 text-white" />
+            </Button>
+
+            <div 
+              ref={scrollContainerRef}
+              className="kanban-scroll-container"
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '100vw',
+                height: 'calc(100vh - 320px)',
+                overflowX: 'scroll',
+                overflowY: 'hidden',
+                paddingBottom: '20px',
+                scrollBehavior: 'smooth',
+                WebkitOverflowScrolling: 'touch',
+                border: '1px solid #374151', // Visual boundary to force scrollbar
+              }}
+              onScroll={handleScroll}
+            >
             <div 
               style={{
                 display: 'flex',
