@@ -207,7 +207,11 @@ export function AppSidebar() {
           </div>
           <SidebarMenuButton
             size="sm"
-            onClick={toggleSidebar}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setOpen(false);
+            }}
             className="h-6 w-6 p-0"
           >
             <X className="h-4 w-4" />
