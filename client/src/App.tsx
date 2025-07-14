@@ -150,7 +150,7 @@ function ErrorFallback({error}: {error: Error}) {
 }
 
 function App() {
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

@@ -461,9 +461,10 @@
   }
 
   /* Ensure touch targets are at least 44px */
-  button, .cursor-pointer, .cursor-move {
+  button, .cursor-pointer, .cursor-move, a, [role="button"] {
     min-height: 44px;
     min-width: 44px;
+    padding: 12px;
   }
 
   /* Improve text legibility on mobile */
@@ -471,11 +472,30 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     font-size: 16px;
+    line-height: 1.5;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+  }
+
+  /* Enhanced touch responsiveness */
+  * {
+    -webkit-tap-highlight-color: rgba(0, 166, 147, 0.3);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection where needed */
+  input, textarea, [contenteditable="true"], .selectable-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
   }
 
   /* Optimize scrolling */
@@ -504,20 +524,58 @@
 
   /* Better mobile kanban columns */
   .kanban-column {
-    min-width: 280px;
-    width: 280px;
+    min-width: 300px;
+    width: 300px;
     flex-shrink: 0;
+    margin-right: 16px;
   }
 
   /* Improve touch scrolling */
   .kanban-scroll {
-    padding-bottom: 100px; /* Extra space for mobile navigation */
+    padding-bottom: 120px; /* Extra space for mobile navigation */
+    padding-right: 20px; /* Right padding for better scroll */
     will-change: scroll-position;
+    scroll-snap-type: x mandatory;
   }
 
   /* Ensure columns don't shrink */
   .kanban-scroll > .kanban-column {
     flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Enhanced card touch interactions */
+  .order-card {
+    min-width: 280px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+
+  .order-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 8px 32px rgba(0, 166, 147, 0.2);
+  }
+
+  /* Better swipe indicators */
+  .mobile-swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, #00A693, transparent);
+    border-radius: 2px;
+    opacity: 0.6;
+  }
+
+  .mobile-swipe-indicator.left {
+    left: 8px;
+  }
+
+  .mobile-swipe-indicator.right {
+    right: 8px;
   }
 
   /* Prevent overlapping with fixed elements */
@@ -594,6 +652,118 @@
   .mobile-nav-item {
     padding: 1rem !important;
     margin-bottom: 0.5rem !important;
+  }
+
+  /* Mobile-specific layout optimizations */
+  .mobile-container {
+    padding: 12px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background: rgba(10, 10, 11, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid #374151 !important;
+    padding: 12px 16px !important;
+  }
+
+  .mobile-content {
+    padding: 16px 12px 140px 12px !important; /* Extra bottom padding for nav */
+    height: calc(100vh - 60px) !important; /* Account for header */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Optimized button sizes */
+  .mobile-btn-sm {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    min-height: 36px !important;
+  }
+
+  .mobile-btn-md {
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+
+  .mobile-btn-lg {
+    padding: 16px 24px !important;
+    font-size: 18px !important;
+    min-height: 52px !important;
+    width: 100% !important;
+  }
+
+  /* Improved form spacing */
+  .mobile-form-group {
+    margin-bottom: 20px !important;
+  }
+
+  .mobile-form-label {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+  }
+
+  .mobile-form-input {
+    font-size: 16px !important; /* Prevent zoom on focus */
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    border: 2px solid #374151 !important;
+    background: #1F2937 !important;
+    color: white !important;
+  }
+
+  .mobile-form-input:focus {
+    border-color: #00A693 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0, 166, 147, 0.1) !important;
+  }
+
+  /* Enhanced modal for mobile */
+  .mobile-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    z-index: 100 !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+
+  .mobile-modal-content {
+    width: 100% !important;
+    max-height: 90vh !important;
+    background: #1F2937 !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 24px 20px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Pull-to-refresh indicator */
+  .mobile-pull-indicator {
+    position: absolute !important;
+    top: -40px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    color: #00A693 !important;
+    font-size: 14px !important;
+    opacity: 0 !important;
+    transition: opacity 0.2s ease !important;
+  }
+
+  .mobile-pull-indicator.active {
+    opacity: 1 !important;
   }
 
   /* Better table responsiveness */
