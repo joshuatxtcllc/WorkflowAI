@@ -653,7 +653,7 @@ export default function KanbanBoard() {
               display: 'flex',
               flexWrap: 'nowrap',
               gap: '24px',
-              overflowX: 'scroll',
+              overflowX: 'auto',
               overflowY: 'hidden',
               paddingBottom: '24px',
               height: 'calc(100vh - 320px)',
@@ -661,28 +661,37 @@ export default function KanbanBoard() {
               scrollBehavior: 'smooth',
               WebkitOverflowScrolling: 'touch',
               overscrollBehaviorX: 'contain',
-              width: 'calc(320px * 10 + 9 * 24px)', // Force much wider than viewport
-              minWidth: 'calc(320px * 10 + 9 * 24px)',
-              maxWidth: 'none', // Remove max-width constraint
-              scrollbarWidth: 'thin',
+              width: '100%',
+              minWidth: '100%',
+              maxWidth: '100%',
+              scrollbarWidth: 'auto',
               scrollbarColor: '#10b981 #1f2937',
+              position: 'relative',
             }}
             onScroll={handleScroll}
           >
-            {KANBAN_COLUMNS.map((column) => (
-              <div key={column.status} className="flex-shrink-0" style={{ 
-                width: '320px',
-                minWidth: '320px',
-                maxWidth: '320px'
-              }}>
-                <KanbanColumn
-                  title={column.title}
-                  status={column.status}
-                  orders={filteredOrders.filter(order => order.status === column.status)}
-                  onDropOrder={handleDropOrder}
-                />
-              </div>
-            ))}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'nowrap',
+              gap: '24px',
+              width: 'calc(320px * 10 + 9 * 24px)', // Force content wider than container
+              minWidth: 'calc(320px * 10 + 9 * 24px)',
+            }}>
+              {KANBAN_COLUMNS.map((column) => (
+                <div key={column.status} className="flex-shrink-0" style={{ 
+                  width: '320px',
+                  minWidth: '320px',
+                  maxWidth: '320px'
+                }}>
+                  <KanbanColumn
+                    title={column.title}
+                    status={column.status}
+                    orders={filteredOrders.filter(order => order.status === column.status)}
+                    onDropOrder={handleDropOrder}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>
