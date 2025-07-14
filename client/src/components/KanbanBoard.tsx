@@ -82,9 +82,15 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
   return (
     <motion.div
       ref={drop}
-      className={`kanban-column flex-shrink-0 w-72 sm:w-80 md:w-72 lg:w-80 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
+      className={`kanban-column flex-shrink-0 glass-strong rounded-xl transition-all duration-300 shadow-glow ${
         isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105 shadow-jade-500/20' : 'shadow-glow-hover hover:border-gray-600/50'
       }`}
+      style={{
+        width: '320px',
+        minWidth: '320px',
+        maxWidth: '320px',
+        height: 'fit-content'
+      }}
       animate={{
         scale: isOver ? 1.02 : 1,
         borderColor: isOver ? '#10b981' : '#1f2937',
@@ -642,7 +648,7 @@ export default function KanbanBoard() {
 
           <div 
             ref={scrollContainerRef}
-            className="kanban-scroll flex gap-4 md:gap-6 overflow-x-auto overflow-y-hidden pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
+            className="kanban-scroll flex gap-4 md:gap-6 overflow-x-scroll overflow-y-hidden pb-4 sm:pb-6 h-full scroll-smooth px-2 sm:px-0"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#10b981 #1f2937',
@@ -651,12 +657,18 @@ export default function KanbanBoard() {
               overscrollBehaviorX: 'contain',
               width: '100%',
               maxWidth: '100%',
-              whiteSpace: 'nowrap'
+              display: 'flex',
+              flexWrap: 'nowrap',
+              minWidth: 'calc(320px * 10 + 9 * 24px)', // Force container to be wider than viewport
             }}
             onScroll={handleScroll}
           >
             {KANBAN_COLUMNS.map((column) => (
-              <div key={column.status} className="flex-shrink-0" style={{ width: '320px' }}>
+              <div key={column.status} className="flex-shrink-0" style={{ 
+                width: '320px',
+                minWidth: '320px',
+                maxWidth: '320px'
+              }}>
                 <KanbanColumn
                   title={column.title}
                   status={column.status}

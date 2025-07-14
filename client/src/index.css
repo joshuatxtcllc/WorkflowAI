@@ -756,7 +756,10 @@
     overflow-y: hidden !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
-    white-space: nowrap !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   /* Force scrollbar visibility on all browsers */
