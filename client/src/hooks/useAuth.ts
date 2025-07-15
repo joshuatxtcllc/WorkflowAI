@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 
 interface User {
   id: string;
@@ -9,57 +9,65 @@ interface User {
 }
 
 export function useAuth() {
-  const { data: user, isLoading, error, refetch } = useQuery<User>({
-    queryKey: ['/api/auth/user'],
-    queryFn: async () => {
-      try {
-        const response = await fetch('/api/auth/user', {
-          credentials: 'include',
-        });
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-        if (!response.ok) {
-          // Clear any stale localStorage data
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      // First check localStorage for user data
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+        } catch (e) {
           localStorage.removeItem('user');
-          throw new Error('Not authenticated');
         }
-
-        const userData = await response.json();
-        // Store user data in localStorage for consistency
-        localStorage.setItem('user', JSON.stringify(userData));
-        return userData;
-      } catch (error) {
-        // Clear localStorage on any auth error
-        localStorage.removeItem('user');
-        throw error;
       }
-    },
-    retry: 1, // Allow one retry
-    retryDelay: 1000, // Wait 1 second before retry
-    staleTime: 1 * 60 * 1000, // 1 minute
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    networkMode: 'online', // Only run when online
-  });
+
+      // Then verify with server
+      const response = await fetch('/api/auth/user', {
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setUser(null);
+      localStorage.removeItem('user');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include',
+        credentials: 'include'
       });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
+      setUser(null);
       localStorage.removeItem('user');
-      window.location.href = '/';
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Force logout locally even if server request fails
+      setUser(null);
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
   };
 
-  return {
-    user,
-    isLoading,
-    isAuthenticated: !!user && !error,
-    error,
-    logout,
-    refetch
-  };
+  return { user, isLoading, logout, checkAuth };
 }
