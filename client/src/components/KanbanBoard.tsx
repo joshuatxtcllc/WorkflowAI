@@ -204,15 +204,30 @@ export default function KanbanBoard() {
 
   const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    refetchInterval: 30000, // Reduced frequency to 30 seconds
-    staleTime: 10000, // 10 seconds stale time
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    retry: 2,
+    queryFn: async () => {
+      const response = await apiRequest("/api/orders", {
+        method: 'GET'
+      });
+      return response;
+    },
+    refetchInterval: 30000,
+    staleTime: 10000,
+    gcTime: 10 * 60 * 1000,
+    retry: (failureCount, error) => {
+      // Don't retry on 4xx errors (client errors)
+      if (error && typeof error === 'object' && 'status' in error) {
+        const status = (error as any).status;
+        if (status >= 400 && status < 500) {
+          return false;
+        }
+      }
+      return failureCount < 2;
+    },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
-    refetchOnWindowFocus: false, // Reduce unnecessary refetches
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    refetchOnMount: false, // Use cached data if available
-    networkMode: 'online', // Only fetch when online
+    refetchOnMount: true, // Changed to true to ensure initial load
+    networkMode: 'online',
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -571,17 +586,27 @@ export default function KanbanBoard() {
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-jade-500 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-gray-400">Loading orders...</p>
+          <p className="text-xs text-gray-500 mt-2">If this takes too long, try refreshing the page</p>
         </div>
       </div>
     );
   }
 
   if (error && !orders.length) {
+    console.error('Orders loading error:', error);
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="text-red-400 mb-4">Unable to load orders</div>
-          <p className="text-gray-400">Please check your connection and try again.</p>
+          <p className="text-gray-400 mb-4">
+            {error instanceof Error ? error.message : 'Please check your connection and try again.'}
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-jade-600 hover:bg-jade-700"
+          >
+            Refresh Page
+          </Button>
         </div>
       </div>
     );
