@@ -202,18 +202,26 @@ export default function KanbanBoard() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const { data: orders = [], isLoading, error } = useQuery<OrderWithDetails[]>({
+  const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
     queryFn: async () => {
-      const response = await apiRequest("/api/orders", {
-        method: 'GET'
-      });
-      return response;
+      console.log('KanbanBoard: Fetching orders...');
+      try {
+        const response = await apiRequest("/api/orders", {
+          method: 'GET'
+        });
+        console.log('KanbanBoard: Orders fetched successfully:', response?.length || 0);
+        return Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error('KanbanBoard: Error fetching orders:', error);
+        throw error;
+      }
     },
     refetchInterval: 30000,
     staleTime: 10000,
     gcTime: 10 * 60 * 1000,
     retry: (failureCount, error) => {
+      console.log(`KanbanBoard: Retry attempt ${failureCount + 1}`, error);
       // Don't retry on 4xx errors (client errors)
       if (error && typeof error === 'object' && 'status' in error) {
         const status = (error as any).status;
@@ -221,12 +229,12 @@ export default function KanbanBoard() {
           return false;
         }
       }
-      return failureCount < 2;
+      return failureCount < 3; // Increased retry count
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    refetchOnMount: true, // Changed to true to ensure initial load
+    refetchOnMount: true,
     networkMode: 'online',
   });
 
@@ -596,17 +604,31 @@ export default function KanbanBoard() {
     console.error('Orders loading error:', error);
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <div className="text-red-400 mb-4">Unable to load orders</div>
           <p className="text-gray-400 mb-4">
             {error instanceof Error ? error.message : 'Please check your connection and try again.'}
           </p>
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="bg-jade-600 hover:bg-jade-700"
-          >
-            Refresh Page
-          </Button>
+          <div className="text-xs text-gray-500 mb-4 p-2 bg-gray-800 rounded">
+            <strong>Debug Info:</strong><br/>
+            Status: {(error as any)?.status || 'Unknown'}<br/>
+            Network: {navigator.onLine ? 'Online' : 'Offline'}<br/>
+            URL: {window.location.href}
+          </div>
+          <div className="flex gap-2 justify-center">
+            <Button 
+              onClick={() => refetch()} 
+              className="bg-jade-600 hover:bg-jade-700"
+            >
+              Retry
+            </Button>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+            >
+              Refresh Page
+            </Button>
+          </div>
         </div>
       </div>
     );

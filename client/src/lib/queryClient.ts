@@ -30,35 +30,64 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
   }
 
   try {
+    console.log(`API Request: ${options.method || 'GET'} ${url}`);
+    console.log('Request config:', { 
+      headers: config.headers,
+      hasBody: !!config.body,
+      signal: !!config.signal
+    });
+
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
 
     console.log(`API Response: ${response.status} ${response.statusText}`);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData: any = {};
+      try {
+        const responseText = await response.text();
+        console.log('Raw error response:', responseText);
+        
+        if (responseText) {
+          try {
+            errorData = JSON.parse(responseText);
+          } catch {
+            errorData = { message: responseText };
+          }
+        }
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+      }
+
       console.log('API Request failed:', errorData.message || 'Unknown error', errorData);
       let errorMessage = `${response.status}: ${response.statusText}`;
 
-      try {
-        const parsedError = JSON.parse(errorData);
-        errorMessage = parsedError.message || parsedError.error || errorMessage;
-      } catch {
-        if (errorData) errorMessage = errorData;
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      } else if (errorData.error) {
+        errorMessage = errorData.error;
       }
 
       const error = new Error(errorMessage);
       (error as any).status = response.status;
+      (error as any).response = response;
       throw error;
     }
 
     const data = await response.json();
+    console.log('API Response data:', Array.isArray(data) ? `Array(${data.length})` : typeof data);
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
 
+    console.error('API Request error:', error);
+    
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out - please check your connection');
+    }
+
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Network error - please check your connection');
     }
 
     throw error;

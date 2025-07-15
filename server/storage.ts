@@ -259,6 +259,12 @@ export class DatabaseStorage implements IStorage {
     const startTime = Date.now();
 
     try {
+      console.log('Starting getOrders query...');
+      
+      // Test database connection first
+      await db.select().from(orders).limit(1);
+      console.log('Database connection verified');
+
       // Simplified query with shorter timeout
       const result = await db
         .select({
@@ -276,6 +282,7 @@ export class DatabaseStorage implements IStorage {
           updatedAt: orders.updatedAt,
           invoiceNumber: orders.invoiceNumber,
           assignedToId: orders.assignedToId,
+          customerId: orders.customerId,
           customer: {
             id: customers.id,
             name: customers.name,
@@ -290,16 +297,37 @@ export class DatabaseStorage implements IStorage {
         .from(orders)
         .leftJoin(customers, eq(orders.customerId, customers.id))
         .orderBy(desc(orders.createdAt))
-        .limit(100); // Reduced limit for faster queries
+        .limit(100);
 
       const endTime = Date.now();
-      console.log(`getOrders query completed: ${endTime - startTime}ms`);
+      console.log(`getOrders query completed: ${endTime - startTime}ms, returned ${result.length} orders`);
 
-      return result as OrderWithDetails[];
+      // Validate the result structure
+      const validatedResult = result.map(order => ({
+        ...order,
+        customer: order.customer || {
+          id: '',
+          name: 'Unknown Customer',
+          email: '',
+          phone: '',
+          address: '',
+          preferences: {},
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      }));
+
+      return validatedResult as OrderWithDetails[];
     } catch (error) {
       console.error('Database error in getOrders:', error);
-      // Return empty array instead of throwing to prevent app crash
-      return [];
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        name: error instanceof Error ? error.name : 'Unknown error type'
+      });
+      
+      // Throw the error instead of returning empty array so we can handle it properly
+      throw new Error(`Failed to fetch orders: ${error instanceof Error ? error.message : 'Unknown database error'}`);
     }
   }
 
