@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
@@ -28,7 +28,7 @@ import AdminPortal from './pages/AdminPortal';
 import Diagnostics from './pages/Diagnostics';
 import Invoices from "./pages/Invoices";
 import NotFound from "./pages/not-found";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
 import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 import LoadingScreen from "./components/LoadingScreen";
@@ -37,21 +37,32 @@ import { AppSidebar } from "./components/AppSidebar";
 import { MobileNav } from "./components/MobileNav";
 
 function App() {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <Router>
+      <ErrorBoundary
+        fallback={({ error }) => (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+              <p className="text-gray-600">{error.message}</p>
+            </div>
+          </div>
+        )}
+      >
+        <TooltipProvider>
           <div className="flex flex-col min-h-screen bg-background">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/*" element={<AuthenticatedApp isMobile={isMobile} />} />
-            </Routes>
+            <Switch>
+              <Route path="/login" component={Login} />
+              <Route path="/customer-portal" component={CustomerPortal} />
+              <Route>
+                <AuthenticatedApp isMobile={isMobile} />
+              </Route>
+            </Switch>
           </div>
           <Toaster />
-        </Router>
+        </TooltipProvider>
       </ErrorBoundary>
     </QueryClientProvider>
   );
@@ -59,6 +70,21 @@ function App() {
 
 function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   const { user, isLoading } = useAuth();
+  const [location, setLocation] = useLocation();
+
+  // Redirect to login if not authenticated - use useEffect before any early returns
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation('/login');
+    }
+  }, [user, isLoading, setLocation]);
+
+  // Redirect root to dashboard
+  useEffect(() => {
+    if (location === '/') {
+      setLocation('/dashboard');
+    }
+  }, [location, setLocation]);
 
   // Show loading while checking auth
   if (isLoading) {
@@ -69,9 +95,9 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Don't render anything while redirecting
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   return (
@@ -79,33 +105,29 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
       <div className="flex flex-1">
         {!isMobile && <AppSidebar />}
         <main className="flex-1 flex flex-col">
-          {isMobile && <MobilePullToRefresh />}
           <div className="flex-1 p-4">
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/quick-wins" element={<QuickWins />} />
-              <Route path="/relaunch" element={<RelaunchPlan />} />
-              <Route path="/twilio" element={<TwilioManagement />} />
-              <Route path="/pos" element={<POSIntegration />} />
-              <Route path="/framers-assistant" element={<FramersAssistantIntegration />} />
-              <Route path="/hub" element={<HubConnection />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/vendor-orders" element={<VendorOrders />} />
-              <Route path="/diagnostics" element={<Diagnostics />} />
-              <Route path="/workflow" element={<Workflow />} />
-              <Route path="/schedule" element={<Schedule />} />
-              <Route path="/time" element={<TimeTracking />} />
-              <Route path="/progress" element={<Progress />} />
-              <Route path="/shop-floor" element={<ShopFloor />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/admin" element={<AdminPortal />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Switch>
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/orders" component={Orders} />
+              <Route path="/customers" component={Customers} />
+              <Route path="/analytics" component={Analytics} />
+              <Route path="/comprehensive-analytics" component={ComprehensiveAnalytics} />
+              <Route path="/quick-wins" component={QuickWins} />
+              <Route path="/relaunch" component={RelaunchPlan} />
+              <Route path="/pos" component={POSIntegration} />
+              <Route path="/framers-assistant" component={FramersAssistantIntegration} />
+              <Route path="/hub" component={HubConnection} />
+              <Route path="/invoices" component={Invoices} />
+              <Route path="/vendor-orders" component={VendorOrders} />
+              <Route path="/diagnostics" component={Diagnostics} />
+              <Route path="/schedule" component={Schedule} />
+              <Route path="/time" component={TimeTracking} />
+              <Route path="/progress" component={Progress} />
+              <Route path="/reports" component={Reports} />
+              <Route path="/notifications" component={Notifications} />
+              <Route path="/admin" component={AdminPortal} />
+              <Route component={NotFound} />
+            </Switch>
           </div>
         </main>
         {isMobile && <MobileBottomNav />}
@@ -113,3 +135,5 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
     </SidebarProvider>
   );
 }
+
+export default App;
