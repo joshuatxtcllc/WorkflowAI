@@ -1,43 +1,40 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from './components/ui/toaster';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { SidebarProvider } from './components/ui/sidebar';
-import { useMobile } from './hooks/use-mobile';
-import { useAuth } from './hooks/useAuth';
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components/ui/toaster";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { useAuth } from "./hooks/useAuth";
+import { ErrorBoundary } from "react-error-boundary";
+import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
+import { useIsMobile } from "./hooks/use-mobile";
 
-// Pages
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Orders from './pages/Orders';
-import Customers from './pages/Customers';
-import Analytics from './pages/Analytics';
-import QuickWins from './pages/QuickWins';
-import RelaunchPlan from './pages/RelaunchPlan';
-import TwilioManagement from './pages/TwilioManagement';
-import POSIntegration from './pages/POSIntegration';
-import FramersAssistantIntegration from './pages/FramersAssistantIntegration';
-import HubConnection from './pages/HubConnection';
-import Invoices from './pages/Invoices';
-import VendorOrders from './pages/VendorOrders';
-import Diagnostics from './pages/Diagnostics';
-import Workflow from './pages/Workflow';
-import Schedule from './pages/Schedule';
-import TimeTracking from './pages/TimeTracking';
-import Progress from './pages/Progress';
-import ShopFloor from './pages/ShopFloor';
-import Reports from './pages/Reports';
-import Notifications from './pages/Notifications';
+import Dashboard from "./pages/Dashboard";
+import QuickWins from "./pages/QuickWins";
+import VendorOrders from "./pages/VendorOrders";
+import Login from "./pages/Login";
+import CustomerPortal from "./components/CustomerPortal";
+import HubConnection from "./pages/HubConnection";
+import POSIntegration from "./pages/POSIntegration";
+import Progress from "./pages/Progress";
+import Orders from "./pages/Orders";
+import Customers from "./pages/Customers";
+import Analytics from "./pages/Analytics";
+import ComprehensiveAnalytics from "./pages/ComprehensiveAnalytics";
+import Schedule from "./pages/Schedule";
+import TimeTracking from "./pages/TimeTracking";
+import Notifications from "./pages/Notifications";
+import Reports from "./pages/Reports";
 import AdminPortal from './pages/AdminPortal';
-import PaymentSuccess from './pages/PaymentSuccess';
-import NotFound from './pages/not-found';
-
-// Components
-import { AppSidebar } from './components/AppSidebar';
+import Diagnostics from './pages/Diagnostics';
+import Invoices from "./pages/Invoices";
+import NotFound from "./pages/not-found";
+import { useEffect, useState } from "react";
+import RelaunchPlan from "./pages/RelaunchPlan";
+import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
+import LoadingScreen from "./components/LoadingScreen";
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { MobilePullToRefresh } from './components/MobilePullToRefresh';
-
-import { queryClient } from './lib/queryClient';
+import { AppSidebar } from "./components/AppSidebar";
+import { MobileNav } from "./components/MobileNav";
 
 function App() {
   const isMobile = useMobile();
