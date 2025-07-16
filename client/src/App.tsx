@@ -34,7 +34,6 @@ import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 import LoadingScreen from "./components/LoadingScreen";
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { AppSidebar } from "./components/AppSidebar";
-import { MobileNav } from "./components/MobileNav";
 
 function App() {
   const isMobile = useIsMobile();
@@ -42,7 +41,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary
-        fallback={({ error }) => (
+        fallback={({ error }: { error: Error }) => (
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
@@ -57,7 +56,7 @@ function App() {
               <Route path="/login" component={Login} />
               <Route path="/customer-portal" component={CustomerPortal} />
               <Route>
-                <AuthenticatedApp isMobile={isMobile} />
+                <AuthenticatedApp isMobile={isMobile.isMobile} />
               </Route>
             </Switch>
           </div>
