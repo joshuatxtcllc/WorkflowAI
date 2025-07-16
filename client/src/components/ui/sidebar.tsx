@@ -48,20 +48,20 @@ function useSidebar() {
 }
 
 const SidebarProviderPrimitive = {
-  Root: "div",
-  Trigger: "button",
-  Content: "div",
+  Root: "div" as const,
+  Trigger: "button" as const,
+  Content: "div" as const,
 }
 
 const SidebarProvider = React.forwardRef<
-  React.ElementRef<typeof SidebarProviderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SidebarProviderPrimitive.Root> & {
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
     defaultOpen?: boolean
     open?: boolean
     onOpenChange?: (open: boolean) => void
   }
 >(({ defaultOpen = true, open: openProp, onOpenChange: setOpenProp, className, style, children, ...props }, ref) => {
-  const isMobile = useIsMobile()
+  const { isMobile } = useIsMobile()
   const [openMobile, setOpenMobile] = useState(false)
 
   // This is the state of the sidebar.
@@ -115,7 +115,7 @@ const SidebarProvider = React.forwardRef<
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-  const state = React.useMemo(
+  const state = React.useMemo<SidebarContextProps>(
     () => ({
       state: open ? "expanded" : "collapsed",
       open,
