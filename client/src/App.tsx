@@ -41,7 +41,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary
-        fallback={({ error }: { error: Error }) => (
+        fallbackRender={({ error }: { error: Error }) => (
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
@@ -100,7 +100,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex flex-1">
         {!isMobile && <AppSidebar />}
         <main className="flex-1 flex flex-col">
