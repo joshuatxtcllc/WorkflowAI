@@ -506,10 +506,16 @@
 
   /* Better touch scrolling for Kanban */
   .kanban-scroll {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    overscroll-behavior-x: contain !important;
+    touch-action: pan-x !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    /* Ensure horizontal scrolling works on mobile */
+    scroll-snap-type: x mandatory !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
   }
 
   /* Prevent zoom on input focus */
@@ -528,6 +534,53 @@
     width: 300px;
     flex-shrink: 0;
     margin-right: 16px;
+    /* Ensure columns maintain size on mobile */
+    max-width: 300px !important;
+  }
+
+  /* Mobile-specific Kanban scroll container */
+  @media (max-width: 768px) {
+    .kanban-scroll-container {
+      /* Force horizontal scrolling on mobile */
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scroll-behavior: smooth !important;
+      touch-action: pan-x !important;
+      /* Prevent elastic bounce */
+      overscroll-behavior-x: none !important;
+      /* Hardware acceleration */
+      -webkit-transform: translate3d(0, 0, 0) !important;
+      transform: translate3d(0, 0, 0) !important;
+      will-change: scroll-position !important;
+    }
+
+    .kanban-scroll {
+      /* Enable touch scrolling */
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-x !important;
+      /* Ensure proper flex behavior */
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      /* Calculate total width */
+      width: max-content !important;
+      min-width: 100% !important;
+    }
+
+    .kanban-column {
+      /* Prevent column shrinking on mobile */
+      flex-shrink: 0 !important;
+      flex-grow: 0 !important;
+      flex-basis: 300px !important;
+      min-width: 280px !important;
+      max-width: 320px !important;
+      margin-right: 12px !important;
+    }
+
+    .kanban-column:last-child {
+      margin-right: 20px !important; /* Extra space for edge scrolling */
+    }
   }
 
   /* Improve touch scrolling */
@@ -536,6 +589,44 @@
     padding-right: 20px; /* Right padding for better scroll */
     will-change: scroll-position;
     scroll-snap-type: x mandatory;
+    /* Mobile touch improvements */
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    /* Better momentum scrolling */
+    scroll-behavior: smooth !important;
+    /* Prevent text selection while scrolling */
+    -webkit-touch-callout: none !important;
+  }
+
+  /* Mobile scroll hint indicators */
+  @media (max-width: 768px) {
+    .kanban-scroll-container::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 20px;
+      height: 60px;
+      background: linear-gradient(to left, rgba(0, 166, 147, 0.3), transparent);
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .kanban-scroll-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 20px;
+      height: 60px;
+      background: linear-gradient(to right, rgba(0, 166, 147, 0.3), transparent);
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 0 10px 10px 0;
+    }
   }
 
   /* Ensure columns don't shrink */
@@ -896,6 +987,13 @@
     -webkit-overflow-scrolling: touch !important;
     /* Force scrollbar to always show */
     scrollbar-gutter: stable both-edges !important;
+    /* Mobile touch scrolling fixes */
+    touch-action: pan-x !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    /* Ensure proper width for horizontal scroll */
+    width: 100% !important;
+    min-width: 100% !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar {
