@@ -457,7 +457,7 @@
     height: 100dvh; /* Dynamic viewport height */
     width: 100vw;
     position: relative;
-    overflow-x: hidden;
+    overflow-x: visible; /* Allow horizontal scrolling */
   }
 
   /* Ensure touch targets are at least 44px */
@@ -832,6 +832,7 @@
 
   .mobile-form-label {
     font-size: 16px !important;
+```text
     margin-bottom: 8px !important;
     display: block !important;
   }

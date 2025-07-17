@@ -69,6 +69,14 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 
   const Icon = columnIcons[status as keyof typeof columnIcons] || Package;
   const totalHours = orders.reduce((sum, order) => sum + order.estimatedHours, 0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -87,9 +95,9 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
         isOver ? 'ring-2 ring-jade-500/50 bg-jade-500/5 scale-105 shadow-jade-500/20' : 'shadow-glow-hover hover:border-gray-600/50'
       }`}
       style={{
-        width: '320px',
-        minWidth: '320px',
-        maxWidth: '320px',
+        width: isMobile ? '240px' : '320px',
+        minWidth: isMobile ? '240px' : '320px',
+        maxWidth: isMobile ? '240px' : '320px',
         height: 'fit-content'
       }}
       animate={{
@@ -98,28 +106,30 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
       }}
       transition={{ duration: 0.2 }}
     >
-      <div className="p-3 sm:p-4 border-b border-gray-800">
+      <div className={`${isMobile ? 'p-2' : 'p-3 sm:p-4'} border-b border-gray-800`}>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Icon className={`w-5 h-5 ${getStatusColor(status)}`} />
-            <h3 className="font-semibold text-white">{title}</h3>
+            <Icon className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} ${getStatusColor(status)}`} />
+            <h3 className={`font-semibold text-white ${isMobile ? 'text-sm' : 'text-base'}`}>
+              {isMobile ? title.split(' ').slice(0, 2).join(' ') : title}
+            </h3>
           </div>
-          <span className="bg-jade-500/20 text-jade-300 px-2 py-1 rounded-full text-xs font-semibold">
+          <span className={`bg-jade-500/20 text-jade-300 px-2 py-1 rounded-full font-semibold ${isMobile ? 'text-xs' : 'text-xs'}`}>
             {orders.length}
           </span>
         </div>
-        <div className="text-xs text-gray-500 flex items-center gap-1">
-          <Timer className="w-3 h-3" />
+        <div className={`text-gray-500 flex items-center gap-1 ${isMobile ? 'text-xs' : 'text-xs'}`}>
+          <Timer className={`${isMobile ? 'w-3 h-3' : 'w-3 h-3'}`} />
           <span>{totalHours.toFixed(1)}h total</span>
         </div>
       </div>
 
-      <div className="p-2 sm:p-3 space-y-2 sm:space-y-3 min-h-[300px] max-h-[calc(100vh-400px)] overflow-y-auto">
+      <div className={`${isMobile ? 'p-2' : 'p-2 sm:p-3'} space-y-2 min-h-[200px] max-h-[calc(100vh-400px)] overflow-y-auto`}>
         <AnimatePresence>
           {orders.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
-              <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No orders in this stage</p>
+              <Package className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} mx-auto mb-2 opacity-50`} />
+              <p className={`${isMobile ? 'text-xs' : 'text-sm'}`}>No orders</p>
             </div>
           ) : (
             orders.map((order, index) => (
@@ -143,7 +153,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
                   transition: { duration: 0.2 }
                 }}
                 layout
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: isMobile ? 1.01 : 1.02 }}
                 className="relative"
               >
                 {/* Drop zone visual feedback */}
@@ -688,64 +698,71 @@ export default function KanbanBoard() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <main className="relative z-10 p-3 sm:p-6 h-full">
+      <main className="relative z-10 h-full">
         <div className="w-full h-full">
           {/* AI Workload Alert Banner */}
-          <WorkloadAlertBanner orders={orders} />
+          <div className="px-3 sm:px-6 pt-3 sm:pt-6">
+            <WorkloadAlertBanner orders={orders} />
+          </div>
 
-          {/* Search and Filter Bar */}
-          <Card className="mb-4 glass-strong">
-            <CardContent className="p-4">
-              <div className="flex flex-wrap gap-4 items-center">
-                <div className="flex-1 min-w-64">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Search by tracking ID, customer, or description..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder-gray-400"
-                    />
+          {/* Search and Filter Bar - Mobile optimized */}
+          <div className="px-3 sm:px-6 mb-4">
+            <Card className="glass-strong">
+              <CardContent className="p-3 sm:p-4">
+                <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-4 sm:items-center">
+                  <div className="flex-1 min-w-0">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        placeholder="Search orders..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 text-base"
+                      />
+                    </div>
                   </div>
+
+                  <div className="flex gap-2 sm:gap-4">
+                    <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                      <SelectTrigger className="flex-1 sm:w-40 bg-gray-800/50 border-gray-700 text-white text-base">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Priorities</SelectItem>
+                        <SelectItem value="HIGH">High Priority</SelectItem>
+                        <SelectItem value="MEDIUM">Medium Priority</SelectItem>
+                        <SelectItem value="LOW">Low Priority</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="flex-1 sm:w-48 bg-gray-800/50 border-gray-700 text-white text-base">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="active">Active Orders</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="ready_for_work">Ready for Work</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {(searchTerm || priorityFilter !== 'all' || statusFilter !== 'all') && (
+                    <div className="text-sm text-gray-400 text-center sm:text-left">
+                      {filteredOrders.length} of {orders.length} orders
+                    </div>
+                  )}
                 </div>
+              </CardContent>
+            </Card>
+          </div>
 
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white">
-                    <Filter className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Priorities</SelectItem>
-                    <SelectItem value="HIGH">High Priority</SelectItem>
-                    <SelectItem value="MEDIUM">Medium Priority</SelectItem>
-                    <SelectItem value="LOW">Low Priority</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48 bg-gray-800/50 border-gray-700 text-white">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="active">Active Orders</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="ready_for_work">Ready for Work</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {(searchTerm || priorityFilter !== 'all' || statusFilter !== 'all') && (
-                  <div className="text-sm text-gray-400">
-                    {filteredOrders.length} of {orders.length} orders
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
+          {/* Mobile optimized Kanban Board */}
           <div className="relative">
-            {/* Scroll arrows at bottom center */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-3">
+            {/* Desktop scroll arrows */}
+            <div className="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 gap-3">
               <Button
                 variant="outline"
                 size="icon"
@@ -771,7 +788,13 @@ export default function KanbanBoard() {
               </Button>
             </div>
 
+            {/* Mobile swipe hint */}
+            <div className="sm:hidden absolute top-4 left-1/2 transform -translate-x-1/2 z-10 bg-jade-500/20 text-jade-300 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+              ← Swipe to see more →
+            </div>
+
             <div 
+              ref={scrollContainerRef}
               className="kanban-scroll-container"
               style={{
                 overflowX: 'scroll',
@@ -779,48 +802,55 @@ export default function KanbanBoard() {
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'auto',
                 scrollbarColor: '#10b981 #1f2937',
-                height: 'calc(100vh - 320px)',
+                height: isMobile ? 'calc(100vh - 280px)' : 'calc(100vh - 320px)',
                 position: 'relative',
                 width: '100%',
                 maxWidth: '100vw',
                 paddingBottom: '20px',
                 scrollBehavior: 'smooth',
-                border: '1px solid #374151', // Visual boundary to force scrollbar
+                touchAction: 'pan-x',
               }}
               onScroll={handleScroll}
             >
-            <div 
-              style={{
-                display: 'flex',
-                flexWrap: 'nowrap',
-                gap: '24px',
-                width: '4000px', // Fixed wide width to guarantee overflow
-                minWidth: '4000px',
-                height: '100%',
-                paddingRight: '24px',
-              }}
-            >
-              {KANBAN_COLUMNS.map((column) => (
-                <div key={column.status} className="flex-shrink-0" style={{ 
-                  width: '320px',
-                  minWidth: '320px',
-                  maxWidth: '320px'
-                }}>
-                  <KanbanColumn
-                    title={column.title}
-                    status={column.status}
-                    orders={filteredOrders.filter(order => order.status === column.status)}
-                    onDropOrder={handleDropOrder}
-                  />
-                </div>
-              ))}
+              <div 
+                className="kanban-scroll"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  gap: isMobile ? '12px' : '24px',
+                  width: isMobile ? `${KANBAN_COLUMNS.length * 260}px` : `${KANBAN_COLUMNS.length * 344}px`,
+                  minWidth: isMobile ? `${KANBAN_COLUMNS.length * 260}px` : `${KANBAN_COLUMNS.length * 344}px`,
+                  height: '100%',
+                  paddingLeft: isMobile ? '12px' : '24px',
+                  paddingRight: isMobile ? '12px' : '24px',
+                }}
+              >
+                {KANBAN_COLUMNS.map((column) => (
+                  <div 
+                    key={column.status} 
+                    className="kanban-column flex-shrink-0" 
+                    style={{ 
+                      width: isMobile ? '240px' : '320px',
+                      minWidth: isMobile ? '240px' : '320px',
+                      maxWidth: isMobile ? '240px' : '320px'
+                    }}
+                  >
+                    <KanbanColumn
+                      title={column.title}
+                      status={column.status}
+                      orders={filteredOrders.filter(order => order.status === column.status)}
+                      onDropOrder={handleDropOrder}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
 
-      {/* Confetti Burst Animation */}<ConfettiBurst
+      {/* Confetti Burst Animation */}
+      <ConfettiBurst
         trigger={triggerConfetti}
         originX={originX}
         originY={originY}
