@@ -99,36 +99,71 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
     return null;
   }
 
+  const getPageTitle = () => {
+    switch (location) {
+      case '/dashboard': return 'Dashboard';
+      case '/orders': return 'Orders';
+      case '/customers': return 'Customers';
+      case '/analytics': return 'Analytics';
+      case '/notifications': return 'Notifications';
+      default: return 'Jay\'s Frames';
+    }
+  };
+
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex flex-1">
-        {!isMobile && <AppSidebar />}
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 p-4">
-            <Switch>
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/orders" component={Orders} />
-              <Route path="/customers" component={Customers} />
-              <Route path="/analytics" component={Analytics} />
-              <Route path="/comprehensive-analytics" component={ComprehensiveAnalytics} />
-              <Route path="/quick-wins" component={QuickWins} />
-              <Route path="/relaunch" component={RelaunchPlan} />
-              <Route path="/pos" component={POSIntegration} />
-              <Route path="/framers-assistant" component={FramersAssistantIntegration} />
-              <Route path="/hub" component={HubConnection} />
-              <Route path="/invoices" component={Invoices} />
-              <Route path="/vendor-orders" component={VendorOrders} />
-              <Route path="/diagnostics" component={Diagnostics} />
-              <Route path="/schedule" component={Schedule} />
-              <Route path="/time" component={TimeTracking} />
-              <Route path="/progress" component={Progress} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/notifications" component={Notifications} />
-              <Route path="/admin" component={AdminPortal} />
-              <Route component={NotFound} />
-            </Switch>
-          </div>
-        </main>
+      <div className="flex flex-1 flex-col">
+        {isMobile && (
+          <header className="mobile-header">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-jade-400 to-jade-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">JF</span>
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-white">{getPageTitle()}</h1>
+                  <p className="text-xs text-gray-400">Jay's Frames</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-gray-300">{user?.firstName?.[0] || 'U'}</span>
+                </div>
+              </div>
+            </div>
+          </header>
+        )}
+        
+        <div className="flex flex-1">
+          {!isMobile && <AppSidebar />}
+          <main className={`flex-1 flex flex-col ${isMobile ? 'mobile-content' : ''}`}>
+            <div className={`flex-1 ${isMobile ? 'mobile-container' : 'p-4'}`}>
+              <Switch>
+                <Route path="/dashboard" component={Dashboard} />
+                <Route path="/orders" component={Orders} />
+                <Route path="/customers" component={Customers} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/comprehensive-analytics" component={ComprehensiveAnalytics} />
+                <Route path="/quick-wins" component={QuickWins} />
+                <Route path="/relaunch" component={RelaunchPlan} />
+                <Route path="/pos" component={POSIntegration} />
+                <Route path="/framers-assistant" component={FramersAssistantIntegration} />
+                <Route path="/hub" component={HubConnection} />
+                <Route path="/invoices" component={Invoices} />
+                <Route path="/vendor-orders" component={VendorOrders} />
+                <Route path="/diagnostics" component={Diagnostics} />
+                <Route path="/schedule" component={Schedule} />
+                <Route path="/time" component={TimeTracking} />
+                <Route path="/progress" component={Progress} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/notifications" component={Notifications} />
+                <Route path="/admin" component={AdminPortal} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </main>
+        </div>
+        
         {isMobile && <MobileBottomNav />}
       </div>
     </SidebarProvider>

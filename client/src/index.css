@@ -756,18 +756,30 @@
   .mobile-header {
     position: sticky !important;
     top: 0 !important;
-    z-index: 50 !important;
-    background: rgba(10, 10, 11, 0.95) !important;
-    backdrop-filter: blur(12px) !important;
+    z-index: 60 !important;
+    background: rgba(10, 10, 11, 0.98) !important;
+    backdrop-filter: blur(16px) !important;
     border-bottom: 1px solid #374151 !important;
-    padding: 12px 16px !important;
+    padding: 14px 16px !important;
+    height: 70px !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .mobile-content {
-    padding: 16px 12px 140px 12px !important; /* Extra bottom padding for nav */
-    height: calc(100vh - 60px) !important; /* Account for header */
+    padding: 0 !important;
+    height: calc(100vh - 70px - 70px) !important; /* Account for header and bottom nav */
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+
+  .mobile-container {
+    padding: 16px 12px 20px 12px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: calc(100vh - 140px) !important;
   }
 
   /* Optimized button sizes */
