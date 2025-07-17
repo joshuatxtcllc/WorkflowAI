@@ -530,29 +530,32 @@
 
   /* Better mobile kanban columns */
   .kanban-column {
-    min-width: 300px;
-    width: 300px;
+    min-width: 280px;
+    width: 280px;
     flex-shrink: 0;
-    margin-right: 16px;
+    margin-right: 12px;
     /* Ensure columns maintain size on mobile */
-    max-width: 300px !important;
+    max-width: 280px !important;
   }
 
   /* Mobile-specific Kanban scroll container */
   @media (max-width: 768px) {
     .kanban-scroll-container {
       /* Force horizontal scrolling on mobile */
-      overflow-x: auto !important;
+      overflow-x: scroll !important;
       overflow-y: hidden !important;
       -webkit-overflow-scrolling: touch !important;
       scroll-behavior: smooth !important;
       touch-action: pan-x !important;
       /* Prevent elastic bounce */
-      overscroll-behavior-x: none !important;
+      overscroll-behavior-x: contain !important;
       /* Hardware acceleration */
       -webkit-transform: translate3d(0, 0, 0) !important;
       transform: translate3d(0, 0, 0) !important;
       will-change: scroll-position !important;
+      /* Force scrollbar visibility */
+      scrollbar-width: auto !important;
+      padding-bottom: 20px !important;
     }
 
     .kanban-scroll {
@@ -563,23 +566,43 @@
       display: flex !important;
       flex-direction: row !important;
       flex-wrap: nowrap !important;
-      /* Calculate total width */
+      /* Calculate total width based on column count */
+      min-width: calc(8 * 292px) !important; /* 8 columns * (280px + 12px margin) */
       width: max-content !important;
-      min-width: 100% !important;
+      gap: 0 !important;
     }
 
     .kanban-column {
-      /* Prevent column shrinking on mobile */
+      /* Smaller columns for mobile */
       flex-shrink: 0 !important;
       flex-grow: 0 !important;
-      flex-basis: 300px !important;
-      min-width: 280px !important;
-      max-width: 320px !important;
-      margin-right: 12px !important;
+      flex-basis: 260px !important;
+      min-width: 260px !important;
+      max-width: 260px !important;
+      width: 260px !important;
+      margin-right: 8px !important;
     }
 
     .kanban-column:last-child {
-      margin-right: 20px !important; /* Extra space for edge scrolling */
+      margin-right: 24px !important; /* Extra space for edge scrolling */
+    }
+
+    /* Make order cards smaller on mobile */
+    .order-card {
+      min-width: 240px !important;
+      max-width: 240px !important;
+      width: 240px !important;
+      font-size: 13px !important;
+      padding: 8px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .order-card h3 {
+      font-size: 14px !important;
+    }
+
+    .order-card .text-xs {
+      font-size: 11px !important;
     }
   }
 
@@ -1014,16 +1037,16 @@
   box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
 }
 
-/* FORCE HORIZONTAL SCROLLBAR - AGGRESSIVE APPROACH */
+/* FORCE HORIZONTAL SCROLLBAR - MOBILE OPTIMIZED */
   .kanban-scroll-container {
-    scrollbar-width: thick !important;
+    scrollbar-width: auto !important;
     scrollbar-color: #10b981 #1f2937 !important;
     overflow-x: scroll !important;
     overflow-y: hidden !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
     /* Force scrollbar to always show */
-    scrollbar-gutter: stable both-edges !important;
+    scrollbar-gutter: stable !important;
     /* Mobile touch scrolling fixes */
     touch-action: pan-x !important;
     -webkit-transform: translateZ(0) !important;
@@ -1031,17 +1054,19 @@
     /* Ensure proper width for horizontal scroll */
     width: 100% !important;
     min-width: 100% !important;
+    position: relative !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar {
-    height: 20px !important;
-    width: 20px !important;
+    height: 16px !important;
+    width: 16px !important;
     background-color: #1f2937 !important;
     display: block !important;
     -webkit-appearance: none !important;
     /* Force visibility */
     opacity: 1 !important;
     visibility: visible !important;
+    border-radius: 8px !important;
   }
 
   .kanban-scroll-container::-webkit-scrollbar-track {
@@ -1107,19 +1132,47 @@
   /* Mobile optimizations */
   @media (max-width: 640px) {
     .order-card {
-      min-width: 260px;
+      min-width: 240px !important;
+      max-width: 240px !important;
+      width: 240px !important;
+      font-size: 12px !important;
+      padding: 6px !important;
     }
 
     .kanban-column {
-      min-width: 280px;
+      min-width: 260px !important;
+      max-width: 260px !important;
+      width: 260px !important;
     }
 
     .glass-card {
-      font-size: 14px;
+      font-size: 12px !important;
     }
 
     .glass-card .text-xs {
+      font-size: 10px !important;
+    }
+
+    /* Force horizontal scroll hint */
+    .kanban-scroll-container::after {
+      content: '← Swipe to see more →';
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
       font-size: 12px;
+      z-index: 1000;
+      pointer-events: none;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      10%, 90% { opacity: 1; }
     }
   }
 

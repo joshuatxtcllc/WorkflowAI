@@ -176,6 +176,7 @@ export default function KanbanBoard() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const columns = KANBAN_COLUMNS
+  const [isMobile, setIsMobile] = useState(false);
 
   // Check URL parameters for filters
   useEffect(() => {
@@ -436,7 +437,7 @@ export default function KanbanBoard() {
       const maxScroll = container.scrollWidth - container.clientWidth;
       const scrollPercent = maxScroll > 0 ? (container.scrollLeft / maxScroll) * 100 : 0;
       setScrollPosition(Math.round(scrollPercent));
-      
+
       // Update scroll button states
       setCanScrollLeft(container.scrollLeft > 0);
       setCanScrollRight(container.scrollLeft < maxScroll);
@@ -587,6 +588,23 @@ export default function KanbanBoard() {
       queryClient.refetchQueries({ queryKey: ["/api/orders"] });
     }
   }, [lastMessage, queryClient]);
+
+    useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // Define your mobile breakpoint
+    };
+
+    // Set initial value
+    handleResize();
+
+    // Listen for window resize events
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   if (isLoading && !orders.length) {
     return (
@@ -754,18 +772,19 @@ export default function KanbanBoard() {
             </div>
 
             <div 
-              ref={scrollContainerRef}
               className="kanban-scroll-container"
               style={{
+                overflowX: 'scroll',
+                overflowY: 'hidden',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'auto',
+                scrollbarColor: '#10b981 #1f2937',
+                height: 'calc(100vh - 320px)',
                 position: 'relative',
                 width: '100%',
                 maxWidth: '100vw',
-                height: 'calc(100vh - 320px)',
-                overflowX: 'scroll',
-                overflowY: 'hidden',
                 paddingBottom: '20px',
                 scrollBehavior: 'smooth',
-                WebkitOverflowScrolling: 'touch',
                 border: '1px solid #374151', // Visual boundary to force scrollbar
               }}
               onScroll={handleScroll}
@@ -801,8 +820,7 @@ export default function KanbanBoard() {
       </div>
     </main>
 
-      {/* Confetti Burst Animation */}
-      <ConfettiBurst
+      {/* Confetti Burst Animation */}<ConfettiBurst
         trigger={triggerConfetti}
         originX={originX}
         originY={originY}
