@@ -13,7 +13,7 @@ import { Separator } from '../components/ui/separator';
 import OrderDetails from '../components/OrderDetails';
 import InvoiceModal from '../components/InvoiceModal';
 import { SystemAlerts } from '../components/SystemAlerts';
-import { Navigation } from '../components/Navigation';
+
 import { useOrderStore } from '../store/useOrderStore';
 import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
@@ -112,7 +112,6 @@ export default function Orders() {
   if (isLoading) {
     return (
       <div className="p-6">
-        <Navigation />
         <div className="flex items-center justify-center h-64">
           <div className="text-muted-foreground">Loading orders...</div>
         </div>
@@ -122,8 +121,6 @@ export default function Orders() {
 
   return (
     <div className="p-6 space-y-6">
-      <Navigation />
-
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Orders Management</h1>

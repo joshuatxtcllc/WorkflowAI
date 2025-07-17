@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { useToast } from '../hooks/use-toast';
-import { Navigation } from '../components/Navigation';
+
 import { SystemAlerts } from '../components/SystemAlerts';
 import { CheckCircle, XCircle, Loader2, Send, Activity, Database } from 'lucide-react';
 
@@ -109,7 +109,6 @@ export default function HubConnection() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
       <div className="container mx-auto p-6 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Central Hub Connection</h1>

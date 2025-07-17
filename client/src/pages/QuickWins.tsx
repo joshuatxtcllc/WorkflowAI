@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Navigation } from '../components/Navigation';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Clock, Zap, TrendingUp, Target, DollarSign, Calendar, Coffee, LogOut } from "lucide-react";
 import { OrderWithDetails } from "@shared/schema";
@@ -199,8 +199,6 @@ export default function QuickWins() {
 
   return (
     <div className="p-6 space-y-6">
-      <Navigation />
-      
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Zap className="h-6 w-6 text-green-600" />

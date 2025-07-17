@@ -7,7 +7,7 @@ import { Separator } from "../components/ui/separator";
 import { CheckCircle, Clock, Package, Download, RefreshCw } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
-import { Navigation } from '../components/Navigation';
+
 import { SystemAlerts } from '../components/SystemAlerts';
 
 interface MaterialItem {
@@ -130,7 +130,6 @@ Notes: Please mark all items with order numbers for easy identification.
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
       <div className="p-6">
         <SystemAlerts />
         <div className="max-w-7xl mx-auto">

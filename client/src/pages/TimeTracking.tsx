@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Navigation } from '../components/Navigation';
+
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -111,8 +111,6 @@ export default function TimeTracking() {
 
   return (
     <div className="p-6 space-y-6">
-      <Navigation />
-      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Time Tracking</h1>
