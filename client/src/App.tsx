@@ -70,6 +70,9 @@ function App() {
 function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
+  
+  // Force desktop view for wider screens to ensure sidebar shows
+  const isActuallyMobile = isMobile && window.innerWidth < 768;
 
   // Redirect to login if not authenticated - use useEffect before any early returns
   useEffect(() => {
@@ -113,7 +116,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex flex-1 flex-col">
-        {isMobile && (
+        {isActuallyMobile && (
           <header className="mobile-header">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -135,9 +138,9 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
         )}
         
         <div className="flex flex-1">
-          {!isMobile && <AppSidebar />}
-          <main className={`flex-1 flex flex-col ${isMobile ? 'mobile-content' : ''}`}>
-            <div className={`flex-1 ${isMobile ? 'mobile-container' : 'p-4'}`}>
+          {!isActuallyMobile && <AppSidebar />}
+          <main className={`flex-1 flex flex-col ${isActuallyMobile ? 'mobile-content' : ''}`}>
+            <div className={`flex-1 ${isActuallyMobile ? 'mobile-container' : 'p-4'}`}>
               <Switch>
                 <Route path="/dashboard" component={Dashboard} />
                 <Route path="/orders" component={Orders} />
@@ -164,7 +167,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
           </main>
         </div>
         
-        {isMobile && <MobileBottomNav />}
+        {isActuallyMobile && <MobileBottomNav />}
       </div>
     </SidebarProvider>
   );
