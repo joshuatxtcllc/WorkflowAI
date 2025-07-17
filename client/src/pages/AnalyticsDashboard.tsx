@@ -38,34 +38,39 @@ export default function AnalyticsDashboard() {
   // Calculate real-time metrics from orders (same as Kanban board)
   const calculateRealTimeMetrics = () => {
     const now = new Date();
-    const activeOrders = orders.filter(order => 
-      !['PICKED_UP', 'COMPLETED'].includes(order.status)
+    
+    // Ensure we're working with valid order data - exactly like Kanban board
+    const validOrders = orders.filter(order => order && order.id);
+    console.log('AnalyticsDashboard: Processing orders:', validOrders.length, 'Raw orders:', orders.length);
+    
+    const activeOrders = validOrders.filter(order => 
+      !['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
     
-    const mysteryItems = orders.filter(order => 
+    const mysteryItems = validOrders.filter(order => 
       order.status === 'MYSTERY_UNCLAIMED'
     );
 
-    const completedOrders = orders.filter(order => 
-      ['PICKED_UP', 'COMPLETED'].includes(order.status)
+    const completedOrders = validOrders.filter(order => 
+      ['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
 
-    const totalHours = orders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
-    const completionRate = orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0;
+    const totalHours = validOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const completionRate = validOrders.length > 0 ? (completedOrders.length / validOrders.length) * 100 : 0;
 
     // Production flow matching Kanban columns
     const productionFlow = {
-      orderProcessed: orders.filter(o => o.status === 'ORDER_PROCESSED').length,
-      materialsOrdered: orders.filter(o => o.status === 'MATERIALS_ORDERED').length,
-      materialsArrived: orders.filter(o => o.status === 'MATERIALS_ARRIVED').length,
-      frameCut: orders.filter(o => o.status === 'FRAME_CUT').length,
-      matCut: orders.filter(o => o.status === 'MAT_CUT').length,
-      prepped: orders.filter(o => o.status === 'PREPPED').length,
-      completed: orders.filter(o => o.status === 'COMPLETED').length,
-      pickedUp: orders.filter(o => o.status === 'PICKED_UP').length
+      orderProcessed: validOrders.filter(o => o.status === 'ORDER_PROCESSED').length,
+      materialsOrdered: validOrders.filter(o => o.status === 'MATERIALS_ORDERED').length,
+      materialsArrived: validOrders.filter(o => o.status === 'MATERIALS_ARRIVED').length,
+      frameCut: validOrders.filter(o => o.status === 'FRAME_CUT').length,
+      matCut: validOrders.filter(o => o.status === 'MAT_CUT').length,
+      prepped: validOrders.filter(o => o.status === 'PREPPED').length,
+      completed: validOrders.filter(o => o.status === 'COMPLETED').length,
+      pickedUp: validOrders.filter(o => o.status === 'PICKED_UP').length
     };
 
-    return {
+    const result = {
       mysteryItems: {
         total: mysteryItems.length,
         items: mysteryItems.slice(0, 5).map(item => ({
@@ -77,7 +82,7 @@ export default function AnalyticsDashboard() {
       efficiency: {
         totalActiveOrders: activeOrders.length,
         completionRate: Math.round(completionRate),
-        averageOrderValue: Math.round(orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0) / orders.length || 0),
+        averageOrderValue: Math.round(validOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0) / validOrders.length || 0),
         estimatedWorkload: Math.round(totalHours)
       },
       productionFlow,
@@ -93,6 +98,14 @@ export default function AnalyticsDashboard() {
         }).length
       }
     };
+
+    console.log('AnalyticsDashboard: Calculated totals:', {
+      totalOrders: validOrders.length,
+      activeOrders: activeOrders.length,
+      completedOrders: completedOrders.length
+    });
+
+    return result;
   };
 
   const realTimeMetrics = calculateRealTimeMetrics();
@@ -190,8 +203,9 @@ export default function AnalyticsDashboard() {
                 <div>
                   <p className="text-sm text-gray-400">Total Orders</p>
                   <p className="text-2xl font-bold text-purple-400">
-                    {orders.length}
+                    {orders.filter(order => order && order.id).length}
                   </p>
+                  <p className="text-xs text-gray-500">Raw: {orders.length}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-purple-400" />
               </div>

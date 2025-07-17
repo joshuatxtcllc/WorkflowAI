@@ -31,51 +31,68 @@ export default function Analytics() {
     const last30Days = subDays(now, 30);
     const last7Days = subDays(now, 7);
 
-    // Use same filtering logic as Kanban board
-    const activeOrders = orders.filter(order => 
-      !['PICKED_UP', 'COMPLETED'].includes(order.status)
+    // Ensure we're working with valid order data - no filtering at the top level
+    const validOrders = orders.filter(order => order && order.id);
+    
+    console.log('Analytics: Processing orders:', validOrders.length, 'Raw orders:', orders.length);
+
+    // Use same filtering logic as Kanban board - match exactly
+    const activeOrders = validOrders.filter(order => 
+      !['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
 
-    const recentOrders = orders.filter(order => 
-      new Date(order.createdAt) >= last30Days
+    const recentOrders = validOrders.filter(order => {
+      try {
+        return order.createdAt && new Date(order.createdAt) >= last30Days;
+      } catch (e) {
+        return false;
+      }
+    });
+
+    const weeklyOrders = validOrders.filter(order => {
+      try {
+        return order.createdAt && new Date(order.createdAt) >= last7Days;
+      } catch (e) {
+        return false;
+      }
+    });
+
+    // Match Kanban board completion logic exactly
+    const completedOrders = validOrders.filter(order => 
+      ['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
 
-    const weeklyOrders = orders.filter(order => 
-      new Date(order.createdAt) >= last7Days
-    );
-
-    // Match Kanban board completion logic
-    const completedOrders = orders.filter(order => 
-      ['PICKED_UP', 'COMPLETED'].includes(order.status)
-    );
-
-    const overdueOrders = activeOrders.filter(order => 
-      order.dueDate && new Date(order.dueDate) < now
-    );
+    const overdueOrders = activeOrders.filter(order => {
+      try {
+        return order.dueDate && new Date(order.dueDate) < now;
+      } catch (e) {
+        return false;
+      }
+    });
 
     // Use totalPrice instead of price to match order schema
     const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
     const averageOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
 
-    // Status distribution - match Kanban columns exactly
-    const statusCounts = orders.reduce((acc, order) => {
+    // Status distribution - match Kanban columns exactly, include all statuses
+    const statusCounts = validOrders.reduce((acc, order) => {
       const status = order.status || 'UNKNOWN';
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
     // Order type distribution
-    const typeCounts = orders.reduce((acc, order) => {
+    const typeCounts = validOrders.reduce((acc, order) => {
       const type = order.orderType || 'UNKNOWN';
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
     // Calculate total estimated hours like Kanban board
-    const totalHours = orders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const totalHours = validOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
 
-    return {
-      totalOrders: orders.length,
+    const result = {
+      totalOrders: validOrders.length,
       activeOrders: activeOrders.length,
       recentOrders: recentOrders.length,
       weeklyOrders: weeklyOrders.length,
@@ -83,12 +100,21 @@ export default function Analytics() {
       overdueOrders: overdueOrders.length,
       totalRevenue,
       averageOrderValue,
-      completionRate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
+      completionRate: validOrders.length > 0 ? (completedOrders.length / validOrders.length) * 100 : 0,
       statusCounts,
       typeCounts,
       totalHours,
-      averageHours: orders.length > 0 ? totalHours / orders.length : 0
+      averageHours: validOrders.length > 0 ? totalHours / validOrders.length : 0
     };
+
+    console.log('Analytics: Calculated totals:', {
+      totalOrders: result.totalOrders,
+      activeOrders: result.activeOrders,
+      completedOrders: result.completedOrders,
+      statusCounts: result.statusCounts
+    });
+
+    return result;
   };
 
   const analytics = calculateAnalytics();
@@ -99,6 +125,9 @@ export default function Analytics() {
         <div>
           <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
           <p className="text-muted-foreground">Performance insights and business metrics</p>
+          <p className="text-xs text-jade-400 mt-1">
+            Data sync: {orders.length} orders loaded • Analytics: {analytics.totalOrders} processed
+          </p>
         </div>
       </div>
 
