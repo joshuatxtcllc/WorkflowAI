@@ -17,29 +17,24 @@ import {
 } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
-interface WorkloadMetrics {
-  totalOrders: number;
-  totalHours: number;
-  averageOrderValue: number;
-  completionRate: number;
-  pendingOrders: number;
-  overdueOrders: number;
-}
-
 export default function Analytics() {
+  // Use the same data source as Kanban board
   const { data: orders = [] } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
+    refetchInterval: 30000,
+    staleTime: 10000,
   });
 
-  const { data: workloadMetrics } = useQuery<WorkloadMetrics>({
-    queryKey: ["/api/analytics/workload"],
-  });
-
-  // Calculate analytics from order data
+  // Calculate analytics from order data - matching Kanban board logic exactly
   const calculateAnalytics = () => {
     const now = new Date();
     const last30Days = subDays(now, 30);
     const last7Days = subDays(now, 7);
+
+    // Use same filtering logic as Kanban board
+    const activeOrders = orders.filter(order => 
+      !['PICKED_UP', 'COMPLETED'].includes(order.status)
+    );
 
     const recentOrders = orders.filter(order => 
       new Date(order.createdAt) >= last30Days
@@ -49,18 +44,20 @@ export default function Analytics() {
       new Date(order.createdAt) >= last7Days
     );
 
+    // Match Kanban board completion logic
     const completedOrders = orders.filter(order => 
-      order.status === 'PICKED_UP'
+      ['PICKED_UP', 'COMPLETED'].includes(order.status)
     );
 
-    const overdueOrders = orders.filter(order => 
-      new Date(order.dueDate) < now && order.status !== 'PICKED_UP'
+    const overdueOrders = activeOrders.filter(order => 
+      order.dueDate && new Date(order.dueDate) < now
     );
 
-    const totalRevenue = completedOrders.reduce((sum, order) => sum + order.price, 0);
+    // Use totalPrice instead of price to match order schema
+    const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
     const averageOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
 
-    // Status distribution
+    // Status distribution - match Kanban columns exactly
     const statusCounts = orders.reduce((acc, order) => {
       const status = order.status || 'UNKNOWN';
       acc[status] = (acc[status] || 0) + 1;
@@ -69,12 +66,17 @@ export default function Analytics() {
 
     // Order type distribution
     const typeCounts = orders.reduce((acc, order) => {
-      acc[order.orderType] = (acc[order.orderType] || 0) + 1;
+      const type = order.orderType || 'UNKNOWN';
+      acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
+    // Calculate total estimated hours like Kanban board
+    const totalHours = orders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+
     return {
       totalOrders: orders.length,
+      activeOrders: activeOrders.length,
       recentOrders: recentOrders.length,
       weeklyOrders: weeklyOrders.length,
       completedOrders: completedOrders.length,
@@ -84,7 +86,8 @@ export default function Analytics() {
       completionRate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
       statusCounts,
       typeCounts,
-      averageHours: orders.length > 0 ? orders.reduce((sum, order) => sum + order.estimatedHours, 0) / orders.length : 0
+      totalHours,
+      averageHours: orders.length > 0 ? totalHours / orders.length : 0
     };
   };
 
@@ -99,7 +102,7 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Key Metrics - Synced with Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
@@ -108,6 +111,9 @@ export default function Analytics() {
               <div>
                 <div className="text-2xl font-bold">{analytics.totalOrders}</div>
                 <div className="text-sm text-muted-foreground">Total Orders</div>
+                <div className="text-xs text-blue-400 mt-1">
+                  {analytics.activeOrders} active
+                </div>
               </div>
             </div>
           </CardContent>
@@ -120,6 +126,9 @@ export default function Analytics() {
               <div>
                 <div className="text-2xl font-bold">${analytics.totalRevenue.toLocaleString()}</div>
                 <div className="text-sm text-muted-foreground">Total Revenue</div>
+                <div className="text-xs text-green-400 mt-1">
+                  ${analytics.averageOrderValue.toFixed(0)} avg
+                </div>
               </div>
             </div>
           </CardContent>
@@ -128,10 +137,13 @@ export default function Analytics() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-500" />
+              <Clock className="h-5 w-5 text-purple-500" />
               <div>
-                <div className="text-2xl font-bold">${analytics.averageOrderValue.toFixed(0)}</div>
-                <div className="text-sm text-muted-foreground">Avg Order Value</div>
+                <div className="text-2xl font-bold">{analytics.totalHours.toFixed(1)}h</div>
+                <div className="text-sm text-muted-foreground">Total Workload</div>
+                <div className="text-xs text-purple-400 mt-1">
+                  {analytics.averageHours.toFixed(1)}h avg
+                </div>
               </div>
             </div>
           </CardContent>
@@ -144,6 +156,9 @@ export default function Analytics() {
               <div>
                 <div className="text-2xl font-bold">{analytics.completionRate.toFixed(1)}%</div>
                 <div className="text-sm text-muted-foreground">Completion Rate</div>
+                <div className="text-xs text-orange-400 mt-1">
+                  {analytics.completedOrders} completed
+                </div>
               </div>
             </div>
           </CardContent>
@@ -205,15 +220,21 @@ export default function Analytics() {
               <Progress value={analytics.completionRate} className="h-2" />
             </div>
 
-            {workloadMetrics && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm">Total Estimated Hours</span>
-                  <span className="text-sm font-medium">{workloadMetrics.totalHours}h</span>
-                </div>
-                <Progress value={(workloadMetrics.totalHours / 500) * 100} className="h-2" />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm">Total Estimated Hours</span>
+                <span className="text-sm font-medium">{analytics.totalHours.toFixed(1)}h</span>
               </div>
-            )}
+              <Progress value={(analytics.totalHours / 500) * 100} className="h-2" />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm">Active vs Completed</span>
+                <span className="text-sm font-medium">{analytics.activeOrders}/{analytics.completedOrders}</span>
+              </div>
+              <Progress value={(analytics.completedOrders / analytics.totalOrders) * 100} className="h-2" />
+            </div>
           </CardContent>
         </Card>
       </div>

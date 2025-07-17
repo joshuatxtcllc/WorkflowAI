@@ -5,9 +5,17 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Brain, TrendingUp, Users, Clock, AlertTriangle, Target, BarChart3, Lightbulb } from 'lucide-react';
+import type { OrderWithDetails } from '@shared/schema';
 
 export default function AnalyticsDashboard() {
   const [insights, setInsights] = useState<any>(null);
+
+  // Use same data source as Kanban board for consistency
+  const { data: orders = [] } = useQuery<OrderWithDetails[]>({
+    queryKey: ["/api/orders"],
+    refetchInterval: 30000,
+    staleTime: 10000,
+  });
 
   // Fetch AI learning insights
   const { data: learningData, isLoading: learningLoading } = useQuery({
@@ -27,11 +35,73 @@ export default function AnalyticsDashboard() {
     retry: false,
   });
 
+  // Calculate real-time metrics from orders (same as Kanban board)
+  const calculateRealTimeMetrics = () => {
+    const now = new Date();
+    const activeOrders = orders.filter(order => 
+      !['PICKED_UP', 'COMPLETED'].includes(order.status)
+    );
+    
+    const mysteryItems = orders.filter(order => 
+      order.status === 'MYSTERY_UNCLAIMED'
+    );
+
+    const completedOrders = orders.filter(order => 
+      ['PICKED_UP', 'COMPLETED'].includes(order.status)
+    );
+
+    const totalHours = orders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const completionRate = orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0;
+
+    // Production flow matching Kanban columns
+    const productionFlow = {
+      orderProcessed: orders.filter(o => o.status === 'ORDER_PROCESSED').length,
+      materialsOrdered: orders.filter(o => o.status === 'MATERIALS_ORDERED').length,
+      materialsArrived: orders.filter(o => o.status === 'MATERIALS_ARRIVED').length,
+      frameCut: orders.filter(o => o.status === 'FRAME_CUT').length,
+      matCut: orders.filter(o => o.status === 'MAT_CUT').length,
+      prepped: orders.filter(o => o.status === 'PREPPED').length,
+      completed: orders.filter(o => o.status === 'COMPLETED').length,
+      pickedUp: orders.filter(o => o.status === 'PICKED_UP').length
+    };
+
+    return {
+      mysteryItems: {
+        total: mysteryItems.length,
+        items: mysteryItems.slice(0, 5).map(item => ({
+          trackingId: item.trackingId,
+          description: item.description || 'Mystery item',
+          daysInSystem: Math.floor((now.getTime() - new Date(item.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+        }))
+      },
+      efficiency: {
+        totalActiveOrders: activeOrders.length,
+        completionRate: Math.round(completionRate),
+        averageOrderValue: Math.round(orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0) / orders.length || 0),
+        estimatedWorkload: Math.round(totalHours)
+      },
+      productionFlow,
+      urgentAlerts: {
+        overdue: activeOrders.filter(o => o.dueDate && new Date(o.dueDate) < now).length,
+        urgent: activeOrders.filter(o => o.priority === 'URGENT').length,
+        dueTomorrow: activeOrders.filter(o => {
+          if (!o.dueDate) return false;
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const dueDate = new Date(o.dueDate);
+          return dueDate.toDateString() === tomorrow.toDateString();
+        }).length
+      }
+    };
+  };
+
+  const realTimeMetrics = calculateRealTimeMetrics();
+
   useEffect(() => {
-    if (learningData && shopData && aiData) {
-      setInsights({ learning: learningData, shop: shopData, ai: aiData });
+    if (learningData && aiData) {
+      setInsights({ learning: learningData, shop: realTimeMetrics, ai: aiData });
     }
-  }, [learningData, shopData, aiData]);
+  }, [learningData, aiData, orders]);
 
   if (learningLoading || shopLoading || aiLoading) {
     return (
@@ -70,7 +140,7 @@ export default function AnalyticsDashboard() {
           </Badge>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Real-time Kanban Data */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-gray-900 border-gray-700">
             <CardContent className="p-4">
@@ -78,7 +148,7 @@ export default function AnalyticsDashboard() {
                 <div>
                   <p className="text-sm text-gray-400">Mystery Items</p>
                   <p className="text-2xl font-bold text-jade-400">
-                    {shopData?.mysteryItems?.total || 0}
+                    {realTimeMetrics.mysteryItems.total}
                   </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-amber-400" />
@@ -92,7 +162,7 @@ export default function AnalyticsDashboard() {
                 <div>
                   <p className="text-sm text-gray-400">Active Orders</p>
                   <p className="text-2xl font-bold text-blue-400">
-                    {shopData?.efficiency?.totalActiveOrders || 0}
+                    {realTimeMetrics.efficiency.totalActiveOrders}
                   </p>
                 </div>
                 <BarChart3 className="w-8 h-8 text-blue-400" />
@@ -106,7 +176,7 @@ export default function AnalyticsDashboard() {
                 <div>
                   <p className="text-sm text-gray-400">Completion Rate</p>
                   <p className="text-2xl font-bold text-green-400">
-                    {shopData?.efficiency?.completionRate || 0}%
+                    {realTimeMetrics.efficiency.completionRate}%
                   </p>
                 </div>
                 <Target className="w-8 h-8 text-green-400" />
@@ -118,13 +188,10 @@ export default function AnalyticsDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Risk Level</p>
-                  <Badge 
-                    variant={aiData?.riskLevel === 'low' ? 'default' : 'destructive'}
-                    className="text-sm"
-                  >
-                    {aiData?.riskLevel?.toUpperCase() || 'LOW'}
-                  </Badge>
+                  <p className="text-sm text-gray-400">Total Orders</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {orders.length}
+                  </p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-purple-400" />
               </div>
@@ -249,11 +316,11 @@ export default function AnalyticsDashboard() {
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-blue-400">Production Pipeline</CardTitle>
-                <CardDescription>Orders flowing through your workflow stages</CardDescription>
+                <CardDescription>Real-time orders flowing through workflow stages (synced with Kanban)</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {shopData?.productionFlow && Object.entries(shopData.productionFlow).map(([stage, count]: [string, any]) => (
+                  {Object.entries(realTimeMetrics.productionFlow).map(([stage, count]: [string, any]) => (
                     <div key={stage} className="bg-gray-800 p-4 rounded-lg text-center">
                       <p className="text-2xl font-bold text-jade-400">{count}</p>
                       <p className="text-xs text-gray-400 capitalize">
@@ -274,18 +341,18 @@ export default function AnalyticsDashboard() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Overdue Orders</span>
-                      <Badge variant="destructive">{shopData?.urgentAlerts?.overdue || 0}</Badge>
+                      <Badge variant="destructive">{realTimeMetrics.urgentAlerts.overdue}</Badge>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Urgent Priority</span>
                       <Badge variant="outline" className="border-amber-400 text-amber-400">
-                        {shopData?.urgentAlerts?.urgent || 0}
+                        {realTimeMetrics.urgentAlerts.urgent}
                       </Badge>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Due Tomorrow</span>
                       <Badge variant="outline" className="border-blue-400 text-blue-400">
-                        {shopData?.urgentAlerts?.dueTomorrow || 0}
+                        {realTimeMetrics.urgentAlerts.dueTomorrow}
                       </Badge>
                     </div>
                   </div>
@@ -301,14 +368,20 @@ export default function AnalyticsDashboard() {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Avg Order Value</span>
                       <span className="text-green-400 font-medium">
-                        ${shopData?.efficiency?.averageOrderValue || 0}
+                        ${realTimeMetrics.efficiency.averageOrderValue}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Workload</span>
                       <span className="text-white font-medium">
-                        {shopData?.efficiency?.estimatedWorkload || 0}h
+                        {realTimeMetrics.efficiency.estimatedWorkload}h
                       </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Live Data Sync</span>
+                      <Badge className="bg-jade-600">
+                        Active
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -388,13 +461,13 @@ export default function AnalyticsDashboard() {
                   <AlertTriangle className="w-5 h-5" />
                   Mystery Items Analysis
                 </CardTitle>
-                <CardDescription>Your authentic unclaimed items from Mystery Drawer #3</CardDescription>
+                <CardDescription>Real-time unclaimed items (synced with Kanban board)</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {shopData?.mysteryItems?.items && shopData.mysteryItems.items.length > 0 ? (
+                  {realTimeMetrics.mysteryItems.items && realTimeMetrics.mysteryItems.items.length > 0 ? (
                     <div className="space-y-3">
-                      {shopData.mysteryItems.items.map((item: any, index: number) => (
+                      {realTimeMetrics.mysteryItems.items.map((item: any, index: number) => (
                         <div key={index} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
                           <div>
                             <p className="text-white font-medium">{item.trackingId}</p>
@@ -410,6 +483,7 @@ export default function AnalyticsDashboard() {
                     <div className="text-center py-8">
                       <AlertTriangle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                       <p className="text-gray-400">No mystery items currently in system</p>
+                      <p className="text-xs text-jade-400 mt-2">✓ Synced with Kanban board</p>
                     </div>
                   )}
                 </div>
