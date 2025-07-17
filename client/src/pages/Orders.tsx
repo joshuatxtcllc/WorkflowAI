@@ -10,9 +10,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Separator } from '../components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import OrderDetails from '../components/OrderDetails';
 import InvoiceModal from '../components/InvoiceModal';
 import { SystemAlerts } from '../components/SystemAlerts';
+import { useIsMobile } from '../hooks/use-mobile';
 
 import { useOrderStore } from '../store/useOrderStore';
 import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
@@ -51,6 +53,8 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
   const [location] = useLocation();
+  const { isMobile } = useIsMobile();
+  const { setUI, setSelectedOrderId: setStoreSelectedOrderId } = useOrderStore();
 
   // Get status from URL params
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -182,73 +186,156 @@ export default function Orders() {
         </CardContent>
       </Card>
 
-      {/* Orders Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {sortedOrders.map((order) => (
-          <Card key={order.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">#{order.trackingId}</CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <User className="h-4 w-4" />
-                    {order.customer?.name || 'Unknown Customer'}
+      {/* Orders Display */}
+      {isMobile ? (
+        /* Mobile Card Layout */
+        <div className="space-y-4">
+          {sortedOrders.map((order) => (
+            <Card key={order.id} className="mobile-card">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">#{order.trackingId}</h3>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                      <User className="h-4 w-4" />
+                      {order.customer?.name || 'Unknown Customer'}
+                    </div>
+                  </div>
+                  <Badge className={getStatusColor(order.status || '')}>
+                    {getStatusLabel(order.status || '')}
+                  </Badge>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <div className="text-sm text-muted-foreground line-clamp-2">
+                    {order.description || 'No description available'}
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>Due: {format(new Date(order.dueDate), 'MMM d')}</span>
+                    </div>
+                    <div className="flex items-center gap-1 font-semibold">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <span>${order.price.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Package className="h-4 w-4" />
+                    <span>{order.orderType} • {order.estimatedHours}h</span>
                   </div>
                 </div>
-                <Badge className={getStatusColor(order.status || '')}>
-                  {getStatusLabel(order.status || '')}
-                </Badge>
-              </div>
-            </CardHeader>
 
-            <CardContent className="space-y-3">
-              <div className="text-sm text-muted-foreground line-clamp-2">
-                {order.description || 'No description available'}
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Due: {format(new Date(order.dueDate), 'MMM d, yyyy')}</span>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 mobile-button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setStoreSelectedOrderId(order.id);
+                      setUI({ isOrderDetailsOpen: true });
+                    }}
+                  >
+                    View Details
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                  <Button
+                    onClick={() => setInvoiceOrderId(order.id)}
+                    variant="outline"
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-400 text-white mobile-button"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
                 </div>
-                <div className="flex items-center gap-1 font-semibold">
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                  <span>${order.price.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Package className="h-4 w-4" />
-                <span>{order.orderType} • {order.estimatedHours}h estimated</span>
-              </div>
-
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full mt-4"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedOrderId(order.id);
-                  setUI({ isOrderDetailsOpen: true });
-                }}
-              >
-                View Details
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-               <Button
-              onClick={() => setInvoiceOrderId(order.id)}
-              variant="outline"
-              size="sm"
-              className="bg-blue-500 hover:bg-blue-400 text-white"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Invoice
-            </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        /* Desktop Table Layout */
+        <Card>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Due Date</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedOrders.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-medium">#{order.trackingId}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        {order.customer?.name || 'Unknown Customer'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(order.status || '')}>
+                        {getStatusLabel(order.status || '')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        {format(new Date(order.dueDate), 'MMM d, yyyy')}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 font-semibold">
+                        <DollarSign className="h-4 w-4 text-green-600" />
+                        ${order.price.toLocaleString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        {order.orderType}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setStoreSelectedOrderId(order.id);
+                            setUI({ isOrderDetailsOpen: true });
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          onClick={() => setInvoiceOrderId(order.id)}
+                          variant="outline"
+                          size="sm"
+                          className="bg-blue-500 hover:bg-blue-400 text-white"
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      )}
 
       {filteredOrders.length === 0 && (
         <Card>
