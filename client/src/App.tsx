@@ -44,16 +44,6 @@ import SystemTest from "./pages/SystemTest";
 import EmergencyPayments from "./pages/EmergencyPayments";
 import { Header } from "./components/Header";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 30000,
-    },
-  },
-});
-
 function AppContent() {
   const { user, isLoading } = useAuth();
   const isMobile = useIsMobile();
