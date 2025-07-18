@@ -17,7 +17,7 @@ import { apiRequest } from '../lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
 import { SystemAlerts } from '../components/SystemAlerts';
 import NewOrderModal from '../components/NewOrderModal';
-
+import { useIsMobile } from '../hooks/use-mobile';
 
 // Component to handle scroll detection
 function ScrollHandler() {
@@ -54,6 +54,8 @@ function ScrollHandler() {
 export default function Dashboard() {
   console.log('Dashboard: Component mounting...');
   const { ui, setUI } = useOrderStore();
+  const { isMobile } = useIsMobile();
+  const [showAI, setShowAI] = useState(false);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-950 relative" style={{ backgroundColor: '#0A0A0B' }}>
@@ -74,9 +76,32 @@ export default function Dashboard() {
       {/* Main content area */}
       <div className="flex-1 p-4 space-y-6 overflow-auto">
         <SystemAlerts />
-        <KanbanBoard />
+        {/* Kanban Board */}
+        <div className={isMobile ? 'mobile-kanban-container' : ''}>
+          <KanbanBoard />
+        </div>
       </div>
-      
+
+      {/* AI Assistant Button for Mobile */}
+      {isMobile && (
+        <button
+          onClick={() => setShowAI(!showAI)}
+          className="fixed bottom-24 right-4 bg-jade-600 hover:bg-jade-700 text-white rounded-full p-4 shadow-lg z-50 touch-manipulation"
+          style={{ minWidth: '56px', minHeight: '56px' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </button>
+      )}
+
+      {/* AI Assistant */}
+      {(showAI || !isMobile) && (
+        <div className={`${isMobile ? 'fixed inset-0 bg-gray-950 z-40' : 'absolute top-0 right-0 w-80 h-full'}`}>
+          <AIAssistant onClose={() => setShowAI(false)} />
+        </div>
+      )}
+
       <AIAssistant />
       <NewOrderModal />
 

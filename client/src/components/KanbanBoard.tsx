@@ -790,7 +790,7 @@ export default function KanbanBoard() {
             </div>
 
             {/* Mobile swipe hint */}
-            <div className="sm:hidden absolute top-4 left-1/2 transform -translate-x-1/2 z-10 bg-jade-500/20 text-jade-300 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+            <div className="sm:hidden absolute top-4 left-1/2 transform -translate-x-1/2 z-10 bg-jade-500/20 text-jade-30 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
               ← Swipe to see more →
             </div>
 

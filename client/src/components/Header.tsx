@@ -1,103 +1,71 @@
-import { Button } from "./ui/button";
-import { SidebarTrigger } from "./ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { Frame, Plus, Settings, BarChart3, Clock, TrendingUp, DollarSign, Zap } from "lucide-react";
-import { Link } from "wouter";
-import { useOrderStore } from "../store/useOrderStore";
+import React from 'react';
+import { Button } from './ui/button';
+import { useLocation } from 'wouter';
+import { useAuth } from '../hooks/useAuth';
+import { SidebarTrigger } from './ui/sidebar';
+import { useIsMobile } from '../hooks/use-mobile';
 
-export default function Header() {
-  const { toggleNewOrderModal } = useOrderStore();
-  const { data: workloadMetrics } = useQuery({
-    queryKey: ["/api/analytics/workload"],
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
+export function Header() {
+  const [, setLocation] = useLocation();
+  const { user, logout } = useAuth();
+  const { isMobile } = useIsMobile();
+
+  const handleLogout = async () => {
+    await logout();
+    setLocation('/login');
+  };
+
+  if (isMobile) {
+    return (
+      <header className="mobile-header">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-jade-400 font-bold text-lg">JAY'S FRAMES</h1>
+
+          {user && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-300 hidden sm:inline">
+                {user.firstName}
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-300 hover:text-white min-h-[44px] min-w-[44px] p-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </Button>
+            </div>
+          )}
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className="relative z-10 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
-      <div className="w-full px-4 py-4">
-        <div className="flex items-center gap-6">
-          {/* Brand & Actions - Left */}
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="text-white hover:bg-gray-800 p-2 rounded-md border border-gray-700 hover:border-gray-600 transition-colors" />
-            <div className="w-12 h-12 bg-gradient-to-br from-jade-500 to-jade-600 rounded-xl flex items-center justify-center">
-              <Frame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold font-mono tracking-wider text-jade-400">JAY'S FRAMES</h1>
-              <p className="text-sm text-gray-400">Smart Production Management</p>
-            </div>
-            <Button 
-              className="bg-jade-500 hover:bg-jade-400 text-black font-semibold ml-4"
-              onClick={toggleNewOrderModal}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Order
-            </Button>
-            <Link href="/quick-wins">
-              <Button className="bg-orange-500 hover:bg-orange-400 text-white font-semibold">
-                <Zap className="w-4 h-4 mr-2" />
-                Quick Wins
+    <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <SidebarTrigger />
+          <h1 className="text-jade-400 font-bold text-xl">JAY'S FRAMES</h1>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {user && (
+            <>
+              <span className="text-sm text-gray-300">
+                Welcome, {user.firstName}
+              </span>
+              <Button 
+                variant="ghost" 
+                onClick={handleLogout}
+                className="text-gray-300 hover:text-white"
+              >
+                Logout
               </Button>
-            </Link>
-          </div>
-
-          {/* Stats Overview - Desktop */}
-          <div className="hidden lg:flex items-center gap-6 flex-1">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-jade-400 flex items-center gap-1">
-                <BarChart3 className="w-5 h-5" />
-                {workloadMetrics?.totalOrders || 0}
-              </div>
-              <div className="text-xs text-gray-400">Active Orders</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400 flex items-center gap-1">
-                <Clock className="w-5 h-5" />
-                {workloadMetrics?.totalHours || 0}h
-              </div>
-              <div className="text-xs text-gray-400">Total Hours</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400 flex items-center gap-1">
-                <TrendingUp className="w-5 h-5" />
-                {workloadMetrics?.efficiency || 85}%
-              </div>
-              <div className="text-xs text-gray-400">Efficiency</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
-                <DollarSign className="w-5 h-5" />
-                ${workloadMetrics?.totalValue?.toLocaleString() || '0'}
-              </div>
-              <div className="text-xs text-gray-400">Total Value</div>
-            </div>
-          </div>
-
-          {/* Stats Overview - Mobile Compact */}
-          <div className="flex lg:hidden items-center gap-3 text-sm flex-1">
-            <div className="flex items-center gap-1">
-              <BarChart3 className="w-4 h-4 text-jade-400" />
-              <span className="font-bold text-jade-400">{workloadMetrics?.totalOrders || 0}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-orange-400" />
-              <span className="font-bold text-orange-400">{workloadMetrics?.totalHours || 0}h</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4 text-blue-400" />
-              <span className="font-bold text-blue-400">{workloadMetrics?.efficiency || 85}%</span>
-            </div>
-          </div>
-
-          {/* Actions - Right */}
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" onClick={() => window.location.href = "/api/logout"}>
-              Logout
-            </Button>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </header>

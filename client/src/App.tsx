@@ -10,7 +10,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "./components/ui/sidebar";
-import { useIsMobile } from "./hooks/use-mobile";
+import { useIsMobile, useViewportHeight } from "./hooks/use-mobile";
 
 import Dashboard from "./pages/Dashboard";
 import QuickWins from "./pages/QuickWins";
@@ -42,179 +42,196 @@ import { useSidebar } from "./components/ui/sidebar";
 import TwilioManagement from "./pages/TwilioManagement";
 import SystemTest from "./pages/SystemTest";
 import EmergencyPayments from "./pages/EmergencyPayments";
+import { Header } from "./components/Header";
 
-function App() {
-  const isMobile = useIsMobile();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 30000,
+    },
+  },
+});
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary
-        fallbackRender={({ error }: { error: Error }) => (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
-              <p className="text-gray-600">{error.message}</p>
-            </div>
-          </div>
-        )}
-      >
-        <TooltipProvider>
-          <div className="flex flex-col min-h-screen bg-background">
-            <Switch>
-              <Route path="/login" component={Login} />
-              <Route path="/customer-portal" component={CustomerPortal} />
-              <Route>
-                <AuthenticatedApp isMobile={isMobile.isMobile} />
-              </Route>
-            </Switch>
-          </div>
-          <Toaster />
-        </TooltipProvider>
-      </ErrorBoundary>
-    </QueryClientProvider>
-  );
-}
-
-function MobileMenuButton() {
-  const { toggleSidebar } = useSidebar();
-
-  return (
-    <button
-      onClick={toggleSidebar}
-      className="w-8 h-8 bg-jade-600 rounded-lg flex items-center justify-center hover:bg-jade-700 transition-colors"
-      aria-label="Open menu"
-    >
-      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-  );
-}
-
-function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
+function AppContent() {
   const { user, isLoading } = useAuth();
-  const [location, setLocation] = useLocation();
-  const [forceLoaded, setForceLoaded] = useState(false);
+  const isMobile = useIsMobile();
+  const viewportHeight = useViewportHeight();
 
-  // Force loading to complete after 10 seconds as a safety mechanism
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      console.log('AuthenticatedApp: Force completing loading after timeout');
-      setForceLoaded(true);
-    }, 10000);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // Force desktop view for wider screens to ensure sidebar shows
-  const isActuallyMobile = isMobile && window.innerWidth < 768;
-
-  // Redirect to login if not authenticated - use useEffect before any early returns
-  useEffect(() => {
-    if (!isLoading && !user) {
-      setLocation('/login');
-    }
-  }, [user, isLoading, setLocation]);
-
-  // Redirect root to dashboard
-  useEffect(() => {
-    if (location === '/') {
-      console.log('AuthenticatedApp: Redirecting from root to dashboard');
-      setLocation('/dashboard');
-    }
-  }, [location, setLocation]);
-
-  // Show loading while checking auth
-  if (isLoading && !forceLoaded) {
-    console.log('AuthenticatedApp: Still loading authentication...');
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <div className="text-sm text-gray-600">Loading Jay's Frames...</div>
-          <div className="text-xs text-gray-500">If this takes too long, try refreshing the page</div>
-        </div>
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
       </div>
     );
   }
 
-  console.log('AuthenticatedApp: Authentication completed, user:', user?.email, 'location:', location);
-
-  // Don't render anything while redirecting
-  if (!user) {
-    return null;
-  }
-
-  const getPageTitle = () => {
-    switch (location) {
-      case '/dashboard': return 'Dashboard';
-      case '/orders': return 'Orders';
-      case '/customers': return 'Customers';
-      case '/analytics': return 'Analytics';
-      case '/notifications': return 'Notifications';
-      default: return 'Jay\'s Frames';
+  const AppLayout = ({ children }: { children: React.ReactNode }) => {
+    if (isMobile) {
+      return (
+        <div 
+          className="mobile-app-container overflow-hidden"
+          style={{ height: viewportHeight }}
+        >
+          <Header />
+          <main 
+            className="mobile-content overflow-y-auto"
+            style={{ 
+              height: `${viewportHeight - 140}px`,
+              paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
+          >
+            <div className="mobile-container">
+              {children}
+            </div>
+          </main>
+          <MobileBottomNav />
+        </div>
+      );
     }
+
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 overflow-y-auto p-6">
+              {children}
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex flex-1 flex-col">
-        {isActuallyMobile && (
-          <header className="mobile-header">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <MobileMenuButton />
-                <div>
-                  <h1 className="text-lg font-bold text-white">{getPageTitle()}</h1>
-                  <p className="text-xs text-gray-400">Jay's Frames</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-gray-300">{user?.firstName?.[0] || 'U'}</span>
-                </div>
-              </div>
-            </div>
-          </header>
-        )}
+    <div className="min-h-screen bg-gray-950 text-white">
+      <Switch>
+        <Route path="/" exact>
+          {user ? (
+            <AppLayout>
+              <Dashboard />
+            </AppLayout>
+          ) : (
+            <Login />
+          )}
+        </Route>
+        <Route path="/login" component={Login} />
+        <Route path="/customer-portal" component={CustomerPortal} />
+        <Route path="/orders">
+          <AppLayout>
+            <Orders />
+          </AppLayout>
+        </Route>
+        <Route path="/customers">
+          <AppLayout>
+            <Customers />
+          </AppLayout>
+        </Route>
+        <Route path="/analytics">
+          <AppLayout>
+            <Analytics />
+          </AppLayout>
+        </Route>
+        <Route path="/comprehensive-analytics">
+          <AppLayout>
+            <ComprehensiveAnalytics />
+          </AppLayout>
+        </Route>
+        <Route path="/notifications">
+          <AppLayout>
+            <Notifications />
+          </AppLayout>
+        </Route>
+         <Route path="/reports">
+          <AppLayout>
+            <Reports />
+          </AppLayout>
+        </Route>
+        <Route path="/schedule">
+          <AppLayout>
+            <Schedule />
+          </AppLayout>
+        </Route>
+        <Route path="/time-tracking">
+          <AppLayout>
+            <TimeTracking />
+          </AppLayout>
+        </Route>
+        <Route path="/vendor-orders">
+          <AppLayout>
+            <VendorOrders />
+          </AppLayout>
+        </Route>
+        <Route path="/hub">
+          <AppLayout>
+            <HubConnection />
+          </AppLayout>
+        </Route>
+         <Route path="/pos">
+          <AppLayout>
+            <POSIntegration />
+          </AppLayout>
+        </Route>
+        <Route path="/quick-wins">
+          <AppLayout>
+            <QuickWins />
+          </AppLayout>
+        </Route>
+        <Route path="/relaunch">
+          <AppLayout>
+            <RelaunchPlan />
+          </AppLayout>
+        </Route>
+        <Route path="/framers-assistant">
+          <AppLayout>
+            <FramersAssistantIntegration />
+          </AppLayout>
+        </Route>
+        <Route path="/invoices">
+          <AppLayout>
+            <Invoices />
+          </AppLayout>
+        </Route>
+         <Route path="/diagnostics">
+          <AppLayout>
+            <Diagnostics />
+          </AppLayout>
+        </Route>
+        <Route path="/system-test">
+          <AppLayout>
+            <SystemTest />
+          </AppLayout>
+        </Route>
+        <Route path="/emergency-payments">
+          <AppLayout>
+            <EmergencyPayments />
+          </AppLayout>
+        </Route>
+        <Route path="/twilio">
+          <AppLayout>
+            <TwilioManagement />
+          </AppLayout>
+        </Route>
+         <Route path="/admin">
+          <AppLayout>
+            <AdminPortal />
+          </AppLayout>
+        </Route>
+        <Route component={NotFound} />
+      </Switch>
+      <Toaster />
+    </div>
+  );
+}
 
-        <div className="flex flex-1">
-          <AppSidebar />
-          <main className={`flex-1 flex flex-col ${isActuallyMobile ? 'mobile-content' : ''}`}>
-            {!isActuallyMobile && (
-              <div className="flex items-center justify-between p-4 border-b">
-                <SidebarTrigger />
-                <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
-                <div></div>
-              </div>
-            )}
-            <div className={`flex-1 ${isActuallyMobile ? 'mobile-container' : 'p-4'}`}>
-              <Switch>
-                <Route path="/dashboard" component={Dashboard} />
-                <Route path="/orders" component={Orders} />
-                <Route path="/customers" component={Customers} />
-                <Route path="/analytics" component={Analytics} />
-                <Route path="/comprehensive-analytics" component={ComprehensiveAnalytics} />
-                <Route path="/quick-wins" component={QuickWins} />
-                <Route path="/relaunch" component={RelaunchPlan} />
-                <Route path="/pos" component={POSIntegration} />
-                <Route path="/framers-assistant" component={FramersAssistantIntegration} />
-                <Route path="/hub" component={HubConnection} />
-                <Route path="/invoices" component={Invoices} />
-                <Route path="/vendor-orders" component={VendorOrders} />
-                <Route path="/diagnostics" component={Diagnostics} />
-                <Route path="/system-test" component={SystemTest} />
-                <Route path="/emergency-payments" component={EmergencyPayments} />
-                <Route path="/admin" component={AdminPortal} />
-                <Route component={NotFound} />
-              </Switch>
-            </div>
-          </main>
-        </div>
-
-        {isActuallyMobile && <MobileBottomNav />}
-      </div>
-    </SidebarProvider>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
   );
 }
 
