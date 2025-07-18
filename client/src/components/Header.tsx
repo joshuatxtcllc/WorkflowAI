@@ -2,8 +2,24 @@ import React from 'react';
 import { Button } from './ui/button';
 import { useLocation } from 'wouter';
 import { useAuth } from '../hooks/useAuth';
-import { SidebarTrigger } from './ui/sidebar';
+import { SidebarTrigger, useSidebar } from './ui/sidebar';
 import { useIsMobile } from '../hooks/use-mobile';
+import { Menu } from 'lucide-react';
+
+// Safe wrapper for SidebarTrigger that only renders when sidebar context is available
+function SafeSidebarTrigger() {
+  try {
+    const { toggleSidebar } = useSidebar();
+    return <SidebarTrigger />;
+  } catch (error) {
+    // If sidebar context is not available, render a simple menu button
+    return (
+      <Button variant="ghost" size="sm" className="p-2">
+        <Menu className="h-4 w-4" />
+      </Button>
+    );
+  }
+}
 
 export function Header() {
   const [, setLocation] = useLocation();
@@ -47,7 +63,7 @@ export function Header() {
     <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <SidebarTrigger />
+          <SafeSidebarTrigger />
           <h1 className="text-jade-400 font-bold text-xl">JAY'S FRAMES</h1>
         </div>
 
