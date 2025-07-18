@@ -178,6 +178,13 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
         <div className="flex flex-1">
           <AppSidebar />
           <main className={`flex-1 flex flex-col ${isActuallyMobile ? 'mobile-content' : ''}`}>
+            {!isActuallyMobile && (
+              <div className="flex items-center justify-between p-4 border-b">
+                <SidebarTrigger />
+                <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
+                <div></div>
+              </div>
+            )}
             <div className={`flex-1 ${isActuallyMobile ? 'mobile-container' : 'p-4'}`}>
               <Switch>
                 <Route path="/dashboard" component={Dashboard} />
