@@ -139,9 +139,20 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
           <header className="mobile-header">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-jade-400 to-jade-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">JF</span>
-                </div>
+                <button
+                  onClick={() => {
+                    const sidebarTrigger = document.querySelector('[data-sidebar="trigger"]') as HTMLButtonElement;
+                    if (sidebarTrigger) {
+                      sidebarTrigger.click();
+                    }
+                  }}
+                  className="w-8 h-8 bg-jade-600 rounded-lg flex items-center justify-center hover:bg-jade-700 transition-colors"
+                  aria-label="Open menu"
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
                 <div>
                   <h1 className="text-lg font-bold text-white">{getPageTitle()}</h1>
                   <p className="text-xs text-gray-400">Jay's Frames</p>
@@ -157,7 +168,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
         )}
         
         <div className="flex flex-1">
-          {!isActuallyMobile && <AppSidebar />}
+          <AppSidebar />
           <main className={`flex-1 flex flex-col ${isActuallyMobile ? 'mobile-content' : ''}`}>
             <div className={`flex-1 ${isActuallyMobile ? 'mobile-container' : 'p-4'}`}>
               <Switch>

@@ -36,6 +36,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarTrigger,
   useSidebar,
 } from "./ui/sidebar";
 import {
@@ -195,6 +196,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="sidebar" className="border-r border-gray-200 bg-white">
+      <SidebarTrigger data-sidebar="trigger" className="hidden" />
       <SidebarHeader>
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
