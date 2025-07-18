@@ -157,8 +157,8 @@ export default function Invoices() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-6 overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Invoices</h1>
           <p className="text-gray-600">Create and manage customer invoices</p>
@@ -181,7 +181,7 @@ export default function Invoices() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="flex-1">
               <Input
                 placeholder="Search by invoice number, customer name, or email..."
@@ -191,7 +191,7 @@ export default function Invoices() {
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48 bg-gray-800 border-gray-700 text-white">
+              <SelectTrigger className="w-full sm:w-48 bg-gray-800 border-gray-700 text-white">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -236,7 +236,7 @@ export default function Invoices() {
             <div className="space-y-4">
               {filteredInvoices.map((invoice) => (
                 <div key={invoice.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold text-lg">{invoice.invoiceNumber}</h3>
@@ -266,30 +266,34 @@ export default function Invoices() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 ml-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewInvoice(invoice)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDownloadInvoice(invoice)}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:ml-4">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewInvoice(invoice)}
+                          className="flex-1 sm:flex-none"
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          View
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownloadInvoice(invoice)}
+                          className="flex-1 sm:flex-none"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
                       {invoice.status !== 'paid' && (
-                        <>
+                        <div className="flex gap-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleCreatePaymentLink(invoice)}
-                            className="bg-blue-50 hover:bg-blue-100"
+                            className="bg-blue-50 hover:bg-blue-100 flex-1 sm:flex-none"
                           >
                             <Link2 className="h-4 w-4 mr-2" />
                             Payment Link
@@ -298,12 +302,12 @@ export default function Invoices() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleRecordPayment(invoice)}
-                            className="bg-green-50 hover:bg-green-100"
+                            className="bg-green-50 hover:bg-green-100 flex-1 sm:flex-none"
                           >
                             <Receipt className="h-4 w-4 mr-2" />
                             Record Payment
                           </Button>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
