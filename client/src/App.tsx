@@ -41,6 +41,7 @@ import { AppSidebar } from "./components/AppSidebar";
 import { useSidebar } from "./components/ui/sidebar";
 import TwilioManagement from "./pages/TwilioManagement";
 import SystemTest from "./pages/SystemTest";
+import EmergencyPayments from "./pages/EmergencyPayments";
 
 function App() {
   const isMobile = useIsMobile();
@@ -203,6 +204,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
                 <Route path="/vendor-orders" component={VendorOrders} />
                 <Route path="/diagnostics" component={Diagnostics} />
                 <Route path="/system-test" component={SystemTest} />
+                <Route path="/emergency-payments" component={EmergencyPayments} />
                 <Route path="/admin" component={AdminPortal} />
                 <Route component={NotFound} />
               </Switch>

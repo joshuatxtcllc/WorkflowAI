@@ -20,7 +20,8 @@ import {
   X,
   Monitor,
   Zap,
-  Globe
+  Globe,
+  DollarSign
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -248,9 +249,9 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
-        
-          
+
+
+
 
           <SidebarGroup>
             <SidebarGroupLabel>Management</SidebarGroupLabel>
@@ -327,7 +328,7 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        
+
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
