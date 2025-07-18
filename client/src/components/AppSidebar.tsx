@@ -17,7 +17,6 @@ import {
   Link,
   Activity,
   Rocket,
-  X,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -36,7 +35,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarTrigger,
   useSidebar,
 } from "./ui/sidebar";
 import {
@@ -183,7 +181,7 @@ export function AppSidebar() {
 
   const [location, navigate] = useLocation();
   const [activeItem, setActiveItem] = useState("Dashboard");
-  const { setOpen, toggleSidebar } = useSidebar();
+  const { toggleSidebar } = useSidebar();
 
   const handleNavigation = (itemTitle: string, url?: string) => {
     setActiveItem(itemTitle);
@@ -196,28 +194,14 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="sidebar" className="border-r border-gray-200 bg-white">
-      <SidebarTrigger data-sidebar="trigger" className="hidden" />
       <SidebarHeader>
-        <div className="flex items-center justify-between p-2">
-          <div className="flex items-center gap-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <Package className="size-4" />
-            </div>
-            <div className="text-sidebar-foreground font-semibold">
-              Jay's Frames
-            </div>
+        <div className="flex items-center gap-2 p-2">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+            <Package className="size-4" />
           </div>
-          <SidebarMenuButton
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setOpen(false);
-            }}
-            className="h-6 w-6 p-0"
-          >
-            <X className="h-4 w-4" />
-          </SidebarMenuButton>
+          <div className="text-sidebar-foreground font-semibold">
+            Jay's Frames
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>

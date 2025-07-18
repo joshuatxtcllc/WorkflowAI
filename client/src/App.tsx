@@ -34,6 +34,7 @@ import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 import LoadingScreen from "./components/LoadingScreen";
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { AppSidebar } from "./components/AppSidebar";
+import { useSidebar } from "./components/ui/sidebar";
 
 function App() {
   const isMobile = useIsMobile();
@@ -64,6 +65,22 @@ function App() {
         </TooltipProvider>
       </ErrorBoundary>
     </QueryClientProvider>
+  );
+}
+
+function MobileMenuButton() {
+  const { toggleSidebar } = useSidebar();
+  
+  return (
+    <button
+      onClick={toggleSidebar}
+      className="w-8 h-8 bg-jade-600 rounded-lg flex items-center justify-center hover:bg-jade-700 transition-colors"
+      aria-label="Open menu"
+    >
+      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
   );
 }
 
@@ -139,20 +156,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
           <header className="mobile-header">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <button
-                  onClick={() => {
-                    const sidebarTrigger = document.querySelector('[data-sidebar="trigger"]') as HTMLButtonElement;
-                    if (sidebarTrigger) {
-                      sidebarTrigger.click();
-                    }
-                  }}
-                  className="w-8 h-8 bg-jade-600 rounded-lg flex items-center justify-center hover:bg-jade-700 transition-colors"
-                  aria-label="Open menu"
-                >
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
+                <MobileMenuButton />
                 <div>
                   <h1 className="text-lg font-bold text-white">{getPageTitle()}</h1>
                   <p className="text-xs text-gray-400">Jay's Frames</p>
