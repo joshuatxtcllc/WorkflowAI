@@ -56,40 +56,33 @@ export default function Dashboard() {
   const { ui, setUI } = useOrderStore();
 
   return (
-    <SidebarProvider>
-      <ScrollHandler />
-      <div className="min-h-screen bg-gray-950 text-white relative dark flex" style={{ backgroundColor: '#0A0A0B' }}>
-        {/* Background Pattern */}
-        <div className="fixed inset-0 opacity-30 pointer-events-none">
-          <div 
-            className="w-full h-full"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
-
-        <AppSidebar />
-
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0" data-scroll-container>
-          <Header />
-          <main className="flex-1 p-4 space-y-6 overflow-hidden">
-            <SystemAlerts />
-            <KanbanBoard />
-          </main>
-          <AIAssistant />
-          <NewOrderModal />
-
-          {ui.isOrderDetailsOpen && (
-            <OrderDetails />
-          )}
-        </div>
+    <div className="flex-1 flex flex-col bg-gray-950 relative" style={{ backgroundColor: '#0A0A0B' }}>
+      {/* Background Pattern */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none">
+        <div 
+          className="w-full h-full"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0, 166, 147, 0.03) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0, 166, 147, 0.03) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        />
       </div>
-    </SidebarProvider>
+
+      {/* Main content area */}
+      <div className="flex-1 p-4 space-y-6 overflow-auto">
+        <SystemAlerts />
+        <KanbanBoard />
+      </div>
+      
+      <AIAssistant />
+      <NewOrderModal />
+
+      {ui.isOrderDetailsOpen && (
+        <OrderDetails />
+      )}
+    </div>
   );
 }
