@@ -34,21 +34,23 @@ const upload = multer({
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET || '';
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET || '';
 
-console.log('🔐 Stripe configuration:');
+console.log('🔄 Initializing Stripe configuration...');
 console.log('- Secret key configured:', stripeSecretKey ? `✅ Yes (${stripeSecretKey.length} chars)` : '❌ No');
 console.log('- Webhook secret configured:', stripeWebhookSecret ? `✅ Yes (${stripeWebhookSecret.length} chars)` : '❌ No');
 
-// Use test key if no production key is available
-const fallbackStripeKey = stripeSecretKey || 'sk_test_51234567890'; // You need to replace with your actual test key
-const stripe = new Stripe(fallbackStripeKey, {
-  apiVersion: '2024-12-18.acacia',
-});
-
-if (!stripeSecretKey) {
-  console.error('🚨 CRITICAL: Stripe not properly configured - PAYMENT COLLECTION DISABLED');
-  console.log('💰 Add your Stripe secret key to Secrets as STRIPE_SECRET_KEY to enable payments');
+let stripe = null;
+if (stripeSecretKey) {
+  try {
+    stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2024-12-18.acacia',
+    });
+    console.log('✅ Stripe initialized successfully');
+  } catch (error) {
+    console.error('❌ Stripe initialization failed:', error.message);
+  }
 } else {
-  console.log('✅ Stripe initialized successfully');
+  console.warn('⚠️  Stripe not initialized - missing STRIPE_SECRET_KEY environment variable');
+  console.log('💡 Add your Stripe secret key to Secrets as STRIPE_SECRET_KEY');
 }
 
 // Initialize AI Service
@@ -1462,7 +1464,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe connection test
   app.get('/api/stripe/test', isAuthenticated, async (req, res) => {
     try {
+      console.log('🔍 Testing Stripe connection...');
+      
       if (!stripe) {
+        console.log('❌ Stripe not initialized');
         return res.json({
           connected: false,
           error: 'Stripe not initialized - missing STRIPE_SECRET_KEY',
@@ -1471,13 +1476,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             STRIPE_SECRET: !!process.env.STRIPE_SECRET,
             STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
             STRIPE_WEBHOOK_ENDPOINT_SECRET: !!process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
-          }
+          },
+          hint: 'Add your Stripe secret key to Secrets as STRIPE_SECRET_KEY'
         });
       }
 
+      console.log('🔄 Retrieving Stripe account information...');
       // Test Stripe connection by retrieving account info
       const account = await stripe.accounts.retrieve();
       
+      console.log('✅ Stripe connection successful');
       res.json({
         connected: true,
         accountId: account.id,
@@ -1485,47 +1493,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         country: account.country,
         currency: account.default_currency,
         chargesEnabled: account.charges_enabled,
-        payoutsEnabled: account.payouts_enabled
+        payoutsEnabled: account.payouts_enabled,
+        status: 'Connected and ready for payments'
       });
     } catch (error) {
-      console.error('Stripe test error:', error);
-      res.status(500).json({
-        connected: false,
-        error: error.message,
-        hint: 'Check if your Stripe secret key is valid'
-      });
-    }
-  });
-
-  // Emergency bulk order completion
-  app.post('/api/orders/bulk-complete', isAuthenticated, async (req: any, res) => {
-    try {
-      const { orderIds } = req.body;
-      const results = [];
+      console.error('❌ Stripe test error:', error.message);
       
-      for (const orderId of orderIds) {
-        try {
-          const order = await storage.getOrder(orderId);
-          if (order && order.status !== 'COMPLETED') {
-            await storage.updateOrder(orderId, { status: 'COMPLETED' });
-            await storage.createStatusHistory({
-              orderId: orderId,
-              fromStatus: order.status,
-              toStatus: 'COMPLETED',
-              changedBy: req.session?.user?.id || 'system',
-              reason: 'Emergency bulk completion'
-            });
-            results.push({ orderId, success: true });
-          }
-        } catch (error) {
-          results.push({ orderId, success: false, error: error.message });
-        }
+      let errorMessage = error.message;
+      let hint = 'Check if your Stripe secret key is valid';
+      
+      if (error.message.includes('Invalid API Key')) {
+        hint = 'Your Stripe secret key is invalid. Check it in Secrets.';
+      } else if (error.message.includes('No such API key')) {
+        hint = 'API key not found. Verify your Stripe secret key in Secrets.';
       }
       
-      res.json({ success: true, results });
-    } catch (error) {
-      console.error('Error in bulk completion:', error);
-      res.status(500).json({ message: 'Failed to complete orders' });
+      res.status(500).json({
+        connected: false,
+        error: errorMessage,
+        hint: hint,
+        code: error.code || 'unknown'
+      });
     }
   });
 
