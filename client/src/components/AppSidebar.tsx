@@ -18,6 +18,9 @@ import {
   Activity,
   Rocket,
   X,
+  Monitor,
+  Zap,
+  Globe
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -245,6 +248,86 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        
+        
+          
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Management</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("Customers", "/customers")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "Customers"}
+                  >
+                    <Users />
+                    <span>Customers</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("Invoices", "/invoices")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "Invoices"}
+                  >
+                    <FileText />
+                    <span>Invoices</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("Vendor Orders", "/vendor-orders")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "Vendor Orders"}
+                  >
+                    <ShoppingCart />
+                    <span>Vendor Orders</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Integrations</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("POS Integration", "/pos-integration")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "POS Integration"}
+                  >
+                    <Monitor />
+                    <span>POS Integration</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("Framers Assistant", "/framers-assistant")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "Framers Assistant"}
+                  >
+                    <Zap />
+                    <span>Framers Assistant</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation("Hub Connection", "/hub-connection")}
+                    className="cursor-pointer"
+                    isActive={activeItem === "Hub Connection"}
+                  >
+                    <Globe />
+                    <span>Hub Connection</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>

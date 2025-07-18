@@ -463,20 +463,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let errorMessage = 'Failed to create order';
       let statusCode = 500;
 
-      if (error.name === 'ZodError') {
-        errorMessage = `Validation error: ${error.errors.map(e => e.message).join(', ')}`;
+      if (error?.name === 'ZodError') {
+        errorMessage = `Validation error: ${error.errors?.map(e => e.message).join(', ') || 'Invalid data'}`;
         statusCode = 400;
-      } else if (error.message.includes('foreign key')) {
-        errorMessage = 'Invalid customer selection';
+      } else if (error?.message?.includes('foreign key')) {
+        errorMessage = 'Invalid customer selection - please select a valid customer';
         statusCode = 400;
-      } else if (error.message) {
+      } else if (error?.message) {
         errorMessage = error.message;
       }
 
       res.status(statusCode).json({ 
         success: false,
         message: errorMessage,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        details: error?.details || null
       });
     }
   });
@@ -990,7 +991,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create Stripe payment link if Stripe is configured
       let paymentLink = null;
-      if (stripe) {
+      if (stripe && validatedData.lineItems?.length > 0) {
         try {
           const customer = await storage.getCustomer(validatedData.customerId);
           
@@ -999,11 +1000,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               price_data: {
                 currency: 'usd',
                 product_data: {
-                  name: item.description,
+                  name: item.description || 'Frame Shop Service',
                 },
-                unit_amount: Math.round(item.price * 100), // Convert to cents
+                unit_amount: Math.round((item.price || 0) * 100), // Convert to cents
               },
-              quantity: item.quantity,
+              quantity: item.quantity || 1,
             })),
             metadata: {
               invoiceId: invoice.id,
@@ -1013,7 +1014,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             after_completion: {
               type: 'redirect',
               redirect: {
-                url: `${process.env.BASE_URL || 'http://localhost:5000'}/payment-success?invoice=${invoice.invoiceNumber}`,
+                url: `${process.env.BASE_URL || 'https://d7cfdc2c-9fda-48e3-81eb-d13894d0f18f-00-247e3ij763ch7.spock.replit.dev'}/payment-success?invoice=${invoice.invoiceNumber}`,
               },
             },
           });
@@ -1029,6 +1030,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         } catch (stripeError) {
           console.error('Error creating Stripe payment link:', stripeError);
+          console.log('Stripe error details:', stripeError.message);
           // Don't fail invoice creation if payment link fails
         }
       }

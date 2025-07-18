@@ -39,6 +39,8 @@ import LoadingScreen from "./components/LoadingScreen";
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { AppSidebar } from "./components/AppSidebar";
 import { useSidebar } from "./components/ui/sidebar";
+import TwilioManagement from "./pages/TwilioManagement";
+import SystemTest from "./pages/SystemTest";
 
 function App() {
   const isMobile = useIsMobile();
@@ -200,11 +202,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
                 <Route path="/invoices" component={Invoices} />
                 <Route path="/vendor-orders" component={VendorOrders} />
                 <Route path="/diagnostics" component={Diagnostics} />
-                <Route path="/schedule" component={Schedule} />
-                <Route path="/time" component={TimeTracking} />
-                <Route path="/progress" component={Progress} />
-                <Route path="/reports" component={Reports} />
-                <Route path="/notifications" component={Notifications} />
+                <Route path="/system-test" component={SystemTest} />
                 <Route path="/admin" component={AdminPortal} />
                 <Route component={NotFound} />
               </Switch>
