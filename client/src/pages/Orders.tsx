@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { SidebarProvider, SidebarInset } from "../components/ui/sidebar";
 import { AppSidebar } from "../components/AppSidebar";
-import Header from '../components/Header';
+import { Header } from '../components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
