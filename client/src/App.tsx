@@ -5,7 +5,11 @@ import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { useAuth } from "./hooks/useAuth";
 import { ErrorBoundary } from "react-error-boundary";
-import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "./components/ui/sidebar";
 import { useIsMobile } from "./hooks/use-mobile";
 
 import Dashboard from "./pages/Dashboard";
