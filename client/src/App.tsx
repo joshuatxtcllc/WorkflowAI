@@ -70,7 +70,7 @@ function App() {
 
 function MobileMenuButton() {
   const { toggleSidebar } = useSidebar();
-  
+
   return (
     <button
       onClick={toggleSidebar}
@@ -88,17 +88,17 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
   const [forceLoaded, setForceLoaded] = useState(false);
-  
+
   // Force loading to complete after 10 seconds as a safety mechanism
   useEffect(() => {
     const timeout = setTimeout(() => {
       console.log('AuthenticatedApp: Force completing loading after timeout');
       setForceLoaded(true);
     }, 10000);
-    
+
     return () => clearTimeout(timeout);
   }, []);
-  
+
   // Force desktop view for wider screens to ensure sidebar shows
   const isActuallyMobile = isMobile && window.innerWidth < 768;
 
@@ -170,7 +170,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
             </div>
           </header>
         )}
-        
+
         <div className="flex flex-1">
           <AppSidebar />
           <main className={`flex-1 flex flex-col ${isActuallyMobile ? 'mobile-content' : ''}`}>
@@ -184,7 +184,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
                 <Route path="/quick-wins" component={QuickWins} />
                 <Route path="/relaunch" component={RelaunchPlan} />
                 <Route path="/pos" component={POSIntegration} />
-                <Route path="/framers-assistant" component={FramersAssistantIntegration} />
+                <Route path="/framers-assistant" component={FamersAssistantIntegration} />
                 <Route path="/hub" component={HubConnection} />
                 <Route path="/invoices" component={Invoices} />
                 <Route path="/vendor-orders" component={VendorOrders} />
@@ -200,7 +200,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
             </div>
           </main>
         </div>
-        
+
         {isActuallyMobile && <MobileBottomNav />}
       </div>
     </SidebarProvider>
