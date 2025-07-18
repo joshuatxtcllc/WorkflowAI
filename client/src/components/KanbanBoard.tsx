@@ -176,6 +176,7 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
 }
 
 export default function KanbanBoard() {
+  console.log('KanbanBoard: Component mounting...');
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();

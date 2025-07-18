@@ -28,7 +28,7 @@ import AdminPortal from './pages/AdminPortal';
 import Diagnostics from './pages/Diagnostics';
 import Invoices from "./pages/Invoices";
 import NotFound from "./pages/not-found";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RelaunchPlan from "./pages/RelaunchPlan";
 import FramersAssistantIntegration from "./pages/FramersAssistantIntegration";
 import LoadingScreen from "./components/LoadingScreen";
@@ -70,6 +70,17 @@ function App() {
 function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
+  const [forceLoaded, setForceLoaded] = useState(false);
+  
+  // Force loading to complete after 10 seconds as a safety mechanism
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      console.log('AuthenticatedApp: Force completing loading after timeout');
+      setForceLoaded(true);
+    }, 10000);
+    
+    return () => clearTimeout(timeout);
+  }, []);
   
   // Force desktop view for wider screens to ensure sidebar shows
   const isActuallyMobile = isMobile && window.innerWidth < 768;
@@ -84,18 +95,26 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
   // Redirect root to dashboard
   useEffect(() => {
     if (location === '/') {
+      console.log('AuthenticatedApp: Redirecting from root to dashboard');
       setLocation('/dashboard');
     }
   }, [location, setLocation]);
 
   // Show loading while checking auth
-  if (isLoading) {
+  if (isLoading && !forceLoaded) {
+    console.log('AuthenticatedApp: Still loading authentication...');
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <div className="text-sm text-gray-600">Loading Jay's Frames...</div>
+          <div className="text-xs text-gray-500">If this takes too long, try refreshing the page</div>
+        </div>
       </div>
     );
   }
+
+  console.log('AuthenticatedApp: Authentication completed, user:', user?.email, 'location:', location);
 
   // Don't render anything while redirecting
   if (!user) {

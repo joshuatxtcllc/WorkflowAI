@@ -14,14 +14,22 @@ interface SystemAlert {
 }
 
 export function SystemAlerts() {
+  console.log('SystemAlerts: Component mounting...');
   const { data: alerts, isLoading, error } = useQuery({
     queryKey: ['diagnostic-alerts'],
     queryFn: async () => {
-      const response = await fetch('/api/diagnostics/alerts');
-      if (!response.ok) throw new Error('Failed to fetch alerts');
-      const data = await response.json();
-      // Handle both direct array and object with alerts property
-      return Array.isArray(data) ? data : (data.alerts || []);
+      console.log('SystemAlerts: Fetching alerts...');
+      try {
+        const response = await fetch('/api/diagnostics/alerts');
+        if (!response.ok) throw new Error('Failed to fetch alerts');
+        const data = await response.json();
+        console.log('SystemAlerts: Alerts fetched successfully:', data);
+        // Handle both direct array and object with alerts property
+        return Array.isArray(data) ? data : (data.alerts || []);
+      } catch (error) {
+        console.error('SystemAlerts: Error fetching alerts:', error);
+        throw error;
+      }
     },
     refetchInterval: 30000,
     retry: 2

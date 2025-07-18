@@ -52,6 +52,7 @@ function ScrollHandler() {
 }
 
 export default function Dashboard() {
+  console.log('Dashboard: Component mounting...');
   const { ui, setUI } = useOrderStore();
 
   return (
