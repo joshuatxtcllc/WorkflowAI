@@ -17,6 +17,7 @@ import {
   Link,
   Activity,
   Rocket,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -35,6 +36,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarTrigger,
   useSidebar,
 } from "./ui/sidebar";
 import {
@@ -195,13 +197,16 @@ export function AppSidebar() {
   return (
     <Sidebar variant="sidebar" className="border-r border-gray-200 bg-white">
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Package className="size-4" />
+        <div className="flex items-center justify-between gap-2 p-2">
+          <div className="flex items-center gap-2">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Package className="size-4" />
+            </div>
+            <div className="text-sidebar-foreground font-semibold">
+              Jay's Frames
+            </div>
           </div>
-          <div className="text-sidebar-foreground font-semibold">
-            Jay's Frames
-          </div>
+          <SidebarTrigger className="h-6 w-6 hover:bg-gray-100 rounded" />
         </div>
       </SidebarHeader>
       <SidebarContent>
