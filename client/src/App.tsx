@@ -184,7 +184,7 @@ function AuthenticatedApp({ isMobile }: { isMobile: boolean }) {
                 <Route path="/quick-wins" component={QuickWins} />
                 <Route path="/relaunch" component={RelaunchPlan} />
                 <Route path="/pos" component={POSIntegration} />
-                <Route path="/framers-assistant" component={FamersAssistantIntegration} />
+                <Route path="/framers-assistant" component={FramersAssistantIntegration} />
                 <Route path="/hub" component={HubConnection} />
                 <Route path="/invoices" component={Invoices} />
                 <Route path="/vendor-orders" component={VendorOrders} />
