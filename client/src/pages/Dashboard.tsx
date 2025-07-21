@@ -11,10 +11,11 @@ import { SidebarInset } from '../components/ui/sidebar';
 import { useOrderStore } from '../store/useOrderStore';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
+import { Switch } from '../components/ui/switch';
 import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { apiRequest } from '../lib/queryClient';
-import type { WorkloadAnalysis } from '@shared/schema';
+import type { WorkloadAnalysis, OrderWithDetails } from '@shared/schema';
 // SystemAlerts removed for performance
 import NewOrderModal from '../components/NewOrderModal';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -55,19 +56,31 @@ function ScrollHandler() {
 }
 
 const Dashboard = memo(() => {
-  console.log('Dashboard: Component mounting...');
+  const mountedRef = useRef(false);
   const { ui, setUI } = useOrderStore();
   const { isMobile } = useIsMobile();
   const [showAI, setShowAI] = useState(false);
   const [activeTab, setActiveTab] = useState("kanban");
-  // Confetti system removed for performance
   const [autoRefresh, setAutoRefresh] = useState(false);
-  //const [showSettings, setShowSettings] = useState(false);
+
+  // Prevent re-mounting logs
+  useEffect(() => {
+    if (!mountedRef.current) {
+      console.log('Dashboard: Component mounting...');
+      mountedRef.current = true;
+    }
+  }, []);
+
+  // Stable query key to prevent re-mounting
+  const stableQueryKey = useRef(["/api/orders"]).current;
 
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/orders"],
+    queryKey: stableQueryKey,
     staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchInterval: autoRefresh ? 60000 : false, // Only refetch manually , increased to 60s
+    refetchInterval: autoRefresh ? 60000 : false,
+    refetchOnMount: false, // Prevent automatic refetch on mount
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   return (

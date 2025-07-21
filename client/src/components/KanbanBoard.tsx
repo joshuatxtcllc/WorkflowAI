@@ -179,9 +179,9 @@ const KanbanColumn = memo(function KanbanColumn({ title, status, orders, onDropO
   );
 });
 
-const mountedRef = useRef(false);
-
 export default memo(function KanbanBoard() {
+  const mountedRef = useRef(false);
+  
   useEffect(() => {
     if (!mountedRef.current) {
       console.log('KanbanBoard: Component mounting...');
@@ -227,9 +227,13 @@ export default memo(function KanbanBoard() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  // Stable query key to prevent re-mounting
+  const stableQueryKey = useRef(["/api/orders"]).current;
+
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/orders", lastRefresh],
+    queryKey: stableQueryKey,
     queryFn: async () => {
+      if (!mountedRef.current) return []; // Skip if not properly mounted
       console.log('KanbanBoard: Fetching orders...');
       const response = await apiRequest("/api/orders", {
         method: 'GET'
@@ -253,7 +257,7 @@ export default memo(function KanbanBoard() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchOnMount: true, // Allow initial mount fetch
+    refetchOnMount: false, // Prevent automatic refetch on mount to stop re-mounting loop
     networkMode: 'online',
     enabled: true, // Always enabled, but polling is controlled
   });
@@ -606,9 +610,10 @@ export default memo(function KanbanBoard() {
 
   const handleForceRefresh = useCallback(() => {
     console.log('Force refresh triggered');
-    setLastRefresh(Date.now());
+    // Use invalidateQueries instead of refetch to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: stableQueryKey });
     refetch();
-  }, [refetch]);
+  }, [refetch, queryClient, stableQueryKey]);
 
   // Removed WebSocket functionality for simplified operation
 
