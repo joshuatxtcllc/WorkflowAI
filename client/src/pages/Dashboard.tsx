@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { SidebarProvider, useSidebar } from "../components/ui/sidebar";
 import { AppSidebar } from "../components/AppSidebar";
 import { Header } from "../components/Header";
@@ -51,7 +51,7 @@ function ScrollHandler() {
   return null;
 }
 
-export default function Dashboard() {
+const Dashboard = memo(() => {
   console.log('Dashboard: Component mounting...');
   const { ui, setUI } = useOrderStore();
   const { isMobile } = useIsMobile();
@@ -110,4 +110,6 @@ export default function Dashboard() {
       )}
     </div>
   );
-}
+});
+
+export default Dashboard;

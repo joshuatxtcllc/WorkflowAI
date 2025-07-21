@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -40,7 +40,7 @@ interface KanbanColumnProps {
   onDropOrder: (orderId: string, newStatus: string) => void;
 }
 
-function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps) {
+const KanbanColumn = memo(function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps) {
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'order',
     drop: (item: { id: string }, monitor) => {
@@ -173,10 +173,9 @@ function KanbanColumn({ title, status, orders, onDropOrder }: KanbanColumnProps)
       </div>
     </motion.div>
   );
-}
+});
 
-export default function KanbanBoard() {
-  console.log('KanbanBoard: Component mounting...');
+export default memo(function KanbanBoard() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
@@ -217,36 +216,27 @@ export default function KanbanBoard() {
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
     queryFn: async () => {
-      console.log('KanbanBoard: Fetching orders...');
-      try {
-        const response = await apiRequest("/api/orders", {
-          method: 'GET'
-        });
-        console.log('KanbanBoard: Orders fetched successfully:', response?.length || 0);
-        return Array.isArray(response) ? response : [];
-      } catch (error) {
-        console.error('KanbanBoard: Error fetching orders:', error);
-        throw error;
-      }
+      const response = await apiRequest("/api/orders", {
+        method: 'GET'
+      });
+      return Array.isArray(response) ? response : [];
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
-    gcTime: 10 * 60 * 1000,
+    refetchInterval: 60000, // Reduced from 30s to 1 minute
+    staleTime: 30000, // Increased from 10s to 30s
+    gcTime: 5 * 60 * 1000, // Reduced cache time
     retry: (failureCount, error) => {
-      console.log(`KanbanBoard: Retry attempt ${failureCount + 1}`, error);
-      // Don't retry on 4xx errors (client errors)
       if (error && typeof error === 'object' && 'status' in error) {
         const status = (error as any).status;
         if (status >= 400 && status < 500) {
           return false;
         }
       }
-      return failureCount < 3; // Increased retry count
+      return failureCount < 2; // Reduced retry attempts
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
     refetchOnWindowFocus: false,
-    refetchOnReconnect: true,
-    refetchOnMount: true,
+    refetchOnReconnect: false, // Disabled to prevent excessive refetches
+    refetchOnMount: false, // Only fetch once on mount
     networkMode: 'online',
   });
 
@@ -865,4 +855,4 @@ export default function KanbanBoard() {
       />
     </DndProvider>
   );
-}
+});
