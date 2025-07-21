@@ -580,15 +580,7 @@ export default memo(function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
-  const { sendMessage, lastMessage } = useWebSocket() || { sendMessage: null, lastMessage: null };
-
-  // Handle WebSocket messages
-  useEffect(() => {
-    if (lastMessage?.type === 'order-updated' || lastMessage?.type === 'order-created') {
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
-    }
-  }, [lastMessage, queryClient]);
+  // Removed WebSocket functionality for simplified operation
 
     useEffect(() => {
     const handleResize = () => {

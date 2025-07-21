@@ -1,6 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { WebSocketServer, WebSocket } from 'ws';
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./auth";
 import { 
@@ -60,11 +59,6 @@ if (stripeSecretKey) {
 
 // Initialize AI Service
 const aiService = new AIService();
-
-interface WebSocketMessage {
-  type: string;
-  data: any;
-}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
@@ -1748,52 +1742,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create HTTP server
   const httpServer = createServer(app);
-
-  // WebSocket server setup
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-
-  wss.on('connection', (ws: WebSocket) => {
-    console.log('WebSocket client connected');
-
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-    });
-
-    ws.on('message', async (data: Buffer) => {
-      try {
-        const message: WebSocketMessage = JSON.parse(data.toString());
-
-        switch (message.type) {
-          case 'order-update':
-            // Handle real-time order updates
-            broadcast(wss, {
-              type: 'order-updated',
-              data: message.data
-            });
-            break;
-
-          case 'status-change':
-            // Handle status changes
-            broadcast(wss, {
-              type: 'status-changed', 
-              data: message.data
-            });
-            break;
-        }
-      } catch (error) {
-        console.error('WebSocket message error:', error);
-      }
-    });
-  });
-
-  function broadcast(wss: WebSocketServer, message: any) {
-    const messageStr = JSON.stringify(message);
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(messageStr);
-      }
-    });
-  }
 
   // Auto-sync metrics to dashboard every 5 minutes
   setInterval(async () => {
