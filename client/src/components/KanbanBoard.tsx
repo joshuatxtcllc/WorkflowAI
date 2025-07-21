@@ -180,14 +180,6 @@ const KanbanColumn = memo(function KanbanColumn({ title, status, orders, onDropO
 });
 
 export default memo(function KanbanBoard() {
-  const mountedRef = useRef(false);
-  
-  useEffect(() => {
-    if (!mountedRef.current) {
-      console.log('KanbanBoard: Component mounting...');
-      mountedRef.current = true;
-    }
-  }, []);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
@@ -227,29 +219,23 @@ export default memo(function KanbanBoard() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Stable query key to prevent re-mounting
-  const stableQueryKey = useRef(["/api/orders"]).current;
+  
 
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: stableQueryKey,
+    queryKey: ["/api/orders"],
     queryFn: async () => {
-      console.log('KanbanBoard: Fetching orders...');
       const response = await apiRequest("/api/orders", {
         method: 'GET'
       });
-      const result = Array.isArray(response) ? response : [];
-      console.log('KanbanBoard: Orders fetched successfully:', result.length);
-      return result;
+      return Array.isArray(response) ? response : [];
     },
-    refetchInterval: false, // Disable automatic polling completely
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    retry: 1, // Reduce retries
-    retryDelay: 1000,
+    refetchInterval: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchOnMount: 'always', // Allow initial fetch but prevent loops
-    networkMode: 'online',
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
     enabled: true,
   });
 

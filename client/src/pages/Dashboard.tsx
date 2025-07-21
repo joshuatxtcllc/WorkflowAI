@@ -56,20 +56,11 @@ function ScrollHandler() {
 }
 
 const Dashboard = memo(() => {
-  const mountedRef = useRef(false);
   const { ui, setUI } = useOrderStore();
   const { isMobile } = useIsMobile();
   const [showAI, setShowAI] = useState(false);
   const [activeTab, setActiveTab] = useState("kanban");
   const [autoRefresh, setAutoRefresh] = useState(false);
-
-  // Prevent re-mounting logs
-  useEffect(() => {
-    if (!mountedRef.current) {
-      console.log('Dashboard: Component mounting...');
-      mountedRef.current = true;
-    }
-  }, []);
 
   // Remove duplicate query - let KanbanBoard handle all data fetching
 
