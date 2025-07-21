@@ -259,13 +259,7 @@ export class DatabaseStorage implements IStorage {
     const startTime = Date.now();
 
     try {
-      console.log('Starting getOrders query...');
-      
-      // Test database connection first
-      await db.select().from(orders).limit(1);
-      console.log('Database connection verified');
-
-      // Simplified query with shorter timeout
+      // Use a single optimized query with all joins
       const result = await db
         .select({
           id: orders.id,
@@ -297,7 +291,7 @@ export class DatabaseStorage implements IStorage {
         .from(orders)
         .leftJoin(customers, eq(orders.customerId, customers.id))
         .orderBy(desc(orders.createdAt))
-        .limit(100);
+        .limit(50); // Reduce limit for better performance
 
       const endTime = Date.now();
       console.log(`getOrders query completed: ${endTime - startTime}ms, returned ${result.length} orders`);

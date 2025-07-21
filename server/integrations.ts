@@ -355,8 +355,11 @@ export class POSIntegration {
       console.log('POS system operational -', connectionTest.message || 'Connected successfully');
     }
 
-    // Set up periodic sync with retry logic (every 5 minutes)
-    setInterval(async () => {
+    // Smart polling with exponential backoff
+    let pollInterval = 300000; // Start with 5 minutes
+    let consecutiveFailures = 0;
+    
+    const smartPoll = async () => {
       try {
         const result = await this.fetchNewOrders();
         if (result.success && result.orders && result.orders.length > 0) {
@@ -365,16 +368,26 @@ export class POSIntegration {
           if (importedOrders.length > 0) {
             console.log(`Successfully imported ${importedOrders.length} new orders into Kanban workflow`);
           }
-        } 
-        // Silent operation when no new orders or temporary connectivity issues
+          // Reset on success
+          consecutiveFailures = 0;
+          pollInterval = 300000; // Reset to 5 minutes
+        }
       } catch (error) {
-        // Only log unexpected errors, not known temporary issues
+        consecutiveFailures++;
+        // Exponential backoff: 5min, 10min, 20min, max 1hr
+        pollInterval = Math.min(300000 * Math.pow(2, consecutiveFailures), 3600000);
+        
         const errorMessage = (error as Error).message;
         if (!errorMessage.includes('503') && !errorMessage.includes('timeout') && !errorMessage.includes('AbortError')) {
           console.error('Real-time sync error:', error);
         }
+      } finally {
+        setTimeout(smartPoll, pollInterval);
       }
-    }, 300000); // 5 minutes instead of 30 seconds
+    };
+    
+    // Start the smart polling
+    setTimeout(smartPoll, pollInterval);
 
     return true;
   }
