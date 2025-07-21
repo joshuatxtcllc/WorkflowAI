@@ -18,6 +18,9 @@ import type { WorkloadAnalysis } from '@shared/schema';
 import { SystemAlerts } from '../components/SystemAlerts';
 import NewOrderModal from '../components/NewOrderModal';
 import { useIsMobile } from '../hooks/use-mobile';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
+
+// Gamified features removed for performance optimization
 
 // Component to handle scroll detection
 function ScrollHandler() {
@@ -56,6 +59,14 @@ const Dashboard = memo(() => {
   const { ui, setUI } = useOrderStore();
   const { isMobile } = useIsMobile();
   const [showAI, setShowAI] = useState(false);
+  const [activeTab, setActiveTab] = useState("kanban");
+  // Confetti system removed for performance
+
+  const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
+    queryKey: ["/api/orders"],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 10 * 60 * 1000, // 10 minutes - reduced frequency
+  });
 
   return (
     <div className="flex-1 flex flex-col bg-gray-950 relative" style={{ backgroundColor: '#0A0A0B' }}>
@@ -76,10 +87,28 @@ const Dashboard = memo(() => {
       {/* Main content area */}
       <div className="flex-1 p-4 space-y-6 overflow-auto">
         <SystemAlerts />
-        {/* Kanban Board */}
-        <div className={isMobile ? 'mobile-kanban-container' : ''}>
-          <KanbanBoard />
-        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="alerts">System Health</TabsTrigger>
+            </TabsList>
+            <TabsContent value="kanban">
+              {/* Kanban Board */}
+              <div className={isMobile ? 'mobile-kanban-container' : ''}>
+                <KanbanBoard />
+              </div>
+            </TabsContent>
+            <TabsContent value="analytics">
+              Analytics Content
+            </TabsContent>
+            {/* Progress tab removed for performance optimization */}
+            <TabsContent value="alerts">
+              System Alerts Content
+            </TabsContent>
+        </Tabs>
+</div>
       </div>
 
       {/* AI Assistant Button for Mobile */}

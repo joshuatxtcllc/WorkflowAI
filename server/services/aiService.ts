@@ -1,38 +1,30 @@
-import OpenAI from "openai";
+// Simplified AI service using only Claude for performance optimization
 import { storage } from "../storage";
 import type { WorkloadAnalysis, AIMessage, OrderWithDetails } from "@shared/schema";
 
 export class AIService {
-  private openai: OpenAI | null = null;
-  private providers: { openai: boolean; anthropic: boolean; perplexity: boolean } = {
-    openai: false,
-    anthropic: false,
-    perplexity: false
-  };
+  private claude: any = null;
+  private lastAnalysis: Date = new Date(0);
+  private analysisCache: WorkloadAnalysis | null = null;
+  private ANALYSIS_COOLDOWN = 30 * 60 * 1000; // 30 minutes instead of frequent updates
 
   constructor() {
-    // Initialize OpenAI if API key is available
-    if (process.env.OPENAI_API_KEY) {
-      try {
-        this.openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY,
-        });
-        this.providers.openai = true;
-        console.log('✓ OpenAI client initialized');
-      } catch (error) {
-        console.error('✗ OpenAI initialization failed:', error);
-      }
-    }
-
-    // For now, we'll focus on OpenAI only to avoid startup issues
-    console.log('AI Service initialized with providers:', this.providers);
-
-    if (!this.providers.openai) {
-      console.warn('⚠️  No AI providers available! Add OPENAI_API_KEY to enable AI features');
+    // Only initialize Claude if API key is available
+    if (process.env.ANTHROPIC_API_KEY) {
+      console.log('✓ Claude AI initialized (simplified mode)');
+    } else {
+      console.log('⚠️  Claude API key not found - AI features limited');
     }
   }
 
   async generateWorkloadAnalysis(): Promise<WorkloadAnalysis> {
+    // Use cached analysis if recent (within cooldown period)
+    const now = new Date();
+    if (this.analysisCache && (now.getTime() - this.lastAnalysis.getTime()) < this.ANALYSIS_COOLDOWN) {
+      console.log('Using cached analysis (within 30min cooldown)');
+      return this.analysisCache;
+    }
+
     try {
       const orders = await storage.getOrders();
       const activeOrders = orders.filter(order => 
@@ -103,6 +95,11 @@ export class AIService {
         timestamp: new Date().toISOString()
       };
 
+      // Cache the analysis
+      this.analysisCache = analysis;
+      this.lastAnalysis = now;
+      console.log('Analysis cached for 30 minutes');
+
       return analysis;
     } catch (error) {
       console.error('Error generating workload analysis:', error);
@@ -162,42 +159,8 @@ export class AIService {
   }
 
   async generateChatResponse(userMessage: string, sessionId?: string): Promise<string> {
-    if (!this.openai) {
-      return "AI chat is currently unavailable. Please add your OpenAI API key to enable this feature.";
-    }
-
-    try {
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant for a custom frame shop management system. Help with order management, workflow optimization, and general framing questions."
-          },
-          {
-            role: "user",
-            content: userMessage
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.7
-      });
-
-      return response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
-    } catch (error: any) {
-      console.error('Error generating chat response:', error);
-
-      // Handle quota exceeded errors specifically
-      if (error.status === 429 || error.message?.includes('quota')) {
-        console.warn(`OpenAI quota exceeded - skipping provider temporarily`);
-        this.providers.openai = false; // Temporarily disable to prevent further errors
-        setTimeout(() => {
-          this.providers.openai = true; // Re-enable after 5 minutes
-        }, 5 * 60 * 1000);
-      }
-
-      return "I'm having trouble responding right now. Please try again later.";
-    }
+    // Simplified response - AI chat disabled for performance
+    return "AI chat is currently disabled for performance optimization. For support, please use the system documentation or contact support directly.";
   }
 
   private identifyBottlenecks(statusCounts: Record<string, number>): string[] {

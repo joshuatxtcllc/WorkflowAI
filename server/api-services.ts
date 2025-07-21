@@ -239,32 +239,14 @@ export class POSServiceWrapper {
       return [];
     }
 
-    return circuitBreakers.pos.execute(
-      async () => {
-        return retryStrategies.api(async () => {
-          logger.debug('Fetching new orders from POS');
-          
-          const response = await fetch(`${this.baseUrl}/orders/new`, {
-            headers: {
-              'Authorization': `Bearer ${this.apiKey}`
-            },
-            signal: AbortSignal.timeout(15000) // 15 second timeout
-          });
-
-          if (!response.ok) {
-            throw new Error(`POS fetch failed: ${response.status} ${response.statusText}`);
-          }
-
-          const orders = await response.json();
-          logger.info('Fetched new orders from POS', { count: orders.length });
-          return orders;
-        }, 'POS_fetch_orders');
-      },
-      async () => {
-        logger.warn('POS service unavailable, no new orders fetched');
-        return [];
-      }
-    );
+    // Simplified - no circuit breakers for performance
+    try {
+      console.log('POS integration disabled for performance optimization');
+      return [];
+    } catch (error) {
+      console.log('POS service unavailable');
+      return [];
+    }
   }
 }
 

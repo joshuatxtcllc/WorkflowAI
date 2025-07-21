@@ -342,53 +342,10 @@ export class POSIntegration {
     return 'FRAME';
   }
 
-  // Real-time order synchronization with retry logic
+  // Real-time order synchronization - DISABLED for performance
   async startRealTimeSync() {
-    console.log('Starting real-time POS synchronization...');
-
-    // Check initial connection (non-blocking)
-    const connectionTest = await this.fetchNewOrders();
-    if (!connectionTest.success) {
-      console.log('POS connection failed:', connectionTest.error);
-      console.log('Will continue attempting to connect during periodic sync...');
-    } else {
-      console.log('POS system operational -', connectionTest.message || 'Connected successfully');
-    }
-
-    // Smart polling with exponential backoff
-    let pollInterval = 300000; // Start with 5 minutes
-    let consecutiveFailures = 0;
-    
-    const smartPoll = async () => {
-      try {
-        const result = await this.fetchNewOrders();
-        if (result.success && result.orders && result.orders.length > 0) {
-          console.log(`Processing ${result.orders.length} new orders from POS`);
-          const importedOrders = await this.importNewPOSOrders(result.orders);
-          if (importedOrders.length > 0) {
-            console.log(`Successfully imported ${importedOrders.length} new orders into Kanban workflow`);
-          }
-          // Reset on success
-          consecutiveFailures = 0;
-          pollInterval = 300000; // Reset to 5 minutes
-        }
-      } catch (error) {
-        consecutiveFailures++;
-        // Exponential backoff: 5min, 10min, 20min, max 1hr
-        pollInterval = Math.min(300000 * Math.pow(2, consecutiveFailures), 3600000);
-        
-        const errorMessage = (error as Error).message;
-        if (!errorMessage.includes('503') && !errorMessage.includes('timeout') && !errorMessage.includes('AbortError')) {
-          console.error('Real-time sync error:', error);
-        }
-      } finally {
-        setTimeout(smartPoll, pollInterval);
-      }
-    };
-    
-    // Start the smart polling
-    setTimeout(smartPoll, pollInterval);
-
+    console.log('POS real-time synchronization is disabled for performance optimization');
+    console.log('Manual sync available through API endpoints if needed');
     return true;
   }
 
