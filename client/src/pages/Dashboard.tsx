@@ -61,11 +61,13 @@ const Dashboard = memo(() => {
   const [showAI, setShowAI] = useState(false);
   const [activeTab, setActiveTab] = useState("kanban");
   // Confetti system removed for performance
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  //const [showSettings, setShowSettings] = useState(false);
 
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
     staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchInterval: false, // Only refetch manually
+    refetchInterval: autoRefresh ? 60000 : false, // Only refetch manually , increased to 60s
   });
 
   return (
@@ -120,6 +122,13 @@ const Dashboard = memo(() => {
       {ui.isOrderDetailsOpen && (
         <OrderDetails />
       )}
+       {/* Auto-Refresh Toggle */}
+       <div className="absolute top-4 right-4 bg-gray-800 bg-opacity-50 rounded-md p-2">
+          <label className="inline-flex items-center space-x-2 cursor-pointer">
+            <span className="text-sm text-gray-300">Auto-Refresh</span>
+            <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
+          </label>
+        </div>
     </div>
   );
 });

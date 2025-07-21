@@ -20,6 +20,9 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import AIAssistant from './AIAssistant';
 import { DevModeToggle } from './DevModeToggle';
+import { Badge } from './ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Plus, Clock, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
 
 const columnIcons = {
   'ORDER_PROCESSED': Package,
@@ -768,7 +771,22 @@ export default memo(function KanbanBoard() {
               </CardContent>
             </Card>
           </div>
-
+<div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-bold">Production Board</h2>
+          <p className="text-muted-foreground">Drag orders between stages to update status</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh Orders
+        </Button>
+</div>
           {/* Mobile optimized Kanban Board */}
           <div className="relative">
             {/* Desktop scroll arrows */}
