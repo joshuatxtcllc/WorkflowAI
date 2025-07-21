@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
+import { Button } from '../components/ui/button';
 import { OrderWithDetails } from '@shared/schema';
 import { 
   BarChart3, 
@@ -10,58 +11,39 @@ import {
   Clock, 
   DollarSign, 
   Package, 
-  Users, 
-  Calendar,
   Target,
-  Activity
+  Activity,
+  RefreshCw
 } from 'lucide-react';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
 export default function Analytics() {
-  // Use the same data source as Kanban board
-  const { data: orders = [] } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/orders"],
-    refetchInterval: 30000,
-    staleTime: 10000,
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Manual refresh only - no auto refresh
+  const { data: orders = [], isLoading, refetch } = useQuery<OrderWithDetails[]>({
+    queryKey: ["/api/orders", refreshKey],
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchInterval: false, // Disable auto refresh
   });
 
-  // Calculate analytics from order data - matching Kanban board logic exactly
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+    refetch();
+  };
+
+  // Simplified analytics calculation
   const calculateAnalytics = () => {
-    const now = new Date();
-    const last30Days = subDays(now, 30);
-    const last7Days = subDays(now, 7);
-
-    // Ensure we're working with valid order data - no filtering at the top level
     const validOrders = orders.filter(order => order && order.id);
-    
-    console.log('Analytics: Processing orders:', validOrders.length, 'Raw orders:', orders.length);
 
-    // Use same filtering logic as Kanban board - match exactly
     const activeOrders = validOrders.filter(order => 
       !['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
 
-    const recentOrders = validOrders.filter(order => {
-      try {
-        return order.createdAt && new Date(order.createdAt) >= last30Days;
-      } catch (e) {
-        return false;
-      }
-    });
-
-    const weeklyOrders = validOrders.filter(order => {
-      try {
-        return order.createdAt && new Date(order.createdAt) >= last7Days;
-      } catch (e) {
-        return false;
-      }
-    });
-
-    // Match Kanban board completion logic exactly
     const completedOrders = validOrders.filter(order => 
       ['PICKED_UP', 'COMPLETED'].includes(order.status || '')
     );
 
+    const now = new Date();
     const overdueOrders = activeOrders.filter(order => {
       try {
         return order.dueDate && new Date(order.dueDate) < now;
@@ -70,54 +52,45 @@ export default function Analytics() {
       }
     });
 
-    // Use totalPrice instead of price to match order schema
     const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
     const averageOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
 
-    // Status distribution - match Kanban columns exactly, include all statuses
+    // Status distribution
     const statusCounts = validOrders.reduce((acc, order) => {
       const status = order.status || 'UNKNOWN';
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    // Order type distribution
-    const typeCounts = validOrders.reduce((acc, order) => {
-      const type = order.orderType || 'UNKNOWN';
-      acc[type] = (acc[type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    // Calculate total estimated hours like Kanban board
     const totalHours = validOrders.reduce((sum, order) => sum + (order.estimatedHours || 0), 0);
+    const completionRate = validOrders.length > 0 ? (completedOrders.length / validOrders.length) * 100 : 0;
 
-    const result = {
+    return {
       totalOrders: validOrders.length,
       activeOrders: activeOrders.length,
-      recentOrders: recentOrders.length,
-      weeklyOrders: weeklyOrders.length,
       completedOrders: completedOrders.length,
       overdueOrders: overdueOrders.length,
       totalRevenue,
       averageOrderValue,
-      completionRate: validOrders.length > 0 ? (completedOrders.length / validOrders.length) * 100 : 0,
+      completionRate,
       statusCounts,
-      typeCounts,
       totalHours,
       averageHours: validOrders.length > 0 ? totalHours / validOrders.length : 0
     };
-
-    console.log('Analytics: Calculated totals:', {
-      totalOrders: result.totalOrders,
-      activeOrders: result.activeOrders,
-      completedOrders: result.completedOrders,
-      statusCounts: result.statusCounts
-    });
-
-    return result;
   };
 
   const analytics = calculateAnalytics();
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="text-center">
+          <Activity className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground mt-2">Loading analytics...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -125,13 +98,14 @@ export default function Analytics() {
         <div>
           <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
           <p className="text-muted-foreground">Performance insights and business metrics</p>
-          <p className="text-xs text-jade-400 mt-1">
-            Data sync: {orders.length} orders loaded • Analytics: {analytics.totalOrders} processed
-          </p>
         </div>
+        <Button onClick={handleRefresh} variant="outline" size="sm">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
-      {/* Key Metrics - Synced with Kanban Board */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
@@ -194,80 +168,6 @@ export default function Analytics() {
         </Card>
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Recent Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Orders This Week</span>
-              <Badge variant="secondary">{analytics.weeklyOrders}</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Orders This Month</span>
-              <Badge variant="secondary">{analytics.recentOrders}</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Completed Orders</span>
-              <Badge className="bg-green-100 text-green-800">{analytics.completedOrders}</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Overdue Orders</span>
-              <Badge variant={analytics.overdueOrders > 0 ? "destructive" : "secondary"}>
-                {analytics.overdueOrders}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Workload Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm">Average Hours per Order</span>
-                <span className="text-sm font-medium">{analytics.averageHours.toFixed(1)}h</span>
-              </div>
-              <Progress value={(analytics.averageHours / 10) * 100} className="h-2" />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm">Completion Progress</span>
-                <span className="text-sm font-medium">{analytics.completionRate.toFixed(1)}%</span>
-              </div>
-              <Progress value={analytics.completionRate} className="h-2" />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm">Total Estimated Hours</span>
-                <span className="text-sm font-medium">{analytics.totalHours.toFixed(1)}h</span>
-              </div>
-              <Progress value={(analytics.totalHours / 500) * 100} className="h-2" />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm">Active vs Completed</span>
-                <span className="text-sm font-medium">{analytics.activeOrders}/{analytics.completedOrders}</span>
-              </div>
-              <Progress value={(analytics.completedOrders / analytics.totalOrders) * 100} className="h-2" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Status Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -309,24 +209,31 @@ export default function Analytics() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              Order Type Distribution
+              <Activity className="h-5 w-5" />
+              Current Status
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(analytics.typeCounts).map(([type, count]) => {
-                const percentage = (count / analytics.totalOrders) * 100;
-                return (
-                  <div key={type}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm">{type}</span>
-                      <span className="text-sm font-medium">{count} ({percentage.toFixed(1)}%)</span>
-                    </div>
-                    <Progress value={percentage} className="h-2" />
-                  </div>
-                );
-              })}
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Active Orders</span>
+              <Badge variant="secondary">{analytics.activeOrders}</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Completed Orders</span>
+              <Badge className="bg-green-100 text-green-800">{analytics.completedOrders}</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Overdue Orders</span>
+              <Badge variant={analytics.overdueOrders > 0 ? "destructive" : "secondary"}>
+                {analytics.overdueOrders}
+              </Badge>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm">Completion Progress</span>
+                <span className="text-sm font-medium">{analytics.completionRate.toFixed(1)}%</span>
+              </div>
+              <Progress value={analytics.completionRate} className="h-2" />
             </div>
           </CardContent>
         </Card>
