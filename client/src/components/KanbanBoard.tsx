@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import AIAssistant from './AIAssistant';
+import { DevModeToggle } from './DevModeToggle';
 
 const columnIcons = {
   'ORDER_PROCESSED': Package,
@@ -175,7 +176,15 @@ const KanbanColumn = memo(function KanbanColumn({ title, status, orders, onDropO
   );
 });
 
+const mountedRef = useRef(false);
+
 export default memo(function KanbanBoard() {
+  useEffect(() => {
+    if (!mountedRef.current) {
+      console.log('KanbanBoard: Component mounting...');
+      mountedRef.current = true;
+    }
+  }, []);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
@@ -187,6 +196,8 @@ export default memo(function KanbanBoard() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const columns = KANBAN_COLUMNS
   const [isMobile, setIsMobile] = useState(false);
+  const [isPollingEnabled, setIsPollingEnabled] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState(Date.now());
 
   // Check URL parameters for filters
   useEffect(() => {
@@ -214,16 +225,19 @@ export default memo(function KanbanBoard() {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/orders", lastRefresh],
     queryFn: async () => {
+      console.log('KanbanBoard: Fetching orders...');
       const response = await apiRequest("/api/orders", {
         method: 'GET'
       });
-      return Array.isArray(response) ? response : [];
+      const result = Array.isArray(response) ? response : [];
+      console.log('KanbanBoard: Orders fetched successfully:', result.length);
+      return result;
     },
-    refetchInterval: 60000, // Reduced from 30s to 1 minute
-    staleTime: 30000, // Increased from 10s to 30s
-    gcTime: 5 * 60 * 1000, // Reduced cache time
+    refetchInterval: isPollingEnabled ? 60000 : false, // Controlled polling
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
       if (error && typeof error === 'object' && 'status' in error) {
         const status = (error as any).status;
@@ -231,13 +245,14 @@ export default memo(function KanbanBoard() {
           return false;
         }
       }
-      return failureCount < 2; // Reduced retry attempts
+      return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false, // Disabled to prevent excessive refetches
-    refetchOnMount: false, // Only fetch once on mount
+    refetchOnReconnect: false,
+    refetchOnMount: true, // Allow initial mount fetch
     networkMode: 'online',
+    enabled: true, // Always enabled, but polling is controlled
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -580,6 +595,18 @@ export default memo(function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
+  // Polling control functions
+  const handleTogglePolling = useCallback((enabled: boolean) => {
+    console.log('Polling toggled:', enabled);
+    setIsPollingEnabled(enabled);
+  }, []);
+
+  const handleForceRefresh = useCallback(() => {
+    console.log('Force refresh triggered');
+    setLastRefresh(Date.now());
+    refetch();
+  }, [refetch]);
+
   // Removed WebSocket functionality for simplified operation
 
     useEffect(() => {
@@ -844,6 +871,14 @@ export default memo(function KanbanBoard() {
       <AIAssistant 
         isOpen={isChatOpen} 
         onClose={() => setIsChatOpen(false)}
+      />
+
+      {/* Development Mode Toggle */}
+      <DevModeToggle
+        isPollingEnabled={isPollingEnabled}
+        onTogglePolling={handleTogglePolling}
+        onForceRefresh={handleForceRefresh}
+        connectionStatus="disconnected"
       />
     </DndProvider>
   );
