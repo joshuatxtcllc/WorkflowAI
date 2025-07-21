@@ -4,7 +4,7 @@ import { AIService } from "./aiService";
 export class BusinessLearningService {
   private aiService: AIService;
   private patterns: Map<string, any> = new Map();
-  
+
   constructor() {
     this.aiService = new AIService();
   }
@@ -12,19 +12,19 @@ export class BusinessLearningService {
   async analyzeBusinessPatterns() {
     const orders = await storage.getOrders();
     const statusChanges = await storage.getStatusChanges();
-    
+
     // Learn completion time patterns
     const completionPatterns = this.analyzeCompletionTimes(orders);
-    
+
     // Learn bottleneck patterns
     const bottleneckPatterns = this.analyzeBottlenecks(statusChanges);
-    
+
     // Learn customer behavior patterns
     const customerPatterns = this.analyzeCustomerBehavior(orders);
-    
+
     // Learn mystery item processing patterns
     const mysteryPatterns = this.analyzeMysteryItems(orders);
-    
+
     return {
       completionTimes: completionPatterns,
       bottlenecks: bottleneckPatterns,
@@ -36,7 +36,7 @@ export class BusinessLearningService {
 
   private analyzeCompletionTimes(orders: any[]) {
     const completedOrders = orders.filter(o => o.status === 'COMPLETED' || o.status === 'PICKED_UP');
-    
+
     const patterns = {
       frameOrders: completedOrders.filter(o => o.orderType === 'FRAME'),
       matOrders: completedOrders.filter(o => o.orderType === 'MAT'),
@@ -44,7 +44,7 @@ export class BusinessLearningService {
       averageByType: {},
       seasonalTrends: this.analyzeSeasonalTrends(completedOrders)
     };
-    
+
     // Calculate average completion times by order type
     ['FRAME', 'MAT', 'SHADOWBOX'].forEach(type => {
       const typeOrders = completedOrders.filter(o => o.orderType === type);
@@ -59,14 +59,14 @@ export class BusinessLearningService {
         };
       }
     });
-    
+
     return patterns;
   }
 
   private analyzeBottlenecks(statusChanges: any[]) {
     // Group status changes by stage to identify where orders get stuck
     const stageDelays = {};
-    
+
     statusChanges.forEach(change => {
       const stage = change.toStatus;
       if (!stageDelays[stage]) {
@@ -75,7 +75,7 @@ export class BusinessLearningService {
       // Calculate time spent in previous stage
       stageDelays[stage].push(change.timestamp);
     });
-    
+
     return {
       commonDelays: this.identifyCommonDelays(stageDelays),
       timeInStages: this.calculateAverageTimeInStages(stageDelays),
@@ -85,7 +85,7 @@ export class BusinessLearningService {
 
   private analyzeCustomerBehavior(orders: any[]) {
     const customerData = {};
-    
+
     orders.forEach(order => {
       const customerName = order.customer?.name || 'Unknown';
       if (!customerData[customerName]) {
@@ -97,16 +97,16 @@ export class BusinessLearningService {
           onTimePickup: 0
         };
       }
-      
+
       customerData[customerName].orderCount++;
       customerData[customerName].preferredTypes.push(order.orderType);
       customerData[customerName].averageValue += order.price || 0;
-      
+
       if (order.priority === 'URGENT') {
         customerData[customerName].urgentOrders++;
       }
     });
-    
+
     return {
       repeatCustomers: Object.entries(customerData).filter(([_, data]: [string, any]) => data.orderCount > 1),
       highValueCustomers: Object.entries(customerData).filter(([_, data]: [string, any]) => data.averageValue > 200),
@@ -116,7 +116,7 @@ export class BusinessLearningService {
 
   private analyzeMysteryItems(orders: any[]) {
     const mysteryOrders = orders.filter(o => o.status === 'MYSTERY_UNCLAIMED');
-    
+
     return {
       totalMysteryItems: mysteryOrders.length,
       averageDaysInSystem: mysteryOrders.reduce((sum, o) => {
@@ -193,6 +193,11 @@ As a frame shop operations expert, analyze these patterns and provide 3-4 specif
       tips.push("Prioritize oldest mystery items to prevent customer service issues");
     }
     return tips;
+  }
+
+  async generateBusinessInsights(): Promise<any> {
+    // Disabled for performance optimization
+    return { insights: "Learning service disabled for performance", patterns: [] };
   }
 }
 

@@ -7,6 +7,8 @@ import { randomUUID } from 'node:crypto';
 
 export class ArtworkManager {
   private uploadsDir = './uploads/artwork';
+  private maxFileSize = 10 * 1024 * 1024; // 10MB - reduced
+  private allowedTypes = ['image/jpeg', 'image/png']; // simplified types
 
   constructor() {
     this.ensureUploadsDirectory();
@@ -26,15 +28,15 @@ export class ArtworkManager {
       const fileExtension = path.extname(filename);
       const uniqueFilename = `${randomUUID()}${fileExtension}`;
       const filepath = path.join(this.uploadsDir, uniqueFilename);
-      
+
       await fs.writeFile(filepath, imageData);
-      
+
       // Return the relative URL for the uploaded image
       const imageUrl = `/api/artwork/${uniqueFilename}`;
-      
+
       // Update order with new image
       await this.addImageToOrder(orderId, imageUrl);
-      
+
       return imageUrl;
     } catch (error) {
       console.error('Failed to upload artwork image:', error);

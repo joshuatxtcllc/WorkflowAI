@@ -15,7 +15,7 @@ import { TrendingUp, Clock, BarChart3, Upload, CheckCircle, ChevronUp } from 'lu
 import { useToast } from '../hooks/use-toast';
 import { apiRequest } from '../lib/queryClient';
 import type { WorkloadAnalysis } from '@shared/schema';
-import { SystemAlerts } from '../components/SystemAlerts';
+// SystemAlerts removed for performance
 import NewOrderModal from '../components/NewOrderModal';
 import { useIsMobile } from '../hooks/use-mobile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
@@ -64,8 +64,8 @@ const Dashboard = memo(() => {
 
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/orders"],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: 10 * 60 * 1000, // 10 minutes - reduced frequency
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchInterval: false, // Only refetch manually
   });
 
   return (
@@ -86,28 +86,11 @@ const Dashboard = memo(() => {
 
       {/* Main content area */}
       <div className="flex-1 p-4 space-y-6 overflow-auto">
-        <SystemAlerts />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="alerts">System Health</TabsTrigger>
-            </TabsList>
-            <TabsContent value="kanban">
-              {/* Kanban Board */}
-              <div className={isMobile ? 'mobile-kanban-container' : ''}>
-                <KanbanBoard />
-              </div>
-            </TabsContent>
-            <TabsContent value="analytics">
-              Analytics Content
-            </TabsContent>
-            {/* Progress tab removed for performance optimization */}
-            <TabsContent value="alerts">
-              System Alerts Content
-            </TabsContent>
-        </Tabs>
+        {/* Simplified - Just Kanban Board */}
+        <div className={isMobile ? 'mobile-kanban-container' : ''}>
+          <KanbanBoard />
+        </div>
 </div>
       </div>
 
