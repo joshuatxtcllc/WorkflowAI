@@ -29,7 +29,7 @@ import { analyticsEngine } from "./analytics-engine";
 import { apiServices } from "./api-services";
 import { replitAuth } from "./replitAuth";
 import { logger } from "./logger";
-import { circuitBreaker } from "./circuit-breaker";
+import { circuitBreakers } from "./circuit-breaker";
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
@@ -625,7 +625,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep essential AI analysis with circuit breaker
   app.get("/api/ai/analysis", isAuthenticated, async (req, res) => {
     try {
-      const analysis = await circuitBreaker.execute(async () => {
+      const analysis = await circuitBreakers.openai.execute(async () => {
         return await aiService.generateWorkloadAnalysis();
       });
       res.json(analysis);
