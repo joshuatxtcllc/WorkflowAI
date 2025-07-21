@@ -233,7 +233,6 @@ export default memo(function KanbanBoard() {
   const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
     queryKey: stableQueryKey,
     queryFn: async () => {
-      if (!mountedRef.current) return []; // Skip if not properly mounted
       console.log('KanbanBoard: Fetching orders...');
       const response = await apiRequest("/api/orders", {
         method: 'GET'
@@ -242,24 +241,16 @@ export default memo(function KanbanBoard() {
       console.log('KanbanBoard: Orders fetched successfully:', result.length);
       return result;
     },
-    refetchInterval: isPollingEnabled ? 60000 : false, // Controlled polling
-    staleTime: 30000,
-    gcTime: 5 * 60 * 1000,
-    retry: (failureCount, error) => {
-      if (error && typeof error === 'object' && 'status' in error) {
-        const status = (error as any).status;
-        if (status >= 400 && status < 500) {
-          return false;
-        }
-      }
-      return failureCount < 2;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    refetchInterval: false, // Disable automatic polling completely
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 1, // Reduce retries
+    retryDelay: 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchOnMount: false, // Prevent automatic refetch on mount to stop re-mounting loop
+    refetchOnMount: 'always', // Allow initial fetch but prevent loops
     networkMode: 'online',
-    enabled: true, // Always enabled, but polling is controlled
+    enabled: true,
   });
 
   const updateOrderStatusMutation = useMutation({
@@ -602,18 +593,10 @@ export default memo(function KanbanBoard() {
     };
   }, [handleMouseMove, stopAutoScroll]);
 
-  // Polling control functions
-  const handleTogglePolling = useCallback((enabled: boolean) => {
-    console.log('Polling toggled:', enabled);
-    setIsPollingEnabled(enabled);
-  }, []);
-
   const handleForceRefresh = useCallback(() => {
-    console.log('Force refresh triggered');
-    // Use invalidateQueries instead of refetch to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: stableQueryKey });
+    console.log('Manual refresh triggered');
     refetch();
-  }, [refetch, queryClient, stableQueryKey]);
+  }, [refetch]);
 
   // Removed WebSocket functionality for simplified operation
 
@@ -898,8 +881,8 @@ export default memo(function KanbanBoard() {
 
       {/* Development Mode Toggle */}
       <DevModeToggle
-        isPollingEnabled={isPollingEnabled}
-        onTogglePolling={handleTogglePolling}
+        isPollingEnabled={false}
+        onTogglePolling={() => {}}
         onForceRefresh={handleForceRefresh}
         connectionStatus="disconnected"
       />

@@ -71,17 +71,7 @@ const Dashboard = memo(() => {
     }
   }, []);
 
-  // Stable query key to prevent re-mounting
-  const stableQueryKey = useRef(["/api/orders"]).current;
-
-  const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: stableQueryKey,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchInterval: autoRefresh ? 60000 : false,
-    refetchOnMount: false, // Prevent automatic refetch on mount
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  // Remove duplicate query - let KanbanBoard handle all data fetching
 
   return (
     <div className="flex-1 flex flex-col bg-gray-950 relative" style={{ backgroundColor: '#0A0A0B' }}>
@@ -101,12 +91,11 @@ const Dashboard = memo(() => {
 
       {/* Main content area */}
       <div className="flex-1 p-4 space-y-6 overflow-auto">
-
         {/* Simplified - Just Kanban Board */}
         <div className={isMobile ? 'mobile-kanban-container' : ''}>
           <KanbanBoard />
         </div>
-</div>
+      </div>
       </div>
 
       {/* AI Assistant Button for Mobile */}
