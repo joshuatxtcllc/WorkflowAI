@@ -23,9 +23,9 @@ import POSIntegration from "./pages/POSIntegration";
 import NotFound from "./pages/not-found";
 
 // Import components
-import AppSidebar from "./components/AppSidebar";
+import { AppSidebar } from "./components/AppSidebar";
 import Header from "./components/Header";
-import MobileBottomNav from "./components/MobileBottomNav";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 
 function ErrorFallback({ error, resetErrorBoundary }: any) {
   return (

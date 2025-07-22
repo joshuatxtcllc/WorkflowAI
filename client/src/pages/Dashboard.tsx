@@ -87,7 +87,6 @@ const Dashboard = memo(() => {
           <KanbanBoard />
         </div>
       </div>
-      </div>
 
       {/* AI Assistant Button for Mobile */}
       {isMobile && (
@@ -109,12 +108,12 @@ const Dashboard = memo(() => {
         </div>
       )}
 
-      <AIAssistant />
       <NewOrderModal />
 
       {ui.isOrderDetailsOpen && (
         <OrderDetails />
       )}
+      
        {/* Auto-Refresh Toggle */}
        <div className="absolute top-4 right-4 bg-gray-800 bg-opacity-50 rounded-md p-2">
           <label className="inline-flex items-center space-x-2 cursor-pointer">

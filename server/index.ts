@@ -25,7 +25,7 @@ async function startServer() {
   await registerRoutes(app);
 
   // Serve static files
-  const staticPath = path.join(__dirname, "../client/dist");
+  const staticPath = path.join(__dirname, "../dist/public");
   app.use(express.static(staticPath));
 
   // Catch-all handler for client-side routing
