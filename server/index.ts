@@ -24,12 +24,16 @@ async function startServer() {
   // Setup API routes
   await registerRoutes(app);
 
-  // Serve static files
-  const staticPath = path.join(__dirname, "../dist/public");
+  // Serve static files from the built dist folder
+  const staticPath = path.join(__dirname, "../dist");
   app.use(express.static(staticPath));
 
-  // Catch-all handler for client-side routing
-  app.get("*", (req, res) => {
+  // Catch-all handler for client-side routing (but NOT for static assets)
+  app.get("*", (req, res, next) => {
+    // Don't intercept requests for static assets
+    if (req.path.startsWith('/assets/') || req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.map')) {
+      return next();
+    }
     res.sendFile(path.join(staticPath, "index.html"));
   });
 
