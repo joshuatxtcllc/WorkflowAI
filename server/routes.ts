@@ -28,6 +28,7 @@ import { analyticsEngine } from "./analytics-engine";
 // import { replitAuth } from "./replitAuth";
 import { logger } from "./logger";
 import { circuitBreakers } from "./circuit-breaker";
+import { setupAuth } from "./auth";
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
@@ -61,6 +62,9 @@ const aiService = new AIService();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
+  
+  // Setup authentication routes
+  await setupAuth(app);
 
   // Orders routes
   app.get("/api/orders", async (req, res) => {

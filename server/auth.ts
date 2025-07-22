@@ -1,6 +1,18 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import type { Express, RequestHandler } from 'express';
+
+declare module 'express-session' {
+  interface SessionData {
+    userId: string;
+    user: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+  }
+}
 import session from 'express-session';
 import connectPg from 'connect-pg-simple';
 import { storage } from './storage';
