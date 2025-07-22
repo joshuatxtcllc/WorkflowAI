@@ -1,250 +1,157 @@
-import React, { useState, useEffect, memo, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { TouchBackend } from "react-dnd-touch-backend";
-import { motion, AnimatePresence } from "framer-motion";
-import { useToast } from "../hooks/use-toast";
-import { useIsMobile } from "../hooks/use-mobile";
-import { useConfettiStore } from "../store/useConfettiStore";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { useOrderStore } from "../store/useOrderStore";
-import { apiRequest } from "../lib/queryClient";
-import { OrderWithDetails } from "@shared/schema";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import OrderCard from "./OrderCard";
-import NewOrderModal from "./NewOrderModal";
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { Plus, RefreshCw } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import OrderCard from './OrderCard';
 
-const statusColumns = [
-  { id: "QUOTED", title: "Quoted", color: "bg-blue-500" },
-  { id: "APPROVED", title: "Approved", color: "bg-green-500" },
-  { id: "IN_PRODUCTION", title: "In Production", color: "bg-yellow-500" },
-  { id: "READY_FOR_PICKUP", title: "Ready", color: "bg-purple-500" },
-  { id: "COMPLETED", title: "Completed", color: "bg-gray-500" },
+const STATUSES = [
+  { id: 'ORDER_PROCESSED', name: 'Order Processed', color: 'bg-blue-500' },
+  { id: 'MATERIALS_ORDERED', name: 'Materials Ordered', color: 'bg-yellow-500' },
+  { id: 'MATERIALS_ARRIVED', name: 'Materials Arrived', color: 'bg-orange-500' },
+  { id: 'FRAME_CUT', name: 'Frame Cut', color: 'bg-purple-500' },
+  { id: 'MAT_CUT', name: 'Mat Cut', color: 'bg-pink-500' },
+  { id: 'PREPPED', name: 'Prepped', color: 'bg-indigo-500' },
+  { id: 'COMPLETED', name: 'Completed', color: 'bg-green-500' },
+  { id: 'PICKED_UP', name: 'Picked Up', color: 'bg-gray-500' },
 ];
 
-export default memo(function KanbanBoard() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const { triggerConfetti, originX, originY, burst, reset } = useConfettiStore();
-  const isMobile = useIsMobile();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+export default function KanbanBoard() {
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: orders = [], isLoading, error, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/orders"],
-    queryFn: async () => {
-      const response = await apiRequest("/api/orders", {
-        method: 'GET'
-      });
-      return Array.isArray(response) ? response : [];
-    },
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: true, // Enable initial fetch
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-    enabled: true,
+  const { data: orders = [], isLoading, refetch } = useQuery({
+    queryKey: ['/api/orders'],
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 
-  const updateOrderMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<OrderWithDetails> }) => {
-      return await apiRequest(`/api/orders/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(updates),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      toast({
-        title: "Order Updated",
-        description: "Order status has been updated successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Update Failed",
-        description: error instanceof Error ? error.message : "Failed to update order",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    updateOrderMutation.mutate({
-      id: orderId,
-      updates: { status: newStatus },
-    });
-
-    if (newStatus === "COMPLETED") {
-      triggerConfetti();
-    }
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const checkScrollButtons = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkScrollButtons();
-  }, [orders]);
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
+  const getOrdersByStatus = (status: string) => {
+    return orders.filter((order: any) => order.status === status) || [];
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading orders...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">
-          Failed to load orders. 
-          <Button onClick={() => refetch()} className="ml-2">
-            Retry
-          </Button>
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 text-jade-400 animate-spin mx-auto mb-2" />
+          <p className="text-gray-400">Loading your frame shop...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">Production Board</h2>
+    <div className="space-y-6">
+      {/* Controls */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2">Production Board</h2>
+          <p className="text-gray-400">Track your custom frame orders through each stage</p>
+        </div>
+        <div className="flex space-x-3">
           <Button
-            onClick={() => setShowNewOrderModal(true)}
-            className="bg-jade-500 hover:bg-jade-400 text-black"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            variant="outline"
+            className="text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
           >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button className="bg-jade-600 hover:bg-jade-700 text-white">
             <Plus className="h-4 w-4 mr-2" />
             New Order
           </Button>
         </div>
-
-        <div className="relative">
-          {!isMobile && canScrollLeft && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 border-gray-600"
-              onClick={scrollLeft}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          )}
-
-          {!isMobile && canScrollRight && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 border-gray-600"
-              onClick={scrollRight}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          )}
-
-          <ScrollArea className="w-full">
-            <div
-              ref={scrollContainerRef}
-              className="flex gap-4 pb-4 overflow-x-auto min-h-[500px]"
-              onScroll={checkScrollButtons}
-            >
-              {statusColumns.map((column) => {
-                const columnOrders = orders.filter(order => order.status === column.id);
-
-                return (
-                  <KanbanColumn
-                    key={column.id}
-                    column={column}
-                    orders={columnOrders}
-                    onStatusChange={handleStatusChange}
-                  />
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </div>
-
-        {showNewOrderModal && (
-          <NewOrderModal onClose={() => setShowNewOrderModal(false)} />
-        )}
-      </div>
-    </DndProvider>
-  );
-});
-
-function KanbanColumn({ column, orders, onStatusChange }: {
-  column: { id: string; title: string; color: string };
-  orders: OrderWithDetails[];
-  onStatusChange: (orderId: string, newStatus: string) => void;
-}) {
-  const [{ isOver }, drop] = useDrop({
-    accept: "ORDER_CARD",
-    drop: (item: { id: string; status: string }) => {
-      if (item.status !== column.id) {
-        onStatusChange(item.id, column.id);
-      }
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
-
-  return (
-    <div
-      ref={drop}
-      className={`flex-shrink-0 w-80 bg-gray-800 rounded-lg p-4 ${
-        isOver ? "ring-2 ring-jade-500" : ""
-      }`}
-    >
-      <div className="flex items-center gap-2 mb-4">
-        <div className={`w-3 h-3 rounded-full ${column.color}`} />
-        <h3 className="font-medium text-white">{column.title}</h3>
-        <Badge variant="secondary" className="ml-auto">
-          {orders.length}
-        </Badge>
       </div>
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        <AnimatePresence>
-          {orders.map((order) => (
+      {/* Kanban Board */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 overflow-x-auto">
+        {STATUSES.map((status) => {
+          const statusOrders = getOrdersByStatus(status.id);
+          
+          return (
             <motion.div
-              key={order.id}
+              key={status.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
+              className="min-w-[280px]"
             >
-              <OrderCard order={order} />
+              <Card className="bg-gray-800 border-gray-700 h-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${status.color}`}></div>
+                      <span className="text-white font-medium">{status.name}</span>
+                    </div>
+                    <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs">
+                      {statusOrders.length}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+                  {statusOrders.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <p className="text-sm">No orders in this stage</p>
+                    </div>
+                  ) : (
+                    statusOrders.map((order: any) => (
+                      <OrderCard key={order.id} order={order} />
+                    ))
+                  )}
+                </CardContent>
+              </Card>
             </motion.div>
-          ))}
-        </AnimatePresence>
+          );
+        })}
+      </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-jade-400">{orders.length}</div>
+              <div className="text-sm text-gray-400">Total Orders</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400">
+                {getOrdersByStatus('ORDER_PROCESSED').length}
+              </div>
+              <div className="text-sm text-gray-400">New Orders</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-400">
+                {orders.filter((o: any) => ['FRAME_CUT', 'MAT_CUT', 'PREPPED'].includes(o.status)).length}
+              </div>
+              <div className="text-sm text-gray-400">In Production</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400">
+                {getOrdersByStatus('COMPLETED').length}
+              </div>
+              <div className="text-sm text-gray-400">Completed</div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

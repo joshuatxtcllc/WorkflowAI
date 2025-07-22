@@ -29,10 +29,15 @@ async function startServer() {
   app.use(express.static(staticPath));
 
   // Catch-all handler for client-side routing (but NOT for static assets)
-  app.get("*", (req, res, next) => {
+  app.get("*", (req, res) => {
     // Don't intercept requests for static assets
-    if (req.path.startsWith('/assets/') || req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.map')) {
-      return next();
+    if (req.path.startsWith('/assets/') || 
+        req.path.includes('.js') || 
+        req.path.includes('.css') || 
+        req.path.includes('.map') ||
+        req.path.includes('.ico')) {
+      // Let express.static handle these
+      return res.status(404).send('Asset not found');
     }
     res.sendFile(path.join(staticPath, "index.html"));
   });
