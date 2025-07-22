@@ -67,12 +67,12 @@ export default function Login() {
 
         // Small delay before redirect to ensure session is established
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = '/app/dashboard';
         }, 100);
       } catch (error) {
         console.error("Login success handler error:", error);
         // Still redirect even if there's an error with localStorage
-        window.location.href = '/dashboard';
+        window.location.href = '/app/dashboard';
       }
     },
     onError: (error: Error) => {
