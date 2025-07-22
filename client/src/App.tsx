@@ -27,7 +27,9 @@ import NotFound from './pages/not-found';
 import './index.css';
 
 function App() {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = !!user;
+  const loading = isLoading;
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

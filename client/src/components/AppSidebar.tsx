@@ -363,10 +363,10 @@ export function AppSidebar() {
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {user?.name || "User"}
+                      {(user as any)?.firstName || "User"}
                     </span>
                     <span className="truncate text-xs">
-                      {user?.email || "user@example.com"}
+                      {(user as any)?.email || "user@example.com"}
                     </span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
