@@ -24,8 +24,8 @@ import { artworkManager } from './artwork-manager';
 import Stripe from 'stripe';
 import express from "express";
 import { analyticsEngine } from "./analytics-engine";
-import { apiServices } from "./api-services";
-import { replitAuth } from "./replitAuth";
+// import { apiServices } from "./api-services";
+// import { replitAuth } from "./replitAuth";
 import { logger } from "./logger";
 import { circuitBreakers } from "./circuit-breaker";
 const upload = multer({ 
@@ -45,11 +45,11 @@ let stripe = null;
 if (stripeSecretKey) {
   try {
     stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2025-06-30.basil',
     });
     console.log('✅ Stripe initialized successfully');
   } catch (error) {
-    console.error('❌ Stripe initialization failed:', error.message);
+    console.error('❌ Stripe initialization failed:', error instanceof Error ? error.message : 'Unknown error');
   }
 } else {
   console.warn('⚠️  Stripe not initialized - missing STRIPE_SECRET_KEY environment variable');
