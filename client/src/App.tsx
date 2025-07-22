@@ -1,121 +1,41 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "./components/ui/toaster";
-import { TooltipProvider } from "./components/ui/tooltip";
-import { ErrorBoundary } from "react-error-boundary";
-import {
-  SidebarProvider,
-} from "./components/ui/sidebar";
-import { useIsMobile, useViewportHeight } from "./hooks/use-mobile";
+import React from 'react';
 
-// Import pages
-import Dashboard from "./pages/Dashboard";
-import Orders from "./pages/Orders";
-import Customers from "./pages/Customers";
-import Analytics from "./pages/Analytics";
-import Invoices from "./pages/Invoices";
-import Schedule from "./pages/Schedule";
-import TimeTracking from "./pages/TimeTracking";
-import Reports from "./pages/Reports";
-import Notifications from "./pages/Notifications";
-import POSIntegration from "./pages/POSIntegration";
-import NotFound from "./pages/not-found";
-
-// Import components
-import { AppSidebar } from "./components/AppSidebar";
-import Header from "./components/Header";
-import { MobileBottomNav } from "./components/MobileBottomNav";
-
-function ErrorFallback({ error, resetErrorBoundary }: any) {
+function App() {
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-4">
-        <h2 className="text-xl font-semibold text-white">Something went wrong</h2>
-        <p className="text-gray-400 text-sm">{error.message}</p>
-        <button
-          onClick={resetErrorBoundary}
-          className="px-4 py-2 bg-jade-500 text-black rounded hover:bg-jade-400"
-        >
-          Try again
-        </button>
+    <div className="min-h-screen bg-gray-950 text-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4 text-green-400">Jay's Frames</h1>
+          <p className="text-xl mb-8 text-gray-300">AI-Powered Frame Shop Management System</p>
+          
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+              <span className="text-green-400 font-semibold">System Online</span>
+            </div>
+            <p className="text-gray-300">
+              Your frame shop management system is ready to use.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div className="bg-gray-800 rounded-lg p-4">
+              <h3 className="text-lg font-semibold mb-2 text-blue-400">Orders</h3>
+              <p className="text-gray-300 text-sm">Manage custom frame orders</p>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-4">
+              <h3 className="text-lg font-semibold mb-2 text-purple-400">AI Assistant</h3>
+              <p className="text-gray-300 text-sm">Get intelligent workflow insights</p>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-4">
+              <h3 className="text-lg font-semibold mb-2 text-yellow-400">Analytics</h3>
+              <p className="text-gray-300 text-sm">Track performance metrics</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function AppContent() {
-  const isMobile = useIsMobile();
-  const viewportHeight = useViewportHeight();
-
-  const AppLayout = ({ children }: { children: React.ReactNode }) => {
-    if (isMobile) {
-      return (
-        <div 
-          className="mobile-app-container overflow-hidden"
-          style={{ height: viewportHeight }}
-        >
-          <Header />
-          <main 
-            className="mobile-content overflow-y-auto"
-            style={{ 
-              height: `${viewportHeight - 140}px`,
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
-          >
-            <div className="mobile-container">
-              {children}
-            </div>
-          </main>
-          <MobileBottomNav />
-        </div>
-      );
-    }
-
-    return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
-          <AppSidebar />
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-y-auto p-6">
-              {children}
-            </main>
-          </div>
-        </div>
-      </SidebarProvider>
-    );
-  };
-
-  return (
-    <AppLayout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/orders" component={Orders} />
-        <Route path="/customers" component={Customers} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/invoices" component={Invoices} />
-        <Route path="/schedule" component={Schedule} />
-        <Route path="/time-tracking" component={TimeTracking} />
-        <Route path="/reports" component={Reports} />
-        <Route path="/notifications" component={Notifications} />
-        <Route path="/pos-integration" component={POSIntegration} />
-        <Route component={NotFound} />
-      </Switch>
-    </AppLayout>
-  );
-}
-
-export default function App() {
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AppContent />
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
-}
+export default App;
