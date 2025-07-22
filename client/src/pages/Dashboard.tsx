@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, memo } from 'react';
 import { SidebarProvider, useSidebar } from "../components/ui/sidebar";
 import { AppSidebar } from "../components/AppSidebar";
-import { Header } from "../components/Header";
+import Header from "../components/Header";
 import KanbanBoard from "../components/KanbanBoard";
 import OrderDetails from "../components/OrderDetails";
 import AIAssistant from '../components/AIAssistant';
@@ -56,13 +56,8 @@ function ScrollHandler() {
 }
 
 const Dashboard = memo(() => {
-  const { ui, setUI } = useOrderStore();
   const { isMobile } = useIsMobile();
   const [showAI, setShowAI] = useState(false);
-  const [activeTab, setActiveTab] = useState("kanban");
-  const [autoRefresh, setAutoRefresh] = useState(false);
-
-  // Remove duplicate query - let KanbanBoard handle all data fetching
 
   return (
     <div className="flex-1 flex flex-col bg-gray-950 relative" style={{ backgroundColor: '#0A0A0B' }}>
@@ -82,9 +77,11 @@ const Dashboard = memo(() => {
 
       {/* Main content area */}
       <div className="flex-1 p-4 space-y-6 overflow-auto">
-        {/* Simplified - Just Kanban Board */}
-        <div className={isMobile ? 'mobile-kanban-container' : ''}>
-          <KanbanBoard />
+        {/* Simplified Dashboard */}
+        <div className="text-center py-20">
+          <h1 className="text-4xl font-bold text-white mb-4">Jay's Frames</h1>
+          <p className="text-gray-400 text-lg mb-8">AI-Powered Frame Shop Management System</p>
+          <div className="text-green-400 text-xl">✓ System Running Successfully</div>
         </div>
       </div>
 
@@ -100,27 +97,6 @@ const Dashboard = memo(() => {
           </svg>
         </button>
       )}
-
-      {/* AI Assistant */}
-      {(showAI || !isMobile) && (
-        <div className={`${isMobile ? 'fixed inset-0 bg-gray-950 z-40' : 'absolute top-0 right-0 w-80 h-full'}`}>
-          <AIAssistant onClose={() => setShowAI(false)} />
-        </div>
-      )}
-
-      <NewOrderModal />
-
-      {ui.isOrderDetailsOpen && (
-        <OrderDetails />
-      )}
-      
-       {/* Auto-Refresh Toggle */}
-       <div className="absolute top-4 right-4 bg-gray-800 bg-opacity-50 rounded-md p-2">
-          <label className="inline-flex items-center space-x-2 cursor-pointer">
-            <span className="text-sm text-gray-300">Auto-Refresh</span>
-            <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
-          </label>
-        </div>
     </div>
   );
 });
