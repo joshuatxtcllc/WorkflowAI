@@ -5,6 +5,20 @@ import { Plus, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import OrderCard from './OrderCard';
+// Type the order data based on the database schema
+interface OrderData {
+  id: string;
+  trackingId: string;
+  customerId: string;
+  assignedToId?: string;
+  status: string;
+  description?: string;
+  orderType: string;
+  priority: string;
+  dueDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 const STATUSES = [
   { id: 'ORDER_PROCESSED', name: 'Order Processed', color: 'bg-blue-500' },
@@ -20,7 +34,7 @@ const STATUSES = [
 export default function KanbanBoard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: orders = [], isLoading, refetch } = useQuery({
+  const { data: orders = [], isLoading, refetch } = useQuery<OrderData[]>({
     queryKey: ['/api/orders'],
     refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
@@ -32,7 +46,7 @@ export default function KanbanBoard() {
   };
 
   const getOrdersByStatus = (status: string) => {
-    return orders.filter((order: any) => order.status === status) || [];
+    return orders.filter((order: OrderData) => order.status === status) || [];
   };
 
   if (isLoading) {
@@ -110,6 +124,16 @@ export default function KanbanBoard() {
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Debug Info */}
+      <div className="bg-gray-800 border border-gray-700 rounded p-4 mb-4">
+        <h3 className="text-white font-bold mb-2">Debug Info (You Should See This):</h3>
+        <p className="text-green-400">✓ Total Orders Loaded: {orders.length}</p>
+        <p className="text-blue-400">✓ Order Processed: {getOrdersByStatus('ORDER_PROCESSED').length}</p>
+        <p className="text-yellow-400">✓ Materials Arrived: {getOrdersByStatus('MATERIALS_ARRIVED').length}</p>
+        <p className="text-orange-400">✓ Frame Cut: {getOrdersByStatus('FRAME_CUT').length}</p>
+        <p className="text-gray-400">✓ Picked Up: {getOrdersByStatus('PICKED_UP').length}</p>
       </div>
 
       {/* Statistics */}
