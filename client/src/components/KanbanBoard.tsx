@@ -34,9 +34,15 @@ const STATUSES = [
 export default function KanbanBoard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: orders = [], isLoading, refetch } = useQuery<OrderData[]>({
+  const { data: orders = [], isLoading, refetch, error } = useQuery<OrderData[]>({
     queryKey: ['/api/orders'],
     refetchInterval: 30000, // Auto-refresh every 30 seconds
+  });
+
+  console.log("KanbanBoard - Query state:", { 
+    ordersLength: orders.length, 
+    isLoading, 
+    error: error?.message 
   });
 
   const handleRefresh = async () => {
@@ -140,8 +146,12 @@ export default function KanbanBoard() {
             <pre className="text-xs text-green-300">{JSON.stringify(orders[0], null, 2)}</pre>
           </div>
         )}
-        {orders.length === 0 && (
-          <p className="text-red-400 mt-2">❌ NO DATA RECEIVED FROM API</p>
+        {orders.length === 0 && !isLoading && (
+          <div className="mt-2 p-2 bg-red-900 border border-red-600 rounded">
+            <p className="text-red-400">❌ NO DATA RECEIVED FROM API</p>
+            {error && <p className="text-red-300 text-sm">Error: {error.message}</p>}
+            <p className="text-gray-400 text-xs">Check browser console for network errors</p>
+          </div>
         )}
       </div>
 

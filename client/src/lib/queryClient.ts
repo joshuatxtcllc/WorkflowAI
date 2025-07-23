@@ -3,13 +3,14 @@ import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      queryFn: getQueryFn({ on401: "redirect" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      refetchOnMount: false,
-      staleTime: Infinity,
-      gcTime: Infinity,
-      retry: false,
+      refetchOnMount: true, // Enable refetch on mount
+      staleTime: 0, // Always fetch fresh data
+      gcTime: 0, // Don't cache indefinitely
+      retry: 1,
       enabled: true,
     },
     mutations: {
@@ -44,11 +45,14 @@ function getQueryFn({ on401 }: { on401: "redirect" | "throw" }) {
     const [url] = queryKey as [string];
 
     try {
+      console.log("Making API request to:", url);
       const response = await fetch(url, {
+        credentials: 'include', // Include cookies for authentication
         headers: {
           'Content-Type': 'application/json',
         },
       });
+      console.log("API response status:", response.status);
 
       if (response.status === 401) {
         if (on401 === "redirect") {
