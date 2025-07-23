@@ -33,21 +33,51 @@ const STATUSES = [
 
 export default function KanbanBoard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: orders = [], isLoading, refetch, error } = useQuery<OrderData[]>({
-    queryKey: ['/api/orders'],
-    refetchInterval: 30000, // Auto-refresh every 30 seconds
-  });
+  // Direct fetch function
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      console.log("Fetching orders directly...");
+      
+      const response = await fetch('/api/orders', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log("Response status:", response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Orders received:", data.length);
+      setOrders(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch orders');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  console.log("KanbanBoard - Query state:", { 
-    ordersLength: orders.length, 
-    isLoading, 
-    error: error?.message 
-  });
+  // Load orders on mount and set up interval
+  React.useEffect(() => {
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refetch();
+    await fetchOrders();
     setTimeout(() => setIsRefreshing(false), 500);
   };
 

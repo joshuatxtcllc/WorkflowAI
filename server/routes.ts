@@ -66,19 +66,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
 
-  // Orders routes - remove auth requirement temporarily for debugging
+  // Orders routes - simplified and direct
   app.get("/api/orders", async (req, res) => {
-    console.log("DEBUG: Orders endpoint hit, session:", req.session?.user?.email || 'no session');
     try {
-      logger.info("Fetching orders");
+      console.log("🔍 Orders API called");
       const orders = await storage.getOrders();
-      console.log(`DEBUG: API returning ${orders.length} orders`);
-      if (orders.length > 0) {
-        console.log("DEBUG: Sample order:", JSON.stringify(orders[0], null, 2));
-      }
+      console.log(`✅ Returning ${orders.length} orders to frontend`);
+      
+      // Set proper headers
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Cache-Control', 'no-cache');
+      
       res.json(orders);
     } catch (error) {
-      logger.error("Error fetching orders:", error);
+      console.error("❌ Orders API error:", error);
       res.status(500).json({ error: "Failed to fetch orders" });
     }
   });
