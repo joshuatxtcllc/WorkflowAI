@@ -290,8 +290,7 @@ export class DatabaseStorage implements IStorage {
         })
         .from(orders)
         .leftJoin(customers, eq(orders.customerId, customers.id))
-        .orderBy(desc(orders.createdAt))
-        .limit(50); // Reduce limit for better performance
+        .orderBy(desc(orders.createdAt)); // Show all orders ordered by creation date
 
       const endTime = Date.now();
       console.log(`getOrders query completed: ${endTime - startTime}ms, returned ${result.length} orders`);
