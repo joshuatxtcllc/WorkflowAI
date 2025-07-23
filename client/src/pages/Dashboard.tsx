@@ -75,15 +75,15 @@ const Dashboard = memo(() => {
         />
       </div>
 
-      {/* Main content area */}
-      <div className="flex-1 p-4 space-y-6 overflow-auto">
-        {/* Simplified Dashboard */}
-        <div className="text-center py-20">
-          <h1 className="text-4xl font-bold text-white mb-4">Jay's Frames</h1>
-          <p className="text-gray-400 text-lg mb-8">AI-Powered Frame Shop Management System</p>
-          <div className="text-green-400 text-xl">✓ System Running Successfully</div>
+      <SidebarInset>
+        <Header />
+        <ScrollHandler />
+        
+        {/* Main Dashboard Content */}
+        <div className="flex-1 p-4 space-y-6" data-scroll-container>
+          <KanbanBoard />
         </div>
-      </div>
+      </SidebarInset>
 
       {/* AI Assistant Button for Mobile */}
       {isMobile && (

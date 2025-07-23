@@ -56,53 +56,53 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/app/dashboard",
       icon: Home,
     },
     {
       title: "Orders",
-      url: "/orders",
+      url: "/app/orders",
       icon: Package,
       items: [
         {
           title: "All Orders",
-          url: "/orders",
+          url: "/app/orders",
         },
         {
           title: "Pending",
-          url: "/orders?status=pending",
+          url: "/app/orders?status=pending",
         },
         {
           title: "In Progress",
-          url: "/orders?status=in-progress",
+          url: "/app/orders?status=in-progress",
         },
         {
           title: "Ready for Pickup",
-          url: "/orders?status=ready",
+          url: "/app/orders?status=ready",
         },
         {
           title: "Completed",
-          url: "/orders?status=completed",
+          url: "/app/orders?status=completed",
         },
       ],
     },
     {
       title: "Customers",
-      url: "/customers",
+      url: "/app/customers",
       icon: Users,
     },
     {
       title: "Analytics",
-      url: "/analytics",
+      url: "/app/analytics",
       icon: BarChart3,
       items: [
         {
           title: "Workload Analysis",
-          url: "/analytics/workload",
+          url: "/app/analytics/workload",
         },
         {
           title: "Time Tracking",
-          url: "/time-tracking",
+          url: "/app/time-tracking",
         },
       ],
     },
@@ -259,7 +259,7 @@ export function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    onClick={() => handleNavigation("Customers", "/customers")}
+                    onClick={() => handleNavigation("Customers", "/app/customers")}
                     className="cursor-pointer"
                     isActive={activeItem === "Customers"}
                   >
