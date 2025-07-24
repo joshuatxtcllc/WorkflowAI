@@ -43,10 +43,13 @@ function App() {
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-jade-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-400">Loading Jay's Frames...</p>
+          <p className="text-gray-500 text-sm mt-2">If this takes too long, try refreshing the page</p>
         </div>
       </div>
     );
   }
+
+  console.log('App rendering with:', { isAuthenticated, isPublicRoute, location });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -91,6 +94,13 @@ function App() {
             {/* Fallback */}
             <Route component={NotFound} />
           </Switch>
+          
+          {/* Debug info in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="fixed bottom-4 right-4 bg-black bg-opacity-50 text-white p-2 text-xs rounded">
+              Auth: {isAuthenticated ? 'Yes' : 'No'} | Route: {location} | Loading: {loading ? 'Yes' : 'No'}
+            </div>
+          )}
         </div>
       </ErrorBoundary>
       <Toaster />

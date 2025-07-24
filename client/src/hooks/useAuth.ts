@@ -11,52 +11,67 @@ interface User {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Prevent multiple auth checks
+    if (authChecked) return;
 
-  const checkAuth = async () => {
-    console.log('useAuth: Starting authentication check...');
-    try {
-      // First check localStorage for user data
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
+    const checkAuth = async () => {
+      console.log('useAuth: Starting authentication check...');
+
+      try {
+        // Check if user data exists in localStorage
+        const storedUser = localStorage.getItem('auth_user');
+        if (storedUser) {
           const userData = JSON.parse(storedUser);
           console.log('useAuth: Found stored user data:', userData.email);
           setUser(userData);
-        } catch (e) {
-          console.log('useAuth: Invalid stored user data, removing...');
-          localStorage.removeItem('user');
+
+          // Verify with server (with timeout)
+          console.log('useAuth: Verifying with server...');
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          try {
+            const response = await fetch('/api/auth/user', {
+              credentials: 'include',
+              signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              const serverUser = await response.json();
+              console.log('useAuth: Server verification successful:', serverUser.email);
+              setUser(serverUser);
+              localStorage.setItem('auth_user', JSON.stringify(serverUser));
+            } else {
+              console.log('useAuth: Server verification failed, using stored data');
+              // Keep the stored user data if server check fails
+            }
+          } catch (fetchError) {
+            clearTimeout(timeoutId);
+            console.log('useAuth: Server verification timeout/error, using stored data');
+            // Keep the stored user data if server check fails
+          }
+        } else {
+          console.log('useAuth: No stored user data found');
+          setUser(null);
         }
-      }
-
-      // Then verify with server
-      console.log('useAuth: Verifying with server...');
-      const response = await fetch('/api/auth/user', {
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('useAuth: Server verification successful:', userData.email);
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-      } else {
-        console.log('useAuth: Server verification failed, status:', response.status);
+      } catch (error) {
+        console.error('useAuth: Authentication check failed:', error);
+        localStorage.removeItem('auth_user');
         setUser(null);
-        localStorage.removeItem('user');
+      } finally {
+        console.log('useAuth: Authentication check completed, setting isLoading to false');
+        setIsLoading(false);
+        setAuthChecked(true);
       }
-    } catch (error) {
-      console.error('useAuth: Auth check failed:', error);
-      setUser(null);
-      localStorage.removeItem('user');
-    } finally {
-      console.log('useAuth: Authentication check completed, setting isLoading to false');
-      setIsLoading(false);
-    }
-  };
+    };
+
+    checkAuth();
+  }, [authChecked]);
 
   const logout = async () => {
     try {
@@ -65,16 +80,16 @@ export function useAuth() {
         credentials: 'include'
       });
       setUser(null);
-      localStorage.removeItem('user');
+      localStorage.removeItem('auth_user');
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout failed:', error);
       // Force logout locally even if server request fails
       setUser(null);
-      localStorage.removeItem('user');
+      localStorage.removeItem('auth_user');
       window.location.href = '/login';
     }
   };
 
-  return { user, isLoading, logout, checkAuth };
+  return { user, isLoading, logout };
 }
