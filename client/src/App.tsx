@@ -1,111 +1,87 @@
-import { useState, useEffect } from 'react';
-import { Route, Switch, useLocation } from 'wouter';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { SidebarProvider } from './components/ui/sidebar';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
-import { queryClient } from './lib/queryClient';
-import { AppSidebar } from './components/AppSidebar';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/AppSidebar";
 import { useAuth } from './hooks/useAuth';
-import ErrorBoundary from './components/ErrorBoundary';
+import { LoadingScreen } from './components/LoadingScreen';
 
 // Pages
-import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Customers from './pages/Customers';
 import Analytics from './pages/Analytics';
-import Reports from './pages/Reports';
-import Schedule from './pages/Schedule';
 import Invoices from './pages/Invoices';
+import Reports from './pages/Reports';
 import SystemTest from './pages/SystemTest';
-import Diagnostics from './pages/Diagnostics';
-import Progress from './pages/Progress';
-import AdminPortal from './pages/AdminPortal';
+import EmergencyPayments from './pages/EmergencyPayments';
 import CustomerPortal from './components/CustomerPortal';
-import NotFound from './pages/not-found';
-import './index.css';
+import { NotFound } from './pages/not-found';
 
-function App() {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 2,
+    },
+  },
+});
+
+function AppContent() {
   const { user, isLoading } = useAuth();
-  const isAuthenticated = !!user;
-  const loading = isLoading;
-  const [location] = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Check for customer portal route
-  const isCustomerPortal = location.startsWith('/track');
-  const isPublicRoute = ['/', '/login', '/customer'].includes(location) || isCustomerPortal;
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
-  if (loading) {
+  if (!user) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-jade-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading Jay's Frames...</p>
-          <p className="text-gray-500 text-sm mt-2">If this takes too long, try refreshing the page</p>
-        </div>
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/track/:trackingId?" element={<CustomerPortal />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
     );
   }
 
-  console.log('App rendering with:', { isAuthenticated, isPublicRoute, location });
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <div className="min-h-screen bg-gray-950">
-          <Switch>
-            {/* Public Routes */}
-            <Route path="/" component={Landing} />
-            <Route path="/login" component={Login} />
-            <Route path="/track/:trackingId?" component={CustomerPortal} />
-            
-            {/* Protected Routes */}
-            <Route path="/app/:path*">
-              {isAuthenticated ? (
-                <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-                  <div className="flex min-h-screen">
-                    <AppSidebar />
-                    <main className="flex-1 bg-gray-50 dark:bg-gray-950">
-                      <Switch>
-                        <Route path="/app" component={Dashboard} />
-                        <Route path="/app/dashboard" component={Dashboard} />
-                        <Route path="/app/orders" component={Orders} />
-                        <Route path="/app/customers" component={Customers} />
-                        <Route path="/app/analytics" component={Analytics} />
-                        <Route path="/app/reports" component={Reports} />
-                        <Route path="/app/schedule" component={Schedule} />
-                        <Route path="/app/invoices" component={Invoices} />
-                        <Route path="/app/system" component={SystemTest} />
-                        <Route path="/app/diagnostics" component={Diagnostics} />
-                        <Route path="/app/progress" component={Progress} />
-                        <Route path="/app/admin" component={AdminPortal} />
-                        <Route component={NotFound} />
-                      </Switch>
-                    </main>
-                  </div>
-                </SidebarProvider>
-              ) : (
-                <Login />
-              )}
-            </Route>
-            
-            {/* Fallback */}
-            <Route component={NotFound} />
-          </Switch>
-          
-          {/* Debug info in development */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="fixed bottom-4 right-4 bg-black bg-opacity-50 text-white p-2 text-xs rounded">
-              Auth: {isAuthenticated ? 'Yes' : 'No'} | Route: {location} | Loading: {loading ? 'Yes' : 'No'}
-            </div>
-          )}
-        </div>
-      </ErrorBoundary>
-      <Toaster />
-    </QueryClientProvider>
+    <Router>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="min-h-screen bg-gray-950">
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/system-test" element={<SystemTest />} />
+              <Route path="/emergency-payments" element={<EmergencyPayments />} />
+              <Route path="/track/:trackingId?" element={<CustomerPortal />} />
+              <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </Router>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+        <Toaster />
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}

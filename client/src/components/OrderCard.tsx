@@ -1,27 +1,16 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, User, Phone, Package, AlertCircle } from 'lucide-react';
+import { Calendar, User, Phone, Package, AlertCircle, Eye, FileText } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
-
-interface Order {
-  id: string;
-  trackingId: string;
-  customerName: string;
-  customerPhone?: string;
-  status: string;
-  priority: string;
-  orderType: string;
-  frameDetails: string;
-  matDetails?: string;
-  quantity: number;
-  dueDate: string;
-  estimatedCompletion?: string;
-  complexity: number;
-}
+import { Button } from './ui/button';
+import { useOrderStore } from '../store/useOrderStore';
+import type { OrderWithDetails } from '@shared/schema';
 
 interface OrderCardProps {
-  order: Order;
+  order: OrderWithDetails;
+  onInvoice?: (orderId: string) => void;
 }
 
 const priorityColors = {
@@ -37,9 +26,26 @@ const typeColors = {
   SHADOWBOX: 'bg-indigo-100 text-indigo-800',
 };
 
-export default function OrderCard({ order }: OrderCardProps) {
+export default function OrderCard({ order, onInvoice }: OrderCardProps) {
+  const { setUI, setSelectedOrderId } = useOrderStore();
+  
   const priorityColor = priorityColors[order.priority as keyof typeof priorityColors] || priorityColors.MEDIUM;
   const typeColor = typeColors[order.orderType as keyof typeof typeColors] || typeColors.FRAME;
+
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedOrderId(order.id);
+    setUI({ isOrderDetailsOpen: true });
+  };
+
+  const handleInvoice = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onInvoice) {
+      onInvoice(order.id);
+    }
+  };
 
   return (
     <motion.div
@@ -50,20 +56,23 @@ export default function OrderCard({ order }: OrderCardProps) {
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="bg-gray-900 border-gray-600 hover:border-jade-500 transition-colors cursor-pointer">
+      <Card className="bg-gray-900 border-gray-600 hover:border-jade-500 transition-colors">
         <CardContent className="p-4">
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div>
               <h4 className="font-medium text-white text-sm">#{order.trackingId}</h4>
-              <p className="text-xs text-gray-400 mt-1">{order.customerName}</p>
+              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                <User className="h-3 w-3" />
+                {order.customer?.name || 'Unknown Customer'}
+              </p>
             </div>
             <div className="flex flex-col items-end space-y-1">
               <Badge className={`text-xs px-2 py-1 ${priorityColor}`}>
-                {order.priority}
+                {order.priority || 'MEDIUM'}
               </Badge>
               <Badge className={`text-xs px-2 py-1 ${typeColor}`}>
-                {order.orderType}
+                {order.orderType || 'FRAME'}
               </Badge>
             </div>
           </div>
@@ -72,20 +81,13 @@ export default function OrderCard({ order }: OrderCardProps) {
           <div className="space-y-2 mb-3">
             <div className="flex items-center text-xs text-gray-400">
               <Package className="h-3 w-3 mr-2" />
-              <span className="truncate">{order.frameDetails}</span>
+              <span className="truncate">{order.description || 'No description'}</span>
             </div>
-            
-            {order.matDetails && (
-              <div className="flex items-center text-xs text-gray-400">
-                <Package className="h-3 w-3 mr-2" />
-                <span className="truncate">{order.matDetails}</span>
-              </div>
-            )}
 
-            {order.customerPhone && (
+            {order.customer?.phone && (
               <div className="flex items-center text-xs text-gray-400">
                 <Phone className="h-3 w-3 mr-2" />
-                <span>{order.customerPhone}</span>
+                <span>{order.customer.phone}</span>
               </div>
             )}
 
@@ -93,14 +95,41 @@ export default function OrderCard({ order }: OrderCardProps) {
               <Calendar className="h-3 w-3 mr-2" />
               <span>Due: {new Date(order.dueDate).toLocaleDateString()}</span>
             </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-500">Price: ${order.price}</span>
+              <span className="text-gray-500">Est: {order.estimatedHours}h</span>
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-500">Qty: {order.quantity}</span>
-              {order.complexity > 7 && (
-                <AlertCircle className="h-3 w-3 text-yellow-500" />
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 text-jade-400 border-jade-500/50 hover:bg-jade-500/10"
+              onClick={handleViewDetails}
+            >
+              <Eye className="h-3 w-3 mr-1" />
+              View
+            </Button>
+            {onInvoice && (
+              <Button
+                onClick={handleInvoice}
+                variant="outline"
+                size="sm"
+                className="bg-blue-500 hover:bg-blue-400 text-white border-blue-500"
+              >
+                <FileText className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+
+          {/* Complexity Indicator */}
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center space-x-1">
+              {order.priority === 'URGENT' && (
+                <AlertCircle className="h-3 w-3 text-red-500" />
               )}
             </div>
             
@@ -109,7 +138,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                 <div
                   key={i}
                   className={`w-1 h-1 rounded-full ${
-                    i < Math.ceil(order.complexity / 2) ? 'bg-jade-400' : 'bg-gray-600'
+                    i < Math.ceil((order.estimatedHours || 3) / 2) ? 'bg-jade-400' : 'bg-gray-600'
                   }`}
                 />
               ))}
