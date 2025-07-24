@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card, CardContent, CardHeader, CardTitle
+} from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { apiRequest } from '../lib/queryClient';
 import { useToast } from '../hooks/use-toast';
-import { 
-  Scissors, Layers, Timer, CheckCircle, Package, 
-  Search, Clock, User, Phone, DollarSign 
+import {
+  Scissors, Layers, Timer, CheckCircle, Package,
+  Search, Clock, User, Phone, DollarSign
 } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 
@@ -52,16 +54,13 @@ export default function ShopFloor() {
     },
   });
 
-  // Filter active orders (not picked up)
-  const activeOrders = orders.filter(order => 
-    order.status !== 'PICKED_UP' && 
-    (searchTerm === '' || 
-     order.trackingId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const activeOrders = orders.filter(order =>
+    order.status !== 'PICKED_UP' &&
+    (searchTerm === '' ||
+      order.trackingId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Group orders by current status
   const ordersByStatus = activeOrders.reduce((acc, order) => {
     const status = order.status || 'OTHER';
     if (!acc[status]) acc[status] = [];
@@ -73,9 +72,42 @@ export default function ShopFloor() {
     updateStatus.mutate({ orderId, status: newStatus });
   };
 
+  const renderNextActionButton = (order: OrderWithDetails) => {
+    const status = order.status;
+    switch (status) {
+      case 'MATERIALS_ARRIVED':
+        return (
+          <Button onClick={() => handleStatusUpdate(order.id, 'FRAME_CUT')} className="flex-1" disabled={updateStatus.isPending}>
+            <Scissors className="h-4 w-4 mr-2" /> Frame Cut Done
+          </Button>
+        );
+      case 'FRAME_CUT':
+        return (
+          <Button onClick={() => handleStatusUpdate(order.id, 'MAT_CUT')} className="flex-1" disabled={updateStatus.isPending}>
+            <Layers className="h-4 w-4 mr-2" /> Mat Cut Done
+          </Button>
+        );
+      case 'MAT_CUT':
+        return (
+          <Button onClick={() => handleStatusUpdate(order.id, 'PREPPED')} className="flex-1" disabled={updateStatus.isPending}>
+            <Timer className="h-4 w-4 mr-2" /> Prep Complete
+          </Button>
+        );
+      case 'PREPPED':
+        return (
+          <Button onClick={() => handleStatusUpdate(order.id, 'COMPLETED')} className="flex-1" disabled={updateStatus.isPending}>
+            <CheckCircle className="h-4 w-4 mr-2" /> Assembly Done
+          </Button>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
+
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Shop Floor</h1>
@@ -97,11 +129,10 @@ export default function ShopFloor() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions Grid */}
+        {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-4">
           {SHOP_ACTIONS.map((action) => {
             const eligibleOrders = activeOrders.filter(order => {
-              // Define which orders are eligible for each action
               switch (action.status) {
                 case 'FRAME_CUT':
                   return order.status === 'MATERIALS_ARRIVED';
@@ -132,7 +163,7 @@ export default function ShopFloor() {
           })}
         </div>
 
-        {/* Order List by Status */}
+        {/* Order Sections */}
         <div className="space-y-6">
           {['MATERIALS_ARRIVED', 'FRAME_CUT', 'MAT_CUT', 'PREPPED', 'COMPLETED'].map((status) => {
             const statusOrders = ordersByStatus[status] || [];
@@ -150,7 +181,7 @@ export default function ShopFloor() {
               <Card key={status}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>{statusLabels[status]}</span>
+                    <span>{statusLabels[status] || status}</span>
                     <Badge variant="outline">{statusOrders.length}</Badge>
                   </CardTitle>
                 </CardHeader>
@@ -163,7 +194,7 @@ export default function ShopFloor() {
                             <div className="font-medium text-lg">#{order.trackingId}</div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <User className="h-4 w-4" />
-                              {order.customer?.name}
+                              {order.customer?.name || 'Unknown'}
                             </div>
                             {order.customer?.phone && (
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -189,51 +220,14 @@ export default function ShopFloor() {
                         </div>
 
                         <div className="mb-3">
-                          <p className="text-sm text-muted-foreground">{order.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {order.description || 'No description provided.'}
+                          </p>
                         </div>
 
-                        {/* Action Buttons */}
+                        {/* Action Button */}
                         <div className="flex gap-2">
-                          {status === 'MATERIALS_ARRIVED' && (
-                            <Button 
-                              onClick={() => handleStatusUpdate(order.id, 'FRAME_CUT')}
-                              disabled={updateStatus.isPending}
-                              className="flex-1"
-                            >
-                              <Scissors className="h-4 w-4 mr-2" />
-                              Frame Cut Done
-                            </Button>
-                          )}
-                          {status === 'FRAME_CUT' && (
-                            <Button 
-                              onClick={() => handleStatusUpdate(order.id, 'MAT_CUT')}
-                              disabled={updateStatus.isPending}
-                              className="flex-1"
-                            >
-                              <Layers className="h-4 w-4 mr-2" />
-                              Mat Cut Done
-                            </Button>
-                          )}
-                          {status === 'MAT_CUT' && (
-                            <Button 
-                              onClick={() => handleStatusUpdate(order.id, 'PREPPED')}
-                              disabled={updateStatus.isPending}
-                              className="flex-1"
-                            >
-                              <Timer className="h-4 w-4 mr-2" />
-                              Prep Complete
-                            </Button>
-                          )}
-                          {status === 'PREPPED' && (
-                            <Button 
-                              onClick={() => handleStatusUpdate(order.id, 'COMPLETED')}
-                              disabled={updateStatus.isPending}
-                              className="flex-1"
-                            >
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Assembly Done
-                            </Button>
-                          )}
+                          {renderNextActionButton(order)}
                         </div>
                       </Card>
                     ))}
