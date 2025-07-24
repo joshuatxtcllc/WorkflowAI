@@ -20,6 +20,7 @@ import { useOrderStore } from '../store/useOrderStore';
 import { Search, Filter, Eye, Calendar, User, Package, DollarSign, Clock, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import type { OrderWithDetails } from '@shared/schema';
 import { useLocation } from 'wouter';
+import KanbanBoard from '../components/KanbanBoard';
 import { format } from 'date-fns';
 
 const statusColors = {
@@ -123,19 +124,27 @@ export default function Orders() {
     );
   }
 
+  // Show kanban board by default for better user experience
+  const showKanban = true;
+
+  if (showKanban) {
+    return <KanbanBoard />;
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Orders Management</h1>
-          <p className="text-muted-foreground">
-            {urlStatus ? `Showing ${urlStatus} orders` : 'Manage and track all your frame orders'}
-          </p>
+    <div className="w-full h-full overflow-auto">
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Orders Management</h1>
+            <p className="text-gray-400">
+              {urlStatus ? `Showing ${urlStatus} orders` : 'Manage and track all your frame orders'}
+            </p>
+          </div>
+          <div className="text-sm text-gray-400">
+            {filteredOrders.length} of {orders.length} orders
+          </div>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {filteredOrders.length} of {orders.length} orders
-        </div>
-      </div>
 
       {/* Filters */}
       <Card>
@@ -375,6 +384,7 @@ export default function Orders() {
           />
         ) : null;
       })()}
+      </div>
     </div>
   );
 }

@@ -97,9 +97,9 @@ export default function KanbanBoard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen w-full overflow-x-auto overflow-y-auto space-y-6 p-4">
       {/* Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sticky top-0 bg-gray-950 z-10 pb-4">
         <div>
           <h2 className="text-3xl font-bold text-white mb-2">Production Board</h2>
           <p className="text-gray-400">Track your custom frame orders through each stage</p>
@@ -122,7 +122,7 @@ export default function KanbanBoard() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 overflow-x-auto">
+      <div className="flex gap-4 min-w-max pb-6">
         {STATUSES.map((status) => {
           const statusOrders = getOrdersByStatus(status.id);
           
@@ -131,9 +131,9 @@ export default function KanbanBoard() {
               key={status.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="min-w-[280px]"
+              className="w-80 flex-shrink-0"
             >
-              <Card className="bg-gray-800 border-gray-700 h-full">
+              <Card className="bg-gray-800 border-gray-700 h-full min-h-[500px]">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center justify-between text-sm">
                     <div className="flex items-center space-x-2">
@@ -145,7 +145,7 @@ export default function KanbanBoard() {
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+                <CardContent className="space-y-3 overflow-y-auto max-h-[600px] pr-2">
                   {statusOrders.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <p className="text-sm">No orders in this stage</p>
