@@ -27,6 +27,11 @@ export default function EmergencyPayments() {
     queryFn: () => apiRequest('/api/invoices'),
   });
 
+  const { data: stripeStatus } = useQuery({
+    queryKey: ['/api/stripe/status'],
+    queryFn: () => apiRequest('/api/stripe/status'),
+  });
+
   const recordPaymentMutation = useMutation({
     mutationFn: async (data: { orderId: string; amount: number; method: string }) => {
       // First create invoice if none exists
@@ -93,7 +98,14 @@ export default function EmergencyPayments() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-red-600">🚨 Emergency Revenue Collection</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold text-red-600">🚨 Emergency Revenue Collection</h1>
+          {stripeStatus && (
+            <Badge variant={stripeStatus.ready ? "default" : "secondary"} className="text-sm">
+              {stripeStatus.ready ? "💳 Stripe Ready" : "⚠️ Stripe Setup Needed"}
+            </Badge>
+          )}
+        </div>
         <Badge variant="destructive" className="text-lg px-4 py-2">
           {unpaidOrders.length} Unpaid Orders
         </Badge>

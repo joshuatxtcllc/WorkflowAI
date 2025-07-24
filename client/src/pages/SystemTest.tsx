@@ -238,29 +238,59 @@ export default function SystemTest() {
 }
 
 function StripeTest() {
-  const { data: stripeStatus } = useQuery({
+  const { data: stripeStatus, isLoading } = useQuery({
     queryKey: ['/api/stripe/test'],
     queryFn: () => apiRequest('/api/stripe/test'),
+    retry: 2,
+    refetchInterval: 30000
   });
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2">
+        <AlertCircle className="h-4 w-4 text-yellow-500 animate-spin" />
+        <span>Testing Stripe connection...</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {stripeStatus ? (
         stripeStatus.connected ? (
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-green-500" />
-            <span>Stripe Connected - {stripeStatus.businessName || 'Ready for payments'}</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span className="font-semibold text-green-700">Stripe Connected & Ready</span>
+            </div>
+            <div className="ml-6 text-sm text-gray-600 space-y-1">
+              <div>Business: {stripeStatus.businessName || 'Not set'}</div>
+              <div>Country: {stripeStatus.country?.toUpperCase()}</div>
+              <div>Currency: {stripeStatus.currency?.toUpperCase()}</div>
+              <div>Charges: {stripeStatus.chargesEnabled ? '✅ Enabled' : '❌ Disabled'}</div>
+              <div>Payouts: {stripeStatus.payoutsEnabled ? '✅ Enabled' : '❌ Disabled'}</div>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <XCircle className="h-4 w-4 text-red-500" />
-            <span>Stripe Not Connected - {stripeStatus.error}</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <XCircle className="h-4 w-4 text-red-500" />
+              <span className="font-semibold text-red-700">Stripe Not Connected</span>
+            </div>
+            <div className="ml-6 text-sm text-red-600">
+              {stripeStatus.error}
+            </div>
+            {stripeStatus.hint && (
+              <div className="ml-6 text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                💡 {stripeStatus.hint}
+              </div>
+            )}
           </div>
         )
       ) : (
         <div className="flex items-center gap-2">
           <AlertCircle className="h-4 w-4 text-yellow-500" />
-          <span>Checking Stripe status...</span>
+          <span>Unable to check Stripe status</span>
         </div>
       )}
     </div>
