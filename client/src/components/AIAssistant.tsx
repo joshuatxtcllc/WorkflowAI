@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Brain, X, Send, BarChart3, Clock, AlertTriangle, TrendingUp, Trash2 
-} from 'lucide-react';
+import { Brain, X, Send, BarChart3, Clock, AlertTriangle, Trash2 } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { apiRequest } from '../lib/queryClient';
 import type { AIMessage, WorkloadAnalysis } from '@shared/schema';
+
+const MAX_MESSAGES = 100;
 
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,129 +20,119 @@ export default function AIAssistant() {
   const queryClient = useQueryClient();
   const { lastMessage } = useWebSocket();
 
-  // Fetch AI analysis
   const { data: analysis } = useQuery<WorkloadAnalysis>({
-    queryKey: ["/api/ai/analysis"],
-    refetchInterval: 30000,
+    queryKey: ['/api/ai/analysis'],
+    enabled: isOpen,
+    refetchInterval: isOpen ? 30000 : false,
   });
 
-  // Fetch AI alerts
   const { data: alertsData } = useQuery<{ alerts: AIMessage[] }>({
-    queryKey: ["/api/ai/alerts"],
-    refetchInterval: 60000,
+    queryKey: ['/api/ai/alerts'],
+    enabled: isOpen,
+    refetchInterval: isOpen ? 60000 : false,
   });
 
-  // Chat mutation
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
       const response = await apiRequest('POST', '/api/ai/chat', { message });
       return response.json();
     },
     onSuccess: (data) => {
-      const aiResponse: AIMessage = {
-        id: Date.now().toString(),
+      addMessage({
+        id: uuidv4(),
         type: 'assistant',
         content: data.response,
         timestamp: new Date(),
-        severity: 'info'
-      };
-      setMessages(prev => [...prev, aiResponse]);
+        severity: 'info',
+      });
     },
   });
 
-  // Scroll to bottom when new messages arrive
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
+
+  const addMessage = useCallback((message: AIMessage | AIMessage[]) => {
+    setMessages(prev => {
+      const newMessages = Array.isArray(message) ? [...prev, ...message] : [...prev, message];
+      return newMessages.slice(-MAX_MESSAGES);
+    });
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const timeout = setTimeout(scrollToBottom, 50);
+    return () => clearTimeout(timeout);
+  }, [messages, scrollToBottom]);
 
-  // Handle WebSocket messages for AI alerts and analysis
   useEffect(() => {
-    if (lastMessage?.type === 'ai-alerts') {
-      const alerts = lastMessage.data;
-      const urgentCount = alerts.filter((alert: AIMessage) => alert.severity === 'urgent').length;
+    if (!lastMessage) return;
+
+    if (lastMessage.type === 'ai-alerts') {
+      const alerts = lastMessage.data as AIMessage[];
+      const urgentCount = alerts.filter(alert => alert.severity === 'urgent').length;
       setUrgentAlerts(prev => prev + urgentCount);
-
-      if (isOpen) {
-        setMessages(prev => [...prev, ...alerts]);
-      }
+      if (isOpen) addMessage(alerts);
     }
 
-    if (lastMessage?.type === 'ai-analysis') {
-      // Trigger refetch of analysis data
-      queryClient.invalidateQueries({ queryKey: ["/api/ai/analysis"] });
+    if (lastMessage.type === 'ai-analysis') {
+      queryClient.invalidateQueries({ queryKey: ['/api/ai/analysis'] });
     }
-  }, [lastMessage, isOpen, queryClient]);
+  }, [lastMessage, isOpen, addMessage, queryClient]);
 
-  // Load initial alerts
   useEffect(() => {
-    if (alertsData?.alerts) {
-      const urgentCount = alertsData.alerts.filter(alert => alert.severity === 'urgent').length;
-      setUrgentAlerts(urgentCount);
+    if (!alertsData?.alerts) return;
+    const urgentCount = alertsData.alerts.filter(alert => alert.severity === 'urgent').length;
+    setUrgentAlerts(urgentCount);
 
-      if (isOpen && messages.length === 0) {
-        setMessages(alertsData.alerts);
-      }
+    if (isOpen && messages.length === 0) {
+      addMessage(alertsData.alerts);
     }
-  }, [alertsData, isOpen, messages.length]);
+  }, [alertsData, isOpen, messages.length, addMessage]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || chatMutation.isPending) return;
+  const sendMessage = useCallback(() => {
+    const content = input.trim();
+    if (!content || chatMutation.isPending) return;
 
-    const messageContent = input.trim();
     const userMessage: AIMessage = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       type: 'user',
-      content: messageContent,
-      timestamp: new Date()
+      content,
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    addMessage(userMessage);
     setInput('');
-
-    try {
-      chatMutation.mutate(messageContent);
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      // Add error message to chat
-      const errorMessage: AIMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: 'Sorry, I encountered an error while processing your message. Please try again.',
-        timestamp: new Date(),
-        severity: 'warning'
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    }
-  };
+    chatMutation.mutate(content, {
+      onError: () => {
+        addMessage({
+          id: uuidv4(),
+          type: 'assistant',
+          content: 'Sorry, I encountered an error while processing your message.',
+          timestamp: new Date(),
+          severity: 'warning',
+        });
+      }
+    });
+  }, [input, chatMutation, addMessage]);
 
   const clearConversation = () => {
     setMessages([]);
     setUrgentAlerts(0);
-    // Force re-fetch of alerts to get fresh data
-    queryClient.invalidateQueries({ queryKey: ["/api/ai/alerts"] });
+    queryClient.invalidateQueries({ queryKey: ['/api/ai/alerts'] });
   };
 
-  const getRiskLevelColor = (level?: string) => {
-    switch (level) {
-      case 'critical': return 'text-red-500';
-      case 'high': return 'text-orange-500';
-      case 'medium': return 'text-yellow-500';
-      default: return 'text-green-500';
-    }
-  };
+  const getRiskLevelColor = (level?: string) => ({
+    critical: 'text-red-500',
+    high: 'text-orange-500',
+    medium: 'text-yellow-500',
+    low: 'text-green-500',
+  }[level || 'low'] || 'text-green-500');
 
-  const getMessageSeverityClass = (severity?: string) => {
-    switch (severity) {
-      case 'urgent': return 'border-red-500';
-      case 'warning': return 'border-yellow-500';
-      case 'success': return 'border-green-500';
-      default: return 'border-jade-500';
-    }
-  };
+  const getMessageSeverityClass = (severity?: string) => ({
+    urgent: 'border-red-500',
+    warning: 'border-yellow-500',
+    success: 'border-green-500',
+  }[severity || ''] || 'border-jade-500');
 
   return (
     <>
@@ -176,116 +167,82 @@ export default function AIAssistant() {
         )}
       </motion.button>
 
-      {/* AI Assistant Panel */}
+      {/* Assistant UI */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ x: 400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
-            className="fixed right-0 top-0 h-full w-[480px] bg-gray-900 border-l border-gray-800 shadow-2xl z-50"
+            className="fixed right-0 top-0 h-full w-[480px] bg-gray-900 border-l border-gray-800 shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-jade-600 to-jade-500 p-6 text-white">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex gap-3 items-center">
                   <Brain className="w-8 h-8" />
                   <div>
                     <h2 className="text-xl font-bold">AI Assistant</h2>
-                    <p className="text-jade-100 text-sm">Your Production Copilot</p>
+                    <p className="text-sm text-jade-100">Your Production Copilot</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                   {messages.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={clearConversation}
-                      className="p-2 hover:bg-jade-700 rounded-lg transition-colors text-white"
-                      title="Clear conversation"
-                    >
+                    <Button variant="ghost" size="icon" onClick={clearConversation}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 hover:bg-jade-700 rounded-lg transition-colors text-white"
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                     <X className="w-5 h-5" />
                   </Button>
                 </div>
               </div>
 
-              {/* Quick Stats */}
+              {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
-                  <BarChart3 className="w-5 h-5 mx-auto mb-1" />
-                  <p className="text-2xl font-bold">{analysis?.onTimePercentage || 0}%</p>
-                  <p className="text-xs">On Time</p>
-                </div>
-                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
-                  <Clock className="w-5 h-5 mx-auto mb-1" />
-                  <p className="text-2xl font-bold">{analysis?.totalHours || 0}h</p>
-                  <p className="text-xs">Workload</p>
-                </div>
-                <div className="bg-jade-700/50 rounded-lg p-3 text-center">
-                  <AlertTriangle className="w-5 h-5 mx-auto mb-1" />
-                  <p className={`text-2xl font-bold uppercase ${getRiskLevelColor(analysis?.riskLevel)}`}>
-                    {analysis?.riskLevel || 'LOW'}
-                  </p>
-                  <p className="text-xs">Risk</p>
-                </div>
+                <StatBox icon={<BarChart3 />} value={`${analysis?.onTimePercentage || 0}%`} label="On Time" />
+                <StatBox icon={<Clock />} value={`${analysis?.totalHours || 0}h`} label="Workload" />
+                <StatBox
+                  icon={<AlertTriangle />}
+                  value={analysis?.riskLevel?.toUpperCase() || 'LOW'}
+                  label="Risk"
+                  valueClass={getRiskLevelColor(analysis?.riskLevel)}
+                />
               </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 h-[calc(100%-320px)]">
-              <AnimatePresence>
+            <div className="flex-1 overflow-y-auto p-6">
+              <AnimatePresence initial={false}>
                 {messages.length === 0 ? (
-                  <div className="text-center text-gray-500 mt-8">
-                    <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm mb-4">Welcome! I'm here to help with your production management.</p>
-                    <div className="text-xs text-left space-y-2">
-                      <p>Try asking me about:</p>
-                      <ul className="list-disc list-inside space-y-1 text-gray-400">
-                        <li>Current workload status</li>
-                        <li>Order priorities and deadlines</li>
-                        <li>Material tracking</li>
-                        <li>Workflow recommendations</li>
-                      </ul>
-                    </div>
-                  </div>
+                  <WelcomeMessage />
                 ) : (
-                  messages.map((message) => (
+                  messages.map((msg) => (
                     <motion.div
-                      key={message.id}
+                      key={msg.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className={`mb-4 ${message.type === 'user' ? 'text-right' : ''}`}
+                      className={`mb-4 ${msg.type === 'user' ? 'text-right' : ''}`}
                     >
                       <div
-                        className={`
-                          inline-block max-w-[80%] p-4 rounded-lg
-                          ${message.type === 'user' 
-                            ? 'bg-jade-600 text-white' 
-                            : message.type === 'alert'
-                            ? `bg-gray-800 border-l-4 ${getMessageSeverityClass(message.severity)}`
+                        className={`inline-block max-w-[80%] p-4 rounded-lg ${
+                          msg.type === 'user'
+                            ? 'bg-jade-600 text-white'
+                            : msg.type === 'alert'
+                            ? `bg-gray-800 border-l-4 ${getMessageSeverityClass(msg.severity)}`
                             : 'bg-gray-800 text-gray-200'
-                          }
-                        `}
+                        }`}
                       >
-                        {message.type === 'assistant' && (
+                        {msg.type === 'assistant' && (
                           <div className="flex items-center gap-2 mb-2 text-jade-400">
                             <Brain className="w-4 h-4" />
                             <span className="text-sm font-semibold">AI Assistant</span>
                           </div>
                         )}
-                        <p className="whitespace-pre-line">{message.content}</p>
+                        <p className="whitespace-pre-line">{msg.content}</p>
                         <div className="text-xs text-gray-500 mt-1">
-                          {new Date(message.timestamp).toLocaleTimeString()}
+                          {new Date(msg.timestamp).toLocaleTimeString()}
                         </div>
                       </div>
                     </motion.div>
@@ -299,27 +256,18 @@ export default function AIAssistant() {
             <div className="p-6 border-t border-gray-800">
               <div className="flex gap-3">
                 <Input
-                  type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  placeholder="Try: 'Find orders for John Smith' or 'Send update to customer about order ready'"
-                  className="flex-1 bg-gray-800 text-white border-gray-700 focus:border-jade-500"
+                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                  placeholder="Ask about workload, updates, materials..."
+                  className="flex-1 bg-gray-800 text-white border-gray-700"
                   disabled={chatMutation.isPending}
                 />
                 <Button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    sendMessage();
-                  }}
+                  onClick={sendMessage}
                   disabled={chatMutation.isPending || !input.trim()}
-                  className="bg-jade-500 text-white hover:bg-jade-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-jade-500 text-white hover:bg-jade-400"
                 >
                   <Send className="w-5 h-5" />
                 </Button>
@@ -331,3 +279,27 @@ export default function AIAssistant() {
     </>
   );
 }
+
+const StatBox = ({ icon, value, label, valueClass = '' }) => (
+  <div className="bg-jade-700/50 rounded-lg p-3 text-center">
+    <div className="mx-auto mb-1">{icon}</div>
+    <p className={`text-2xl font-bold ${valueClass}`}>{value}</p>
+    <p className="text-xs">{label}</p>
+  </div>
+);
+
+const WelcomeMessage = () => (
+  <div className="text-center text-gray-500 mt-8">
+    <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
+    <p className="text-sm mb-4">Welcome! I'm here to help with your production management.</p>
+    <div className="text-xs text-left space-y-2">
+      <p>Try asking me about:</p>
+      <ul className="list-disc list-inside space-y-1 text-gray-400">
+        <li>Current workload status</li>
+        <li>Order priorities and deadlines</li>
+        <li>Material tracking</li>
+        <li>Workflow recommendations</li>
+      </ul>
+    </div>
+  </div>
+);
