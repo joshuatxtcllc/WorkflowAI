@@ -42,14 +42,9 @@ function AppContent() {
   }
 
   // Always show the main app - remove authentication requirement temporarily
-  if (!user && false) {
-    return (
-      <Router>
-        <Route path="/track/:trackingId?" component={CustomerPortal} />
-        <Route path="/login" component={() => { window.location.href = "/dashboard"; return null; }} />
-        <Route path="*" component={() => { window.location.href = "/login"; return null; }} />
-      </Router>
-    );
+  // Skip loading and auth checks for immediate access
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
   return (

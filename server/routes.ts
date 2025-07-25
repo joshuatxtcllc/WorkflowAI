@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
+  // Auth routes - simplified for immediate access
   app.get('/api/auth/user', async (req: any, res) => {
     try {
       // Return a mock user for now

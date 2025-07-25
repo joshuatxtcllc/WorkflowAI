@@ -8,102 +8,36 @@ interface User {
   role?: string;
 }
 
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [authChecked, setAuthChecked] = useState(false);
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>({ 
+    id: '1', 
+    name: 'System User', 
+    email: 'admin@jaysframes.com' 
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Prevent multiple auth checks
-    if (authChecked) return;
+    // Auto-authenticate for development
+    setUser({ id: '1', name: 'System User', email: 'admin@jaysframes.com' });
+    setIsLoading(false);
+  }, []);
 
-    const checkAuth = async () => {
-      console.log('useAuth: Starting authentication check...');
-
-      try {
-        // Check if user data exists in localStorage, or create admin user
-        let storedUser = localStorage.getItem('auth_user');
-        if (!storedUser) {
-          // Create admin user for immediate access
-          const adminUser = {
-            id: "ac461820-55f2-46ff-a798-236fdc101806",
-            email: "admin@jaysframes.com",
-            firstName: "Jay",
-            lastName: "Admin",
-            role: "EMPLOYEE"
-          };
-          localStorage.setItem('auth_user', JSON.stringify(adminUser));
-          storedUser = JSON.stringify(adminUser);
-          console.log('useAuth: Created admin user for immediate access');
-        }
-        
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          console.log('useAuth: Found stored user data:', userData.email);
-          setUser(userData);
-
-          // Verify with server (with timeout)
-          console.log('useAuth: Verifying with server...');
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-          try {
-            const response = await fetch('/api/auth/user', {
-              credentials: 'include',
-              signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            if (response.ok) {
-              const serverUser = await response.json();
-              console.log('useAuth: Server verification successful:', serverUser.email);
-              setUser(serverUser);
-              localStorage.setItem('auth_user', JSON.stringify(serverUser));
-            } else {
-              console.log('useAuth: Server verification failed, using stored data');
-              // Keep the stored user data if server check fails
-            }
-          } catch (fetchError) {
-            clearTimeout(timeoutId);
-            console.log('useAuth: Server verification timeout/error, using stored data');
-            // Keep the stored user data if server check fails
-          }
-        } else {
-          console.log('useAuth: No stored user data found');
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('useAuth: Authentication check failed:', error);
-        localStorage.removeItem('auth_user');
-        setUser(null);
-      } finally {
-        console.log('useAuth: Authentication check completed, setting isLoading to false');
-        setIsLoading(false);
-        setAuthChecked(true);
-      }
-    };
-
-    checkAuth();
-  }, [authChecked]);
-
-  const logout = async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      setUser(null);
-      localStorage.removeItem('auth_user');
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Force logout locally even if server request fails
-      setUser(null);
-      localStorage.removeItem('auth_user');
-      window.location.href = '/login';
-    }
+  const checkAuth = async () => {
+    // Always return authenticated for development
+    setUser({ id: '1', name: 'System User', email: 'admin@jaysframes.com' });
+    setIsLoading(false);
   };
 
-  return { user, isLoading, logout };
-}
+  const login = async (email: string, password: string) => {
+    // Always succeed for development
+    setUser({ id: '1', name: 'System User', email: 'admin@jaysframes.com' });
+    return { success: true };
+  };
+
+  const logout = async () => {
+    // Keep user logged in for development
+    setUser({ id: '1', name: 'System User', email: 'admin@jaysframes.com' });
+  };
+
+  return { user, isLoading, login, logout, checkAuth };
+};
