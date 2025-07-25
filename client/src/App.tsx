@@ -6,7 +6,7 @@ import { AppSidebar } from "./components/AppSidebar";
 import { useAuth } from './hooks/useAuth';
 
 // Pages
-import Login from './pages/Login';
+
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Customers from './pages/Customers';
@@ -46,7 +46,7 @@ function AppContent() {
     return (
       <Router>
         <Route path="/track/:trackingId?" component={CustomerPortal} />
-        <Route path="/login" component={Login} />
+        <Route path="/login" component={() => { window.location.href = "/dashboard"; return null; }} />
         <Route path="*" component={() => { window.location.href = "/login"; return null; }} />
       </Router>
     );

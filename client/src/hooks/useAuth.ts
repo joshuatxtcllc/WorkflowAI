@@ -21,8 +21,22 @@ export function useAuth() {
       console.log('useAuth: Starting authentication check...');
 
       try {
-        // Check if user data exists in localStorage
-        const storedUser = localStorage.getItem('auth_user');
+        // Check if user data exists in localStorage, or create admin user
+        let storedUser = localStorage.getItem('auth_user');
+        if (!storedUser) {
+          // Create admin user for immediate access
+          const adminUser = {
+            id: "ac461820-55f2-46ff-a798-236fdc101806",
+            email: "admin@jaysframes.com",
+            firstName: "Jay",
+            lastName: "Admin",
+            role: "EMPLOYEE"
+          };
+          localStorage.setItem('auth_user', JSON.stringify(adminUser));
+          storedUser = JSON.stringify(adminUser);
+          console.log('useAuth: Created admin user for immediate access');
+        }
+        
         if (storedUser) {
           const userData = JSON.parse(storedUser);
           console.log('useAuth: Found stored user data:', userData.email);
