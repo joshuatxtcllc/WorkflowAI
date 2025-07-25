@@ -704,7 +704,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { testUrl, testApiKey } = req.body;
       const connection = await framersAssistantIntegration.testConnection(testUrl, testApiKey);
-      
+
       res.json(connection);
     } catch (error) {
       console.error('Error testing Framers Assistant connection:', error);
@@ -983,7 +983,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/invoices',  async (req, res) => {
     try {
       const validatedData = insertInvoiceSchema.parse(req.body);
-      
+
       // Check if invoice number already exists
       const existingInvoice = await storage.getInvoiceByNumber(validatedData.invoiceNumber);
       if (existingInvoice) {
@@ -997,7 +997,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (stripe && validatedData.lineItems?.length > 0) {
         try {
           const customer = await storage.getCustomer(validatedData.customerId);
-          
+
           const paymentLinkData = await stripe.paymentLinks.create({
             line_items: validatedData.lineItems.map(item => ({
               price_data: {
@@ -1103,7 +1103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate invoice number
       const invoiceNumber = `INV-${Date.now()}`;
-      
+
       // Create invoice from order
       const invoiceData = {
         invoiceNumber,
@@ -1183,7 +1183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { amount, method, transactionId, notes } = req.body;
       const invoice = await storage.getInvoice(req.params.id);
-      
+
       if (!invoice) {
         return res.status(404).json({ message: 'Invoice not found' });
       }
@@ -1225,7 +1225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const customer = await storage.getCustomer(invoice.customerId);
-      
+
       const paymentLinkData = await stripe.paymentLinks.create({
         line_items: invoice.lineItems.map(item => ({
           price_data: {
@@ -1269,7 +1269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe webhook handler
   app.post('/api/webhooks/stripe', async (req, res) => {
     const sig = req.headers['stripe-signature'];
-    
+
     try {
       if (!stripe) {
         return res.status(400).json({ message: 'Stripe not configured' });
@@ -1284,7 +1284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
         const invoiceId = session.metadata?.invoiceId;
-        
+
         if (invoiceId) {
           await storage.updateInvoice(invoiceId, {
             status: 'paid',
@@ -1462,7 +1462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/stripe/test',  async (req, res) => {
     try {
       console.log('🔍 Testing Stripe connection...');
-      
+
       if (!stripe) {
         console.log('❌ Stripe not initialized');
         return res.json({
@@ -1481,7 +1481,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔄 Retrieving Stripe account information...');
       // Test Stripe connection by retrieving account info
       const account = await stripe.accounts.retrieve();
-      
+
       console.log('✅ Stripe connection successful');
       res.json({
         connected: true,
@@ -1495,16 +1495,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('❌ Stripe test error:', error.message);
-      
+
       let errorMessage = error.message;
       let hint = 'Check if your Stripe secret key is valid';
-      
+
       if (error.message.includes('Invalid API Key')) {
         hint = 'Your Stripe secret key is invalid. Check it in Secrets.';
       } else if (error.message.includes('No such API key')) {
         hint = 'API key not found. Verify your Stripe secret key in Secrets.';
       }
-      
+
       res.status(500).json({
         connected: false,
         error: errorMessage,
@@ -1520,7 +1520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isConnected = !!stripe;
       const hasSecretKey = !!process.env.STRIPE_SECRET_KEY;
       const hasWebhookSecret = !!process.env.STRIPE_WEBHOOK_SECRET;
-      
+
       res.json({
         connected: isConnected,
         hasSecretKey,
