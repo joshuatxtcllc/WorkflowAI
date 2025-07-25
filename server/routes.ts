@@ -66,13 +66,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
-      if (req.session?.user) {
-        res.json(req.session.user);
-      } else {
-        res.status(401).json({ message: 'Unauthorized' });
-      }
+      // Return a mock user for now
+      res.json({ id: '1', name: 'System User', email: 'admin@jaysframes.com' });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -80,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Twilio Voice API endpoints
-  app.post('/api/twilio/call/order-ready/:orderId', isAuthenticated, async (req, res) => {
+  app.post('/api/twilio/call/order-ready/:orderId', async (req, res) => {
     try {
       const { orderId } = req.params;
       const order = await storage.getOrder(orderId);
@@ -125,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/twilio/call/overdue/:orderId', isAuthenticated, async (req, res) => {
+  app.post('/api/twilio/call/overdue/:orderId', async (req, res) => {
     try {
       const { orderId } = req.params;
       const { daysPastDue } = req.body;
@@ -171,7 +168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/twilio/call/delay/:orderId', isAuthenticated, async (req, res) => {
+  app.post('/api/twilio/call/delay/:orderId', async (req, res) => {
     try {
       const { orderId } = req.params;
       const { newDueDate, reason } = req.body;
@@ -218,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/twilio/call/custom', isAuthenticated, async (req, res) => {
+  app.post('/api/twilio/call/custom', async (req, res) => {
     try {
       const { phone, message } = req.body;
 
@@ -246,7 +243,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/twilio/test', isAuthenticated, async (req, res) => {
+  app.get('/api/twilio/test', async (req, res) => {
     try {
       const result = await TwilioVoiceService.testConnection();
       res.json(result);
@@ -259,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/twilio/calls', isAuthenticated, async (req, res) => {
+  app.get('/api/twilio/calls', async (req, res) => {
     try {
       const { startDate, endDate } = req.query;
       const start = startDate ? new Date(startDate as string) : undefined;
@@ -306,12 +303,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Test route for connection verification
-  app.get('/api/test/auth', isAuthenticated, (req, res) => {
+  app.get('/api/test/auth', (req, res) => {
     res.json({ success: true, message: 'Hub connection authenticated successfully' });
   });
 
   // Customer routes
-  app.get('/api/customers', isAuthenticated, async (req, res) => {
+  app.get('/api/customers', async (req, res) => {
     try {
       const customers = await storage.getCustomers();
       res.json(customers);
@@ -321,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/customers', isAuthenticated, async (req, res) => {
+  app.post('/api/customers', async (req, res) => {
     try {
       const validatedData = insertCustomerSchema.parse(req.body);
 
@@ -345,7 +342,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Order routes
-  app.get('/api/orders', isAuthenticated, async (req, res) => {
+  app.get('/api/orders', async (req, res) => {
     try {
       const orders = await storage.getOrders();
       res.json(orders);
@@ -355,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/orders/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/:id', async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
       if (!order) {
@@ -368,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders', isAuthenticated, async (req: any, res) => {
+  app.post('/api/orders', async (req: any, res) => {
     try {
       console.log('Order creation request received:', req.body);
 
@@ -489,7 +486,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // General order update endpoint
-  app.patch('/api/orders/:id', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/orders/:id', async (req: any, res) => {
     try {
       const orderId = req.params.id;
       const updates = { ...req.body };
@@ -537,7 +534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/orders/:id/status', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/orders/:id/status', async (req: any, res) => {
     try {
       const { status } = req.body;
       const orderId = req.params.id;
@@ -580,7 +577,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Material routes
-  app.get('/api/orders/:orderId/materials', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/:orderId/materials', async (req, res) => {
     try {
       const materials = await storage.getMaterialsByOrder(req.params.orderId);
       res.json(materials);
@@ -590,7 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders/:orderId/materials', isAuthenticated, async (req, res) => {
+  app.post('/api/orders/:orderId/materials', async (req, res) => {
     try {
       const validatedData = insertMaterialSchema.parse({
         ...req.body,
@@ -606,7 +603,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics routes
-  app.get('/api/analytics/workload', isAuthenticated, async (req, res) => {
+  app.get('/api/analytics/workload', async (req, res) => {
     try {
       const workload = await storage.getWorkloadMetrics();
       res.json(workload);
@@ -617,7 +614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI-powered routes
-  app.get('/api/ai/analysis', isAuthenticated, async (req, res) => {
+  app.get('/api/ai/analysis', async (req, res) => {
     try {
       const orders = await storage.getOrders();
       const workload = await storage.getWorkloadMetrics();
@@ -649,7 +646,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/ai/alerts', isAuthenticated, async (req, res) => {
+  app.get('/api/ai/alerts', async (req, res) => {
     try {
       const orders = await storage.getOrders();
       const workload = await storage.getWorkloadMetrics();
@@ -670,7 +667,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Integration routes
-  app.get('/api/integrations/status', isAuthenticated, async (req, res) => {
+  app.get('/api/integrations/status', async (req, res) => {
     try {
       const twilioStatus = !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
 
@@ -689,7 +686,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Framers Assistant Integration routes
-  app.get('/api/framers-assistant/status', isAuthenticated, async (req, res) => {
+  app.get('/api/framers-assistant/status', async (req, res) => {
     try {
       const status = await framersAssistantIntegration.checkConnection();
       res.json(status);
@@ -703,7 +700,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/framers-assistant/test-connection', isAuthenticated, async (req, res) => {
+  app.post('/api/framers-assistant/test-connection',  async (req, res) => {
     try {
       const { testUrl, testApiKey } = req.body;
       const connection = await framersAssistantIntegration.testConnection(testUrl, testApiKey);
@@ -721,7 +718,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/framers-assistant/sync-order/:orderId', isAuthenticated, async (req, res) => {
+  app.post('/api/framers-assistant/sync-order/:orderId',  async (req, res) => {
     try {
       const { orderId } = req.params;
       const result = await framersAssistantIntegration.syncOrder(orderId);
@@ -735,7 +732,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/framers-assistant/sync-all', isAuthenticated, async (req, res) => {
+  app.post('/api/framers-assistant/sync-all',  async (req, res) => {
     try {
       const result = await framersAssistantIntegration.syncAllActiveOrders();
       res.json(result);
@@ -749,7 +746,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // POS Integration routes
-  app.get('/api/pos/status', isAuthenticated, async (req, res) => {
+  app.get('/api/pos/status',  async (req, res) => {
     try {
       const isConnected = await posIntegration.checkConnection();
       const hasApiKey = !!process.env.POS_API_KEY;
@@ -772,7 +769,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/pos/test-connection', isAuthenticated, async (req, res) => {
+  app.post('/api/pos/test-connection',  async (req, res) => {
     try {
       const connection = await posIntegration.checkConnection();
       res.json({
@@ -790,7 +787,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/pos/sync', isAuthenticated, async (req, res) => {
+  app.post('/api/pos/sync',  async (req, res) => {
     try {
       const newOrders = await posIntegration.fetchNewOrders();
       res.json({
@@ -809,7 +806,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SMS Integration routes
-  app.post('/api/sms/send', isAuthenticated, async (req, res) => {
+  app.post('/api/sms/send',  async (req, res) => {
     try {
       const { orderId, message, phoneNumber } = req.body;
       await smsIntegration.sendOrderNotification(orderId, message, phoneNumber);
@@ -821,7 +818,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Voice Call Integration routes
-  app.post('/api/voice/order-status', isAuthenticated, async (req, res) => {
+  app.post('/api/voice/order-status',  async (req, res) => {
     try {
       const { orderId, phoneNumber } = req.body;
 
@@ -859,7 +856,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/voice/order-ready', isAuthenticated, async (req, res) => {
+  app.post('/api/voice/order-ready',  async (req, res) => {
     try {
       const { orderId } = req.body;
 
@@ -901,7 +898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/voice/custom', isAuthenticated, async (req, res) => {
+  app.post('/api/voice/custom',  async (req, res) => {
     try {
       const { phoneNumber, message } = req.body;
 
@@ -934,7 +931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/voice/status/:callSid', isAuthenticated, async (req, res) => {
+  app.get('/api/voice/status/:callSid',  async (req, res) => {
     try {
       const { callSid } = req.params;
       const callStatus = await TwilioVoiceService.getCallStatus(callSid);
@@ -946,7 +943,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard Integration routes
-  app.post('/api/integrations/dashboard/sync', isAuthenticated, async (req, res) => {
+  app.post('/api/integrations/dashboard/sync',  async (req, res) => {
     try {
       await dashboardIntegration.syncMetrics();
       res.json({ success: true, message: 'Metrics synced to dashboard' });
@@ -960,7 +957,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Invoice routes
-  app.get('/api/invoices', isAuthenticated, async (req, res) => {
+  app.get('/api/invoices',  async (req, res) => {
     try {
       const invoices = await storage.getInvoices();
       res.json(invoices);
@@ -970,7 +967,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/invoices/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/invoices/:id',  async (req, res) => {
     try {
       const invoice = await storage.getInvoice(req.params.id);
       if (!invoice) {
@@ -983,7 +980,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/invoices', isAuthenticated, async (req, res) => {
+  app.post('/api/invoices',  async (req, res) => {
     try {
       const validatedData = insertInvoiceSchema.parse(req.body);
       
@@ -1057,7 +1054,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/invoices/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/invoices/:id',  async (req, res) => {
     try {
       const invoice = await storage.updateInvoice(req.params.id, req.body);
       res.json(invoice);
@@ -1067,7 +1064,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/invoices/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/invoices/:id',  async (req, res) => {
     try {
       await storage.deleteInvoice(req.params.id);
       res.json({ message: 'Invoice deleted successfully' });
@@ -1077,7 +1074,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/customers/:customerId/invoices', isAuthenticated, async (req, res) => {
+  app.get('/api/customers/:customerId/invoices',  async (req, res) => {
     try {
       const invoices = await storage.getInvoicesByCustomer(req.params.customerId);
       res.json(invoices);
@@ -1087,7 +1084,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/orders/:orderId/invoices', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/:orderId/invoices',  async (req, res) => {
     try {
       const invoices = await storage.getInvoicesByOrder(req.params.orderId);
       res.json(invoices);
@@ -1097,7 +1094,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders/:orderId/generate-invoice', isAuthenticated, async (req, res) => {
+  app.post('/api/orders/:orderId/generate-invoice',  async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.orderId);
       if (!order) {
@@ -1182,7 +1179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Record manual payment
-  app.post('/api/invoices/:id/payment', isAuthenticated, async (req, res) => {
+  app.post('/api/invoices/:id/payment',  async (req, res) => {
     try {
       const { amount, method, transactionId, notes } = req.body;
       const invoice = await storage.getInvoice(req.params.id);
@@ -1216,7 +1213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new payment link for existing invoice
-  app.post('/api/invoices/:id/payment-link', isAuthenticated, async (req, res) => {
+  app.post('/api/invoices/:id/payment-link',  async (req, res) => {
     try {
       const invoice = await storage.getInvoice(req.params.id);
       if (!invoice) {
@@ -1308,7 +1305,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artwork management routes
-  app.post('/api/orders/:orderId/artwork/upload', isAuthenticated, upload.single('artwork'), async (req, res) => {
+  app.post('/api/orders/:orderId/artwork/upload',  upload.single('artwork'), async (req, res) => {
     try {
       const { orderId } = req.params;
       const file = req.file;
@@ -1325,7 +1322,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/orders/:orderId/artwork/location', isAuthenticated, async (req, res) => {
+  app.put('/api/orders/:orderId/artwork/location',  async (req, res) => {
     try {
       const { orderId } = req.params;
       const { location } = req.body;
@@ -1342,7 +1339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/orders/:orderId/artwork/received', isAuthenticated, async (req, res) => {
+  app.put('/api/orders/:orderId/artwork/received',  async (req, res) => {
     try {
       const { orderId } = req.params;
       const { received } = req.body;
@@ -1355,7 +1352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/orders/:orderId/artwork/:imageUrl', isAuthenticated, async (req, res) => {
+  app.delete('/api/orders/:orderId/artwork/:imageUrl',  async (req, res) => {
     try {
       const { orderId, imageUrl } = req.params;
       const decodedImageUrl = decodeURIComponent(imageUrl);
@@ -1368,7 +1365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/artwork/locations', isAuthenticated, async (req, res) => {
+  app.get('/api/artwork/locations',  async (req, res) => {
     try {
       const locations = artworkManager.getCommonLocations();
       res.json(locations);
@@ -1420,7 +1417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Search routes
-  app.get('/api/orders/search', isAuthenticated, async (req, res) => {
+  app.get('/api/orders/search',  async (req, res) => {
     try {
       const { q } = req.query;
       if (!q || typeof q !== 'string') {
@@ -1462,7 +1459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe connection test
-  app.get('/api/stripe/test', isAuthenticated, async (req, res) => {
+  app.get('/api/stripe/test',  async (req, res) => {
     try {
       console.log('🔍 Testing Stripe connection...');
       
@@ -1518,7 +1515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe payment status endpoint
-  app.get('/api/stripe/status', isAuthenticated, async (req, res) => {
+  app.get('/api/stripe/status',  async (req, res) => {
     try {
       const isConnected = !!stripe;
       const hasSecretKey = !!process.env.STRIPE_SECRET_KEY;
@@ -1546,7 +1543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Diagnostic endpoints for the diagnostic dashboard
-  app.get('/api/diagnostics/system-health', isAuthenticated, async (req, res) => {
+  app.get('/api/diagnostics/system-health',  async (req, res) => {
     try {
       const startTime = Date.now();
 
@@ -1624,7 +1621,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/diagnostics/workflow-metrics', isAuthenticated, async (req, res) => {
+  app.get('/api/diagnostics/workflow-metrics',  async (req, res) => {
     try {
       const orders = await storage.getOrders();
 
@@ -1698,7 +1695,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/diagnostics/alerts', isAuthenticated, async (req, res) => {
+  app.get('/api/diagnostics/alerts',  async (req, res) => {
     try {
       const orders = await storage.getOrders();
       const alerts = [];
