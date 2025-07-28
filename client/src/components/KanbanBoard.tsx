@@ -162,28 +162,7 @@ export default function KanbanBoard() {
         })}
       </div>
 
-      {/* Debug Info */}
-      <div className="bg-gray-800 border border-gray-700 rounded p-4 mb-4">
-        <h3 className="text-white font-bold mb-2">🔍 TROUBLESHOOTING DATA FLOW:</h3>
-        <p className="text-green-400">✓ Total Orders Loaded: {orders.length}</p>
-        <p className="text-blue-400">✓ Order Processed: {getOrdersByStatus('ORDER_PROCESSED').length}</p>
-        <p className="text-yellow-400">✓ Materials Arrived: {getOrdersByStatus('MATERIALS_ARRIVED').length}</p>
-        <p className="text-orange-400">✓ Frame Cut: {getOrdersByStatus('FRAME_CUT').length}</p>
-        <p className="text-gray-400">✓ Picked Up: {getOrdersByStatus('PICKED_UP').length}</p>
-        {orders.length > 0 && (
-          <div className="mt-2 p-2 bg-gray-700 rounded">
-            <p className="text-white text-sm">Sample Order Data:</p>
-            <pre className="text-xs text-green-300">{JSON.stringify(orders[0], null, 2)}</pre>
-          </div>
-        )}
-        {orders.length === 0 && !isLoading && (
-          <div className="mt-2 p-2 bg-red-900 border border-red-600 rounded">
-            <p className="text-red-400">❌ NO DATA RECEIVED FROM API</p>
-            {error && <p className="text-red-300 text-sm">Error: {error.message}</p>}
-            <p className="text-gray-400 text-xs">Check browser console for network errors</p>
-          </div>
-        )}
-      </div>
+      
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
